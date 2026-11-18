@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shifter Punkz — Character Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1113; --panel:#171b1e; --panel2:#1d2226; --line:#3a4148;
+  --line-strong:#6b747c; --ink:#e7eaec; --ink-dim:#9aa3aa; --ink-faint:#5f6870;
+  --hp:#e0432c; --hp-dim:#5a2620; --sp:#22b99b; --sp-dim:#1b4842;
+  --cosmic:#a06bf2; --outlaw:#ffd000; --cpd:#3aa0e0; --shifter:#a06bf2;
+  /* colours used for the selected factor button; light mode swaps in darker shades of the same hues so they stay readable */
+  --shifter-ink:var(--shifter); --outlaw-ink:var(--outlaw); --cpd-ink:var(--cpd);
+  --warn:#e0b23c; --accent:#e7eaec;
+  font-family:'Inter',sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#eef0f1; --panel:#ffffff; --panel2:#f5f6f7; --line:#c7ccd0;
+    --line-strong:#9098a0; --ink:#15181a; --ink-dim:#565f66; --ink-faint:#8a929a;
+    --shifter-ink:#8948ef; --outlaw-ink:#876e00; --cpd-ink:#1c76af;
+  }
+}
+:root[data-theme="dark"]{ --bg:#0e1113; }
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+body{padding:20px 20px 80px;}
+h1,h2,h3,.label,.btn,button,.tag,.chip{font-family:'Rajdhani',sans-serif;}
+.wrap{max-width:1400px;margin:0 auto;}
+header.top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  border-bottom:2px solid var(--line-strong);padding-bottom:14px;margin-bottom:18px;}
+header.top h1{font-size:26px;font-weight:700;letter-spacing:.04em;margin:0;text-transform:uppercase;}
+header.top .sub{color:var(--ink-dim);font-size:13px;letter-spacing:.03em;}
+.columns{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:16px;}
+@media (max-width:1000px){.columns{grid-template-columns:1fr;}}
+
+.panel{background:var(--panel);border:1px solid var(--line);position:relative;margin-bottom:14px;}
+.panel-head{background:var(--panel2);border-bottom:1px solid var(--line);padding:8px 14px;
+  clip-path:polygon(0 0,100% 0,100% 100%,14px 100%,0 calc(100% - 14px));}
+.panel-head h2{margin:0;font-size:15px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;}
+.panel-body{padding:14px;}
+.panel-body.tight{padding:10px 14px;}
+
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:90px;}
+.field.narrow{flex:0 0 90px;min-width:70px;}
+.label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);font-weight:600;}
+input[type=text],input[type=number],textarea,select{
+  background:var(--bg);border:1px solid var(--line);color:var(--ink);
+  padding:7px 8px;font-family:'Inter',sans-serif;font-size:14px;width:100%;border-radius:2px;}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--sp);outline-offset:-1px;}
+textarea{resize:vertical;min-height:60px;line-height:1.4;}
+.hint{font-size:11.5px;color:var(--ink-faint);line-height:1.4;margin-top:2px;}
+.unit-input{display:flex;align-items:stretch;}
+.unit-input input{border-top-right-radius:0;border-bottom-right-radius:0;border-right:none;}
+.unit-input .unit-suffix{display:flex;align-items:center;white-space:nowrap;padding:0 8px;
+  background:var(--panel2);border:1px solid var(--line);border-left:none;color:var(--ink-faint);
+  font-size:12.5px;border-top-right-radius:2px;border-bottom-right-radius:2px;}
+
+.factor-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.factor-btn{border:1px solid var(--line);background:var(--panel2);color:var(--ink-dim);
+  padding:10px 6px;text-align:center;cursor:pointer;font-family:'Rajdhani',sans-serif;
+  font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;transition:.15s;}
+.factor-btn:hover{border-color:var(--line-strong);}
+.factor-btn.active[data-f="shifter"]{border-color:var(--shifter-ink);color:var(--shifter-ink);box-shadow:inset 0 0 0 1px var(--shifter-ink);}
+.factor-btn.active[data-f="outlaw"]{border-color:var(--outlaw-ink);color:var(--outlaw-ink);box-shadow:inset 0 0 0 1px var(--outlaw-ink);}
+.factor-btn.active[data-f="cpd"]{border-color:var(--cpd-ink);color:var(--cpd-ink);box-shadow:inset 0 0 0 1px var(--cpd-ink);}
+#factorDesc{font-size:12.5px;color:var(--ink-dim);line-height:1.5;margin-top:8px;padding:8px 10px;
+  background:var(--bg);border-left:2px solid var(--line-strong);}
+
+.repcombo{display:flex;align-items:center;gap:6px;}
+.repcombo span{color:var(--ink-faint);font-weight:700;}
+
+/* meters */
+.meter-wrap{margin-top:4px;}
+.meter-track{height:10px;background:var(--bg);border:1px solid var(--line);position:relative;overflow:hidden;}
+.meter-fill{height:100%;transition:width .2s;}
+.meter-fill.hp{background:var(--hp);}
+.meter-fill.sp{background:var(--sp);}
+.meter-nums{font-size:12px;color:var(--ink-dim);margin-top:3px;display:flex;justify-content:space-between;}
+
+/* list rows (items, bonded, weapons, gears, skills, cosmic) */
+.rows{display:flex;flex-direction:column;gap:6px;}
+.rowline{display:grid;gap:6px;align-items:center;}
+.rowline input,.rowline textarea{font-size:13px;padding:6px 7px;}
+.rowline textarea{min-height:31px;line-height:1.35;resize:vertical;overflow:hidden;}
+.rm-btn{background:transparent;border:1px solid var(--line);color:var(--ink-faint);
+  width:26px;height:26px;line-height:1;cursor:pointer;border-radius:2px;font-size:15px;}
+.rm-btn:hover{border-color:var(--hp);color:var(--hp);}
+.add-btn{margin-top:8px;background:var(--panel2);border:1px dashed var(--line-strong);
+  color:var(--ink-dim);padding:7px 10px;cursor:pointer;font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;font-family:'Rajdhani',sans-serif;font-weight:700;width:100%;}
+.add-btn:hover{color:var(--ink);border-color:var(--sp);}
+.add-btn:disabled{opacity:.35;cursor:not-allowed;}
+.cap-note{font-size:11px;color:var(--ink-faint);margin-top:4px;}
+.cap-note.over{color:var(--hp);}
+
+/* stepper */
+.stepper{display:flex;align-items:center;gap:10px;justify-content:space-between;
+  border:1px solid var(--line);padding:6px 8px;background:var(--bg);}
+.stepper .name{font-size:13px;font-weight:600;letter-spacing:.03em;flex:0 0 auto;}
+.stepper .ctrl{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+.stepper .ba-mod{display:flex;align-items:center;gap:5px;font-size:10.5px;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);flex:0 0 auto;margin-left:auto;}
+.stepper .ba-mod input{width:46px;padding:3px 4px;font-size:12px;text-align:center;}
+.step-btn{width:24px;height:24px;border:1px solid var(--line-strong);background:var(--panel2);
+  color:var(--ink);cursor:pointer;font-size:14px;line-height:1;border-radius:2px;}
+.step-btn:hover{border-color:var(--sp);}
+.step-val{min-width:16px;text-align:center;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:15px;}
+.points-remaining{font-size:12.5px;margin-top:8px;color:var(--ink-dim);}
+.points-remaining b{color:var(--sp);}
+.points-remaining.over b{color:var(--hp);}
+
+/* dice counters */
+.dice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.dice-box{border:1px solid var(--line);padding:10px;text-align:center;background:var(--bg);}
+.dice-box .name{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px;}
+.dice-box .val{font-size:28px;font-weight:700;font-family:'Rajdhani',sans-serif;}
+.dice-box .ctrl{display:flex;justify-content:center;gap:8px;margin-top:6px;}
+
+/* coins */
+.coin-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.coin-total{font-size:26px;font-weight:700;font-family:'Rajdhani',sans-serif;color:var(--warn);}
+.roll-btn{background:var(--panel2);border:1px solid var(--warn);color:var(--warn);
+  padding:8px 14px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;font-size:12.5px;}
+.roll-btn:hover{background:var(--warn);color:#1a1400;}
+.roll-log{font-size:11.5px;color:var(--ink-faint);min-height:16px;}
+
+/* injuries checklist */
+.chk-group{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;}
+.chk-group h4{grid-column:1/-1;margin:10px 0 2px;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-faint);font-weight:700;}
+.chk-group h4:first-child{margin-top:0;}
+.chk{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-dim);}
+.chk input[type=checkbox]{width:15px;height:15px;accent-color:var(--hp);flex:0 0 auto;}
+.chk-lv .lv-input{width:38px;margin-left:auto;padding:2px 4px;font-size:12px;flex:0 0 auto;}
+.chk-lv .part-input{width:110px;margin-left:auto;padding:2px 6px;font-size:12px;flex:0 0 auto;}
+
+/* table headers for rows */
+.thead{display:grid;gap:6px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-faint);padding:0 2px 2px;}
+
+.disabled-panel{opacity:.4;pointer-events:none;filter:grayscale(1);}
+.disabled-note{font-size:12px;color:var(--ink-faint);font-style:italic;padding:6px 0;}
+
+footer.actions{position:sticky;bottom:0;margin-top:22px;background:var(--panel);
+  border-top:2px solid var(--line-strong);padding:12px 16px;display:flex;gap:10px;
+  flex-wrap:wrap;justify-content:flex-end;}
+.main-btn{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;font-size:13px;padding:10px 18px;cursor:pointer;border:1px solid var(--line-strong);
+  background:var(--panel2);color:var(--ink);}
+.main-btn.primary{background:var(--sp);border-color:var(--sp);color:#052420;}
+.main-btn.primary:hover{filter:brightness(1.1);}
+.main-btn.ghost:hover{border-color:var(--hp);color:var(--hp);}
+
+.main-btn.active{border-color:var(--sp);color:var(--sp);}
+.party-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+.pcard{border:1px solid var(--line);background:var(--bg);padding:10px 12px;}
+.pcard h3{margin:0 0 2px;font-size:17px;letter-spacing:.03em;}
+.pcard .who{font-size:12px;color:var(--ink-faint);margin-bottom:8px;}
+.pcard .ln{font-size:12.5px;color:var(--ink-dim);margin-top:5px;line-height:1.45;white-space:pre-wrap;}
+.pcard .ln b{color:var(--ink);font-weight:600;}
+.pcard .ln.warn{color:var(--hp);}
+.pcard details{margin-top:8px;}
+.pcard summary{cursor:pointer;color:var(--ink);font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:12px;}
+.drop{border:2px dashed var(--line-strong);padding:22px 14px;text-align:center;color:var(--ink-dim);font-size:14px;transition:.15s;}
+.drop.over{border-color:var(--sp);color:var(--sp);background:var(--panel2);}
+.pick{color:var(--sp);cursor:pointer;text-decoration:underline;}
+.gm-msg{font-size:13px;margin-top:10px;min-height:18px;color:var(--sp);white-space:pre-wrap;}
+.gm-msg.bad{color:var(--hp);}
+.pcard input,.pcard textarea{margin-top:6px;}
+.pcard textarea{resize:vertical;min-height:54px;line-height:1.4;}
+.pcard .foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px;}
+.pcard .foot .stamp{font-size:11px;color:var(--ink-faint);}
+.pcard .rm{font-size:11.5px;padding:4px 10px;}
+.chk-lv .lv-prefix{margin-left:auto;font-size:11px;letter-spacing:.05em;color:var(--ink-faint);font-family:'Rajdhani',sans-serif;font-weight:700;}
+.chk-lv .lv-prefix + .lv-input{margin-left:0;}
+@media print{
+  body{background:#fff;color:#000;padding:0;}
+  footer.actions{display:none;}
+  .panel{break-inside:avoid;border-color:#999;}
+  .add-btn,.rm-btn,.roll-btn,.step-btn{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Shifter Punkz — Character Sheet</h1>
+    </div>
+    <div style="text-align:right">
+      <div class="sub" id="charTag">เอกสารตัวละครยังไม่ได้ตั้งชื่อ</div>
+      <div class="sub" id="cloudStatus">บันทึกในเครื่องนี้</div>
+      <div id="viewTabs" style="display:none;gap:6px;margin-top:6px;justify-content:flex-end">
+        <button class="main-btn" id="tabSheet" type="button">My Sheet</button>
+        <button class="main-btn" id="tabParty" type="button">GM Sheet</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="gmView" style="display:none">
+    <div class="panel">
+      <div class="panel-head"><h2>GM Sheet — ตัวละครของผู้เล่น</h2></div>
+      <div class="panel-body">
+        <div class="drop" id="gmDrop">
+          ลากไฟล์ .json ของผู้เล่นมาวางที่นี่ หรือ
+          <label class="pick">เลือกไฟล์<input type="file" id="gmFile" accept=".json,application/json" multiple hidden></label>
+        </div>
+        <div class="hint">รับไฟล์ที่ผู้เล่น Export JSON จากใบตัวละคร (เลือกได้หลายไฟล์) และไฟล์ "Export ทั้งปาร์ตี้" · ชื่อตัวละครซ้ำจะอัปเดตทับ (คงชื่อผู้เล่นและโน้ต GM) · ไฟล์ที่อัปโหลดเก็บในเบราว์เซอร์เครื่องนี้ ใช้ Export เก็บสำรองได้</div>
+        <div class="gm-msg" id="gmMsg"></div>
+        <div class="row" style="margin-bottom:10px">
+          <button class="main-btn" id="partyExport" type="button">Export ทั้งปาร์ตี้ (JSON)</button>
+          <button class="main-btn ghost" id="gmClear" type="button">ล้างไฟล์ที่อัปโหลด</button>
+        </div>
+        <div id="partyList">กำลังโหลด…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <!-- ============ LEFT COLUMN ============ -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="panel-head"><h2>Identity</h2></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="field" style="flex:2">
+              <label class="label" for="fName">Name</label>
+              <input type="text" id="fName" placeholder="ชื่อตัวละคร">
+            </div>
+            <div class="field narrow">
+              <label class="label" for="fAge" id="fAgeLabel">Job</label>
+              <input type="text" id="fAge" maxlength="30" placeholder="—">
+            </div>
+          </div>
+
+          <div class="field" style="margin-top:12px">
+            <label class="label">Factor</label>
+            <div class="factor-grid">
+              <div class="factor-btn active" data-f="shifter">Shifter</div>
+              <div class="factor-btn" data-f="outlaw">Norms</div>
+              <div class="factor-btn" data-f="cpd">C.P.D.</div>
+            </div>
+            <div id="factorDesc"></div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <div class="field narrow">
+              <label class="label">Rep. Gained</label>
+              <input type="number" id="repGain" min="0" value="0">
+            </div>
+            <div class="field narrow">
+              <label class="label">Rep. Current</label>
+              <input type="number" id="repCur" min="0" value="0">
+            </div>
+            <div class="field" style="align-self:flex-end;flex:0 0 auto;">
+              <div class="repcombo"><span id="repShow">0 / 0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Background</h2></div>
+        <div class="panel-body">
+          <textarea id="fBio" placeholder="ประวัติ ที่มา และแรงจูงใจของตัวละคร..." style="min-height:110px"></textarea>
+          <div class="label" style="margin:14px 0 6px">Flaw(s)</div>
+          <textarea id="fFlaw" placeholder="ข้อเสีย/ปมของตัวละคร ที่สามารถ trigger บัฟทดแทนอุปสรรคได้..." style="min-height:70px"></textarea>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2 id="traitTitle">Trait</h2></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="field" style="flex:1">
+              <label class="label" for="fTraitName">Name</label>
+              <input type="text" id="fTraitName" maxlength="40" placeholder="ชื่อ Trait">
+            </div>
+            <div class="field" style="flex:2" id="traitFxField">
+              <label class="label" for="fTraitFx">Ability</label>
+              <textarea id="fTraitFx" rows="1" placeholder="เอฟเฟกต์ของ Trait..." style="min-height:36px"></textarea>
+            </div>
+          </div>
+          <div id="extraTraitsWrap">
+            <div class="rows" id="traitXRows" style="margin-top:8px"></div>
+            <button class="add-btn" id="addTraitX" type="button">+ เพิ่ม Trait</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Supplies</h2></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="field narrow"><label class="label">Slots</label>
+              <input type="number" id="itemSlots" min="0" max="99" value="5" style="width:70px"></div>
+            <button class="main-btn" id="slotReset" type="button" style="align-self:flex-end;padding:7px 12px;font-size:12px" title="เริ่ม session ใหม่ — รีเซ็ต Advance pts เป็น 5 และ Slots เป็นค่าเริ่มต้น (Norms = 8, อื่นๆ = 5)">เริ่ม session ใหม่</button>
+            <div class="field narrow" style="margin-left:auto"><label class="label">Coins</label>
+              <input type="number" id="coinManual" min="0" max="10" value="0" style="width:70px"></div>
+            <button class="roll-btn" id="rollCoins" type="button" style="display:none">Roll Starting Coins</button><!-- hidden for now; remove style="display:none" to bring it back -->
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Bonded Item</h2></div>
+        <div class="panel-body">
+          <div class="thead" id="bondedHead" style="grid-template-columns:1fr 1fr 26px;">
+            <div>Name</div><div>Effect / Buff on destroy</div><div></div>
+          </div>
+          <div class="rows" id="bondedRows"></div>
+          <button class="add-btn" id="addBonded" type="button">+ เพิ่ม Bonded Item</button>
+          <div class="field" style="margin-top:14px"><label class="label" for="fBond1">ตัวละครนี้มีความผูกพันกับของสิ่งนี้อย่างไร?</label>
+            <textarea id="fBond1" rows="1" style="min-height:36px"></textarea></div>
+          <div class="field" style="margin-top:10px"><label class="label" for="fBond2">ตัวละครนี้ได้รับของสิ่งนี้มาได้อย่างไร?</label>
+            <textarea id="fBond2" rows="1" style="min-height:36px"></textarea></div>
+          <div class="field" style="margin-top:10px"><label class="label" for="fBond3">หากตัวละครนี้สูญเสียของสิ่งนี้จะรู้สึกอย่างไร?</label>
+            <textarea id="fBond3" rows="1" style="min-height:36px"></textarea></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ MIDDLE COLUMN ============ -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="panel-head"><h2 style="color:var(--hp)">Integrity Point</h2></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="field narrow"><label class="label">Current</label>
+              <input type="number" id="hpCur" min="0" max="20" value="10"></div>
+            <div class="field narrow"><label class="label">Max IP</label>
+              <input type="number" id="hpMax" min="10" max="20" value="10"></div>
+            <div class="field narrow"><label class="label">AMR+</label>
+              <input type="number" id="hpAmr" min="0" max="2" value="0"></div>
+            <div class="field narrow"><label class="label">RGN+</label>
+              <input type="number" id="hpRgn" min="0" max="2" value="0"></div>
+          </div>
+          <div class="meter-wrap">
+            <div class="meter-track"><div class="meter-fill hp" id="hpFill" style="width:100%"></div></div>
+            <div class="meter-nums"><span id="hpNums">10 / 10</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="spPanel">
+        <div class="panel-head"><h2 style="color:var(--sp)">Whelm</h2></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="field narrow"><label class="label">Current</label>
+              <input type="number" id="spCur" min="0" max="10" value="10"></div>
+            <div class="field narrow"><label class="label">Max WM</label>
+              <input type="number" id="spMax" min="1" max="10" value="10"></div>
+            <div class="field narrow"><label class="label">PWR+</label>
+              <input type="number" id="spPwr" min="0" max="2" value="0"></div>
+            <div class="field narrow"><label class="label">RGN+</label>
+              <input type="number" id="spRgn" min="0" max="2" value="1"></div>
+          </div>
+          <div class="meter-wrap">
+            <div class="meter-track"><div class="meter-fill sp" id="spFill" style="width:100%"></div></div>
+            <div class="meter-nums"><span id="spNums">5 / 5</span><span id="spNote"></span></div>
+          </div>
+          <div class="disabled-note" id="spDisabledNote" style="display:none">C.P.D. ไม่มีพลังคอสมิค — ไม่มี WM</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" style="display:flex;align-items:center;justify-content:space-between"><h2>Injuries</h2><label class="chk" data-key="COMA" style="color:var(--hp);font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.06em"><input type="checkbox"> COMA</label></div>
+        <div class="panel-body tight">
+          <div class="chk-group">
+            <h4>Physical</h4>
+            <label class="chk" data-key="Stun" style="display:none"><input type="checkbox"> Stun</label><!-- hidden for now; remove style="display:none" to bring it back -->
+            <label class="chk chk-lv" data-key="Poisoned"><input type="checkbox"> Poisoned
+              <span class="lv-prefix" style="display:none">Lv</span><input type="number" id="poisonLvInput" style="display:none" class="lv-input" min="1" max="5" value="1" title="ระดับความรุนแรงของพิษ"></label>
+            <label class="chk" data-key="Burn" style="display:none"><input type="checkbox"> Burn</label><!-- hidden for now; remove style="display:none" to bring it back -->
+            <label class="chk chk-lv" data-key="Bleeding"><input type="checkbox"> Bleeding
+              <span class="lv-prefix" style="display:none">DMG</span><input type="number" id="bleedDmgInput" style="display:none" class="lv-input" min="1" max="3" value="1" title="DMG ตอนจบเทิร์น"></label>
+            <label class="chk" data-key="Enervated"><input type="checkbox"> Enervated</label>
+            <label class="chk chk-lv" data-key="Paralyzed" style="display:none"><!-- hidden for now; remove style="display:none" to bring it back --><input type="checkbox"> Paralyzed
+              <input type="text" id="paralyzedPartInput" class="part-input" maxlength="30" placeholder="อวัยวะที่อัมพาต" title="ระบุอวัยวะที่อัมพาต"></label>
+            <label class="chk" data-key="Severe Wounded" style="display:none"><input type="checkbox"> Severe Wounded</label><!-- hidden for now; remove style="display:none" to bring it back -->
+            <h4>Mental</h4>
+            <label class="chk" data-key="Fear" style="display:none"><input type="checkbox"> Fear</label><!-- hidden for now; remove style="display:none" to bring it back -->
+            <label class="chk chk-lv" data-key="Fainted"><input type="checkbox"> Fainted
+              <span class="lv-prefix">DC</span><input type="number" id="faintRollInput" class="lv-input" min="1" max="8" value="8" title="DC ที่ต้องทอยให้ผ่าน"></label>
+            <label class="chk" data-key="Panic" style="display:none"><input type="checkbox"> Panic</label><!-- hidden for now; remove style="display:none" to bring it back -->
+            <label class="chk" data-key="Paranoia" style="display:none"><input type="checkbox"> Paranoia</label><!-- hidden for now; remove style="display:none" to bring it back -->
+            <label class="chk" data-key="Insane"><input type="checkbox"> Insane</label>
+            <label class="chk" data-key="Hallucinated"><input type="checkbox"> Hallucinated</label>
+            <h4>Cosmic Overwhelm</h4>
+            <label class="chk" data-key="Cosmic Infected"><input type="checkbox"> Cosmic Infected</label>
+            <label class="chk" data-key="Cosmic Stigma"><input type="checkbox"> Cosmic Stigma</label>
+            <label class="chk" data-key="Cosmic Outburst"><input type="checkbox"> Cosmic Outburst</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="vehiclePanel" style="display:none"><!-- hidden for now; remove style="display:none" to bring it back -->
+        <div class="panel-head"><h2>Vehicle / Speed</h2></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="field" style="flex:2">
+              <label class="label" for="vehName">Vehicle</label>
+              <input type="text" id="vehName" placeholder="ชื่อ/ประเภทยานพาหนะ">
+            </div>
+            <div class="field narrow">
+              <label class="label" for="vehSpeed">Speed</label>
+              <div class="unit-input">
+                <input type="number" id="vehSpeed" placeholder="0" min="0">
+                <span class="unit-suffix">m.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Notes</h2></div>
+        <div class="panel-body">
+          <textarea id="fNotes" placeholder="บันทึกส่วนตัวของผู้เล่น..." style="min-height:100px"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============ RIGHT COLUMN ============ -->
+    <div class="col">
+
+      <div class="panel">
+        <div class="panel-head"><h2>Basic Ability</h2></div>
+        <div class="panel-body">
+          <div class="rows" id="baStats"></div>
+          <div class="points-remaining" id="baRemaining"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Dice Pools</h2></div>
+        <div class="panel-body">
+          <div class="dice-grid">
+            <div class="dice-box">
+              <div class="name" style="color:var(--shifter)">Surge Energy</div>
+              <div class="val" id="sdVal">0</div>
+              <div class="ctrl">
+                <button class="step-btn" data-dice="sd" data-d="-1" type="button">−</button>
+                <button class="step-btn" data-dice="sd" data-d="1" type="button">+</button>
+              </div>
+            </div>
+            <div class="dice-box">
+              <div class="name">Exhaustion</div>
+              <div class="val" id="edVal">0</div>
+              <div class="ctrl">
+                <button class="step-btn" data-dice="ed" data-d="-1" type="button">−</button>
+                <button class="step-btn" data-dice="ed" data-d="1" type="button">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <div class="field narrow"><label class="label">Advance pts</label>
+              <input type="number" id="advPts" min="0" max="5" value="5"></div>
+            <button class="main-btn" id="advReset" type="button" style="align-self:flex-end;padding:7px 12px;font-size:12px" title="เริ่ม session ใหม่ — รีเซ็ต Advance pts เป็น 5 และ Slots เป็นค่าเริ่มต้น (Norms = 8, อื่นๆ = 5)">เริ่ม session ใหม่</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>General Skills</h2></div>
+        <div class="panel-body">
+          <div class="thead" id="skillsHead" style="grid-template-columns:0.6fr 1.4fr 26px;">
+            <div>Name</div><div>Effect</div><div></div>
+          </div>
+          <div class="rows" id="skillsRows"></div>
+          <button class="add-btn" id="addSkill" type="button">+ เพิ่มสกิล</button>
+          <div class="cap-note" id="skillsCap">0 สกิล</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Weapons</h2></div>
+        <div class="panel-body">
+          <div class="thead" id="weapHead" style="grid-template-columns:1fr 50px 50px 1fr 26px;">
+            <div>Name</div><div>Range</div><div>DMG</div><div>Effect</div><div></div>
+          </div>
+          <div class="rows" id="weapRows"></div>
+          <button class="add-btn" id="addWeap" type="button">+ เพิ่มอาวุธ</button>
+          <div class="hint" id="weapNote"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Gears</h2></div>
+        <div class="panel-body">
+          <div class="thead" id="gearHead" style="grid-template-columns:1fr 1fr 26px;">
+            <div>Name</div><div>Effect</div><div></div>
+          </div>
+          <div class="rows" id="gearRows"></div>
+          <button class="add-btn" id="addGear" type="button">+ เพิ่มชุด/เกราะ</button>
+          <div class="hint" id="gearNote"></div>
+        </div>
+      </div>
+
+      <div class="panel" id="cosmicPanel">
+        <div class="panel-head"><h2>Cosmic Abilities</h2></div>
+        <div class="panel-body">
+          <div class="thead" id="cosHead" style="grid-template-columns:1fr 1fr 50px 26px;">
+            <div>Type</div><div>Effect</div><div>Cosmic Dice</div><div></div>
+          </div>
+          <div class="rows" id="cosRows"></div>
+          <button class="add-btn" id="addCos" type="button">+ เพิ่ม Cosmic Ability (สูงสุด 1 ตอนสร้าง)</button>
+          <div class="hint" id="cosNote"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="actions">
+    <button class="main-btn ghost" id="resetBtn" type="button">Reset</button>
+    <button class="main-btn" id="printBtn" type="button">Save PDF</button>
+    <span class="sub" id="importMsg" style="align-self:center"></span>
+    <label class="main-btn" style="cursor:pointer" title="นำเข้าไฟล์ตัวละคร (.json) ที่เคย Export ไว้ — จะแทนที่ใบตัวละครปัจจุบัน">Import JSON<input type="file" id="importFile" accept=".json,application/json" hidden></label>
+    <button class="main-btn primary" id="exportBtn" type="button">Export JSON</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var FACTOR_INFO = {
+    shifter: {
+      label: "Shifter",
+      desc: "ผู้มีพลังคอสมิค เริ่มต้นด้วย 1 Cosmic Ability พร้อม 1 Cosmic Die (CD) ติดตัวทันที. WM RGN+ เริ่มต้นที่ 1.",
+      spMax: 10, spRgn: 1, hasSp: true, hasCosmic: true, cosmicLabel: "",
+      weaponNote: "",
+      gearNote: "",
+      coinRoll: function(){ return roll(6); }, coinDesc: "1D6",
+      baBonus: 0
+    },
+    outlaw: {
+      label: "Norms",
+      desc: "คนธรรมดาที่ไม่มีพลังคอสมิคใดๆ มีสกิลเริ่มต้น 4 สกิล และ Item Slot เริ่มที่ 8",
+      spMax: 10, spRgn: 0, spStart: 0, hasSp: true, hasCosmic: true, cosmicLabel: "",
+      weaponNote: "",
+      gearNote: "",
+      coinRoll: function(){ return 2 + roll(6); }, coinDesc: "2 + 1D6",
+      baBonus: 0
+    },
+    cpd: {
+      label: "C.P.D.",
+      desc: "หน่วยงานรัฐ ปราบปรามภัยจากพลังคอสมิค ไม่มีพลังคอสมิคใด ๆ ติดตัว (ไม่มี WM). มี +1 Basic Die ตั้งแต่เริ่ม และอาวุธ/เกราะตามยศ (ไม่ต้องซื้อ).",
+      spMax: 0, spRgn: 0, hasSp: false, hasCosmic: false, cosmicLabel: "",
+      weaponNote: "",
+      gearNote: "",
+      coinRoll: function(){ return roll(6); }, coinDesc: "1D6",
+      baBonus: 1
+    }
+  };
+
+  var BA_POOL_BASE = 4;
+  var BA_BASE = 1;          // free starting die per ability, doesn't cost pool points
+  var BA_MAX_TOTAL = 3;     // hard cap on dice per ability (base + spent)
+  var baStats = [
+    {key:"force", name:"Force", tip:"พละกำลัง, ความทนทาน"},
+    {key:"tactical", name:"Tactical", tip:"ความชำนาญ, ความคล่องตัว, ความแม่นยำ"},
+    {key:"trick", name:"Trick", tip:"ความรู้, ไหวพริบ, วาจา"},
+    {key:"sense", name:"Sense", tip:"สัญชาตญาณ, ความรู้สึก, สติสัมปชัญญะ"}
+  ];
+  var baVals = {force:0, tactical:0, trick:0, sense:0};   // pool points SPENT above the free base
+  var baMods = {force:0, tactical:0, trick:0, sense:0};   // temporary +/- die mod (buffs/debuffs)
+  var currentFactor = "shifter";
+  var sdVal = 0, edVal = 0;
+
+  function roll(sides){ return 1 + Math.floor(Math.random()*sides); }
+  function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+  function $(id){ return document.getElementById(id); }
+
+  // ---------- Factor ----------
+  // starting Whelm values that come with PICKING a factor (never applied when restoring a saved sheet)
+  function applyFactorDefaults(f){
+    var info = FACTOR_INFO[f];
+    $("spMax").value = info.spMax;
+    $("spCur").value = (info.spStart !== undefined) ? info.spStart : info.spMax;
+    $("spRgn").value = info.spRgn;
+    if(!info.hasSp) $("spPwr").value = 0;
+  }
+  function applyFactor(f){
+    currentFactor = f;
+    var info = FACTOR_INFO[f];
+    document.querySelectorAll(".factor-btn").forEach(function(b){
+      b.classList.toggle("active", b.dataset.f === f);
+    });
+    $("factorDesc").textContent = info.desc;
+
+    var ageInput = $("fAge");
+    if(f === "cpd"){
+      $("fAgeLabel").textContent = "RANK";
+      ageInput.type = "number";
+      ageInput.min = "1"; ageInput.max = "5";
+      ageInput.removeAttribute("maxlength");
+      ageInput.placeholder = "1–5";
+      if(ageInput.value && (parseInt(ageInput.value) < 1 || parseInt(ageInput.value) > 5 || isNaN(parseInt(ageInput.value)))){
+        ageInput.value = "";
+      }
+    } else {
+      $("fAgeLabel").textContent = "Job";
+      ageInput.type = "text";
+      ageInput.removeAttribute("min"); ageInput.removeAttribute("max");
+      ageInput.maxLength = 30;
+      ageInput.placeholder = "—";
+    }
+
+    // C.P.D. has a Division instead of a Job trait
+    $("traitTitle").textContent = (f === "cpd") ? "Division" : "Trait";
+    $("fTraitName").placeholder = (f === "cpd") ? "ชื่อหน่วยงานที่สังกัด (Division)" : "ชื่อ Trait";
+    // Division (C.P.D.) is name-only: hide the Effect field
+    $("traitFxField").style.display = (f === "cpd") ? "none" : "";
+    if(typeof updateSkillCap === "function") updateSkillCap();
+    if(typeof updateTraitXCap === "function") updateTraitXCap();
+
+    var spPanel = $("spPanel");
+    if(info.hasSp){
+      spPanel.classList.remove("disabled-panel");
+      $("spDisabledNote").style.display = "none";
+      $("spNote").textContent = "";
+    } else {
+      spPanel.classList.add("disabled-panel");
+      $("spDisabledNote").style.display = "block";
+    }
+    updateSpMeter();
+
+    var cosPanel = $("cosmicPanel");
+    if(info.hasCosmic){
+      cosPanel.classList.remove("disabled-panel");
+      $("cosNote").textContent = info.cosmicLabel;
+      updateCosCap();
+    } else {
+      cosPanel.classList.add("disabled-panel");
+      $("cosNote").textContent = "C.P.D. ไม่มีพลังคอสมิคติดตัว";
+    }
+
+    $("weapNote").textContent = info.weaponNote;
+    $("gearNote").textContent = info.gearNote;
+
+    renderBaRemaining();
+
+    saveState();
+    updateTag();
+  }
+
+  document.querySelectorAll(".factor-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var changed = btn.dataset.f !== currentFactor;
+      if(changed) applyFactorDefaults(btn.dataset.f);
+      applyFactor(btn.dataset.f);
+      if(changed){ $("itemSlots").value = slotsStart(); saveState(); }   // picking a different factor sets its starting Slots
+    });
+  });
+
+  // ---------- Reputation ----------
+  var repState = {gain:0, cur:0};
+  function syncRepState(){
+    repState.gain = Math.max(0, parseInt($("repGain").value) || 0);
+    repState.cur = Math.max(0, parseInt($("repCur").value) || 0);
+  }
+  function updateRep(){
+    $("repShow").textContent = ($("repGain").value||0) + " / " + ($("repCur").value||0);
+    if(typeof updateSkillCap === "function") updateSkillCap();
+    if(typeof updateCosCap === "function") updateCosCap();
+    if(typeof updateTraitXCap === "function") updateTraitXCap();
+    saveState();
+  }
+  $("repGain").addEventListener("input", function(){
+    var gain = Math.max(0, parseInt(this.value) || 0);
+    // received new rep -> current jumps up to the new total; spending (gain going down) leaves current alone
+    if(gain > repState.gain) $("repCur").value = Math.max(parseInt($("repCur").value) || 0, gain);   // never pulls Current down
+    syncRepState();
+    updateRep();
+  });
+  $("repCur").addEventListener("input", function(){
+    if(this.value === ""){ syncRepState(); updateRep(); return; }
+    var cur = Math.max(0, parseInt(this.value) || 0);
+    // can be raised up to Gain (or stay where it already is after Gain was spent), lowered freely
+    var cap = Math.max(repState.gain, repState.cur);
+    if(cur > cap) cur = cap;
+    this.value = cur;
+    syncRepState();
+    updateRep();
+  });
+
+  // ---------- HP / SP meters ----------
+  function updateHpMeter(){
+    var amr = parseInt($("hpAmr").value);
+    if(!isNaN(amr)) $("hpAmr").value = clamp(amr, 0, 2);   // AMR+ goes 0-2
+    var hrgn = parseInt($("hpRgn").value);
+    if(!isNaN(hrgn)) $("hpRgn").value = clamp(hrgn, 0, 2);   // RGN+ goes 0-2
+    var max = clamp(parseInt($("hpMax").value)||10, 10, 20);
+    var cur = clamp(parseInt($("hpCur").value)||0, 0, max);
+    $("hpMax").value = max; $("hpCur").value = cur;
+    $("hpFill").style.width = (max? (cur/max*100):0) + "%";
+    $("hpNums").textContent = cur + " / " + max;
+    saveState();
+  }
+  function updateSpMeter(){
+    var pwr = parseInt($("spPwr").value);
+    if(!isNaN(pwr)) $("spPwr").value = clamp(pwr, 0, 2);   // PWR+ goes 0-2
+    var rgn = parseInt($("spRgn").value);
+    if(!isNaN(rgn)) $("spRgn").value = clamp(rgn, 0, 2);   // RGN+ goes 0-2
+    var hasSp = FACTOR_INFO[currentFactor].hasSp;
+    var max = clamp(parseInt($("spMax").value)||0, hasSp ? 1 : 0, hasSp ? 10 : 0);   // Max SP never goes below 1 (C.P.D. has none)
+    var cur = clamp(parseInt($("spCur").value)||0, 0, max);
+    $("spMax").value = max; $("spCur").value = cur;
+    $("spFill").style.width = (max? (cur/max*100):0) + "%";
+    $("spNums").textContent = cur + " / " + max;
+    saveState();
+  }
+  ["hpMax","hpCur","hpAmr","hpRgn"].forEach(function(id){ $(id).addEventListener("input", updateHpMeter); });
+  ["spMax","spCur","spPwr","spRgn"].forEach(function(id){ $(id).addEventListener("input", updateSpMeter); });
+
+  // ---------- Basic Ability stat point-buy ----------
+  function renderBaStats(){
+    var wrap = $("baStats");
+    wrap.innerHTML = "";
+    var maxSpend = BA_MAX_TOTAL - BA_BASE;
+    baStats.forEach(function(s){
+      var row = document.createElement("div");
+      row.className = "stepper";
+      if(s.tip) row.title = s.tip;   // hover description
+      row.innerHTML =
+        '<span class="name">'+s.name+'</span>' +
+        '<div class="ctrl">' +
+          '<button class="step-btn" data-ba="'+s.key+'" data-d="-1" type="button">−</button>' +
+          '<span class="step-val" id="baVal_'+s.key+'">'+(BA_BASE+baVals[s.key])+'</span>' +
+          '<button class="step-btn" data-ba="'+s.key+'" data-d="1" type="button">+</button>' +
+        '</div>' +
+        '<div class="ba-mod"><span>Mod</span><input type="number" id="baMod_'+s.key+'" value="'+baMods[s.key]+'" step="1"></div>';
+      wrap.appendChild(row);
+    });
+    wrap.querySelectorAll("[data-ba]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var key = btn.dataset.ba, d = parseInt(btn.dataset.d);
+        var pool = BA_POOL_BASE + FACTOR_INFO[currentFactor].baBonus;
+        var used = Object.keys(baVals).reduce(function(a,k){return a+baVals[k];},0);
+        if(d > 0 && (used >= pool || baVals[key] >= maxSpend)) return;
+        baVals[key] = clamp(baVals[key] + d, 0, maxSpend);
+        $("baVal_"+key).textContent = BA_BASE + baVals[key];
+        renderBaRemaining();
+        saveState();
+      });
+    });
+    baStats.forEach(function(s){
+      $("baMod_"+s.key).addEventListener("input", function(){
+        baMods[s.key] = parseInt(this.value) || 0;
+        saveState();
+      });
+    });
+  }
+  function renderBaRemaining(){
+    var pool = BA_POOL_BASE + FACTOR_INFO[currentFactor].baBonus;
+    var used = Object.keys(baVals).reduce(function(a,k){return a+baVals[k];},0);
+    var remain = pool - used;
+    var el = $("baRemaining");
+    el.innerHTML = "แต้มคงเหลือ: <b>" + remain + "</b> / " + pool;
+    el.classList.toggle("over", remain < 0);
+  }
+
+  // ---------- Dice pools ----------
+  function renderDice(){ $("sdVal").textContent = sdVal; $("edVal").textContent = edVal; saveState(); }
+  document.querySelectorAll("[data-dice]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var d = parseInt(btn.dataset.d);
+      if(btn.dataset.dice === "sd") sdVal = clamp(sdVal + d, 0, 3);
+      else edVal = clamp(edVal + d, 0, 3);
+      renderDice();
+    });
+  });
+  $("advPts").addEventListener("input", function(){
+    this.value = clamp(parseInt(this.value)||0, 0, 5); saveState();
+  });
+  function slotsStart(){ return currentFactor === "outlaw" ? 8 : 5; }   // Norms (internal key "outlaw") start with 8 slots, everyone else 5
+  function resetSession(){ $("advPts").value = 5; $("itemSlots").value = slotsStart(); saveState(); }   // new session: Advance pts back to 5, Slots back to the factor's starting value
+  $("advReset").addEventListener("click", resetSession);
+  $("slotReset").addEventListener("click", resetSession);
+  $("poisonLvInput").addEventListener("input", function(){
+    this.value = clamp(parseInt(this.value)||1, 1, 5); saveState();
+  });
+  $("bleedDmgInput").addEventListener("input", function(){
+    this.value = clamp(parseInt(this.value)||1, 1, 3); saveState();
+  });
+  $("faintRollInput").addEventListener("input", function(){
+    this.value = clamp(parseInt(this.value)||8, 1, 8); saveState();
+  });
+  $("paralyzedPartInput").addEventListener("input", saveState);
+  $("fTraitName").addEventListener("input", saveState);
+  $("fTraitFx").addEventListener("input", saveState);
+
+  // ---------- Coins ----------
+  function updateCoinDisplay(v, note){
+    $("coinManual").value = clamp(parseInt(v) || 0, 0, 10);
+    saveState();
+  }
+  $("rollCoins").addEventListener("click", function(){
+    var info = FACTOR_INFO[currentFactor];
+    var v = info.coinRoll();
+    $("coinManual").value = "";
+    updateCoinDisplay(v, "ทอย " + info.coinDesc + " ได้ผล " + v);
+  });
+  $("coinManual").addEventListener("input", function(){
+    var v = parseInt(this.value);
+    if(!isNaN(v)) this.value = clamp(v, 0, 10);
+    saveState();
+  });
+
+  // ---------- Generic dynamic row lists ----------
+  function autoGrow(el){
+    el.style.height = "auto";
+    if(el.scrollHeight > 0) el.style.height = (el.scrollHeight + 2) + "px";
+  }
+  function makeRowFactory(containerId, fields, opts){
+    opts = opts || {};
+    var container = $(containerId);
+    function addRow(values){
+      values = values || {};
+      var row = document.createElement("div");
+      row.className = "rowline";
+      row.style.gridTemplateColumns = fields.map(function(f){return f.width || "1fr";}).join(" ") + " 26px";
+      fields.forEach(function(f){
+        var inp = document.createElement(f.multiline ? "textarea" : "input");
+        if(f.multiline){ inp.rows = 1; row.style.alignItems = "start"; }
+        else inp.type = f.type || "text";
+        inp.placeholder = f.placeholder || "";
+        inp.dataset.field = f.key;
+        if(f.max !== undefined) inp.max = f.max;
+        if(f.min !== undefined) inp.min = f.min;
+        if(values[f.key] !== undefined) inp.value = values[f.key];
+        if(f.type === "number" && f.max !== undefined){
+          // keep typed numbers inside the field's declared min/max (or a custom snap rule)
+          inp.dataset.prev = inp.value;
+          inp.addEventListener("input", function(){
+            var v = parseInt(this.value);
+            if(!isNaN(v)){
+              v = f.snap ? f.snap(v, parseInt(this.dataset.prev)) : Math.min(f.max, Math.max(f.min || 0, v));
+              this.value = v;
+            }
+            this.dataset.prev = this.value;
+          });
+        }
+        inp.addEventListener("input", saveState);
+        if(f.multiline) inp.addEventListener("input", function(){ autoGrow(inp); });
+        row.appendChild(inp);
+      });
+      var rm = document.createElement("button");
+      rm.className = "rm-btn"; rm.type = "button"; rm.textContent = "×";
+      rm.addEventListener("click", function(){ row.remove(); if(opts.onChange) opts.onChange(); saveState(); });
+      row.appendChild(rm);
+      container.appendChild(row);
+      row.querySelectorAll("textarea").forEach(autoGrow);
+      if(opts.onChange) opts.onChange();
+    }
+    return { add: addRow, container: container };
+  }
+
+  // Item(s): no item list — just a pool of slots (starts at 5) spent on any item during play
+  function updateItemSlots(){
+    var el = $("itemSlots"), v = parseInt(el.value);
+    if(!isNaN(v)) el.value = clamp(v, 0, 99);
+  }
+  $("itemSlots").addEventListener("input", function(){ updateItemSlots(); saveState(); });
+
+  var bondedFactory = makeRowFactory("bondedRows", [
+    {key:"name", placeholder:"ชื่อ Bonded Item", width:"1fr"},
+    {key:"effect", placeholder:"ความสามารถ / บัฟเมื่อถูกทำลาย", width:"1fr", multiline:true}
+  ], { onChange: updateBondedCap });
+  function updateBondedCap(){
+    // a character has only one Bonded Item
+    $("addBonded").disabled = document.querySelectorAll("#bondedRows .rowline").length >= 1;
+  }
+  $("addBonded").addEventListener("click", function(){
+    if(document.querySelectorAll("#bondedRows .rowline").length >= 1) return;
+    bondedFactory.add();
+  });
+
+  var skillsFactory = makeRowFactory("skillsRows", [
+    {key:"name", placeholder:"ชื่อสกิล", width:"0.6fr"},
+    {key:"fx", placeholder:"เอฟเฟกต์", width:"1.4fr", multiline:true}
+  ], { onChange: updateSkillCap });
+  // skills: 2 to start (Shifter, C.P.D.) or 4 (Norms), plus 1 more for every 2 Rep. (current)
+  function skillCap(){ return (currentFactor === "outlaw" ? 4 : 2) + Math.floor((parseInt($("repCur").value) || 0) / 2); }
+  function updateSkillCap(){
+    var n = document.querySelectorAll("#skillsRows .rowline").length, cap = skillCap();
+    $("skillsCap").textContent = n + " / " + cap + " สกิล";
+    $("skillsCap").classList.toggle("over", n > cap);
+    $("addSkill").disabled = n >= cap;
+  }
+  $("addSkill").addEventListener("click", function(){
+    if(document.querySelectorAll("#skillsRows .rowline").length >= skillCap()) return;
+    skillsFactory.add();
+  });
+
+  var weapFactory = makeRowFactory("weapRows", [
+    {key:"name", placeholder:"ชื่ออาวุธ", width:"1fr"},
+    {key:"range", type:"number", placeholder:"1-5", min:1, max:5, width:"50px"},
+    {key:"dmg", placeholder:"DMG", width:"50px"},
+    {key:"fx", placeholder:"เอฟเฟกต์", width:"1fr"}
+  ], { onChange: updateWeapCap });
+  function updateWeapCap(){
+    // at most 2 weapons
+    $("addWeap").disabled = document.querySelectorAll("#weapRows .rowline").length >= 2;
+  }
+  $("addWeap").addEventListener("click", function(){
+    if(document.querySelectorAll("#weapRows .rowline").length >= 2) return;
+    weapFactory.add();
+  });
+
+  var gearFactory = makeRowFactory("gearRows", [
+    {key:"name", placeholder:"ชื่อชุด/เกราะ", width:"1fr"},
+    {key:"fx", placeholder:"เอฟเฟกต์", width:"1fr"}
+  ], { onChange: updateGearCap });
+  function updateGearCap(){
+    // at most 2 gears
+    $("addGear").disabled = document.querySelectorAll("#gearRows .rowline").length >= 2;
+  }
+  $("addGear").addEventListener("click", function(){
+    if(document.querySelectorAll("#gearRows .rowline").length >= 2) return;
+    gearFactory.add();
+  });
+
+  var cosFactory = makeRowFactory("cosRows", [
+    {key:"name", placeholder:"ประเภทของพลัง", width:"1fr"},
+    {key:"fx", placeholder:"เอฟเฟกต์", width:"1fr", multiline:true},
+    {key:"cd", type:"number", placeholder:"Dice", min:0, max:3, width:"50px"}
+  ], { onChange: updateCosCap });
+  // extra Traits: one more per 8 Rep. (current); not used by C.P.D. (Division stays a single name)
+  var traitXFactory = makeRowFactory("traitXRows", [
+    {key:"name", placeholder:"ชื่อ Trait", width:"1fr"},
+    {key:"fx", placeholder:"Ability", width:"2fr", multiline:true}
+  ], { onChange: updateTraitXCap });
+  function traitXAllowed(){ return Math.floor((parseInt($("repCur").value) || 0) / 8); }
+  function updateTraitXCap(){
+    $("extraTraitsWrap").style.display = (currentFactor === "cpd") ? "none" : "";
+    var n = document.querySelectorAll("#traitXRows .rowline").length, allowed = traitXAllowed();
+    $("addTraitX").disabled = n >= allowed;
+    $("addTraitX").textContent = allowed === 0
+      ? "+ เพิ่ม Trait (ปลดล็อกทุก 8 Rep.)"
+      : "+ เพิ่ม Trait (เพิ่มได้อีก " + Math.max(0, allowed - n) + ")";
+  }
+  $("addTraitX").addEventListener("click", function(){
+    if(document.querySelectorAll("#traitXRows .rowline").length >= traitXAllowed()) return;
+    traitXFactory.add();
+  });
+  function cosCap(){
+    // 1 ability to start; every 4 Rep. (current) unlocks one more
+    return 1 + Math.floor((parseInt($("repCur").value) || 0) / 4);
+  }
+  function updateCosCap(){
+    var n = document.querySelectorAll("#cosRows .rowline").length;
+    var namePh = currentFactor === "outlaw" ? "Cosmic Gadget" : "ประเภทของพลัง";
+    document.querySelectorAll('#cosRows [data-field="name"]').forEach(function(i){ i.placeholder = namePh; });
+    $("addCos").disabled = n >= cosCap() || !FACTOR_INFO[currentFactor].hasCosmic;
+    $("addCos").textContent = cosCap() > 1
+      ? "+ เพิ่ม Cosmic Ability (สูงสุด " + cosCap() + " — Rep. ทุก 4 ได้เพิ่ม 1)"
+      : "+ เพิ่ม Cosmic Ability (สูงสุด 1 ตอนสร้าง)";
+  }
+  $("addCos").addEventListener("click", function(){
+    if(document.querySelectorAll("#cosRows .rowline").length >= cosCap()) return;
+    cosFactory.add();
+  });
+
+  // ---------- Tag / header ----------
+  function updateTag(){
+    var name = $("fName").value.trim();
+    var f = FACTOR_INFO[currentFactor].label;
+    $("charTag").textContent = (name || "ยังไม่ได้ตั้งชื่อ") + "  ·  " + f;
+  }
+  $("fName").addEventListener("input", updateTag);
+  $("fAge").addEventListener("input", function(){
+    if(currentFactor === "cpd" && this.value !== ""){
+      this.value = clamp(parseInt(this.value)||1, 1, 5);
+    }
+    saveState();
+  });
+
+  // ---------- Persistence ----------
+  function collectState(){
+    function rows(id, keys){
+      return Array.prototype.map.call(document.querySelectorAll("#"+id+" .rowline"), function(r){
+        var o = {};
+        keys.forEach(function(k){ o[k] = r.querySelector('[data-field="'+k+'"]').value; });
+        return o;
+      });
+    }
+    var injuries = {};
+    document.querySelectorAll(".chk[data-key]").forEach(function(lbl){
+      var key = lbl.dataset.key || lbl.textContent.trim();
+      injuries[key] = lbl.querySelector('input[type="checkbox"]').checked;
+    });
+    return {
+      name: $("fName").value, age: $("fAge").value, factor: currentFactor,
+      repGain: $("repGain").value, repCur: $("repCur").value,
+      bio: $("fBio").value, trait: {name: $("fTraitName").value, fx: $("fTraitFx").value}, extraTraits: rows("traitXRows", ["name","fx"]), bondAnswers: [$("fBond1").value, $("fBond2").value, $("fBond3").value], flaw: $("fFlaw").value, notes: $("fNotes").value,
+      vehicle: $("vehName").value, speed: $("vehSpeed").value,
+      hp: {max:$("hpMax").value, cur:$("hpCur").value, amr:$("hpAmr").value, rgn:$("hpRgn").value},
+      sp: {max:$("spMax").value, cur:$("spCur").value, pwr:$("spPwr").value, rgn:$("spRgn").value},
+      basicAbility: {
+        force: BA_BASE+baVals.force, tactical: BA_BASE+baVals.tactical,
+        trick: BA_BASE+baVals.trick, sense: BA_BASE+baVals.sense
+      },
+      basicAbilityMod: baMods,
+      shifterDice: sdVal, exhaustDice: edVal, advancePts: $("advPts").value,
+      coins: parseInt($("coinManual").value) || 0,
+      itemSlots: parseInt($("itemSlots").value) || 0,
+      bondedItems: rows("bondedRows", ["name","effect"]),
+      generalSkills: rows("skillsRows", ["name","fx"]),
+      weapons: rows("weapRows", ["name","range","dmg","fx"]),
+      gears: rows("gearRows", ["name","fx"]),
+      cosmicAbilities: rows("cosRows", ["name","fx","cd"]),
+      injuries: injuries,
+      poisonLv: parseInt($("poisonLvInput").value) || 1,
+      bleedDmg: parseInt($("bleedDmgInput").value) || 1,
+      faintRoll: parseInt($("faintRollInput").value) || 8,
+      paralyzedPart: $("paralyzedPartInput").value
+    };
+  }
+  function saveState(){
+    try{ localStorage.setItem("shifterpunkz_char", JSON.stringify(collectState())); }catch(e){}
+    scheduleCloudPush();
+  }
+  function loadState(){
+    var raw;
+    try{ raw = localStorage.getItem("shifterpunkz_char"); }catch(e){ return; }
+    if(!raw) return;
+    var s;
+    try{ s = JSON.parse(raw); }catch(e){ return; }
+    if(!s) return;
+    applyState(s);
+  }
+  function applyState(s){
+    // clear dynamic rows first so applying twice (local, then online) never duplicates them
+    ["traitXRows","bondedRows","skillsRows","weapRows","gearRows","cosRows"].forEach(function(id){ $(id).innerHTML = ""; });
+    $("fName").value = s.name||""; $("fAge").value = s.age||"";
+    applyFactor(s.factor||"shifter");
+    $("repGain").value = s.repGain||0; $("repCur").value = s.repCur||0; syncRepState(); updateRep();
+    $("fBio").value = s.bio||""; var tr = s.trait; if(typeof tr === "string") tr = {name:"", fx:tr}; tr = tr || {}; $("fTraitName").value = tr.name||""; $("fTraitFx").value = tr.fx||""; $("fFlaw").value = s.flaw||""; $("fNotes").value = s.notes||"";
+    $("vehName").value = s.vehicle||""; $("vehSpeed").value = s.speed||"";
+    if(s.hp){ $("hpMax").value=s.hp.max; $("hpCur").value=s.hp.cur; $("hpAmr").value=s.hp.amr; $("hpRgn").value=s.hp.rgn; }
+    if(s.sp){ $("spMax").value=s.sp.max; $("spCur").value=s.sp.cur; $("spPwr").value=s.sp.pwr; $("spRgn").value=s.sp.rgn; }
+    updateHpMeter(); updateSpMeter();
+    var maxSpend = BA_MAX_TOTAL - BA_BASE;
+    if(s.basicAbility){
+      baVals = {
+        force: clamp((s.basicAbility.force||BA_BASE)-BA_BASE, 0, maxSpend),
+        tactical: clamp((s.basicAbility.tactical||BA_BASE)-BA_BASE, 0, maxSpend),
+        trick: clamp((s.basicAbility.trick||BA_BASE)-BA_BASE, 0, maxSpend),
+        sense: clamp((s.basicAbility.sense||BA_BASE)-BA_BASE, 0, maxSpend)
+      };
+    }
+    baMods = s.basicAbilityMod || {force:0, tactical:0, trick:0, sense:0};
+    renderBaStats(); renderBaRemaining();
+    sdVal = clamp(s.shifterDice||0, 0, 3); edVal = clamp(s.exhaustDice||0, 0, 3); renderDice();
+    $("advPts").value = (s.advancePts === undefined || s.advancePts === null || s.advancePts === "") ? 5 : s.advancePts;
+    if(s.coins !== undefined) updateCoinDisplay(s.coins, "");
+    $("itemSlots").value = (s.itemSlots === undefined || s.itemSlots === null || s.itemSlots === "") ? slotsStart() : clamp(parseInt(s.itemSlots) || 0, 0, 99);
+    (s.extraTraits||[]).forEach(function(v){ traitXFactory.add(v); });
+    var bq = s.bondAnswers || [];
+    ["fBond1","fBond2","fBond3"].forEach(function(id, i){ $(id).value = bq[i] || ""; autoGrow($(id)); });
+    (s.bondedItems||[]).forEach(function(v){ bondedFactory.add(v); });
+    (s.generalSkills||[]).forEach(function(v){ skillsFactory.add(v); });
+    (s.weapons||[]).forEach(function(v){ weapFactory.add(v); });
+    (s.gears||[]).forEach(function(v){ gearFactory.add(v); });
+    (s.cosmicAbilities||[]).forEach(function(v){ cosFactory.add(v); });
+    if(s.injuries){
+      document.querySelectorAll(".chk[data-key]").forEach(function(lbl){
+        var key = lbl.dataset.key || lbl.textContent.trim();
+        lbl.querySelector('input[type="checkbox"]').checked = !!s.injuries[key];
+      });
+    }
+    $("poisonLvInput").value = clamp(parseInt(s.poisonLv)||1, 1, 5);
+    $("bleedDmgInput").value = clamp(parseInt(s.bleedDmg)||1, 1, 3);
+    $("faintRollInput").value = clamp(parseInt(s.faintRoll)||8, 1, 8);
+    $("paralyzedPartInput").value = s.paralyzedPart || "";
+    updateItemSlots(); updateSkillCap(); updateCosCap(); updateWeapCap(); updateGearCap(); updateTraitXCap(); updateBondedCap();
+    updateTag();
+  }
+
+  // ---------- Online save + GM party view (db capability) ----------
+  var cloud = {db:null, user:null, uid:null, loaded:false, dead:false, busy:false, timer:null, isGM:false, party:[]};
+  function setCloudStatus(t){ $("cloudStatus").textContent = t; }
+  function scheduleCloudPush(){
+    if(!cloud || !cloud.loaded || cloud.dead) return;
+    clearTimeout(cloud.timer);
+    cloud.timer = setTimeout(pushCloud, 1500);
+  }
+  async function pushCloud(){
+    if(!cloud.loaded || cloud.dead || !cloud.db || !cloud.uid) return;
+    if(cloud.busy){ cloud.timer = setTimeout(pushCloud, 800); return; }
+    cloud.busy = true;
+    try{
+      await cloud.db.doc("characters/" + cloud.uid).set({ sheet: collectState(), updatedAt: Date.now() });
+      setCloudStatus("☁ บันทึกออนไลน์แล้ว");
+    }catch(e){
+      cloud.dead = true;
+      setCloudStatus("บันทึกในเครื่องนี้เท่านั้น (บันทึกออนไลน์ไม่ได้ — ต้องได้สิทธิ์ Contributor ขึ้นไป)");
+    }finally{ cloud.busy = false; }
+  }
+  async function saveFile(filename, text){
+    var dl = null;
+    try{ if(typeof claude !== "undefined" && claude.use) dl = await claude.use("downloads"); }catch(e){}
+    if(dl){
+      try{ await dl.save({filename: filename, data: text}); }catch(e){}
+      return;
+    }
+    var blob = new Blob([text], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  async function initCloud(){
+    if(typeof claude === "undefined" || !claude.use){ return; }
+    var db = null, user = null;
+    try{ user = await claude.use("user"); db = await claude.use("db"); }catch(e){}
+    if(!db || !user){ setCloudStatus("บันทึกในเครื่องนี้เท่านั้น (ใช้ปุ่ม Export JSON เก็บไฟล์)"); return; }
+    cloud.db = db; cloud.user = user;
+    try{ cloud.uid = await user.id(); }catch(e){}
+    var gm = false;
+    try{ gm = (await user.canEdit()) || (await user.isOwner()); }catch(e){}
+    cloud.isGM = gm;
+    if(cloud.uid){
+      try{
+        var snap = await db.doc("characters/" + cloud.uid).get();
+        var existing = snap.exists ? snap.data() : null;
+        if(existing && existing.sheet){ applyState(existing.sheet); }
+        cloud.loaded = true;
+        if(!existing && $("fName").value.trim()) scheduleCloudPush();
+        setCloudStatus("☁ เชื่อมต่อออนไลน์แล้ว");
+      }catch(e){
+        setCloudStatus("บันทึกในเครื่องนี้เท่านั้น (เชื่อมต่อออนไลน์ไม่ได้)");
+      }
+    } else {
+      setCloudStatus("บันทึกในเครื่องนี้เท่านั้น (ยังไม่ได้ลงชื่อเข้าใช้)");
+    }
+    if(gm) enableGM();
+  }
+  function showView(v){
+    var party = v === "party";
+    $("gmView").style.display = party ? "block" : "none";
+    document.querySelector(".columns").style.display = party ? "none" : "";
+    document.querySelector("footer.actions").style.display = party ? "none" : "";
+    $("tabSheet").classList.toggle("active", !party);
+    $("tabParty").classList.toggle("active", party);
+  }
+  $("tabSheet").addEventListener("click", function(){ showView("sheet"); });
+  $("tabParty").addEventListener("click", function(){ showView("party"); });
+  function enableGM(){
+    $("viewTabs").style.display = "flex";
+    showView("sheet");
+    cloud.db.collection("characters").onSnapshot(function(snap){
+      cloud.party = snap.docs.map(function(d){
+        var v = d.data() || {};
+        return {id: d.id, sheet: v.sheet || {}, updatedAt: v.updatedAt || 0};
+      });
+      renderParty();
+    }, function(){ $("partyList").textContent = "อ่านข้อมูลปาร์ตี้ไม่ได้"; });
+  }
+  function el(tag, cls, text){
+    var e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(text !== undefined && text !== null) e.textContent = text;
+    return e;
+  }
+  function lineB(label, value, cls){
+    var d = el("div", "ln" + (cls ? " " + cls : ""));
+    d.appendChild(el("b", null, label + " "));
+    d.appendChild(document.createTextNode(value));
+    return d;
+  }
+  function listLine(label, arr, fmt){
+    arr = (arr || []).filter(function(x){ return x && x.name; });
+    if(!arr.length) return lineB(label, "—");
+    var d = el("div", "ln");
+    d.appendChild(el("b", null, label));
+    arr.forEach(function(x){ d.appendChild(document.createTextNode("\n• " + fmt(x))); });
+    return d;
+  }
+  function partyCard(r, playerName, extra){
+    var s = r.sheet || {};
+    var c = el("div", "pcard");
+    c.appendChild(el("h3", null, s.name || "(ยังไม่ตั้งชื่อ)"));
+    var fLabel = {shifter:"Shifter", outlaw:"Norms", cpd:"C.P.D."}[s.factor] || "—";
+    var jobLabel = s.factor === "cpd" ? "Rank" : "Job";
+    c.appendChild(el("div", "who", [playerName, fLabel + (s.age ? " · " + jobLabel + " " + s.age : "")].filter(Boolean).join(" · ")));
+    if(extra && extra.rec){
+      var pn = el("input"); pn.type = "text"; pn.placeholder = "ชื่อผู้เล่น"; pn.maxLength = 40; pn.value = extra.rec.playerName || "";
+      pn.addEventListener("input", function(){ extra.rec.playerName = pn.value; saveLocalParty(); });
+      c.appendChild(pn);
+    }
+    var hp = s.hp || {}, sp = s.sp || {}, ba = s.basicAbility || {}, bm = s.basicAbilityMod || {};
+    c.appendChild(lineB("IP", (hp.cur||0) + " / " + (hp.max||0) + "  (AMR+" + (hp.amr||0) + " RGN+" + (hp.rgn||0) + ")"));
+    if(s.factor !== "cpd") c.appendChild(lineB("WM", (sp.cur||0) + " / " + (sp.max||0) + "  (PWR+" + (sp.pwr||0) + " RGN+" + (sp.rgn||0) + ")"));
+    c.appendChild(lineB("Coins", String(s.coins||0) + "  ·  Rep " + (s.repGain||0) + " / " + (s.repCur||0)));
+    function baStr(k){
+      var m = parseInt(bm[k]) || 0;
+      return (ba[k] || 1) + (m ? "(" + (m > 0 ? "+" : "") + m + ")" : "");
+    }
+    c.appendChild(lineB("Ability", "Force " + baStr("force") + " · Tactical " + baStr("tactical") + " · Trick " + baStr("trick") + " · Sense " + baStr("sense")));
+    c.appendChild(lineB("Dice", "Surge " + (s.shifterDice||0) + " · Exhaustion " + (s.exhaustDice||0) + " · Adv " + (s.advancePts||0)));
+    var inj = s.injuries || {};
+    var details = {"Fainted": "DC " + (s.faintRoll||8), "Paralyzed": s.paralyzedPart || ""};
+    var active = Object.keys(inj).filter(function(k){ return inj[k]; }).map(function(k){ return details[k] ? k + " (" + details[k] + ")" : k; });
+    c.appendChild(lineB("Injuries", active.length ? active.join(", ") : "—", active.length ? "warn" : ""));
+
+    var det = el("details");
+    det.appendChild(el("summary", null, "รายละเอียดเต็ม"));
+    var tr = s.trait; if(typeof tr === "string") tr = {name:"", fx:tr}; tr = tr || {};
+    det.appendChild(lineB(s.factor === "cpd" ? "Division" : "Trait", (tr.name || "—") + (tr.fx ? " — " + tr.fx : "")));
+    if(s.factor !== "cpd" && (s.extraTraits || []).some(function(x){ return x && x.name; })){
+      det.appendChild(listLine("More traits", s.extraTraits, function(x){ return x.name + (x.fx ? " — " + x.fx : ""); }));
+    }
+    det.appendChild(lineB("Flaw", s.flaw || "—"));
+    det.appendChild(lineB("Item slots", String(s.itemSlots === undefined || s.itemSlots === null ? 5 : s.itemSlots)));
+    det.appendChild(listLine("Bonded", s.bondedItems, function(x){ return x.name + (x.effect ? " — " + x.effect : ""); }));
+    var bondQs = (s.bondAnswers || []).map(function(t, i){ return t ? (i + 1) + ". " + t : ""; }).filter(Boolean);
+    if(bondQs.length){
+      var dBond = el("div", "ln");
+      dBond.appendChild(el("b", null, "Bond answers"));
+      bondQs.forEach(function(t){ dBond.appendChild(document.createTextNode("\n" + t)); });
+      det.appendChild(dBond);
+    }
+    det.appendChild(listLine("Skills", s.generalSkills, function(x){ return x.name + (x.fx ? " — " + x.fx : ""); }));
+    det.appendChild(listLine("Weapons", s.weapons, function(x){ return x.name + " [R" + (x.range||"?") + " DMG " + (x.dmg||"—") + "]"; }));
+    det.appendChild(listLine("Gears", s.gears, function(x){ return x.name; }));
+    det.appendChild(listLine("Cosmic", s.cosmicAbilities, function(x){ return x.name + " (CD " + (x.cd||"—") + ")"; }));
+    if(s.vehicle || s.speed) det.appendChild(lineB("Vehicle", (s.vehicle || "—") + (s.speed ? " · " + s.speed + " m." : "")));
+    det.appendChild(lineB("Background", s.bio || "—"));
+    c.appendChild(det);
+    if(extra && extra.rec){
+      var rec = extra.rec;
+      var note = el("textarea"); note.placeholder = "โน้ต GM (เห็นเฉพาะในหน้านี้)"; note.value = rec.gmNote || "";
+      note.addEventListener("input", function(){ rec.gmNote = note.value; saveLocalParty(); });
+      c.appendChild(note);
+      var foot = el("div", "foot");
+      foot.appendChild(el("span", "stamp", rec.updatedAt ? "ข้อมูลล่าสุด " + new Date(rec.updatedAt).toLocaleString() : "อัปโหลดจากไฟล์"));
+      var rm = el("button", "main-btn ghost rm", "ลบ"); rm.type = "button";
+      var armed = false;
+      rm.addEventListener("click", function(){
+        if(!armed){
+          armed = true; rm.textContent = "ยืนยันลบ?";
+          setTimeout(function(){ armed = false; rm.textContent = "ลบ"; }, 3000);
+          return;
+        }
+        localParty = localParty.filter(function(p){ return p !== rec; });
+        saveLocalParty(); renderParty();
+      });
+      foot.appendChild(rm);
+      c.appendChild(foot);
+    } else if(r.updatedAt){ c.appendChild(el("div", "ln", "อัปเดตล่าสุด " + new Date(r.updatedAt).toLocaleString())); }
+    return c;
+  }
+  async function renderParty(){
+    var list = $("partyList");
+    var rows = (cloud.party || []).slice().sort(function(a,b){ return (b.updatedAt||0) - (a.updatedAt||0); });
+    var names = {};
+    try{ names = await cloud.user.profiles(rows.map(function(r){ return r.id; })); }catch(e){}
+    list.textContent = "";
+    var ups = localParty.slice().sort(function(a, b){ return ((a.sheet.name || "").toLowerCase() < (b.sheet.name || "").toLowerCase()) ? -1 : 1; });
+    if(!rows.length && !ups.length){ list.textContent = "ยังไม่มีตัวละคร — รอผู้เล่นบันทึกออนไลน์ หรืออัปโหลดไฟล์ JSON ด้านบน"; return; }
+    var grid = el("div", "party-grid");
+    rows.forEach(function(r){ grid.appendChild(partyCard(r, (names[r.id] && names[r.id].name) || "ผู้เล่น")); });
+    ups.forEach(function(rec){ grid.appendChild(partyCard({sheet: rec.sheet, updatedAt: rec.updatedAt}, "", {rec: rec})); });
+    list.appendChild(grid);
+  }
+  // ---------- GM: upload players' exported sheets (kept in this browser) ----------
+  var LOCAL_KEY = "sp_gm_party";
+  var localParty = [];
+  function loadLocalParty(){
+    try{
+      var raw = localStorage.getItem(LOCAL_KEY);
+      if(raw){ var a = JSON.parse(raw); if(Array.isArray(a)) localParty = a; }
+    }catch(e){}
+  }
+  function saveLocalParty(){
+    try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(localParty)); }
+    catch(e){ gmMsg("บันทึกในเบราว์เซอร์ไม่ได้ — ใช้ปุ่ม Export เก็บไฟล์ไว้", true); }
+  }
+  function gmMsg(t, bad){ var m = $("gmMsg"); m.textContent = t; m.className = "gm-msg" + (bad ? " bad" : ""); }
+  // accepts a single sheet (Export JSON), a list of sheets, or a party export ([{playerName, sheet, ...}])
+  function gmNormalize(data){
+    var out = [];
+    (Array.isArray(data) ? data : [data]).forEach(function(it){
+      if(!it || typeof it !== "object") return;
+      var wrapped = it.sheet && typeof it.sheet === "object";
+      var sheet = wrapped ? it.sheet : it;
+      if(typeof sheet.name !== "string" || !sheet.name.trim()) return;
+      if(!sheet.hp && !sheet.factor && !sheet.basicAbility) return;
+      out.push({
+        sheet: sheet,
+        playerName: wrapped && it.playerName ? String(it.playerName) : "",
+        gmNote: wrapped && it.gmNote ? String(it.gmNote) : "",
+        updatedAt: wrapped && it.updatedAt ? Number(it.updatedAt) : 0
+      });
+    });
+    return out;
+  }
+  function gmMergeIn(rec, fileTime){
+    var key = rec.sheet.name.trim().toLowerCase();
+    var ex = localParty.filter(function(p){ return p.key === key; })[0];
+    if(ex){
+      ex.sheet = rec.sheet;
+      ex.updatedAt = rec.updatedAt || fileTime;
+      if(rec.playerName && !ex.playerName) ex.playerName = rec.playerName;
+      if(rec.gmNote && !ex.gmNote) ex.gmNote = rec.gmNote;
+      return "updated";
+    }
+    localParty.push({key: key, playerName: rec.playerName, gmNote: rec.gmNote, updatedAt: rec.updatedAt || fileTime, sheet: rec.sheet});
+    return "added";
+  }
+  function gmReadFile(f){
+    return new Promise(function(res){
+      var r = new FileReader();
+      r.onload = function(){ res({name: f.name, text: String(r.result), time: f.lastModified || Date.now()}); };
+      r.onerror = function(){ res({name: f.name, error: true}); };
+      r.readAsText(f);
+    });
+  }
+  async function gmHandleFiles(files){
+    var added = 0, updated = 0, bad = [];
+    for(var i = 0; i < files.length; i++){
+      var r = await gmReadFile(files[i]);
+      if(r.error){ bad.push(r.name); continue; }
+      var data;
+      try{ data = JSON.parse(r.text); }catch(e){ bad.push(r.name); continue; }
+      var recs = gmNormalize(data);
+      if(!recs.length){ bad.push(r.name); continue; }
+      recs.forEach(function(rec){ if(gmMergeIn(rec, r.time) === "added") added++; else updated++; });
+    }
+    saveLocalParty(); renderParty();
+    var parts = [];
+    if(added) parts.push("เพิ่มใหม่ " + added);
+    if(updated) parts.push("อัปเดต " + updated);
+    var text = parts.length ? "สำเร็จ: " + parts.join(" · ") + " ตัวละคร" : "";
+    if(bad.length) text += (text ? "\n" : "") + "อ่านไม่ได้/ไม่ใช่ไฟล์ตัวละคร: " + bad.join(", ");
+    gmMsg(text || "ไม่พบไฟล์", !parts.length);
+  }
+  $("gmFile").addEventListener("change", function(){
+    if(this.files && this.files.length) gmHandleFiles(Array.prototype.slice.call(this.files));
+    this.value = "";
+  });
+  var gmDrop = $("gmDrop");
+  ["dragenter", "dragover"].forEach(function(ev){
+    gmDrop.addEventListener(ev, function(e){ e.preventDefault(); gmDrop.classList.add("over"); });
+  });
+  ["dragleave", "drop"].forEach(function(ev){
+    gmDrop.addEventListener(ev, function(e){ e.preventDefault(); gmDrop.classList.remove("over"); });
+  });
+  gmDrop.addEventListener("drop", function(e){
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if(files && files.length) gmHandleFiles(Array.prototype.slice.call(files));
+  });
+  var gmClearArmed = false;
+  $("gmClear").addEventListener("click", function(){
+    var btn = this;
+    if(!gmClearArmed){
+      gmClearArmed = true; btn.textContent = "กดอีกครั้งเพื่อยืนยัน";
+      setTimeout(function(){ gmClearArmed = false; btn.textContent = "ล้างไฟล์ที่อัปโหลด"; }, 4000);
+      return;
+    }
+    gmClearArmed = false; btn.textContent = "ล้างไฟล์ที่อัปโหลด";
+    localParty = []; saveLocalParty(); renderParty(); gmMsg("ล้างไฟล์ที่อัปโหลดแล้ว");
+  });
+  loadLocalParty();
+
+  $("partyExport").addEventListener("click", async function(){
+    var rows = cloud.party || [];
+    var names = {};
+    try{ names = await cloud.user.profiles(rows.map(function(r){ return r.id; })); }catch(e){}
+    var out = rows.map(function(r){
+      return {playerId: r.id, playerName: (names[r.id] && names[r.id].name) || "", updatedAt: r.updatedAt, sheet: r.sheet};
+    });
+    localParty.forEach(function(p){ out.push({playerName: p.playerName || "", gmNote: p.gmNote || "", updatedAt: p.updatedAt || 0, sheet: p.sheet}); });
+    saveFile("shifter_punkz_party.json", JSON.stringify(out, null, 2));
+  });
+
+  // ---------- Actions ----------
+  var resetArmed = false;
+  $("resetBtn").addEventListener("click", async function(){
+    var btn = this;
+    if(!resetArmed){
+      resetArmed = true;
+      btn.textContent = "กดอีกครั้งเพื่อยืนยันการล้างข้อมูล";
+      setTimeout(function(){ resetArmed = false; btn.textContent = "Reset"; }, 4000);
+      return;
+    }
+    try{ localStorage.removeItem("shifterpunkz_char"); }catch(e){}
+    clearTimeout(cloud.timer); cloud.dead = true;
+    if(cloud.db && cloud.uid && cloud.loaded){
+      try{ await cloud.db.doc("characters/" + cloud.uid).delete(); }catch(e){}
+    }
+    location.reload();
+  });
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s = document.createElement("script");
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+  async function saveBlobFile(filename, blob){
+    var dl = null;
+    try{ if(typeof claude !== "undefined" && claude.use) dl = await claude.use("downloads"); }catch(e){}
+    if(dl){
+      try{ await dl.save({filename: filename, data: blob}); }catch(e){}
+      return;
+    }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  $("printBtn").addEventListener("click", async function(){
+    var btn = this, label = btn.textContent;
+    btn.disabled = true; btn.textContent = "กำลังสร้าง PDF…";
+    try{
+      if(!window.html2canvas) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+      if(!(window.jspdf && window.jspdf.jsPDF)) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+      var bg = getComputedStyle(document.body).backgroundColor;
+      var canvas = await window.html2canvas(document.querySelector(".columns"), {
+        backgroundColor: bg, scale: 2,
+        onclone: function(doc){
+          doc.querySelectorAll(".add-btn,.rm-btn,.step-btn,.roll-btn").forEach(function(n){ n.style.display = "none"; });
+        }
+      });
+      var pdf = new window.jspdf.jsPDF({orientation: "landscape", unit: "pt", format: "a4"});
+      var pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight(), m = 20;
+      var rgb = (bg.match(/\d+/g) || [14,17,19]).map(Number);
+      var iw = pw - m*2, k = iw / canvas.width, sliceH = Math.floor((ph - m*2) / k);
+      for(var y = 0, page = 0; y < canvas.height; y += sliceH, page++){
+        var h = Math.min(sliceH, canvas.height - y);
+        var part = document.createElement("canvas");
+        part.width = canvas.width; part.height = h;
+        part.getContext("2d").drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
+        if(page > 0) pdf.addPage();
+        pdf.setFillColor(rgb[0], rgb[1], rgb[2]);
+        pdf.rect(0, 0, pw, ph, "F");
+        pdf.addImage(part.toDataURL("image/jpeg", 0.92), "JPEG", m, m, iw, h * k);
+      }
+      var fname = ($("fName").value.trim() || "shifter_punkz_character").replace(/\s+/g, "_") + ".pdf";
+      await saveBlobFile(fname, pdf.output("blob"));
+    }catch(e){
+      window.print();
+    }finally{
+      btn.disabled = false; btn.textContent = label;
+    }
+  });
+  function showImportMsg(t, bad){
+    var m = $("importMsg");
+    m.textContent = t; m.style.color = bad ? "var(--hp)" : "";
+    clearTimeout(showImportMsg._t);
+    showImportMsg._t = setTimeout(function(){ m.textContent = ""; }, 6000);
+  }
+  $("importFile").addEventListener("change", function(){
+    var input = this, f = input.files && input.files[0];
+    if(!f) return;
+    var r = new FileReader();
+    r.onload = function(){
+      try{
+        var data = JSON.parse(String(r.result));
+        if(Array.isArray(data)) data = data[0];
+        if(data && data.sheet && typeof data.sheet === "object") data = data.sheet;
+        if(!data || typeof data !== "object" || (!data.hp && !data.factor && !data.basicAbility)) throw new Error("not a sheet");
+        applyState(data);
+        saveState();
+        showImportMsg("นำเข้า " + (data.name || "ตัวละคร") + " แล้ว");
+      }catch(e){
+        showImportMsg("ไฟล์นี้ไม่ใช่ไฟล์ตัวละคร (JSON) ที่ Export จากใบนี้", true);
+      }
+      input.value = "";
+    };
+    r.onerror = function(){ showImportMsg("อ่านไฟล์ไม่ได้", true); input.value = ""; };
+    r.readAsText(f);
+  });
+  $("exportBtn").addEventListener("click", function(){
+    var data = collectState();
+    saveFile((data.name || "shifter_punkz_character").replace(/\s+/g,"_") + ".json", JSON.stringify(data, null, 2));
+  });
+
+  // ---------- Init ----------
+  var hadSavedSheet = false;
+  try{ hadSavedSheet = !!localStorage.getItem("shifterpunkz_char"); }catch(e){}
+  renderBaStats();
+  loadState();
+  // a brand-new sheet starts with 1 empty Bonded Item row (a character has only one)
+  if(!hadSavedSheet && document.querySelectorAll("#bondedRows .rowline").length === 0){
+    bondedFactory.add();
+  }
+  ["fBond1","fBond2","fBond3"].forEach(function(id){ $(id).addEventListener("input", function(){ autoGrow(this); }); });
+  updateItemSlots(); updateSkillCap(); updateCosCap();
+  updateRep(); updateHpMeter(); updateSpMeter(); updateTag();
+  applyFactor(currentFactor);
+  // any edit anywhere on the sheet autosaves (name, bio, notes, injury checkboxes, ...)
+  function autosaveFromEvent(e){
+    if(e.target && e.target.closest && e.target.closest("#gmView")) return;   // GM-side edits aren't part of this player's sheet
+    saveState();
+  }
+  document.addEventListener("input", autosaveFromEvent);
+  document.addEventListener("change", autosaveFromEvent);
+  initCloud();
+})();
+</script>
+</body>
+</html>
