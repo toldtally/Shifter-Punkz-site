@@ -133,10 +133,12 @@
       v.onAvatar = (e) => this.onAvatar(e);
       v.logout = (e) => this.logout(e);
       v.navLogout = (e) => this.logout(e);
-      v.switchToGm = () => {
+      var menuRole = (role) => {
         if (!p) return;
-        this.patch({ role: 'gm' }).then((d) => { if (d) this.setState({ role: 'gm', switched: true, menuRole: 'gm', roleWarn: false, menuSwitched: true }); });
+        this.patch({ role: role }).then((d) => { if (d) this.setState({ role: role, switched: true, menuRole: role, roleWarn: false, charWarn: false, menuSwitched: role }); });
       };
+      v.switchToGm = () => menuRole('gm');
+      v.switchToPlayer = () => menuRole('player');
       v.doDelete = (e) => this.doDelete(e);
       v.hasMsg = !!this.state.msg;
       v.msg = this.state.msg;

@@ -16,7 +16,7 @@
         if (this.state.spMenu && !(e.target.closest && e.target.closest('[data-sp-menu]'))) this.setState({ spMenu: false });
       });
       sb.auth.onAuthStateChange((event) => {
-        if (event === 'SIGNED_OUT') this.setState({ spUser: null, spMenu: false, spWarn: false });
+        if (event === 'SIGNED_OUT') this.setState({ spUser: null, spMenu: false, spWarn: false, spCharWarn: false });
       });
       var s = (await sb.auth.getSession()).data.session;
       if (!s) return;
@@ -46,22 +46,31 @@
       v.spNoAvatar = !v.spAvatar;
       v.spMenuOpen = !!this.state.spMenu;
       v.spExpanded = this.state.spMenu ? 'true' : 'false';
-      v.spToggle = () => this.setState({ spMenu: !this.state.spMenu, spWarn: false, spSwitched: false });
+      v.spToggle = () => this.setState({ spMenu: !this.state.spMenu, spWarn: false, spCharWarn: false, spSwitched: '' });
       v.spIsGm = !!(u && u.role === 'gm');
       v.spNotGm = !v.spIsGm;
       v.spWarn = !!this.state.spWarn;
       v.spWarnExpanded = this.state.spWarn ? 'true' : 'false';
-      v.spAskSessions = () => this.setState({ spWarn: !this.state.spWarn });
+      v.spAskSessions = () => this.setState({ spWarn: !this.state.spWarn, spCharWarn: false });
       v.spWarnText = this.state.spErr || (th ? 'Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).');
-      v.spSwitched = !!this.state.spSwitched;
+      v.spSwitchedGm = this.state.spSwitched === 'gm';
+      v.spSwitchedPlayer = this.state.spSwitched === 'player';
       v.spSwitchedLabel = th ? '✓ เปลี่ยนบทบาทเป็น GM แล้ว' : '✓ You are now a GM';
-      v.spSwitchToGm = async () => {
+      v.spSwitchedPlayerLabel = th ? '✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว' : '✓ You are now a Player';
+      v.spCharWarn = !!this.state.spCharWarn;
+      v.spCharWarnExpanded = this.state.spCharWarn ? 'true' : 'false';
+      v.spAskChars = () => this.setState({ spCharWarn: !this.state.spCharWarn, spWarn: false });
+      v.spCharWarnText = this.state.spErr || (th ? 'ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).');
+      v.spSwitchPlayerLabel = th ? 'เปลี่ยนเป็นผู้เล่น' : 'Switch to Player';
+      var setRole = async (role) => {
         var s = (await sb.auth.getSession()).data.session;
         if (!s) return;
-        var r = await sb.from('profiles').update({ role: 'gm' }).eq('id', s.user.id);
+        var r = await sb.from('profiles').update({ role: role }).eq('id', s.user.id);
         if (r.error) return this.setState({ spErr: SP.err(r.error, th) });
-        this.setState({ spUser: Object.assign({}, this.state.spUser, { role: 'gm' }), spWarn: false, spSwitched: true, spErr: '' });
+        this.setState({ spUser: Object.assign({}, this.state.spUser, { role: role }), spWarn: false, spCharWarn: false, spSwitched: role, spErr: '' });
       };
+      v.spSwitchToGm = () => setRole('gm');
+      v.spSwitchToPlayer = () => setRole('player');
       v.spCharsLabel = th ? 'ตัวละครของฉัน' : 'My Characters';
       v.spSessionsLabel = th ? 'Session ของฉัน' : 'My Sessions';
       v.spSwitchLabel = th ? 'เปลี่ยนเป็น GM' : 'Switch to GM';

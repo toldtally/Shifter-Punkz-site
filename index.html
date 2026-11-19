@@ -132,10 +132,24 @@ html{scroll-behavior:smooth}
         </button>
         <sc-if value="{{spMenuOpen}}">
           <div role="menu" style="position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
-            <span role="menuitem" aria-disabled="true" data-soon style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740">{{spCharsLabel}}<span class="soon-chip">SOON</span></span>
+            <sc-if value="{{spNotGm}}">
+              <span role="menuitem" aria-disabled="true" data-soon style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740">{{spCharsLabel}}<span class="soon-chip">SOON</span></span>
+              <sc-if value="{{spSwitchedPlayer}}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{spSwitchedPlayerLabel}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{spIsGm}}">
+              <button type="button" role="menuitem" onClick="{{spAskChars}}" aria-expanded="{{spCharWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #2EE6F0">{{spCharsLabel}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">PLAYER</span></button>
+              <sc-if value="{{spCharWarn}}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #06181A; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #C9EEF0">{{spCharWarnText}}</p>
+                  <button type="button" onClick="{{spSwitchToPlayer}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 0; cursor: pointer; background: #2EE6F0; color: #0B0A12; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{spSwitchPlayerLabel}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
             <sc-if value="{{spIsGm}}">
               <span role="menuitem" aria-disabled="true" data-soon style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740">{{spSessionsLabel}}<span class="soon-chip">SOON</span></span>
-              <sc-if value="{{spSwitched}}">
+              <sc-if value="{{spSwitchedGm}}">
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{spSwitchedLabel}}</p>
               </sc-if>
             </sc-if>

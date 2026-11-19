@@ -73,7 +73,21 @@ html{scroll-behavior:smooth}
         </button>
         <sc-if value="{{userMenuOpen}}" hint-placeholder-val="{{ false }}">
           <div role="menu" style="position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
-            <span role="menuitem" aria-disabled="true" title="Coming soon" data-soon onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}<span class="soon-chip">SOON</span></span>
+            <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
+              <span role="menuitem" aria-disabled="true" title="Coming soon" data-soon onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}<span class="soon-chip">SOON</span></span>
+              <sc-if value="{{charJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitchedPlayer}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
+              <button type="button" role="menuitem" onClick="{{askChars}}" aria-expanded="{{charWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">PLAYER</span></button>
+              <sc-if value="{{charWarn}}" hint-placeholder-val="{{ false }}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #06181A; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #C9EEF0">{{charWarnText}}</p>
+                  <button type="button" onClick="{{switchToPlayer}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchPlayer}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
             <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
               <span role="menuitem" aria-disabled="true" title="Coming soon" data-soon onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span class="soon-chip">SOON</span></span>
               <sc-if value="{{roleJustSwitched}}" hint-placeholder-val="{{ false }}">
@@ -287,15 +301,21 @@ class Component extends DCLogic {
       },
       userMenuOpen: !!this.state.userMenu,
       userMenuExpanded: this.state.userMenu ? 'true' : 'false',
-      toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, menuSwitched: false }),
+      toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
       closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
       menuIsGm: (this.state.menuRole || this.state.role) === 'gm',
       menuNotGm: (this.state.menuRole || this.state.role) !== 'gm',
-      roleJustSwitched: !!this.state.menuSwitched,
+      roleJustSwitched: this.state.menuSwitched === 'gm',
+      charJustSwitched: this.state.menuSwitched === 'player',
+      charWarn: !!this.state.charWarn,
+      charWarnExpanded: this.state.charWarn ? 'true' : 'false',
+      askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
       roleWarn: !!this.state.roleWarn,
       roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
-      askSessions: () => this.setState({ roleWarn: !this.state.roleWarn }),
-      switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, menuSwitched: true, role: 'gm', switched: true }),
+      askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
+      switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm', role: 'gm', switched: true }),
+      switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player', role: 'player', switched: true }),
       roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
@@ -354,6 +374,8 @@ class Component extends DCLogic {
         menuSessions: L('Session ของฉัน', 'My Sessions'),
         menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
         menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
+        menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
         menuLogout: L('ออกจากระบบ', 'Log out'),
         advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
