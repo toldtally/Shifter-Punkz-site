@@ -76,6 +76,13 @@
       this.say('ok', 'ส่งลิงก์เปลี่ยนรหัสผ่านไปที่ ' + this.state.email + ' แล้ว', 'We sent a password link to ' + this.state.email + '.');
     }
 
+    /* called by the design's change-password form */
+    async changePassword(pw) {
+      var r = await sb.auth.updateUser({ password: pw });
+      if (r.error) throw r.error;
+    }
+    pwErr(e) { return SP.err(e, this.th()); }
+
     async logout(e) {
       if (e && e.preventDefault) e.preventDefault();
       await sb.auth.signOut();
@@ -114,7 +121,7 @@
         pick: () => { if (p && r.id !== this.state.role) this.patch({ role: r.id }).then((d) => { if (d) this.setState({ role: r.id, switched: true }); }); }
       }));
       v.methods = v.methods.map((m, i) => {
-        if (i === 0) return Object.assign({}, m, { status: this.state.email, act: () => this.resetPassword() });
+        if (i === 0) return Object.assign({}, m, { status: this.state.email });
         var prov = i === 1 ? 'google' : 'discord';
         return Object.assign({}, m, { act: () => this.toggleProvider(prov, this.state[prov]) });
       });
@@ -125,6 +132,7 @@
       };
       v.onAvatar = (e) => this.onAvatar(e);
       v.logout = (e) => this.logout(e);
+      v.navLogout = (e) => this.logout(e);
       v.doDelete = (e) => this.doDelete(e);
       v.hasMsg = !!this.state.msg;
       v.msg = this.state.msg;
