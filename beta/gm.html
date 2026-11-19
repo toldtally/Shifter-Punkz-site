@@ -572,6 +572,14 @@ class Component extends DCLogic {
     const ids = Object.keys(this.state.chars).filter((k) => this.state.removed.indexOf(k) === -1);
     const list = ids.map((k) => Object.assign({ id: k }, this.state.chars[k]));
     const isGm = this.state.role === 'gm';
+    /* prototype only: tell the My Sessions artboard (same browser) about pause / resume / end */
+    const demoSt = (id, st) => {
+      let map = {};
+      try { map = JSON.parse(localStorage.getItem('sp-demo-sessions') || '{}') || {}; } catch (e) {}
+      map[id] = st;
+      try { localStorage.setItem('sp-demo-sessions', JSON.stringify(map)); } catch (e) {}
+      try { const ch = new BroadcastChannel('sp-demo-sessions'); ch.postMessage(map); ch.close(); } catch (e) {}
+    };
     const TABLES = {
       t1: { code: 'SP-K7QX', th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'active', n: (this.state.cur === 't1' ? Object.keys(this.state.chars).length - this.state.removed.length : 3) },
       t2: { code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
@@ -691,7 +699,7 @@ class Component extends DCLogic {
         this.setState({ copied: true });
       },
       copyLabel: this.state.copied ? L('คัดลอกแล้ว', 'Copied') : L('คัดลอกรหัส', 'Copy code'),
-      togglePause: () => this.setState({ paused: !this.state.paused, ending: false }),
+      togglePause: () => { const np = !this.state.paused; this.setState({ paused: np, ending: false }); demoSt(this.state.cur, np ? 'paused' : 'live'); },
       pauseBg: this.state.paused ? '#FFD400' : 'transparent',
       pauseFg: this.state.paused ? '#0B0A12' : '#FFD400',
       askEnd: () => this.setState({ ending: !this.state.ending, pendingTable: null }),
@@ -699,7 +707,7 @@ class Component extends DCLogic {
       hasEnd: !!this.state.ending && !this.state.ended,
       endTitle: L('จบ session ' + TABLES[this.state.cur].th + '?', 'End ' + TABLES[this.state.cur].en + '?'),
       cancelEnd: () => this.setState({ ending: false }),
-      doEnd: () => this.setState({ ending: false, ended: true, paused: true }),
+      doEnd: () => { this.setState({ ending: false, ended: true, paused: true }); demoSt(this.state.cur, 'ended'); },
       hasEnded: !!this.state.ended,
       endedNote: L('จบ session ' + TABLES[this.state.cur].th + ' แล้ว', TABLES[this.state.cur].en + ' has ended.'),
       pausedPressed: this.state.paused ? 'true' : 'false',

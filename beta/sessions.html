@@ -260,6 +260,18 @@ class Component extends DCLogic {
       ]
     };
   }
+  /* prototype only: follow pause / resume / end pressed on the GM Monitor artboard */
+  componentDidMount() {
+    const LAB = { live: ['กำลังเล่น', 'Running now'], paused: ['พักเมื่อสักครู่', 'Paused just now'], ended: ['จบเมื่อสักครู่', 'Ended just now'] };
+    const applySt = (map) => {
+      if (!map) return;
+      this.setState({ tables: this.state.tables.map((y) => (map[y.id] && map[y.id] !== y.st && y.st !== 'ended'
+        ? Object.assign({}, y, { st: map[y.id], lastTh: LAB[map[y.id]][0], lastEn: LAB[map[y.id]][1] }) : y)) });
+    };
+    try { applySt(JSON.parse(localStorage.getItem('sp-demo-sessions') || 'null')); } catch (e) {}
+    try { this._demoCh = new BroadcastChannel('sp-demo-sessions'); this._demoCh.onmessage = (e) => applySt(e.data); } catch (e) {}
+  }
+  componentWillUnmount() { if (this._demoCh) this._demoCh.close(); }
   renderVals() {
     const th = this.state.lang !== 'en';
     const L = (a, b) => (th ? a : b);
