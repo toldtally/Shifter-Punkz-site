@@ -111,7 +111,6 @@ html{scroll-behavior:smooth}
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
         <a href="#world" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navWorld}}</a>
         <a href="#factions" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navFactions}}</a>
-        <a href="#hub" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">ANIMATION</a>
         <div style="position: relative">
           <button type="button" onClick="{{toggleGame}}" aria-expanded="{{gameExpanded}}" aria-controls="game-menu" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; color: {{gameColor}}">GAME<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style="{{caretStyle}}"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg></button>
           <sc-if value="{{gameOpen}}" hint-placeholder-val="{{ false }}">
