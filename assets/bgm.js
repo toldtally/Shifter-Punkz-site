@@ -16,7 +16,9 @@
     { id: 'intense', code: 'TRK-02', title: 'C.P.D. Raid', th: 'เร้าใจ', en: 'Intense', color: '#FF2E88',
       descTh: '140 BPM เบสแตก กลองรัว มีช่วง build-up ก่อนระเบิด สำหรับไล่ล่า ต่อสู้ บุกจับ', descEn: '140 BPM, distorted bass, drum fills and a build-up before each drop' },
     { id: 'sad', code: 'TRK-03', title: 'Rain on Concrete', th: 'เศร้า', en: 'Sad', color: '#C084FC',
-      descTh: 'เปียโนช้า ๆ บนเครื่องสายและเชลโล สำหรับการสูญเสีย บทอำลา ฉากเงียบ', descEn: 'Slow piano over strings and cello for loss and farewells' }
+      descTh: 'เปียโนช้า ๆ บนเครื่องสายและเชลโล สำหรับการสูญเสีย บทอำลา ฉากเงียบ', descEn: 'Slow piano over strings and cello for loss and farewells' },
+    { id: 'mystery', code: 'TRK-04', title: 'Data Trail', th: 'น่าสงสัย', en: 'Suspicious', color: '#FFD400',
+      descTh: 'นัวร์ไซเบอร์ 84 BPM เสียงนาฬิกาเดิน เบสดีดเบา ๆ คีย์บอร์ดสั่นไหว สำหรับสืบสวน ตามรอย แอบฟัง', descEn: 'Cyber-noir with a ticking clock, muted bass and wavering keys for investigations' }
   ];
   var AMBIENTS = [
     { id: 'rain', th: 'ฝนตก', en: 'Rain' },
@@ -28,7 +30,7 @@
   ];
 
   // loudness trims so moods and ambiences sit at a similar level
-  var TRIM = { normal: 1.2, intense: 0.65, sad: 2.1, rain: 0.3, city: 1.2, neon: 3, siren: 3, wind: 0.6, geiger: 3 };
+  var TRIM = { normal: 1.2, intense: 0.65, sad: 2.1, mystery: 1.4, rain: 0.3, city: 1.2, neon: 3, siren: 3, wind: 0.6, geiger: 3 };
 
   var mtof = function (m) { return 440 * Math.pow(2, (m - 69) / 12); };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
@@ -101,6 +103,33 @@
         if (m) e.piano(t + rnd(0, 0.025), mtof(m), out, 0.1 + rnd(-0.015, 0.015));
         if (s % 4 === 2) e.piano(t, mtof(tones[(s / 2) % 3] - 12), out, 0.035);
         if (cycle % 2 === 1 && phase >= 4 && m) e.piano(t + dur * 2, mtof(m + 12), out, 0.03);
+      }
+    }
+    ,
+    mystery: {
+      // Data Trail — cyber-noir: clock ticks, muted walking bass, tremolo keys, a semitone motif that never resolves
+      bpm: 84,
+      chords: [[38, [60, 64, 65, 69]], [34, [57, 62, 65, 69]], [43, [58, 62, 64, 67]], [33, [58, 61, 64, 67]],
+               [38, [60, 64, 65, 69]], [34, [57, 62, 65, 69]], [31, [58, 62, 65, 67]], [33, [58, 61, 64, 67]]], // Dm9 Bbmaj7 Gm6 A7b9 | Dm9 Bbmaj7 Gm7/G A7b9
+      motif: [[74, 0, 0, 0, 77, 0, 0, 76, 0, 0, 0, 0, 70, 0, 69, 0], [0, 0, 0, 0, 74, 0, 73, 0, 0, 0, 70, 0, 0, 0, 0, 0]],
+      step: function (e, s, bar, t, ch, out, dur) {
+        var root = ch[0], tones = ch[1], phase = bar % 8;
+        // ticking clock: 8ths, accent on the beat
+        if (s % 2 === 0) e.tick(t, out, s % 4 === 0 ? 0.05 : 0.025);
+        // muted bass: 1, the "and" of 2, and a chromatic approach into the next bar
+        if (s === 0) e.mbass(t, mtof(root), dur * 3, out, 0.22);
+        if (s === 6) e.mbass(t, mtof(root + 7), dur * 2, out, 0.16);
+        if (s === 10) e.mbass(t, mtof(root + 12), dur * 2, out, 0.14);
+        if (s === 14) e.mbass(t, mtof(root + (phase % 4 === 3 ? 6 : 1)), dur * 2, out, 0.15);
+        if (s === 0) e.kick(t, out, 0.22);
+        if (s === 8) e.rim(t, out, 0.09);
+        // tremolo keys, syncopated
+        if (s === 0 || s === 11) e.keys(t, tones, dur * (s === 0 ? 10 : 5), out, s === 0 ? 0.06 : 0.04);
+        // the motif on bars 2-3 and its answer on 6-7
+        var mot = (phase === 2 || phase === 6) ? TRACKS.mystery.motif[0] : (phase === 3 || phase === 7) ? TRACKS.mystery.motif[1] : null;
+        if (mot && mot[s]) e.lead(t, mtof(mot[s] - (phase >= 6 ? 12 : 0)), dur * 2.5, out, 0.045, 'sine');
+        // glassy pings now and then
+        if (s === 13 && Math.random() < 0.35) e.bell(t, mtof(pick(tones) + 24), out, 0.03);
       }
     }
   };
@@ -262,6 +291,41 @@
         fl.type = 'lowpass'; fl.frequency.value = 600;
         g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + dur * 0.35); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.4);
         o.connect(fl); fl.connect(g); g.connect(out); g.connect(revSend); o.start(t); vib.start(t); o.stop(t + dur + 0.5); vib.stop(t + dur + 0.5);
+      },
+      mbass: function (t, f, dur, out, v) {
+        var o = ctx.createOscillator(), fl = ctx.createBiquadFilter(), g = ctx.createGain();
+        o.type = 'triangle'; o.frequency.value = f;
+        fl.type = 'lowpass'; fl.frequency.value = 700; fl.Q.value = 2;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + Math.min(dur, 0.5));
+        o.connect(fl); fl.connect(g); g.connect(out); o.start(t); o.stop(t + Math.min(dur, 0.5) + 0.05);
+      },
+      keys: function (t, notes, dur, out, v) {
+        var g = ctx.createGain(), trem = ctx.createOscillator(), tg = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        trem.frequency.value = 5.5; tg.gain.value = v * 0.45; trem.connect(tg); tg.connect(g.gain);
+        notes.forEach(function (m) {
+          [['sine', 1, 1], ['triangle', 2, 0.18]].forEach(function (h) {
+            var o = ctx.createOscillator(), og = ctx.createGain(); o.type = h[0]; o.frequency.value = mtof(m) * h[1]; og.gain.value = h[2] / notes.length;
+            o.connect(og); og.connect(g); o.start(t); o.stop(t + dur + 0.05);
+          });
+        });
+        g.connect(out); g.connect(revSend); g.connect(delaySend); trem.start(t); trem.stop(t + dur + 0.05);
+      },
+      bell: function (t, f, out, v) {
+        var car = ctx.createOscillator(), mod = ctx.createOscillator(), mg = ctx.createGain(), g = ctx.createGain();
+        car.frequency.value = f; mod.frequency.value = f * 3.5; mg.gain.setValueAtTime(f * 2, t); mg.gain.exponentialRampToValueAtTime(1, t + 1.2);
+        mod.connect(mg); mg.connect(car.frequency);
+        env(g, t, 0.003, v, 2.2); car.connect(g); g.connect(out); g.connect(revSend); g.connect(delaySend);
+        car.start(t); mod.start(t); car.stop(t + 2.4); mod.stop(t + 2.4);
+      },
+      tick: function (t, out, v) {
+        var n = noise(t, 0.015), f = ctx.createBiquadFilter(), g = ctx.createGain();
+        f.type = 'bandpass'; f.frequency.value = 3800; f.Q.value = 6;
+        env(g, t, 0.0005, v, 0.012); n.connect(f); f.connect(g); g.connect(out);
+      },
+      rim: function (t, out, v) {
+        var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'square'; o.frequency.value = 1700;
+        env(g, t, 0.0008, v, 0.03); o.connect(g); g.connect(out); g.connect(revSend); o.start(t); o.stop(t + 0.05);
       },
       kick: function (t, out, v) {
         var o = ctx.createOscillator(), g = ctx.createGain();
