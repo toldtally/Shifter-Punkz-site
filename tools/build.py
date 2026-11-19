@@ -68,6 +68,33 @@ BETA_LINKS = {"Main": "../index.html", "TRPG": "../trpg.html", "Account": "accou
 ASK_GM = ('re:<sc-if value="\\{\\{menuNotGm\\}\\}"( hint-placeholder-val="\\{\\{ true \\}\\}">\\s*<button type="button" role="menuitem" onClick="\\{\\{askSessions\\}\\}")', '<sc-if value="{{menuCanAskGm}}"\\1', 1)
 ME = ('re:aria-hidden="true">N</span><span>Nox', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1)
 
+BOOKS = '''<!-- Books: a code printed in any book unlocks the GM role -->
+        <section id="books" aria-labelledby="books-h" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px">
+            <h2 id="books-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{bk.title}}</h2>
+            <p style="margin: 0; padding: 4px 10px; border: 1px solid {{bk.chipColor}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: {{bk.chipColor}}">{{bk.chip}}</p>
+          </div>
+          <p style="margin: 0; font-size: 14px; line-height: 1.65; color: #A9A5C2">{{bk.sub}}</p>
+          <sc-if value="{{bk.hasOwned}}" hint-placeholder-val="{{ false }}">
+            <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+              <sc-for list="{{bk.owned}}" as="ob" hint-placeholder-count="1">
+                <li style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; padding: 10px 14px; background: #0B0A12; border-left: 3px solid {{ob.accent}}"><span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF">{{ob.name}}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #8C88A6">{{ob.when}}</span></li>
+              </sc-for>
+            </ul>
+          </sc-if>
+          <form onSubmit="{{bk.redeem}}" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+            <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px">
+              <label for="acc-book" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{bk.label}}</label>
+              <input id="acc-book" class="fld" type="text" autocomplete="off" spellcheck="false" maxlength="14" placeholder="BK-XXXX-XXXX" value="{{bk.code}}" onInput="{{bk.onCode}}" aria-invalid="{{bk.invalid}}" aria-describedby="acc-book-msg" style="font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase">
+            </div>
+            <button type="submit" aria-busy="{{bk.busy}}" style="min-height: 46px; padding: 0 22px; border: 0; cursor: pointer; background: #FF2E88; color: #0B0A12; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em">{{bk.btn}}</button>
+          </form>
+          <sc-if value="{{bk.hasMsg}}" hint-placeholder-val="{{ false }}">
+            <p id="acc-book-msg" role="status" aria-live="polite" style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid {{bk.msgColor}}; font-size: 13.5px; line-height: 1.55; color: #E4E1F0">{{bk.msg}}</p>
+          </sc-if>
+        </section>
+        '''
+
 PAGES = [
     dict(src="Main.dc.html", out="index.html", title="Shifter Punkz",
          desc="Shifter Punkz — จักรวาลกึ่งไซเบอร์พังก์ในกรุงเทพ 26XX ผ่านแอนิเมชัน TRPG เกมดิจิทัล และบอร์ดเกม",
@@ -92,7 +119,7 @@ PAGES = [
          desc="ตั้งค่าบัญชี Shifter Punkz (beta)", beta="beta-account.js",
          links=BETA_LINKS,
          markup=[ASK_GM,
-             (r're:(<!-- Role -->\s*)(<section id="role".*?</section>)', r'\1<sc-if value="{{canGm}}" hint-placeholder-val="{{ true }}">\2</sc-if>', 1),
+             (r're:(<!-- Role -->\s*)(<section id="role".*?</section>)', lambda m: BOOKS + m.group(1) + '<sc-if value="{{canGm}}" hint-placeholder-val="{{ true }}">' + m.group(2) + '</sc-if>', 1),
              
              ('<input id="acc-avatar" type="file" accept="image/*"', '<input id="acc-avatar" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{onAvatar}}"', 1),
              ('value="player@example.com" readonly', 'value="{{email}}" readonly', 1),

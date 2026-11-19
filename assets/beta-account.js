@@ -3,6 +3,13 @@
   'use strict';
   var sb = SP.sb;
 
+  var BOOK_NAMES = {
+    core: ['Core Rulebook', 'Core Rulebook', '#FF2E88'],
+    'dossier-cpd': ['Shifter แฟ้มลับ C.P.D.', 'Shifter Dossier: C.P.D. Edition', '#FFD400'],
+    'gadget-blueprint': ['Gadget Blueprint', 'Gadget Blueprint', '#2EE6F0'],
+    'one-shot': ['ชุด One-Shot', 'One-Shot Collection', '#C084FC']
+  };
+
   class Page extends Component {
     constructor(props) {
       super(props);
@@ -29,6 +36,37 @@
       var has = function (p) { return ids.some(function (i) { return i.provider === p; }); };
       this.setState({ ready: true, profile: r.data, name: r.data.display_name, role: r.data.role, news: r.data.news_opt_in,
         email: u.email || '', identities: ids, google: has('google'), discord: has('discord') });
+      var b = await sb.from('book_codes').select('book, redeemed_at').order('redeemed_at');
+      this.setState({ owned: b.data || [] });
+    }
+
+    async redeem(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var code = String(this.state.bookCode || '').trim().toUpperCase();
+      var bad = function (th, en) { return { kind: 'error', th: th, en: en }; };
+      if (!/^BK-?[A-Z0-9]{4}-?[A-Z0-9]{4}$/.test(code.replace(/\s/g, ''))) {
+        return this.setState({ bookMsg: bad('รหัสหนังสือเป็นรูปแบบ BK-XXXX-XXXX อยู่ในหน้าแรกของหนังสือ', 'Book codes look like BK-XXXX-XXXX, inside the front cover.') });
+      }
+      this.setState({ bookBusy: true, bookMsg: null });
+      var wasGm = !!(this.state.profile && this.state.profile.gm_allowed);
+      var r = await sb.rpc('redeem_book_code', { p_code: code });
+      var res = r.error ? 'ERR:' + r.error.message : String(r.data || '');
+      var ERR = {
+        BOOK_CODE_NOT_FOUND: ['ไม่พบรหัสนี้ ลองตรวจตัวอักษรอีกครั้ง', 'That code doesn\'t exist. Check the letters and try again.'],
+        BOOK_CODE_USED: ['รหัสนี้ถูกใช้กับบัญชีอื่นไปแล้ว', 'That code has already been used on another account.'],
+        BOOK_CODE_ALREADY_YOURS: ['รหัสนี้ลงทะเบียนกับบัญชีนี้ไว้แล้ว', 'That code is already on this account.'],
+        TOO_MANY_TRIES: ['ลองผิดหลายครั้งเกินไป รอ 1 ชั่วโมงแล้วลองใหม่', 'Too many wrong tries. Wait an hour and try again.']
+      };
+      if (res.indexOf('ERR:') === 0) {
+        var k = Object.keys(ERR).filter(function (x) { return res.indexOf(x) !== -1; })[0];
+        var m = k ? ERR[k] : [SP.err(r.error || res, true), SP.err(r.error || res, false)];
+        return this.setState({ bookBusy: false, bookMsg: bad(m[0], m[1]) });
+      }
+      await this.load();
+      var name = (BOOK_NAMES[res] || BOOK_NAMES.core)[this.th() ? 0 : 1];
+      this.setState({ bookBusy: false, bookCode: '', bookMsg: wasGm
+        ? { kind: 'ok', th: 'เพิ่ม ' + name + ' เข้าบัญชีแล้ว', en: name + ' added to your account.' }
+        : { kind: 'ok', th: 'เพิ่ม ' + name + ' แล้ว · ปลดล็อกบทบาท GM แล้ว เลือกเป็น GM ได้ที่ส่วนบทบาทด้านล่าง', en: name + ' added. The GM role is unlocked: pick it under Role below.' } });
     }
 
     async patch(fields, okTh, okEn) {
@@ -117,6 +155,27 @@
         this.patch({ display_name: n }, 'บันทึกโปรไฟล์แล้ว', 'Profile saved.');
       };
       v.savedMsg = '';
+      var th = this.th(), L = function (a, b) { return th ? a : b; };
+      var owned = this.state.owned || [], bm = this.state.bookMsg, gmOk = !!(p && p.gm_allowed);
+      v.bk = {
+        title: L('หนังสือของฉัน', 'My books'),
+        chip: gmOk ? L('GM ปลดล็อกแล้ว', 'GM UNLOCKED') : L('GM ล็อกอยู่', 'GM LOCKED'),
+        chipColor: gmOk ? '#4ADE80' : '#8C88A6',
+        sub: gmOk ? L('กรอกรหัสจากหนังสือเล่มอื่นเพื่อเพิ่มเข้าบัญชีได้ รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'Add codes from your other books here. Each code works once.')
+                  : L('บทบาท GM เปิดให้เจ้าของหนังสือ Shifter Punkz TRPG อย่างน้อย 1 เล่ม กรอกรหัสในหน้าแรกของหนังสือเพื่อปลดล็อก รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'The GM role is for owners of at least one Shifter Punkz TRPG book. Enter the code inside the front cover to unlock it. Each code works once.'),
+        hasOwned: owned.length > 0,
+        owned: owned.map(function (o) { var n = BOOK_NAMES[o.book] || BOOK_NAMES.core; return { name: th ? n[0] : n[1], accent: n[2], when: L('ลงทะเบียน ', 'Added ') + new Date(o.redeemed_at).toLocaleDateString(th ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) }; }),
+        label: L('รหัสหนังสือ', 'BOOK CODE'),
+        code: this.state.bookCode || '',
+        onCode: (e) => this.setState({ bookCode: String(e && e.target ? e.target.value : '').toUpperCase(), bookMsg: null }),
+        invalid: bm && bm.kind === 'error' ? 'true' : 'false',
+        busy: this.state.bookBusy ? 'true' : 'false',
+        btn: L('ลงทะเบียนหนังสือ', 'Register book'),
+        redeem: (e) => this.redeem(e),
+        hasMsg: !!bm,
+        msg: bm ? (th ? bm.th : bm.en) : '',
+        msgColor: bm && bm.kind === 'error' ? '#FF3D6E' : '#4ADE80'
+      };
       v.canGm = !!(p && p.gm_allowed);
       v.menuCanAskGm = !!(p && p.gm_allowed && this.state.role !== 'gm');
       v.roles = v.roles.map((r) => Object.assign({}, r, {

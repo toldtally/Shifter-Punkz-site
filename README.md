@@ -33,4 +33,12 @@ Published by Rollaholic Games · Game Designer: Jittrapa K. (Prim)
 
 ## GM permission
 
-Only devs grant GM access. In the Supabase dashboard open Table Editor → `profiles`, find the account (`public_no` is the SP-000xxx number) and tick `gm_allowed`. Signed-in users can't change that column themselves; unticking it also drops the account back to player.
+The GM role is for book owners. Every printed book carries a one-time code (`BK-XXXX-XXXX`); entering it under Settings → My books unlocks GM on that account.
+
+Make codes in the Supabase SQL editor (books: `core`, `dossier-cpd`, `gadget-blueprint`, `one-shot`):
+
+```sql
+select code from private.make_book_codes('core', 50);
+```
+
+Who used which code: `select * from public.book_codes where redeemed_by is not null;`. A dev can still tick or untick `profiles.gm_allowed` by hand in the Table Editor; unticking drops the account back to player.
