@@ -181,7 +181,8 @@ html{scroll-behavior:smooth}
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #FFD400; user-select: all">{{curCode}}</span>
             </div>
             <button type="button" onClick="{{copyCode}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{copyLabel}}</button>
-            <button type="button" onClick="{{togglePause}}" aria-pressed="{{pausedPressed}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{pauseLabel}}</button>
+            <button type="button" onClick="{{togglePause}}" aria-pressed="{{pausedPressed}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FFD400; background: {{pauseBg}}; color: {{pauseFg}}; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{pauseLabel}}</button>
+            <button type="button" onClick="{{askEnd}}" aria-expanded="{{endExpanded}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.endSession}}</button>
           </div>
         </div>
         <sc-if value="{{hasSwitch}}" hint-placeholder-val="{{ false }}">
@@ -193,6 +194,19 @@ html{scroll-behavior:smooth}
             <button type="button" onClick="{{cancelSwitch}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.cancel}}</button>
             <button type="button" onClick="{{doSwitch}}" style="min-height: 40px; padding: 0 16px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.doSwitch}}</button>
           </div>
+        </sc-if>
+        <sc-if value="{{hasEnd}}" hint-placeholder-val="{{ false }}">
+          <div role="alertdialog" aria-labelledby="end-h" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px; background: #24060E; border: 1px solid #FF3D6E">
+            <div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+              <p id="end-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; color: #FF3D6E">{{endTitle}}</p>
+              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #F2C9D3">{{t.endBody}}</p>
+            </div>
+            <button type="button" onClick="{{cancelEnd}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.cancel}}</button>
+            <button type="button" onClick="{{doEnd}}" style="min-height: 40px; padding: 0 16px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.doEnd}}</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{hasEnded}}" hint-placeholder-val="{{ false }}">
+          <p role="status" style="margin: 0; padding: 12px 14px; background: #151225; border-left: 3px solid #8C88A6; font-size: 14px; color: #D8D6E8">{{endedNote}} <a href="sessions.html" style="color: #2EE6F0; font-weight: 700">{{t.backSessions}}</a></p>
         </sc-if>
         </div>
 
@@ -677,9 +691,19 @@ class Component extends DCLogic {
         this.setState({ copied: true });
       },
       copyLabel: this.state.copied ? L('คัดลอกแล้ว', 'Copied') : L('คัดลอกรหัส', 'Copy code'),
-      togglePause: () => this.setState({ paused: !this.state.paused }),
+      togglePause: () => this.setState({ paused: !this.state.paused, ending: false }),
+      pauseBg: this.state.paused ? '#FFD400' : 'transparent',
+      pauseFg: this.state.paused ? '#0B0A12' : '#FFD400',
+      askEnd: () => this.setState({ ending: !this.state.ending, pendingTable: null }),
+      endExpanded: this.state.ending ? 'true' : 'false',
+      hasEnd: !!this.state.ending && !this.state.ended,
+      endTitle: L('จบ session ' + TABLES[this.state.cur].th + '?', 'End ' + TABLES[this.state.cur].en + '?'),
+      cancelEnd: () => this.setState({ ending: false }),
+      doEnd: () => this.setState({ ending: false, ended: true, paused: true }),
+      hasEnded: !!this.state.ended,
+      endedNote: L('จบ session ' + TABLES[this.state.cur].th + ' แล้ว', TABLES[this.state.cur].en + ' has ended.'),
       pausedPressed: this.state.paused ? 'true' : 'false',
-      pauseLabel: this.state.paused ? L('▶ ติดตามต่อ', '▶ Resume') : L('❚❚ หยุดชั่วคราว', '❚❚ Pause'),
+      pauseLabel: this.state.paused ? L('▶ เริ่ม session ต่อ', '▶ Resume session') : L('❚❚ พัก session', '❚❚ Pause session'),
       feedState: this.state.paused ? 'PAUSED' : 'STREAMING',
       feedStateColor: this.state.paused ? '#8C88A6' : '#4ADE80',
       onlineCount: list.filter((c) => c.online).length + ' / ' + list.length,
@@ -806,6 +830,10 @@ class Component extends DCLogic {
         manageTables: L('จัดการ session ทั้งหมด / สร้าง session ใหม่', 'Manage sessions / new session'),
         oneRun: L('1 บัญชีรันได้ทีละ 1 session', 'One live session per account'),
         doSwitch: L('พัก session เดิม แล้วสลับ', 'Pause current & switch'),
+        endSession: L('■ จบ session', '■ End session'),
+        endBody: L('ผู้เล่นทุกคนจะออกจาก session นี้ และรหัสเชิญจะใช้ไม่ได้อีก ตัวละครยังอยู่ในบัญชีของผู้เล่น ย้อนกลับไม่ได้', 'Every player leaves this session and the invite code stops working. Characters stay in each player\'s account. This can\'t be undone.'),
+        doEnd: L('จบ session', 'End session'),
+        backSessions: L('กลับไปหน้า Session ของฉัน →', 'Back to My Sessions →'),
         tableCode: L('รหัสเชิญผู้เล่น', 'PLAYER INVITE CODE'),
         details: L('รายละเอียดเต็ม', 'Full details'),
         gmNote: L('โน้ต GM (ผู้เล่นไม่เห็น)', 'GM note (hidden from players)'),

@@ -163,6 +163,38 @@
         await this.loadSessions();
         await this.open(to);
       };
+      // pause / resume / end the open session for real
+      var isLive = !!(sess && sess.status === 'live');
+      var refresh = async () => {
+        await this.loadSessions();
+        var fresh = this.state.sessions.find((s) => sess && s.id === sess.id);
+        if (fresh) this.apply({ session: fresh });
+      };
+      v.pausedPressed = sess && !isLive ? 'true' : 'false';
+      v.pauseLabel = sess && !isLive ? L('▶ เริ่ม session ต่อ', '▶ Resume session') : L('❚❚ พัก session', '❚❚ Pause session');
+      v.pauseBg = sess && !isLive ? '#FFD400' : 'transparent';
+      v.pauseFg = sess && !isLive ? '#0B0A12' : '#FFD400';
+      v.feedState = sess && !isLive ? 'PAUSED' : 'STREAMING';
+      v.feedStateColor = sess && !isLive ? '#8C88A6' : '#4ADE80';
+      v.togglePause = async () => {
+        if (!sess || this._busy) return;
+        this._busy = true;
+        var r = await sb.rpc(isLive ? 'pause_session' : 'start_session', { p_session: sess.id });
+        this._busy = false;
+        this.setState({ ending: false });
+        if (r.error) return this.setState({ toast: SP.err(r.error, th) });
+        await refresh();
+      };
+      v.askEnd = () => { if (sess) this.setState({ ending: !this.state.ending, pendingTable: null }); };
+      v.hasEnd = !!(this.state.ending && sess);
+      v.endTitle = sess ? L('จบ session ' + sess.name + '?', 'End ' + sess.name + '?') : '';
+      v.doEnd = async () => {
+        if (!sess) return;
+        var r = await sb.rpc('end_session', { p_session: sess.id });
+        if (r.error) return this.setState({ ending: false, toast: SP.err(r.error, th) });
+        location.href = 'sessions.html';
+      };
+      v.hasEnded = false;
       v.copyCode = () => { try { if (navigator.clipboard && sess) navigator.clipboard.writeText(sess.invite_code).catch(() => {}); } catch (e) {} this.setState({ copied: true }); };
       var ids = Object.keys(this.state.chars);
       v.party = v.party.map((p, i) => {
