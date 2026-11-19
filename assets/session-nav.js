@@ -16,7 +16,7 @@
         if (this.state.spMenu && !(e.target.closest && e.target.closest('[data-sp-menu]'))) this.setState({ spMenu: false });
       });
       sb.auth.onAuthStateChange((event) => {
-        if (event === 'SIGNED_OUT') this.setState({ spUser: null, spMenu: false });
+        if (event === 'SIGNED_OUT') this.setState({ spUser: null, spMenu: false, spWarn: false });
       });
       var s = (await sb.auth.getSession()).data.session;
       if (!s) return;
@@ -46,7 +46,16 @@
       v.spNoAvatar = !v.spAvatar;
       v.spMenuOpen = !!this.state.spMenu;
       v.spExpanded = this.state.spMenu ? 'true' : 'false';
-      v.spToggle = () => this.setState({ spMenu: !this.state.spMenu });
+      v.spToggle = () => this.setState({ spMenu: !this.state.spMenu, spWarn: false });
+      v.spIsGm = !!(u && u.role === 'gm');
+      v.spNotGm = !v.spIsGm;
+      v.spWarn = !!this.state.spWarn;
+      v.spWarnExpanded = this.state.spWarn ? 'true' : 'false';
+      v.spAskSessions = () => this.setState({ spWarn: !this.state.spWarn });
+      v.spWarnText = th ? 'Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนบทบาทเป็น GM ในหน้าตั้งค่าบัญชีก่อนเข้า' : 'My Sessions is for the GM role. Your account is a Player right now; switch to GM in Settings first.';
+      v.spCharsLabel = th ? 'ตัวละครของฉัน' : 'My Characters';
+      v.spSessionsLabel = th ? 'Session ของฉัน' : 'My Sessions';
+      v.spSwitchLabel = th ? 'ไปเปลี่ยนบทบาท' : 'Switch role';
       v.spKey = (e) => { if (e && e.key === 'Escape') this.setState({ spMenu: false }); };
       v.spLogout = async (e) => {
         if (e && e.preventDefault) e.preventDefault();

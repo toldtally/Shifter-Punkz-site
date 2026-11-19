@@ -122,6 +122,19 @@ def session_nav(body):
         </button>
         <sc-if value="{{{{spMenuOpen}}}}">
           <div role="menu" style="position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
+            <span role="menuitem" aria-disabled="true" data-soon style="{MENU_ITEM}; color: #2EE6F0; border-bottom: 1px solid #2A2740">{{{{spCharsLabel}}}}<span class="soon-chip">SOON</span></span>
+            <sc-if value="{{{{spIsGm}}}}">
+              <span role="menuitem" aria-disabled="true" data-soon style="{MENU_ITEM}; color: #FFD400; border-bottom: 1px solid #2A2740">{{{{spSessionsLabel}}}}<span class="soon-chip">SOON</span></span>
+            </sc-if>
+            <sc-if value="{{{{spNotGm}}}}">
+              <button type="button" role="menuitem" onClick="{{{{spAskSessions}}}}" aria-expanded="{{{{spWarnExpanded}}}}" style="{MENU_ITEM}; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{{{spSessionsLabel}}}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <sc-if value="{{{{spWarn}}}}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{{{spWarnText}}}}</p>
+                  <a href="beta/account.html#role" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{{{spSwitchLabel}}}}</a>
+                </div>
+              </sc-if>
+            </sc-if>
             <a role="menuitem" href="beta/account.html" style="{MENU_ITEM}; color: #D8D6E8; border-bottom: 1px solid #2A2740">{{{{spSettingsLabel}}}}</a>
             <a role="menuitem" href="#" onClick="{{{{spLogout}}}}" style="{MENU_ITEM}; color: #FF3D6E">{{{{spLogoutLabel}}}}</a>
           </div>
@@ -143,9 +156,14 @@ def strip_spoilers(name, js):
 def lock_links(markup, locked):
     if not locked:
         return markup
-    pat = re.compile(r'<a href="(?:%s)\.dc\.html"([^>]*)>(.*?)</a>' % "|".join(locked), re.S)
-    return pat.sub(lambda m: '<span role="link" aria-disabled="true" title="Coming soon" data-soon%s>%s'
-                   '<span class="soon-chip">SOON</span></span>' % (m.group(1), m.group(2)), markup)
+    pat = re.compile(r'<a ([^>]*?)href="(?:%s)\.dc\.html[^"]*"([^>]*)>(.*?)</a>' % "|".join(locked), re.S)
+
+    def swap(m):
+        pre = m.group(1).strip()
+        head = (pre + ' ') if 'role=' in pre else ('role="link" ' + (pre + ' ' if pre else ''))
+        return '<span %saria-disabled="true" title="Coming soon" data-soon%s>%s<span class="soon-chip">SOON</span></span>' % (
+            head, m.group(2), m.group(3))
+    return pat.sub(swap, markup)
 
 
 def build(cfg):
