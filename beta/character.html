@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ใบตัวละคร · Shifter Punkz</title>
+<meta name="description" content="ใบตัวละคร Shifter Punkz (beta)">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="ใบตัวละคร · Shifter Punkz">
+<meta property="og:description" content="ใบตัวละคร Shifter Punkz (beta)">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0A12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%230B0A12'/%3E%3Cpath d='M4 4h12l8 8v12H12L4 16z' fill='none' stroke='%23FF2E88' stroke-width='2.5'/%3E%3Cpath d='M10 10h6v6h-6z' fill='%232EE6F0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;background:#0B0A12}
+a{color:#2EE6F0}a:hover{color:#FF2E88}
+*{box-sizing:border-box}
+.hero-gl{animation:glHero .9s linear var(--d,0s) both}
+@keyframes glHero{
+0%{opacity:0;clip-path:inset(40% 0 45% 0);transform:translate3d(-18px,0,0);text-shadow:-5px 0 #FF2E88,5px 0 #2EE6F0}
+7%{opacity:1;clip-path:inset(8% 0 72% 0);transform:translate3d(14px,0,0)}
+14%{clip-path:inset(58% 0 18% 0);transform:translate3d(-10px,0,0)}
+21%{clip-path:inset(0 0 0 0);transform:translate3d(6px,0,0);opacity:.45}
+29%{opacity:1;clip-path:inset(22% 0 52% 0);transform:translate3d(-14px,0,0)}
+37%{clip-path:inset(0 0 0 0);transform:translate3d(4px,0,0);text-shadow:-3px 0 #FF2E88,3px 0 #2EE6F0}
+54%{transform:translate3d(-3px,0,0);opacity:.75}
+66%{opacity:1;transform:translate3d(1px,0,0);text-shadow:-2px 0 rgba(255,46,136,.7),2px 0 rgba(46,230,240,.7)}
+100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+.panel{background:#151225;border:1px solid #2A2740;border-top:3px solid #3A3655;margin-bottom:14px}
+.pk{border-top-color:#FF2E88}.cy{border-top-color:#2EE6F0}
+.ph{background:#1D1930;border-bottom:1px solid #2A2740;padding:9px 14px;clip-path:polygon(0 0,100% 0,100% 100%,14px 100%,0 calc(100% - 14px));display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ph h2{margin:0;font-family:'Chakra Petch',sans-serif;font-size:16px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:#FFFFFF}
+.pb{padding:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:90px}
+.narrow{flex:0 0 90px;min-width:70px}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#A9A5C2;font-weight:500}
+.fld{background:#0B0A12;border:1px solid #2A2740;color:#FFFFFF;padding:7px 8px;font-family:'IBM Plex Sans Thai',sans-serif;font-size:14px;width:100%;border-radius:2px}
+.fld:focus{outline:2px solid #2EE6F0;outline-offset:-1px;box-shadow:0 0 12px rgba(46,230,240,.25)}
+.fld::placeholder{color:#6E6A88}
+textarea.fld{resize:vertical;line-height:1.45}
+.hint{font-size:11.5px;color:#8C88A6;line-height:1.4;margin-top:4px}
+.thead{display:grid;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#8C88A6;padding:0 2px 4px}
+.rowline{display:grid;gap:6px;align-items:center;margin-bottom:6px}
+.rowline .fld{font-size:13px;padding:6px 7px}
+.rm{background:transparent;border:1px solid #2A2740;color:#8C88A6;width:28px;height:28px;cursor:pointer;font-size:15px;line-height:1}
+.rm:hover{border-color:#FF3D6E;color:#FF3D6E}
+.add{margin-top:6px;background:#1D1930;border:1px dashed #3A3655;color:#A9A5C2;padding:8px 10px;cursor:pointer;font-size:12px;letter-spacing:.05em;text-transform:uppercase;font-family:'Chakra Petch',sans-serif;font-weight:700;width:100%;min-height:36px}
+.add:hover{color:#FFFFFF;border-color:#2EE6F0}
+.add:disabled{opacity:.35;cursor:not-allowed}
+.cap{font-size:11px;color:#8C88A6;margin-top:4px}
+.step{width:26px;height:26px;border:1px solid #3A3655;background:#1D1930;color:#FFFFFF;cursor:pointer;font-size:14px;line-height:1}
+.step:hover{border-color:#2EE6F0}
+.btn{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:13px;padding:0 18px;min-height:44px;cursor:pointer;border:1px solid #3A3655;background:#1D1930;color:#D8D6E8;display:inline-flex;align-items:center}
+.btn.sm{font-size:12px;padding:0 12px;min-height:34px}
+.chk{display:flex;align-items:center;gap:7px;font-size:13px;color:#A9A5C2}
+.chk input[type=checkbox]{width:15px;height:15px;accent-color:#FF3D6E;flex:0 0 auto}
+.meter{height:10px;background:#0B0A12;border:1px solid #2A2740;overflow:hidden;margin-top:8px}
+.meter div{height:100%;transition:width .2s}
+@media (prefers-reduced-motion: reduce){.hero-gl{animation:none}}
+.eq{display:inline-flex;align-items:flex-end;gap:3px;height:16px}
+.eq i{display:block;width:3px;height:4px;background:currentColor;animation:eqB .9s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}
+.eq.off i{animation:none;height:3px;opacity:.5}
+@keyframes eqB{0%,100%{height:4px}50%{height:16px}}
+@media (prefers-reduced-motion: reduce){.eq i{animation:none;height:8px}}
+
+[data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
+[data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+@media (max-width: 720px){
+  p.hero-gl{width:auto!important;height:auto!important;max-width:100%!important}
+  .hero-bg{justify-content:center!important;align-items:flex-end!important;padding:0 16px 20px!important;font-size:10px}
+  .hero-bg > *{opacity:.45}
+}
+[aria-busy="true"]{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<template id="dc-tpl">
+<div style="background: #0B0A12; color: #D8D6E8; font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; min-height: 100vh; padding-bottom: 80px; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px)">
+
+  <div style="display: flex; align-items: stretch; background: #FFD400; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em">
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+    <p style="margin: 0; padding: 9px 16px; flex: 1; min-width: 0">{{t.advisory}}</p>
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+  </div>
+
+  <header style="border-bottom: 1px solid #2A2740">
+    <nav style="max-width: 1400px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 4h12l8 8v12H12L4 16z" fill="none" stroke="#FF2E88" stroke-width="2.5"></path><path d="M10 10h6v6h-6z" fill="#2EE6F0"></path></svg>
+        <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
+        <span style="padding: 3px 8px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #2EE6F0">TRPG</span>
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 22px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
+        <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navHome}}</a>
+        <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">TRPG</a>
+        <a href="characters.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navMine}}</a>
+      </div>
+      <div style="position: relative" onKeyDown="{{userMenuKey}}">
+        <button type="button" onClick="{{toggleUserMenu}}" aria-haspopup="true" aria-expanded="{{userMenuExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid #2EE6F0; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; background: transparent; cursor: pointer">
+        <span style="width: 30px; height: 30px; background: #1D1930; border: 1px solid #3A3655; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #2EE6F0" aria-hidden="true">{{meInitial}}</span><span>{{meName}}</span>
+<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" style="margin-left: 2px"><path d="M1.5 3.5L5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+        </button>
+        <sc-if value="{{userMenuOpen}}" hint-placeholder-val="{{ false }}">
+          <div role="menu" style="position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
+            <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
+              <a role="menuitem" href="characters.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}</a>
+              <sc-if value="{{charJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitchedPlayer}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
+              <button type="button" role="menuitem" onClick="{{askChars}}" aria-expanded="{{charWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">PLAYER</span></button>
+              <sc-if value="{{charWarn}}" hint-placeholder-val="{{ false }}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #06181A; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #C9EEF0">{{charWarnText}}</p>
+                  <button type="button" onClick="{{switchToPlayer}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchPlayer}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
+              <a role="menuitem" href="sessions.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}</a>
+              <sc-if value="{{roleJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitched}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
+                  <button type="button" onClick="{{switchToGm}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchRole}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
+            <a role="menuitem" href="account.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #D8D6E8; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.4" fill="none" stroke="#2EE6F0" stroke-width="1.5"></circle><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="#2EE6F0" stroke-width="1.5"></path></svg>{{t.menuSettings}}</a>
+            <a role="menuitem" href="auth.html" onClick="{{navLogout}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FF3D6E"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2.5H3v11h3M10.5 5l3 3-3 3M13.5 8H6" fill="none" stroke="#FF3D6E" stroke-width="1.5"></path></svg>{{t.menuLogout}}</a>
+          </div>
+        </sc-if>
+      </div>
+      <div role="group" aria-label="Language" style="display: flex; border: 1px solid #2EE6F0">
+        <button type="button" onClick="{{setTh}}" aria-pressed="{{thPressed}}" style="{{thStyle}}">TH</button>
+        <button type="button" onClick="{{setEn}}" aria-pressed="{{enPressed}}" style="{{enStyle}}">EN</button>
+      </div>
+    </nav>
+  </header>
+
+  <div style="max-width: 1400px; margin: 0 auto; padding: 28px 20px 0">
+    <header style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid #2A2740; padding-bottom: 20px; margin-bottom: 22px">
+      <div>
+        <p class="hero-gl" style="--d: .1s; margin: 0 0 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FF2E88">CHARACTER SHEET // NEW RECRUIT</p>
+        <h1 class="hero-gl" style="--d: .25s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-size: 40px; font-weight: 700; color: #FFFFFF; text-shadow: 0 0 20px rgba(46,230,240,.35)">{{t.title}}</h1>
+      </div>
+      <div style="text-align: right; font-size: 13px; color: #A9A5C2; display: flex; flex-direction: column; gap: 3px">
+        <span>{{charTag}}</span>
+        <span style="color: {{saveColor}}">{{saveStatus}}</span>
+      </div>
+    </header>
+
+    <section aria-label="Table" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; padding: 14px 16px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid {{tb.accent}}">
+      <sc-if value="{{tb.out}}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{tb.join}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+          <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #8C88A6">TABLE // OFFLINE</p>
+            <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #D8D6E8">{{tb.outText}}</p>
+            <sc-if value="{{tb.hasOther}}" hint-placeholder-val="{{ true }}">
+              <p style="margin: 0; font-size: 12px; color: #FFD400">{{tb.otherNote}}</p>
+            </sc-if>
+          </div>
+          <label for="tblCode" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{tb.codeLabel}}</label>
+          <input id="tblCode" class="fld" type="text" autocomplete="off" spellcheck="false" maxlength="7" placeholder="SP-XXXX" value="{{tb.code}}" onInput="{{tb.onCode}}" aria-invalid="{{tb.invalid}}" aria-describedby="tblErr" style="width: 170px; min-height: 40px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; border-color: {{tb.fldBorder}}">
+          <button type="submit" style="min-height: 40px; padding: 0 18px; border: 0; background: #2EE6F0; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{tb.joinLabel}}</button>
+        </form>
+        <sc-if value="{{tb.hasErr}}" hint-placeholder-val="{{ false }}">
+          <p id="tblErr" role="alert" style="margin: 0; font-size: 13px; color: #FF3D6E">{{tb.err}}</p>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{tb.conflict}}" hint-placeholder-val="{{ false }}">
+        <div role="alertdialog" aria-label="{{tb.conflictTitle}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px; background: #1F1A06; border: 1px solid #FFD400">
+          <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+            <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; color: #FFD400">{{tb.conflictTitle}}</p>
+            <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #EDE3B8">{{tb.conflictBody}}</p>
+          </div>
+          <button type="button" onClick="{{tb.cancelMove}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{tb.cancel}}</button>
+          <button type="button" onClick="{{tb.doMove}}" style="min-height: 40px; padding: 0 16px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{tb.moveLabel}}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{tb.live}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+          <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+            <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: {{tb.stColor}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{tb.stColor}}" aria-hidden="true"></span>{{tb.stLabel}} · {{tb.joinedCode}}</p>
+            <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; color: #FFFFFF">{{tb.tableName}}</p>
+            <p style="margin: 0; font-size: 13px; color: #A9A5C2">{{tb.liveText}}</p>
+          </div>
+          <sc-if value="{{tb.notLeaving}}" hint-placeholder-val="{{ true }}">
+            <button type="button" onClick="{{tb.askLeave}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #4A1630; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{tb.leaveLabel}}</button>
+          </sc-if>
+        </div>
+        <sc-if value="{{tb.leaving}}" hint-placeholder-val="{{ false }}">
+          <div role="alertdialog" aria-label="{{tb.leaveLabel}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px; background: #1A0B14; border: 1px solid #FF3D6E">
+            <p style="flex: 1 1 260px; margin: 0; font-size: 13px; line-height: 1.6; color: #E8C9D3">{{tb.leaveBody}}</p>
+            <button type="button" onClick="{{tb.cancelLeave}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{tb.cancel}}</button>
+            <button type="button" onClick="{{tb.doLeave}}" style="min-height: 40px; padding: 0 16px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{tb.confirmLeave}}</button>
+          </div>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{bgmShow}}" hint-placeholder-val="{{ false }}">
+        <div role="group" aria-label="BGM" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 8px 12px; background: #0B0A12; border: 1px solid #2A2740">
+          <button type="button" role="switch" aria-checked="{{bgmOnPressed}}" onClick="{{bgmToggle}}" style="display: inline-flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 12px 0 8px; cursor: pointer; border: 1px solid {{bgmAccent}}; background: transparent; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">
+            <span style="position: relative; width: 34px; height: 18px; border: 1.5px solid {{bgmAccent}}; background: {{bgmTrack}}" aria-hidden="true"><span style="position: absolute; top: 2px; left: {{bgmKnob}}; width: 11px; height: 11px; background: {{bgmAccent}}; transition: left .15s"></span></span>
+            ♪ BGM
+          </button>
+          <label for="bgmPVol" style="font-size: 12px; color: #A9A5C2">{{bgmVolLabel}}</label>
+          <input id="bgmPVol" type="range" min="0" max="100" value="{{bgmVol}}" onInput="{{bgmSetVol}}" style="flex: 0 1 160px; min-width: 90px; accent-color: #2EE6F0">
+        </div>
+      </sc-if>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+
+      <!-- ============ LEFT ============ -->
+      <div style="flex: 1 1 340px; min-width: 0">
+        <div class="panel pk">
+          <div class="ph"><h2>Identity</h2></div>
+          <div class="pb">
+            <div style="display: flex; gap: 14px; align-items: flex-start">
+              <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; align-items: center">
+                <label for="fPortrait" title="{{t.portraitPick}}" style="position: relative; width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; background: #0B0A12; border: 1px {{portraitBorderStyle}} {{factorColor}}">
+                  <sc-if value="{{hasPortrait}}" hint-placeholder-val="{{ false }}">
+                    <img src="{{s.portrait}}" alt="{{portraitAlt}}" style="width: 100%; height: 100%; object-fit: cover; display: block">
+                  </sc-if>
+                  <sc-if value="{{noPortrait}}" hint-placeholder-val="{{ true }}">
+                    <span style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px; text-align: center; color: #8C88A6">
+                      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-2.5h6L17 7h3v12H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="13" r="3.6" fill="none" stroke="currentColor" stroke-width="1.5"></circle></svg>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; line-height: 1.3">{{t.portraitAdd}}</span>
+                    </span>
+                  </sc-if>
+                </label>
+                <input id="fPortrait" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{onPortrait}}" style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden">
+                <sc-if value="{{hasPortrait}}" hint-placeholder-val="{{ false }}">
+                  <button type="button" onClick="{{clearPortrait}}" style="min-height: 28px; padding: 0 8px; border: 1px solid #3A3655; background: transparent; color: #A9A5C2; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em">{{t.portraitRemove}}</button>
+                </sc-if>
+              </div>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+              <div class="row">
+                <div class="field" style="flex: 2"><label class="lbl" for="fName">Name</label><input id="fName" class="fld" type="text" placeholder="{{t.phName}}" value="{{s.name}}" onInput="{{on.name}}"></div>
+                <div class="field narrow"><label class="lbl" for="fAge">{{jobLabel}}</label><input id="fAge" class="fld" type="{{jobType}}" placeholder="{{jobPh}}" value="{{s.job}}" onInput="{{on.job}}"></div>
+              </div>
+                <p style="margin: 0; font-size: 11.5px; line-height: 1.5; color: {{portraitNoteColor}}">{{portraitNote}}</p>
+              </div>
+            </div>
+            <div class="field" style="margin-top: 12px">
+              <span class="lbl" id="factor-l">Factor</span>
+              <div role="group" aria-labelledby="factor-l" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+                <sc-for list="{{factors}}" as="fc" hint-placeholder-count="3">
+                  <button type="button" aria-pressed="{{fc.pressed}}" onClick="{{fc.pick}}" style="{{fc.style}}">{{fc.name}}</button>
+                </sc-for>
+              </div>
+              <p style="margin: 8px 0 0; padding: 8px 10px; background: #0B0A12; border-left: 2px solid {{factorColor}}; font-size: 12.5px; line-height: 1.6; color: #A9A5C2">{{factorDesc}}</p>
+            </div>
+            <div class="row" style="margin-top: 12px">
+              <div class="field narrow"><label class="lbl" for="repGain">Rep. Gained</label><input id="repGain" class="fld" type="number" min="0" value="{{s.repGain}}" onInput="{{on.repGain}}"></div>
+              <div class="field narrow"><label class="lbl" for="repCur">Rep. Current</label><input id="repCur" class="fld" type="number" min="0" value="{{s.repCur}}" onInput="{{on.repCur}}"></div>
+              <div class="field" style="align-self: flex-end; flex: 0 0 auto; padding-bottom: 8px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #8C88A6">{{repShow}}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel cy">
+          <div class="ph"><h2>Background</h2></div>
+          <div class="pb">
+            <textarea id="fBio" class="fld" aria-label="Background" placeholder="{{t.phBio}}" style="min-height: 110px" value="{{s.bio}}" onInput="{{on.bio}}"></textarea>
+            <label class="lbl" for="fFlaw" style="display: block; margin: 14px 0 6px">Flaw(s)</label>
+            <textarea id="fFlaw" class="fld" placeholder="{{t.phFlaw}}" style="min-height: 70px" value="{{s.flaw}}" onInput="{{on.flaw}}"></textarea>
+          </div>
+        </div>
+
+        <div class="panel pk">
+          <div class="ph"><h2>{{traitTitle}}</h2></div>
+          <div class="pb">
+            <div class="row">
+              <div class="field" style="flex: 1"><label class="lbl" for="fTraitName">Name</label><input id="fTraitName" class="fld" type="text" maxlength="40" placeholder="{{traitPh}}" value="{{s.traitName}}" onInput="{{on.traitName}}"></div>
+              <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
+                <div class="field" style="flex: 2"><label class="lbl" for="fTraitFx">Ability</label><textarea id="fTraitFx" class="fld" rows="1" placeholder="{{t.phTraitFx}}" style="min-height: 36px" value="{{s.traitFx}}" onInput="{{on.traitFx}}"></textarea></div>
+              </sc-if>
+            </div>
+            <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
+              <div style="margin-top: 8px">
+                <sc-for list="{{traitX}}" as="r" hint-placeholder-count="0">
+                  <div class="rowline" style="grid-template-columns: 1fr 2fr 28px; align-items: start">
+                    <input class="fld" type="text" aria-label="Trait name" placeholder="{{t.phTraitName}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                    <textarea class="fld" rows="1" aria-label="Trait ability" placeholder="Ability" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
+                    <button type="button" class="rm" aria-label="{{t.rmTrait}}" onClick="{{r.remove}}">×</button>
+                  </div>
+                </sc-for>
+                <button type="button" class="add" onClick="{{addTraitX}}" disabled="{{traitXFull}}">{{traitXLabel}}</button>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <div class="panel cy">
+          <div class="ph"><h2>Supplies</h2></div>
+          <div class="pb">
+            <div class="row" style="align-items: flex-end">
+              <div class="field narrow"><label class="lbl" for="itemSlots">Slots</label><input id="itemSlots" class="fld" type="number" min="0" max="99" value="{{s.slots}}" onInput="{{on.slots}}" style="width: 70px"></div>
+              <button type="button" class="btn sm" onClick="{{newSession}}" title="{{t.newSessTip}}">{{t.newSess}}</button>
+              <div class="field narrow" style="margin-left: auto"><label class="lbl" for="coinManual">Coins</label><input id="coinManual" class="fld" type="number" min="0" max="10" value="{{s.coins}}" onInput="{{on.coins}}" style="width: 70px"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel pk">
+          <div class="ph"><h2>Bonded Item</h2></div>
+          <div class="pb">
+            <div class="thead" style="grid-template-columns: 1fr 1fr 28px"><div>Name</div><div>Effect / Buff on destroy</div><div></div></div>
+            <sc-for list="{{bonded}}" as="r" hint-placeholder-count="1">
+              <div class="rowline" style="grid-template-columns: 1fr 1fr 28px; align-items: start">
+                <input class="fld" type="text" aria-label="Bonded item name" placeholder="{{t.phBondName}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                <textarea class="fld" rows="1" aria-label="Bonded item effect" placeholder="{{t.phBondFx}}" value="{{r.effect}}" onInput="{{r.on_effect}}"></textarea>
+                <button type="button" class="rm" aria-label="{{t.rmBond}}" onClick="{{r.remove}}">×</button>
+              </div>
+            </sc-for>
+            <button type="button" class="add" onClick="{{addBonded}}" disabled="{{bondedFull}}">{{t.addBond}}</button>
+            <sc-for list="{{bondQs}}" as="q" hint-placeholder-count="3">
+              <div class="field" style="margin-top: 12px"><label class="lbl" style="text-transform: none; letter-spacing: .02em; font-family: 'IBM Plex Sans Thai', sans-serif; font-size: 12.5px" for="{{q.id}}">{{q.label}}</label><textarea id="{{q.id}}" class="fld" rows="1" style="min-height: 36px" value="{{q.val}}" onInput="{{q.on}}"></textarea></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ MIDDLE ============ -->
+      <div style="flex: 1 1 340px; min-width: 0">
+        <div class="panel" style="border-top-color: #FF3D6E">
+          <div class="ph"><h2 style="color: #FF3D6E">Integrity Point</h2></div>
+          <div class="pb">
+            <div class="row">
+              <div class="field narrow"><label class="lbl" for="hpCur">Current</label><input id="hpCur" class="fld" type="number" min="0" max="20" value="{{s.hpCur}}" onInput="{{on.hpCur}}"></div>
+              <div class="field narrow"><label class="lbl" for="hpMax">Max IP</label><input id="hpMax" class="fld" type="number" min="10" max="20" value="{{s.hpMax}}" onInput="{{on.hpMax}}"></div>
+              <div class="field narrow"><label class="lbl" for="hpAmr">AMR+</label><input id="hpAmr" class="fld" type="number" min="0" max="2" value="{{s.hpAmr}}" onInput="{{on.hpAmr}}"></div>
+              <div class="field narrow"><label class="lbl" for="hpRgn">RGN+</label><input id="hpRgn" class="fld" type="number" min="0" max="2" value="{{s.hpRgn}}" onInput="{{on.hpRgn}}"></div>
+            </div>
+            <div class="meter" aria-hidden="true"><div style="width: {{hpPct}}; background: #FF3D6E"></div></div>
+            <p style="margin: 3px 0 0; font-size: 12px; color: #A9A5C2">{{hpNums}}</p>
+          </div>
+        </div>
+
+        <div class="panel" style="border-top-color: #2EE6F0; opacity: {{spOpacity}}">
+          <div class="ph"><h2 style="color: #2EE6F0">Whelm</h2></div>
+          <div class="pb">
+            <div class="row">
+              <div class="field narrow"><label class="lbl" for="spCur">Current</label><input id="spCur" class="fld" type="number" min="0" max="10" value="{{s.spCur}}" onInput="{{on.spCur}}" disabled="{{isCpd}}"></div>
+              <div class="field narrow"><label class="lbl" for="spMax">Max WM</label><input id="spMax" class="fld" type="number" min="1" max="10" value="{{s.spMax}}" onInput="{{on.spMax}}" disabled="{{isCpd}}"></div>
+              <div class="field narrow"><label class="lbl" for="spPwr">PWR+</label><input id="spPwr" class="fld" type="number" min="0" max="2" value="{{s.spPwr}}" onInput="{{on.spPwr}}" disabled="{{isCpd}}"></div>
+              <div class="field narrow"><label class="lbl" for="spRgn">RGN+</label><input id="spRgn" class="fld" type="number" min="0" max="2" value="{{s.spRgn}}" onInput="{{on.spRgn}}" disabled="{{isCpd}}"></div>
+            </div>
+            <div class="meter" aria-hidden="true"><div style="width: {{spPct}}; background: #2EE6F0"></div></div>
+            <p style="margin: 3px 0 0; font-size: 12px; color: #A9A5C2">{{spNums}}</p>
+            <sc-if value="{{isCpd}}" hint-placeholder-val="{{ false }}"><p style="margin: 6px 0 0; font-size: 12px; font-style: italic; color: #8C88A6">{{t.cpdNoWm}}</p></sc-if>
+          </div>
+        </div>
+
+        <div class="panel" style="border-top-color: #FF3D6E">
+          <div class="ph"><h2>Injuries</h2><label class="chk" style="color: #FF3D6E; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: .06em"><input type="checkbox" checked="{{s.coma}}" onChange="{{on.coma}}"> COMA</label></div>
+          <div class="pb" style="padding: 10px 14px">
+            <sc-for list="{{injuries}}" as="g" hint-placeholder-count="3">
+              <div style="margin-bottom: 10px">
+                <p style="margin: 0 0 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #8C88A6; font-weight: 700; font-family: 'Chakra Petch', sans-serif">{{g.group}}</p>
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 14px">
+                  <sc-for list="{{g.items}}" as="it" hint-placeholder-count="3">
+                    <label class="chk" title="{{it.tip}}"><input type="checkbox" checked="{{it.checked}}" onChange="{{it.toggle}}"> {{it.n}}
+                      <sc-if value="{{it.hasDc}}" hint-placeholder-val="{{ false }}"><span style="margin-left: auto; font-size: 11px; color: #8C88A6; font-family: 'Chakra Petch', sans-serif; font-weight: 700">DC</span><input class="fld" type="number" min="1" max="8" value="{{s.faintDc}}" onInput="{{on.faintDc}}" aria-label="Fainted DC" title="{{t.dcTip}}" style="width: 44px; padding: 2px 4px; font-size: 12px"></sc-if>
+                    </label>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div class="panel cy">
+          <div class="ph"><h2>Notes</h2></div>
+          <div class="pb"><textarea id="fNotes" class="fld" aria-label="Notes" placeholder="{{t.phNotes}}" style="min-height: 100px" value="{{s.notes}}" onInput="{{on.notes}}"></textarea></div>
+        </div>
+      </div>
+
+      <!-- ============ RIGHT ============ -->
+      <div style="flex: 1.15 1 360px; min-width: 0">
+        <div class="panel pk">
+          <div class="ph"><h2>Basic Ability</h2></div>
+          <div class="pb">
+            <sc-for list="{{abilities}}" as="ab" hint-placeholder-count="4">
+              <div title="{{ab.tip}}" style="display: flex; align-items: center; gap: 10px; border: 1px solid #2A2740; padding: 6px 8px; background: #0B0A12; margin-bottom: 6px">
+                <span style="font-size: 13px; font-weight: 600; letter-spacing: .03em; color: #FFFFFF">{{ab.name}}</span>
+                <span style="display: flex; align-items: center; gap: 8px">
+                  <button type="button" class="step" aria-label="{{ab.name}} −" onClick="{{ab.dec}}">−</button>
+                  <span style="min-width: 16px; text-align: center; font-weight: 700; font-family: 'Chakra Petch', sans-serif; font-size: 16px; color: #2EE6F0">{{ab.val}}</span>
+                  <button type="button" class="step" aria-label="{{ab.name}} +" onClick="{{ab.inc}}" style="width: 26px; height: 26px">+</button>
+                </span>
+                <span style="display: flex; align-items: center; gap: 5px; margin-left: auto; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: #8C88A6">Mod <input class="fld" type="number" step="1" value="{{ab.mod}}" onInput="{{ab.onMod}}" aria-label="{{ab.name}} mod" style="width: 48px; padding: 3px 4px; font-size: 12px; text-align: center"></span>
+              </div>
+            </sc-for>
+            <p style="margin: 8px 0 0; font-size: 12.5px; color: #A9A5C2">{{t.pointsLeft}} <b style="color: {{poolColor}}">{{remain}}</b> / {{pool}}</p>
+          </div>
+        </div>
+
+        <div class="panel cy">
+          <div class="ph"><h2>Dice Pools</h2></div>
+          <div class="pb">
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+              <sc-for list="{{pools}}" as="pl" hint-placeholder-count="2">
+                <div style="border: 1px solid #2A2740; padding: 10px; text-align: center; background: #0B0A12">
+                  <div style="font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: {{pl.color}}; margin-bottom: 6px">{{pl.name}}</div>
+                  <div style="font-size: 28px; font-weight: 700; font-family: 'Chakra Petch', sans-serif; color: #FFFFFF">{{pl.val}}</div>
+                  <div style="display: flex; justify-content: center; gap: 8px; margin-top: 6px"><button type="button" class="step" aria-label="{{pl.name}} −" onClick="{{pl.dec}}">−</button><button type="button" class="step" aria-label="{{pl.name}} +" onClick="{{pl.inc}}">+</button></div>
+                </div>
+              </sc-for>
+            </div>
+            <div class="row" style="margin-top: 10px; align-items: flex-end">
+              <div class="field narrow"><label class="lbl" for="advPts">Advance pts</label><input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}"></div>
+              <button type="button" class="btn sm" onClick="{{newSession}}" title="{{t.newSessTip}}">{{t.newSess}}</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel pk">
+          <div class="ph"><h2>General Skills</h2></div>
+          <div class="pb">
+            <div class="thead" style="grid-template-columns: .6fr 1.4fr 28px"><div>Name</div><div>Effect</div><div></div></div>
+            <sc-for list="{{skills}}" as="r" hint-placeholder-count="0">
+              <div class="rowline" style="grid-template-columns: .6fr 1.4fr 28px; align-items: start">
+                <input class="fld" type="text" aria-label="Skill name" placeholder="{{t.phSkill}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                <textarea class="fld" rows="1" aria-label="Skill effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
+                <button type="button" class="rm" aria-label="{{t.rmSkill}}" onClick="{{r.remove}}">×</button>
+              </div>
+            </sc-for>
+            <button type="button" class="add" onClick="{{addSkill}}" disabled="{{skillsFull}}">{{t.addSkill}}</button>
+            <p class="cap" style="color: {{skillsCapColor}}">{{skillsCap}}</p>
+          </div>
+        </div>
+
+        <div class="panel cy">
+          <div class="ph"><h2>Weapons</h2></div>
+          <div class="pb">
+            <div class="thead" style="grid-template-columns: 1fr 52px 52px 1fr 28px"><div>Name</div><div>Range</div><div>DMG</div><div>Effect</div><div></div></div>
+            <sc-for list="{{weapons}}" as="r" hint-placeholder-count="0">
+              <div class="rowline" style="grid-template-columns: 1fr 52px 52px 1fr 28px">
+                <input class="fld" type="text" aria-label="Weapon name" placeholder="{{t.phWeap}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                <input class="fld" type="number" min="1" max="5" aria-label="Range" placeholder="1-5" value="{{r.range}}" onInput="{{r.on_range}}">
+                <input class="fld" type="text" aria-label="Damage" placeholder="DMG" value="{{r.dmg}}" onInput="{{r.on_dmg}}">
+                <input class="fld" type="text" aria-label="Weapon effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}">
+                <button type="button" class="rm" aria-label="{{t.rmWeap}}" onClick="{{r.remove}}">×</button>
+              </div>
+            </sc-for>
+            <button type="button" class="add" onClick="{{addWeap}}" disabled="{{weapFull}}">{{t.addWeap}}</button>
+          </div>
+        </div>
+
+        <div class="panel pk">
+          <div class="ph"><h2>Gears</h2></div>
+          <div class="pb">
+            <div class="thead" style="grid-template-columns: 1fr 1fr 28px"><div>Name</div><div>Effect</div><div></div></div>
+            <sc-for list="{{gears}}" as="r" hint-placeholder-count="0">
+              <div class="rowline" style="grid-template-columns: 1fr 1fr 28px">
+                <input class="fld" type="text" aria-label="Gear name" placeholder="{{t.phGear}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                <input class="fld" type="text" aria-label="Gear effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}">
+                <button type="button" class="rm" aria-label="{{t.rmGear}}" onClick="{{r.remove}}">×</button>
+              </div>
+            </sc-for>
+            <button type="button" class="add" onClick="{{addGear}}" disabled="{{gearFull}}">{{t.addGear}}</button>
+          </div>
+        </div>
+
+        <div class="panel" style="border-top-color: #C084FC; opacity: {{cosOpacity}}">
+          <div class="ph"><h2>Cosmic Abilities</h2></div>
+          <div class="pb">
+            <div class="thead" style="grid-template-columns: .5fr 1.5fr 52px 28px"><div>Type</div><div>Effect</div><div>Cosmic Dice</div><div></div></div>
+            <sc-for list="{{cosmic}}" as="r" hint-placeholder-count="0">
+              <div class="rowline" style="grid-template-columns: .5fr 1.5fr 52px 28px; align-items: start">
+                <input class="fld" type="text" aria-label="Cosmic type" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                <textarea class="fld" rows="1" aria-label="Cosmic effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
+                <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
+                <button type="button" class="rm" aria-label="{{t.rmCos}}" onClick="{{r.remove}}">×</button>
+              </div>
+            </sc-for>
+            <button type="button" class="add" onClick="{{addCos}}" disabled="{{cosFull}}">{{cosLabel}}</button>
+            <p class="hint">{{cosNote}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="position: sticky; bottom: 0; margin-top: 22px; background: rgba(21,18,37,0.96); border-top: 2px solid #FF2E88">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 12px 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center">
+      <a href="characters.html" style="margin-right: auto; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; text-decoration: none">← {{t.navMine}}</a>
+      <span role="status" style="font-size: 13px; color: #A9A5C2">{{actionMsg}}</span>
+      <button type="button" class="btn" onClick="{{reset}}" style="{{resetStyle}}">{{resetLabel}}</button>
+      <button type="button" class="btn" onClick="{{savePdf}}">Save PDF</button>
+      <button type="button" class="btn" onClick="{{importJson}}" title="{{t.importTip}}">Import JSON</button>
+      <button type="button" class="btn" onClick="{{exportJson}}" style="background: #FF2E88; border-color: #FF2E88; color: #0B0A12; clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 12px) 100%, 0 100%)">Export JSON</button>
+      <button type="button" class="btn" onClick="{{saveChar}}" style="gap: 8px; min-height: 48px; padding: 0 24px; font-size: 15px; background: #2EE6F0; border-color: #2EE6F0; color: #0B0A12; box-shadow: 0 0 18px rgba(46,230,240,0.35); clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 12px) 100%, 0 100%)"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 2.5h8.5l2.5 2.5v8.5h-11z M5 2.5v4h6v-4 M5 13.5v-4h6v4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.save}}</button>
+    </div>
+  </footer>
+</div>
+</template>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../assets/dc.js"></script>
+<script src="../assets/sp.js"></script>
+<script src="../assets/beta-common.js"></script>
+<script src="../assets/bgm.js"></script>
+<script>
+function initialSheet() {
+  return {
+    name: '', job: '', factor: 'shifter', repGain: '0', repCur: '0', bio: '', flaw: '',
+    traitName: '', traitFx: '', traitX: [], slots: '5', coins: '0',
+    bonded: [{ name: '', effect: '' }], bondA: ['', '', ''],
+    hpCur: '10', hpMax: '10', hpAmr: '0', hpRgn: '0',
+    spCur: '10', spMax: '10', spPwr: '0', spRgn: '1',
+    coma: false, inj: {}, faintDc: '8', notes: '', portrait: '',
+    ba: { force: 0, tactical: 0, trick: 0, sense: 0 }, baMod: { force: '0', tactical: '0', trick: '0', sense: '0' },
+    se: 0, ex: 0, adv: '5', skills: [], weapons: [], gears: [], cosmic: []
+  };
+}
+class Component extends DCLogic {
+  componentDidMount() {
+    try {
+      this._bc = new BroadcastChannel('sp-bgm');
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'state') this.onBgm(ev.data); };
+      this._bc.postMessage({ type: 'hello' });
+    } catch (e) { this._bc = null; }
+  }
+  componentWillUnmount() { if (this._bc) this._bc.close(); if (this._bgm) this._bgm.close(); }
+  /* GM's BGM state arrives here (BroadcastChannel on the canvas, Supabase realtime on the live site) */
+  onBgm(msg) {
+    this.setState({ bgmRemote: msg });
+    if (this.state.bgmOn && this._bgm && this.state.tbl.joined) this._bgm.apply(msg.sync ? msg : {});
+  }
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'th', s: initialSheet(), resetArmed: false, msg: '', dirty: false, savedAt: null, tbl: { joined: '', code: '', err: '', leaving: false, pending: '', other: { name: 'Kaew', code: 'SP-K7QX' } } };
+  }
+  upd(patch) { this.setState({ s: Object.assign({}, this.state.s, patch), dirty: true }); }
+  renderVals() {
+    const th = this.state.lang !== 'en';
+    const L = (a, b) => (th ? a : b);
+    const s = this.state.s;
+    const num = (v) => parseInt(v, 10) || 0;
+    const clampStr = (v, lo, hi) => (v === '' ? '' : String(Math.max(lo, Math.min(hi, num(v)))));
+    const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
+    const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
+    const F = {
+      shifter: { label: 'Shifter', color: '#2EE6F0', desc: L('ผู้มีพลังคอสมิค เริ่มต้นด้วย 1 Cosmic Ability พร้อม 1 Cosmic Die (CD) ติดตัวทันที. WM RGN+ เริ่มต้นที่ 1.', 'Has cosmic power. Starts with 1 Cosmic Ability and 1 Cosmic Die (CD). WM RGN+ starts at 1.'), spMax: 10, spCur: 10, spRgn: 1, bonus: 0 },
+      outlaw: { label: 'Norms', color: '#FF2E88', desc: L('คนธรรมดาที่ไม่มีพลังคอสมิคใดๆ มีสกิลเริ่มต้น 4 สกิล และ Item Slot เริ่มที่ 8', 'An ordinary person with no cosmic power. Starts with 4 skills and 8 Item Slots.'), spMax: 10, spCur: 0, spRgn: 0, bonus: 0 },
+      cpd: { label: 'C.P.D.', color: '#FFD400', desc: L('หน่วยงานรัฐ ปราบปรามภัยจากพลังคอสมิค ไม่มีพลังคอสมิคใด ๆ ติดตัว (ไม่มี WM). มี +1 Basic Die ตั้งแต่เริ่ม และอาวุธ/เกราะตามยศ (ไม่ต้องซื้อ).', 'Government agents who contain cosmic threats. No cosmic power (no WM). Start with +1 Basic Die and rank-issued weapons and armor (free).'), spMax: 0, spCur: 0, spRgn: 0, bonus: 1 }
+    };
+    const fk = s.factor;
+    const f = F[fk];
+    const cpd = fk === 'cpd';
+    const slotsStart = () => (this.state.s.factor === 'outlaw' ? '8' : '5');
+    const repCur = num(s.repCur);
+
+    // simple field setters
+    const set = (k, fn) => (e) => { const v = e && e.target ? e.target.value : ''; this.upd({ [k]: fn ? fn(v) : v }); };
+    const onH = {
+      name: set('name'),
+      job: set('job', (v) => (this.state.s.factor === 'cpd' && v !== '' ? clampStr(v, 1, 5) : v.slice(0, 30))),
+      bio: set('bio'), flaw: set('flaw'), traitName: set('traitName'), traitFx: set('traitFx'), notes: set('notes'),
+      slots: set('slots', (v) => clampStr(v, 0, 99)),
+      coins: set('coins', (v) => clampStr(v, 0, 10)),
+      hpAmr: set('hpAmr', (v) => clampStr(v, 0, 2)), hpRgn: set('hpRgn', (v) => clampStr(v, 0, 2)),
+      hpMax: set('hpMax'), hpCur: set('hpCur'),
+      spPwr: set('spPwr', (v) => clampStr(v, 0, 2)), spRgn: set('spRgn', (v) => clampStr(v, 0, 2)),
+      spMax: set('spMax'), spCur: set('spCur'),
+      adv: set('adv', (v) => clampStr(v, 0, 5)),
+      faintDc: set('faintDc', (v) => clampStr(v, 1, 8)),
+      coma: () => this.upd({ coma: !this.state.s.coma }),
+      repGain: (e) => {
+        const cur = this.state.s;
+        const v = e && e.target ? e.target.value : '';
+        const gain = Math.max(0, num(v));
+        const patch = { repGain: v === '' ? '' : String(gain) };
+        if (gain > num(cur.repGain)) patch.repCur = String(Math.max(num(cur.repCur), gain));
+        this.upd(patch);
+      },
+      repCur: (e) => {
+        const cur = this.state.s;
+        const v = e && e.target ? e.target.value : '';
+        if (v === '') { this.upd({ repCur: '' }); return; }
+        const cap = Math.max(num(cur.repGain), num(cur.repCur));
+        this.upd({ repCur: String(Math.min(Math.max(0, num(v)), cap)) });
+      }
+    };
+    // HP / SP clamped values for display (applied on blur-free render)
+    const hpMax = Math.max(10, Math.min(20, num(s.hpMax) || 10));
+    const hpCur = Math.max(0, Math.min(hpMax, num(s.hpCur)));
+    const spMax = cpd ? 0 : Math.max(1, Math.min(10, num(s.spMax)));
+    const spCur = Math.max(0, Math.min(spMax, num(s.spCur)));
+
+    // dynamic rows
+    const rows = (key, fields, clamps) => s[key].map((r, i) => {
+      const o = Object.assign({}, r, {
+        remove: () => this.upd({ [key]: this.state.s[key].filter((_, j) => j !== i) })
+      });
+      fields.forEach((k) => {
+        o['on_' + k] = (e) => {
+          let v = e && e.target ? e.target.value : '';
+          if (clamps && clamps[k] && v !== '') v = clampStr(v, clamps[k][0], clamps[k][1]);
+          const arr = this.state.s[key].slice();
+          arr[i] = Object.assign({}, arr[i], { [k]: v });
+          this.upd({ [key]: arr });
+        };
+      });
+      return o;
+    });
+    const add = (key, blank, cap) => () => { if (this.state.s[key].length < cap) this.upd({ [key]: this.state.s[key].concat([blank]) }); };
+
+    const traitXAllowed = Math.floor(repCur / 8);
+    const skillCap = (fk === 'outlaw' ? 4 : 2) + Math.floor(repCur / 2);
+    const cosCap = 1 + Math.floor(repCur / 4);
+
+    // basic ability
+    const pool = 4 + f.bonus;
+    const used = s.ba.force + s.ba.tactical + s.ba.trick + s.ba.sense;
+    const setBa = (k, d) => {
+      const cur = this.state.s;
+      const u = cur.ba.force + cur.ba.tactical + cur.ba.trick + cur.ba.sense;
+      const p = 4 + F[cur.factor].bonus;
+      if (d > 0 && (u >= p || cur.ba[k] >= 2)) return;
+      this.upd({ ba: Object.assign({}, cur.ba, { [k]: Math.max(0, Math.min(2, cur.ba[k] + d)) }) });
+    };
+
+    const injDefs = [
+      { group: 'Physical', items: [
+        { n: 'Poisoned', tip: L('ได้รับ +1 Exhaustion (EX) เมื่อจบเทิร์น', 'Gain +1 Exhaustion (EX) at end of turn') },
+        { n: 'Bleeding', tip: L('เสีย -1 IP (Integrity Point) เมื่อจบเทิร์น', 'Lose 1 IP (Integrity Point) at end of turn') },
+        { n: 'Enervated', tip: L('ทุกแอคชั่นจะทอยได้เพียง 1D8 เท่านั้น', 'Every action rolls only 1D8') }] },
+      { group: 'Mental', items: [
+        { n: 'Fainted', tip: L('เมื่อเริ่มเทิร์น ทอยค่า Sense ให้มากกว่า Fainted DC เพื่อฟื้น', 'At the start of your turn, roll Sense over the Fainted DC to come to'), dc: true },
+        { n: 'Insane', tip: '' },
+        { n: 'Hallucinated', tip: '' }] },
+      { group: 'Cosmic Overwhelm', items: [
+        { n: 'Cosmic Infected', tip: '' }, { n: 'Cosmic Stigma', tip: '' }, { n: 'Cosmic Outburst', tip: '' }] }
+    ];
+
+    const tbl = this.state.tbl;
+    const setTbl = (patch) => this.setState({ tbl: Object.assign({}, this.state.tbl, patch) });
+    const TABLES = {
+      'SP-K7QX': { th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'live' },
+      'SP-R4MZ': { th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'paused' },
+      'SP-H2WD': { th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended' }
+    };
+    const tName = (c) => (TABLES[c] ? L(TABLES[c].th, TABLES[c].en) : c);
+    const joinedT = tbl.joined ? TABLES[tbl.joined] : null;
+    const conflict = !!tbl.pending;
+    const tb = {
+      out: !tbl.joined && !conflict, live: !!tbl.joined, conflict: conflict,
+      leaving: tbl.leaving, notLeaving: !tbl.leaving,
+      accent: tbl.joined ? (joinedT.st === 'live' ? '#4ADE80' : '#FFD400') : conflict ? '#FFD400' : '#3A3655',
+      code: tbl.code, hasErr: !!tbl.err, err: tbl.err, invalid: tbl.err ? 'true' : 'false',
+      fldBorder: tbl.err ? '#FF3D6E' : '#2A2740',
+      hasOther: !!tbl.other,
+      otherNote: tbl.other ? L('บัญชีนี้อยู่ที่ session ' + tName(tbl.other.code) + ' กับ ' + tbl.other.name + ' แล้ว (1 บัญชีเล่นได้ทีละ 1 session)', 'Your account is already at ' + tName(tbl.other.code) + ' with ' + tbl.other.name + ' (one session per account).') : '',
+      onCode: (e) => setTbl({ code: String(e && e.target ? e.target.value : '').toUpperCase(), err: '' }),
+      join: (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const c = String(tbl.code || '').trim().toUpperCase();
+        if (!/^SP-[A-HJ-NP-Z2-9]{4}$/.test(c)) return setTbl({ err: L('รหัสต้องเป็นรูปแบบ SP-XXXX (ตัวอักษรหรือตัวเลข 4 ตัว)', 'Codes look like SP-XXXX (4 letters or digits)') });
+        if (!TABLES[c]) return setTbl({ err: L('ไม่พบ session นี้ ลองขอรหัสใหม่จาก GM', 'No session with that code. Ask your GM for a fresh one.') });
+        if (TABLES[c].st === 'ended') return setTbl({ err: L('Session นี้จบไปแล้ว รหัสใช้ไม่ได้อีก', 'That session has ended; its code is closed.') });
+        if (tbl.other) return setTbl({ pending: c, err: '' });
+        setTbl({ joined: c, err: '', code: '' });
+      },
+      conflictTitle: L('1 บัญชีเล่นได้ทีละ 1 session', 'One session per account'),
+      conflictBody: tbl.other && tbl.pending ? L(tbl.other.name + ' อยู่ที่ session ' + tName(tbl.other.code) + ' ถ้าย้าย ' + tbl.other.name + ' จะออกจาก session เดิม แล้วตัวละครนี้เข้า ' + tName(tbl.pending) + ' แทน', tbl.other.name + ' is at ' + tName(tbl.other.code) + '. Moving takes ' + tbl.other.name + ' out of that session and seats this character at ' + tName(tbl.pending) + '.') : '',
+      moveLabel: L('ย้ายมา session นี้', 'Move here'),
+      cancelMove: () => setTbl({ pending: '' }),
+      doMove: () => setTbl({ joined: tbl.pending, pending: '', other: null, code: '' }),
+      stColor: joinedT && joinedT.st === 'live' ? '#4ADE80' : '#FFD400',
+      stLabel: joinedT && joinedT.st === 'live' ? 'LIVE' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
+      joinedCode: tbl.joined,
+      tableName: tbl.joined ? L('Session: ', 'SESSION: ') + tName(tbl.joined) : '',
+      askLeave: () => setTbl({ leaving: true }),
+      cancelLeave: () => setTbl({ leaving: false }),
+      doLeave: () => { setTbl({ joined: '', leaving: false }); if (this._bgm) this._bgm.stopAll(); this.setState({ bgmOn: false }); },
+      outText: L('ยังไม่ได้เข้าร่วม session กรอกรหัสเชิญจาก GM เพื่อให้ GM เห็นใบตัวละครนี้แบบเรียลไทม์', 'Not in a session yet. Enter your GM\'s invite code so they can follow this sheet live.'),
+      codeLabel: L('รหัสเชิญ', 'Invite code'),
+      joinLabel: L('เข้าร่วม session', 'Join session'),
+      liveText: joinedT && joinedT.st === 'live' ? L('ทุกครั้งที่กดบันทึก GM จะเห็นการเปลี่ยนแปลงทันที', 'Every save reaches your GM instantly.') : L('เข้า session แล้ว GM จะเห็นตัวละครนี้เมื่อเริ่ม session', 'You\'re seated. Your GM sees this sheet once the session starts.'),
+      leaveLabel: L('ออกจาก session', 'Leave session'),
+      leaveBody: L('ออกจาก session นี้? GM จะไม่เห็นการอัปเดตของตัวละครนี้อีก (ใบตัวละครยังอยู่ครบ)', 'Leave this session? Your GM stops seeing updates from this character. The sheet itself stays.'),
+      cancel: L('ยกเลิก', 'Cancel'),
+      confirmLeave: L('ยืนยันออก', 'Leave')
+    };
+
+    const fc = { shifter: '#2EE6F0', outlaw: '#FF2E88', cpd: '#FFD400' }[s.factor] || '#2EE6F0';
+    const takePortrait = (e) => {
+      const inp = e && e.target;
+      const file = inp && inp.files && inp.files[0];
+      if (inp) inp.value = '';
+      if (!file) return;
+      if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return this.setState({ portraitErr: L('รองรับเฉพาะไฟล์ PNG, JPG หรือ WebP', 'PNG, JPG or WebP only') });
+      if (file.size > 5 * 1024 * 1024) return this.setState({ portraitErr: L('ไฟล์ใหญ่เกิน 5 MB', 'File is over 5 MB') });
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const side = Math.min(img.naturalWidth, img.naturalHeight);
+        const c = document.createElement('canvas');
+        c.width = 512; c.height = 512;
+        c.getContext('2d').drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, 512, 512);
+        URL.revokeObjectURL(url);
+        let out = c.toDataURL('image/webp', 0.85);
+        if (out.indexOf('data:image/webp') !== 0) out = c.toDataURL('image/jpeg', 0.85);
+        this.setState({ portraitErr: '' });
+        this.upd({ portrait: out });
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); this.setState({ portraitErr: L('เปิดรูปนี้ไม่ได้ ลองไฟล์อื่น', 'Couldn\'t read that image. Try another file.') }); };
+      img.src = url;
+    };
+
+    const bgmR = this.state.bgmRemote;
+    const bgmVals = {
+      bgmShow: !!this.state.tbl.joined,
+      bgmAccent: this.state.bgmOn ? '#2EE6F0' : '#3A3655',
+      bgmTrack: this.state.bgmOn ? 'rgba(46,230,240,0.18)' : '#0B0A12',
+      bgmKnob: this.state.bgmOn ? '18px' : '2px',
+      bgmVol: String(this.state.bgmVol == null ? 70 : this.state.bgmVol),
+      bgmVolLabel: L('ความดัง', 'Volume'),
+      bgmSetVol: (ev) => { const v = +ev.target.value || 0; this.setState({ bgmVol: v }); if (this._bgm) { this._bgm.setVolume(v / 100); this._bgm.setAmbientVolume(v / 100 * 0.75); } },
+      bgmOnPressed: this.state.bgmOn ? 'true' : 'false',
+      bgmToggle: () => {
+        const on = !this.state.bgmOn;
+        this.setState({ bgmOn: on });
+        if (on) {
+          if (!this._bgm && window.SPBGM) this._bgm = window.SPBGM.create();
+          if (this._bgm) { const v = (this.state.bgmVol == null ? 70 : this.state.bgmVol) / 100; this._bgm.setVolume(v); this._bgm.setAmbientVolume(v * 0.75); this._bgm.apply(bgmR && bgmR.sync ? bgmR : {}); }
+        } else if (this._bgm) this._bgm.stopAll();
+      }
+    };
+
+    return {
+      tb,
+      ...bgmVals,
+      factorColor: fc,
+      hasPortrait: !!s.portrait, noPortrait: !s.portrait,
+      portraitBorderStyle: s.portrait ? 'solid' : 'dashed',
+      portraitAlt: L('รูปหน้า ', 'Portrait of ') + (s.name.trim() || L('ตัวละคร', 'character')),
+      onPortrait: takePortrait,
+      clearPortrait: () => { this.setState({ portraitErr: '' }); this.upd({ portrait: '' }); },
+      portraitNote: this.state.portraitErr || L('แตะกรอบเพื่ออัปโหลด PNG / JPG / WebP ไม่เกิน 5 MB', 'Tap the frame to upload PNG / JPG / WebP up to 5 MB.'),
+      portraitNoteColor: this.state.portraitErr ? '#FF3D6E' : '#8C88A6',
+      userMenuOpen: !!this.state.userMenu,
+      userMenuExpanded: this.state.userMenu ? 'true' : 'false',
+      toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
+      closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
+      menuIsGm: (this.state.menuRole || 'player') === 'gm',
+      menuNotGm: (this.state.menuRole || 'player') !== 'gm',
+      roleJustSwitched: this.state.menuSwitched === 'gm',
+      charJustSwitched: this.state.menuSwitched === 'player',
+      charWarn: !!this.state.charWarn,
+      charWarnExpanded: this.state.charWarn ? 'true' : 'false',
+      askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      roleWarn: !!this.state.roleWarn,
+      roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
+      askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
+      switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm' }),
+      switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player' }),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
+      navLogout: () => this.setState({ userMenu: false }),
+      setTh: () => this.setState({ lang: 'th' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      thPressed: th ? 'true' : 'false',
+      enPressed: th ? 'false' : 'true',
+      thStyle: th ? on : off,
+      enStyle: th ? off : on,
+      s: s,
+      on: onH,
+      charTag: (s.name.trim() || L('ยังไม่ได้ตั้งชื่อ', 'Unnamed')) + '  ·  ' + f.label,
+      factors: Object.keys(F).map((k) => ({
+        name: F[k].label,
+        pressed: k === fk ? 'true' : 'false',
+        pick: () => {
+          if (k === this.state.s.factor) return;
+          const nf = F[k];
+          this.upd({ factor: k, spMax: String(nf.spMax), spCur: String(nf.spCur), spRgn: String(nf.spRgn), spPwr: k === 'cpd' ? '0' : this.state.s.spPwr, slots: k === 'outlaw' ? '8' : '5', job: k === 'cpd' ? '' : this.state.s.job });
+        },
+        style: 'min-height: 42px; padding: 0 6px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; background: #1D1930; ' + (k === fk ? 'border: 1px solid ' + F[k].color + '; color: ' + F[k].color + '; box-shadow: inset 0 0 0 1px ' + F[k].color : 'border: 1px solid #2A2740; color: #A9A5C2')
+      })),
+      factorDesc: f.desc,
+      factorColor: f.color,
+      jobLabel: cpd ? 'RANK' : 'Job',
+      jobType: cpd ? 'number' : 'text',
+      jobPh: cpd ? '1–5' : '—',
+      repShow: (s.repGain || 0) + ' / ' + (s.repCur || 0),
+      traitTitle: cpd ? 'Division' : 'Trait',
+      traitPh: cpd ? L('ชื่อหน่วยงานที่สังกัด (Division)', 'Your Division') : L('ชื่อ Trait', 'Trait name'),
+      notCpd: !cpd,
+      isCpd: cpd,
+      traitX: rows('traitX', ['name', 'fx']),
+      addTraitX: add('traitX', { name: '', fx: '' }, traitXAllowed),
+      traitXFull: s.traitX.length >= traitXAllowed,
+      traitXLabel: traitXAllowed === 0 ? L('+ เพิ่ม Trait (ปลดล็อกทุก 8 Rep.)', '+ Add Trait (unlocks every 8 Rep.)') : L('+ เพิ่ม Trait (เพิ่มได้อีก ', '+ Add Trait (') + Math.max(0, traitXAllowed - s.traitX.length) + L(')', ' left)'),
+      newSession: () => this.upd({ adv: '5', slots: slotsStart() }),
+      bonded: rows('bonded', ['name', 'effect']),
+      addBonded: add('bonded', { name: '', effect: '' }, 1),
+      bondedFull: s.bonded.length >= 1,
+      bondQs: [L('ตัวละครนี้มีความผูกพันกับของสิ่งนี้อย่างไร?', 'What ties this character to the item?'), L('ตัวละครนี้ได้รับของสิ่งนี้มาได้อย่างไร?', 'How did they get it?'), L('หากตัวละครนี้สูญเสียของสิ่งนี้จะรู้สึกอย่างไร?', 'How would they feel if they lost it?')].map((label, i) => ({
+        id: 'fBond' + (i + 1), label: label, val: s.bondA[i],
+        on: (e) => { const a = this.state.s.bondA.slice(); a[i] = e && e.target ? e.target.value : ''; this.upd({ bondA: a }); }
+      })),
+      hpPct: (hpMax ? Math.round(hpCur / hpMax * 100) : 0) + '%',
+      hpNums: hpCur + ' / ' + hpMax,
+      spPct: (spMax ? Math.round(spCur / spMax * 100) : 0) + '%',
+      spNums: spCur + ' / ' + spMax,
+      spOpacity: cpd ? '0.4' : '1',
+      injuries: injDefs.map((g) => ({
+        group: g.group,
+        items: g.items.map((it) => ({
+          n: it.n, tip: it.tip, hasDc: !!it.dc, checked: !!s.inj[it.n],
+          toggle: () => this.upd({ inj: Object.assign({}, this.state.s.inj, { [it.n]: !this.state.s.inj[it.n] }) })
+        }))
+      })),
+      abilities: [
+        { k: 'force', name: 'Force', tip: L('พละกำลัง, ความทนทาน', 'Strength, endurance') },
+        { k: 'tactical', name: 'Tactical', tip: L('ความชำนาญ, ความคล่องตัว, ความแม่นยำ', 'Skill, agility, precision') },
+        { k: 'trick', name: 'Trick', tip: L('ความรู้, ไหวพริบ, วาจา', 'Knowledge, wit, speech') },
+        { k: 'sense', name: 'Sense', tip: L('สัญชาตญาณ, ความรู้สึก, สติสัมปชัญญะ', 'Instinct, feeling, awareness') }
+      ].map((a) => Object.assign({}, a, {
+        val: String(1 + s.ba[a.k]),
+        inc: () => setBa(a.k, 1), dec: () => setBa(a.k, -1),
+        mod: s.baMod[a.k],
+        onMod: (e) => this.upd({ baMod: Object.assign({}, this.state.s.baMod, { [a.k]: e && e.target ? e.target.value : '0' }) })
+      })),
+      pool: String(pool),
+      remain: String(pool - used),
+      poolColor: pool - used < 0 ? '#FF3D6E' : '#2EE6F0',
+      pools: [
+        { name: 'Surge Energy', color: '#C084FC', val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
+        { name: 'Exhaustion', color: '#A9A5C2', val: String(s.ex), inc: () => this.upd({ ex: Math.min(3, this.state.s.ex + 1) }), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
+      ],
+      skills: rows('skills', ['name', 'fx']),
+      addSkill: add('skills', { name: '', fx: '' }, skillCap),
+      skillsFull: s.skills.length >= skillCap,
+      skillsCap: s.skills.length + ' / ' + skillCap + L(' สกิล', ' skills'),
+      skillsCapColor: s.skills.length > skillCap ? '#FF3D6E' : '#8C88A6',
+      weapons: rows('weapons', ['name', 'range', 'dmg', 'fx'], { range: [1, 5] }),
+      addWeap: add('weapons', { name: '', range: '', dmg: '', fx: '' }, 2),
+      weapFull: s.weapons.length >= 2,
+      gears: rows('gears', ['name', 'fx']),
+      addGear: add('gears', { name: '', fx: '' }, 2),
+      gearFull: s.gears.length >= 2,
+      cosmic: rows('cosmic', ['name', 'fx', 'cd'], { cd: [0, 3] }),
+      addCos: cpd ? () => {} : add('cosmic', { name: '', fx: '', cd: '' }, cosCap),
+      cosFull: cpd || s.cosmic.length >= cosCap,
+      cosLabel: cosCap > 1 ? L('+ เพิ่ม Cosmic Ability (สูงสุด ', '+ Add Cosmic Ability (max ') + cosCap + L(' — Rep. ทุก 4 ได้เพิ่ม 1)', ' — +1 every 4 Rep.)') : L('+ เพิ่ม Cosmic Ability (สูงสุด 1 ตอนสร้าง)', '+ Add Cosmic Ability (max 1 at creation)'),
+      cosPh: fk === 'outlaw' ? 'Cosmic Gadget' : L('ประเภทของพลัง', 'Power type'),
+      cosNote: cpd ? L('C.P.D. ไม่มีพลังคอสมิคติดตัว', 'C.P.D. agents have no cosmic power') : '',
+      cosOpacity: cpd ? '0.4' : '1',
+      reset: () => {
+        if (!this.state.resetArmed) {
+          this.setState({ resetArmed: true, msg: '' });
+          clearTimeout(this._rt);
+          this._rt = setTimeout(() => this.setState({ resetArmed: false }), 4000);
+          return;
+        }
+        clearTimeout(this._rt);
+        this.setState({ s: initialSheet(), resetArmed: false, dirty: false, savedAt: null, msg: L('ล้างใบตัวละครแล้ว', 'Sheet cleared') });
+      },
+      resetLabel: this.state.resetArmed ? L('กดอีกครั้งเพื่อยืนยันการล้างข้อมูล', 'Click again to clear the sheet') : 'Reset',
+      resetStyle: this.state.resetArmed ? 'border-color: #FF3D6E; color: #FF3D6E' : '',
+      savePdf: () => this.setState({ msg: L('PROTOTYPE: Save PDF ทำงานในใบตัวละครตัวจริง', 'PROTOTYPE: Save PDF works on the live sheet') }),
+      importJson: () => this.setState({ msg: L('PROTOTYPE: Import JSON ทำงานในใบตัวละครตัวจริง', 'PROTOTYPE: Import JSON works on the live sheet') }),
+      exportJson: () => this.setState({ msg: L('PROTOTYPE: Export JSON ทำงานในใบตัวละครตัวจริง', 'PROTOTYPE: Export JSON works on the live sheet') }),
+      saveChar: () => {
+        const nm = (this.state.s.name || '').trim();
+        if (!nm) { this.setState({ msg: L('ใส่ชื่อตัวละครก่อนบันทึก', 'Give your character a name before saving') }); return; }
+        this.setState({ dirty: false, savedAt: Date.now(), msg: L('บันทึก ' + nm + ' แล้ว', nm + ' saved') });
+      },
+      saveStatus: this.state.dirty
+        ? L('● ยังไม่ได้บันทึกการเปลี่ยนแปลง', '● Unsaved changes')
+        : (this.state.savedAt ? L('☁ บันทึกแล้ว ', '☁ Saved ') + new Date(this.state.savedAt).toTimeString().slice(0, 5) : L('☁ ยังไม่มีการแก้ไข', '☁ No changes yet')),
+      saveColor: this.state.dirty ? '#FFD400' : '#4ADE80',
+      actionMsg: this.state.msg,
+      t: {
+        menuChars: L('ตัวละครของฉัน', 'My Characters'),
+        menuSessions: L('Session ของฉัน', 'My Sessions'),
+        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
+        menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
+        menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
+        menuLogout: L('ออกจากระบบ', 'Log out'),
+        portraitAdd: L('อัปโหลดรูป', 'ADD PORTRAIT'),
+        portraitPick: L('อัปโหลดรูปหน้าตัวละคร', 'Upload a portrait'),
+        portraitRemove: L('ลบรูป', 'REMOVE'),
+        advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
+        navHome: L('หน้าแรก', 'HOME'),
+        navMine: L('ตัวละครของฉัน', 'MY CHARACTERS'),
+        title: L('สร้างตัวละคร', 'Create a character'),
+        save: L('บันทึกตัวละคร', 'Save character'),
+        phName: L('ชื่อตัวละคร', 'Character name'),
+        phBio: L('ประวัติ ที่มา และแรงจูงใจของตัวละคร...', 'History, origins and what drives your character...'),
+        phFlaw: L('ข้อเสีย/ปมของตัวละคร ที่สามารถ trigger บัฟทดแทนอุปสรรคได้...', 'Your character\'s flaws, which can trigger a buff to offset a setback...'),
+        phTraitFx: L('เอฟเฟกต์ของ Trait...', 'Trait effect...'),
+        phTraitName: L('ชื่อ Trait', 'Trait name'),
+        rmTrait: L('ลบ Trait', 'Remove Trait'),
+        newSess: L('เริ่ม session ใหม่', 'New session'),
+        newSessTip: L('เริ่ม session ใหม่ — รีเซ็ต Advance pts เป็น 5 และ Slots เป็นค่าเริ่มต้น (Norms = 8, อื่นๆ = 5)', 'Start a new session: resets Advance pts to 5 and Slots to default (Norms = 8, others = 5)'),
+        phBondName: L('ชื่อ Bonded Item', 'Bonded Item name'),
+        phBondFx: L('ความสามารถ / บัฟเมื่อถูกทำลาย', 'Ability / buff on destroy'),
+        rmBond: L('ลบ Bonded Item', 'Remove Bonded Item'),
+        addBond: L('+ เพิ่ม Bonded Item', '+ Add Bonded Item'),
+        cpdNoWm: L('C.P.D. ไม่มีพลังคอสมิค — ไม่มี WM', 'C.P.D. has no cosmic power — no WM'),
+        dcTip: L('DC ที่ต้องทอยให้ผ่าน', 'DC to beat'),
+        phNotes: L('บันทึกส่วนตัวของผู้เล่น...', 'Your private notes...'),
+        pointsLeft: L('แต้มคงเหลือ:', 'Points left:'),
+        phSkill: L('ชื่อสกิล', 'Skill name'),
+        phFx: L('เอฟเฟกต์', 'Effect'),
+        rmSkill: L('ลบสกิล', 'Remove skill'),
+        addSkill: L('+ เพิ่มสกิล', '+ Add skill'),
+        phWeap: L('ชื่ออาวุธ', 'Weapon name'),
+        rmWeap: L('ลบอาวุธ', 'Remove weapon'),
+        addWeap: L('+ เพิ่มอาวุธ', '+ Add weapon'),
+        phGear: L('ชื่อชุด/เกราะ', 'Outfit / armor name'),
+        rmGear: L('ลบชุด/เกราะ', 'Remove outfit / armor'),
+        addGear: L('+ เพิ่มชุด/เกราะ', '+ Add outfit / armor'),
+        rmCos: L('ลบ Cosmic Ability', 'Remove Cosmic Ability'),
+        importTip: L('นำเข้าไฟล์ตัวละคร (.json) ที่เคย Export ไว้ — จะแทนที่ใบตัวละครปัจจุบัน', 'Import a character file (.json) you exported before. It replaces the current sheet.')
+      }
+    };
+  }
+}
+</script>
+<script src="../assets/beta-character.js"></script>
+</body>
+</html>

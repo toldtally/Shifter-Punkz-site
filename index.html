@@ -133,7 +133,7 @@ html{scroll-behavior:smooth}
         <sc-if value="{{spMenuOpen}}">
           <div role="menu" style="position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
             <sc-if value="{{spNotGm}}">
-              <span role="menuitem" aria-disabled="true" data-soon style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740">{{spCharsLabel}}<span class="soon-chip">SOON</span></span>
+              <a role="menuitem" href="beta/characters.html" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740">{{spCharsLabel}}</a>
               <sc-if value="{{spSwitchedPlayer}}">
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{spSwitchedPlayerLabel}}</p>
               </sc-if>
@@ -148,7 +148,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{spIsGm}}">
-              <span role="menuitem" aria-disabled="true" data-soon style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740">{{spSessionsLabel}}<span class="soon-chip">SOON</span></span>
+              <a role="menuitem" href="beta/sessions.html" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740">{{spSessionsLabel}}</a>
               <sc-if value="{{spSwitchedGm}}">
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{spSwitchedLabel}}</p>
               </sc-if>

@@ -73,6 +73,10 @@ SETPW = '''<sc-if value="{{isSetPw}}" hint-placeholder-val="{{ false }}">
         </sc-if>
 '''
 
+BETA_LINKS = {"Main": "../index.html", "TRPG": "../trpg.html", "Account": "account.html", "Auth": "auth.html",
+              "Character": "character.html", "MyCharacters": "characters.html", "GMTables": "sessions.html", "GMSheet": "gm.html"}
+ME = ('re:aria-hidden="true">N</span><span>Nox', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1)
+
 PAGES = [
     dict(src="Main.dc.html", out="index.html", title="Shifter Punkz",
          desc="Shifter Punkz — จักรวาลกึ่งไซเบอร์พังก์ในกรุงเทพ 26XX ผ่านแอนิเมชัน TRPG เกมดิจิทัล และบอร์ดเกม",
@@ -82,7 +86,7 @@ PAGES = [
          links={"Main": "index.html", "TRPG": "trpg.html"}, beta="session-nav.js", session_nav=True),
     dict(src="Auth.dc.html", out="beta/auth.html", title="เข้าสู่ระบบ · Shifter Punkz",
          desc="เข้าสู่ระบบ Shifter Punkz (beta)", beta="beta-auth.js",
-         links={"Main": "../index.html", "TRPG": "../trpg.html", "Account": "account.html", "Auth": "auth.html"},
+         links=BETA_LINKS,
          markup=[
              ('<button type="button" onClick="{{submit}}"', MSG + '<button type="button" onClick="{{submit}}"', 2),
              ('<button type="button" onClick="{{logout}}"', MSG + '<button type="button" onClick="{{logout}}"', 1),
@@ -93,7 +97,7 @@ PAGES = [
          ]),
     dict(src="Account.dc.html", out="beta/account.html", title="ตั้งค่าบัญชี · Shifter Punkz",
          desc="ตั้งค่าบัญชี Shifter Punkz (beta)", beta="beta-account.js",
-         links={"Main": "../index.html", "TRPG": "../trpg.html", "Account": "account.html", "Auth": "auth.html"},
+         links=BETA_LINKS,
          markup=[
              ('<input id="acc-avatar" type="file" accept="image/*"', '<input id="acc-avatar" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{onAvatar}}"', 1),
              ('value="player@example.com" readonly', 'value="{{email}}" readonly', 1),
@@ -101,6 +105,30 @@ PAGES = [
              ('aria-hidden="true">{{initial}}</div>', 'aria-hidden="true"><sc-if value="{{avatarUrl}}" hint-placeholder-val="{{ false }}"><img src="{{avatarUrl}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{noAvatar}}" hint-placeholder-val="{{ true }}">{{initial}}</sc-if></div>', 1),
              (r're:<a href="auth.html"([^>]*)>\{\{t\.logout\}\}</a>', r'<a href="auth.html" onClick="{{logout}}"\1>{{t.logout}}</a>', 1),
              (r're:<a href="auth.html"([^>]*)>\{\{t\.delConfirm\}\}</a>', r'<a href="auth.html" onClick="{{doDelete}}"\1>{{t.delConfirm}}</a>', 1),
+         ]),
+    dict(src="MyCharacters.dc.html", out="beta/characters.html", title="ตัวละครของฉัน · Shifter Punkz",
+         desc="ตัวละครของฉัน Shifter Punkz (beta)", beta="beta-characters.js", common=True, links=BETA_LINKS,
+         markup=[ME,
+             (r're:<a href="character\.html"( style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; background: \{\{c\.color\}\})', r'<a href="{{c.href}}"\1', 1),
+             (r're:<button type="button"( style="[^"]*">Export</button>)', r'<button type="button" onClick="{{c.exportJson}}"\1', 1),
+             (r're:<span style="[^"]*">\{\{t\.sample\}\}</span>', '', 1),
+         ]),
+    dict(src="Character.dc.html", out="beta/character.html", title="ใบตัวละคร · Shifter Punkz",
+         desc="ใบตัวละคร Shifter Punkz (beta)", beta="beta-character.js", common=True, bgm=True, links=BETA_LINKS,
+         markup=[ME]),
+    dict(src="GMTables.dc.html", out="beta/sessions.html", title="Session ของฉัน · Shifter Punkz",
+         desc="Session ของ GM Shifter Punkz (beta)", beta="beta-sessions.js", common=True, links=BETA_LINKS,
+         markup=[(r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
+             (r're:<a href="gm\.html"([^>]*>\{\{t\.openScreen\}\}</a>)', r'<a href="{{c.monitorHref}}"\1', 1),
+         ]),
+    dict(src="GMSheet.dc.html", out="beta/gm.html", title="GM Monitor · Shifter Punkz",
+         desc="GM Monitor Shifter Punkz (beta)", beta="beta-gm.js", common=True, bgm=True, links=BETA_LINKS,
+         markup=[(r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
+             (r're:<!-- Prototype-only role preview -->\s*<div .*?</sc-for>\s*</span>\s*</div>', '', 1),
+             ('<textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}"></textarea>',
+              '<textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}" onInput="{{p.onNote}}">{{p.note}}</textarea>', 1),
+             (r're:<button type="button"( style="[^"]*">\{\{t\.exportParty\}\}</button>)', r'<button type="button" onClick="{{exportParty}}"\1', 1),
+             ('<input id="gm-file" type="file"', '<input id="gm-file" type="file" onChange="{{importFiles}}"', 1),
          ]),
 ]
 
@@ -123,7 +151,7 @@ def session_nav(body):
         <sc-if value="{{{{spMenuOpen}}}}">
           <div role="menu" style="position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
             <sc-if value="{{{{spNotGm}}}}">
-              <span role="menuitem" aria-disabled="true" data-soon style="{MENU_ITEM}; color: #2EE6F0; border-bottom: 1px solid #2A2740">{{{{spCharsLabel}}}}<span class="soon-chip">SOON</span></span>
+              <a role="menuitem" href="beta/characters.html" style="{MENU_ITEM}; color: #2EE6F0; border-bottom: 1px solid #2A2740">{{{{spCharsLabel}}}}</a>
               <sc-if value="{{{{spSwitchedPlayer}}}}">
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{{{spSwitchedPlayerLabel}}}}</p>
               </sc-if>
@@ -138,7 +166,7 @@ def session_nav(body):
               </sc-if>
             </sc-if>
             <sc-if value="{{{{spIsGm}}}}">
-              <span role="menuitem" aria-disabled="true" data-soon style="{MENU_ITEM}; color: #FFD400; border-bottom: 1px solid #2A2740">{{{{spSessionsLabel}}}}<span class="soon-chip">SOON</span></span>
+              <a role="menuitem" href="beta/sessions.html" style="{MENU_ITEM}; color: #FFD400; border-bottom: 1px solid #2A2740">{{{{spSessionsLabel}}}}</a>
               <sc-if value="{{{{spSwitchedGm}}}}">
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{{{spSwitchedLabel}}}}</p>
               </sc-if>
@@ -158,7 +186,10 @@ def session_nav(body):
         </sc-if>
       </div>'''
     swap = '<sc-if value="{{spSignedOut}}">%s</sc-if><sc-if value="{{spSignedIn}}">%s</sc-if>' % (m.group(0), user)
-    return body[:m.start()] + swap + body[m.end():]
+    body = body[:m.start()] + swap + body[m.end():]
+    # "create a character" CTAs open the beta sheet for signed-in testers; visitors still see SOON
+    cta = re.compile(r'<span role="link" aria-disabled="true" title="Coming soon" data-soon( style="[^"]*")>\{\{t\.ctaChar\}\}<span class="soon-chip">SOON</span></span>')
+    return cta.sub(lambda c: '<sc-if value="{{spSignedOut}}">%s</sc-if><sc-if value="{{spSignedIn}}"><a href="beta/character.html"%s>{{t.ctaChar}}</a></sc-if>' % (c.group(0), c.group(1)), body)
 
 
 def strip_spoilers(name, js):
@@ -218,6 +249,7 @@ def build(cfg):
             body = body.replace(anchor, SETPW + '        ' + anchor)
     js = strip_spoilers(name, js)
     helmet = helmet.replace("</style>", EXTRA_CSS + "</style>")
+    helmet = re.sub(r'\s*<script src="\./bgm\.js"></script>', '', helmet)
 
     depth = out.count("/")
     up = "../" * depth
@@ -225,6 +257,10 @@ def build(cfg):
     if cfg.get("beta"):
         scripts = ('<script src="%s"></script>\n' % SUPABASE_JS + scripts
                    + '<script src="%sassets/sp.js"></script>\n' % up)
+        if cfg.get("common"):
+            scripts += '<script src="%sassets/beta-common.js"></script>\n' % up
+        if cfg.get("bgm"):
+            scripts += '<script src="%sassets/bgm.js"></script>\n' % up
         mount = '</script>\n<script src="%sassets/%s"></script>' % (up, cfg["beta"])
         robots = '<meta name="robots" content="noindex">\n' if out.startswith("beta/") else ""
     else:

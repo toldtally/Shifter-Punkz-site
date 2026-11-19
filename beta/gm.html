@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GM Monitor · Shifter Punkz</title>
+<meta name="description" content="GM Monitor Shifter Punkz (beta)">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="GM Monitor · Shifter Punkz">
+<meta property="og:description" content="GM Monitor Shifter Punkz (beta)">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0A12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%230B0A12'/%3E%3Cpath d='M4 4h12l8 8v12H12L4 16z' fill='none' stroke='%23FF2E88' stroke-width='2.5'/%3E%3Cpath d='M10 10h6v6h-6z' fill='%232EE6F0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;background:#0B0A12}
+a{color:#2EE6F0}a:hover{color:#FF2E88}
+.cpd-play .cpd-body{animation:cpdFade .3s ease-out .6s both}
+.crt{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:32px;pointer-events:none;background:#050508;background-image:repeating-linear-gradient(0deg,rgba(255,212,0,.07) 0 1px,transparent 1px 3px)}
+.cpd-play .crt{animation:crtOn .3s cubic-bezier(.2,.8,.2,1) both,crtOff .2s ease-in .55s forwards}
+.bl{margin:0;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.06em;color:#FFD400;white-space:nowrap;clip-path:inset(0 100% 0 0)}
+.bl-ok{color:#2EE6F0}
+.cpd-play .bl{animation:blType .12s steps(16) var(--d,0s) forwards}
+@keyframes crtOn{0%{transform:scale(0,.004);filter:brightness(4)}45%{transform:scale(1,.004);filter:brightness(3)}100%{transform:scale(1,1);filter:brightness(1)}}
+@keyframes crtOff{to{opacity:0;visibility:hidden}}
+@keyframes blType{to{clip-path:inset(0 0 0 0)}}
+@keyframes cpdFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.live-dot{animation:livePulse 1.4s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.25}}
+.flash{animation:flashIn 1.2s ease-out}
+@keyframes flashIn{0%{box-shadow:0 0 0 2px #FFD400,0 0 28px rgba(255,212,0,.45)}100%{box-shadow:0 0 0 0 rgba(255,212,0,0)}}
+.fld{width:100%;box-sizing:border-box;padding:8px 10px;background:#0B0A12;border:1px solid #2A2740;color:#FFFFFF;font-family:'IBM Plex Sans Thai',sans-serif;font-size:13px}
+.fld:focus{outline:2px solid #2EE6F0;outline-offset:-1px}
+.fld::placeholder{color:#6E6A88}
+summary{cursor:pointer;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:#D8D6E8;min-height:32px;display:flex;align-items:center}
+@media (prefers-reduced-motion: reduce){.cpd-play .cpd-body,.flash,.live-dot{animation:none}.crt{display:none}}
+.eq{display:flex;align-items:flex-end;gap:3px;height:18px}
+.eq i{display:block;width:4px;height:4px;background:currentColor;animation:eqB .9s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}.eq i:nth-child(4){animation-delay:-.15s}
+.eq.off i{animation:none;height:3px;opacity:.5}
+@keyframes eqB{0%,100%{height:4px}50%{height:18px}}
+.bgm-range{width:100%;accent-color:#2EE6F0}
+@media (prefers-reduced-motion: reduce){.eq i{animation:none;height:8px}}
+
+[data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
+[data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+@media (max-width: 720px){
+  p.hero-gl{width:auto!important;height:auto!important;max-width:100%!important}
+  .hero-bg{justify-content:center!important;align-items:flex-end!important;padding:0 16px 20px!important;font-size:10px}
+  .hero-bg > *{opacity:.45}
+}
+[aria-busy="true"]{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<template id="dc-tpl">
+<div style="background: #0B0A12; color: #D8D6E8; font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; min-height: 100vh; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px)">
+
+  <div style="display: flex; align-items: stretch; background: #FFD400; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em">
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+    <p style="margin: 0; padding: 9px 16px; flex: 1; min-width: 0">{{t.advisory}}</p>
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+  </div>
+
+  <header style="border-bottom: 1px solid #2A2740">
+    <nav style="max-width: 1400px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 4h12l8 8v12H12L4 16z" fill="none" stroke="#FF2E88" stroke-width="2.5"></path><path d="M10 10h6v6h-6z" fill="#2EE6F0"></path></svg>
+        <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
+        <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
+        <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+        <a href="sessions.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navTables}}</a>
+      </div>
+      <div style="position: relative" onKeyDown="{{userMenuKey}}">
+        <button type="button" onClick="{{toggleUserMenu}}" aria-haspopup="true" aria-expanded="{{userMenuExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid {{roleColor}}; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; background: transparent; cursor: pointer">
+        <span style="width: 30px; height: 30px; background: #1D1930; border: 1px solid #3A3655; display: flex; align-items: center; justify-content: center; font-size: 13px; color: {{roleColor}}" aria-hidden="true">{{meInitial}}</span><span>{{meName}}</span>
+<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" style="margin-left: 2px"><path d="M1.5 3.5L5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+        </button>
+        <sc-if value="{{userMenuOpen}}" hint-placeholder-val="{{ false }}">
+          <div role="menu" style="position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
+            <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
+              <a role="menuitem" href="characters.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}</a>
+              <sc-if value="{{charJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitchedPlayer}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
+              <button type="button" role="menuitem" onClick="{{askChars}}" aria-expanded="{{charWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">PLAYER</span></button>
+              <sc-if value="{{charWarn}}" hint-placeholder-val="{{ false }}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #06181A; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #C9EEF0">{{charWarnText}}</p>
+                  <button type="button" onClick="{{switchToPlayer}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchPlayer}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
+              <a role="menuitem" href="sessions.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}</a>
+              <sc-if value="{{roleJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitched}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
+                  <button type="button" onClick="{{switchToGm}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchRole}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
+            <a role="menuitem" href="account.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #D8D6E8; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.4" fill="none" stroke="#2EE6F0" stroke-width="1.5"></circle><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="#2EE6F0" stroke-width="1.5"></path></svg>{{t.menuSettings}}</a>
+            <a role="menuitem" href="auth.html" onClick="{{navLogout}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FF3D6E"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2.5H3v11h3M10.5 5l3 3-3 3M13.5 8H6" fill="none" stroke="#FF3D6E" stroke-width="1.5"></path></svg>{{t.menuLogout}}</a>
+          </div>
+        </sc-if>
+      </div>
+      <div role="group" aria-label="Language" style="display: flex; border: 1px solid #2EE6F0">
+        <button type="button" onClick="{{setTh}}" aria-pressed="{{thPressed}}" style="{{thStyle}}">TH</button>
+        <button type="button" onClick="{{setEn}}" aria-pressed="{{enPressed}}" style="{{enStyle}}">EN</button>
+      </div>
+    </nav>
+  </header>
+
+  
+
+  <!-- LOCKED (player) -->
+  <sc-if value="{{locked}}" hint-placeholder-val="{{ false }}">
+    <main style="max-width: 720px; margin: 0 auto; padding: 80px 24px 120px">
+      <section style="display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding: 36px; background: #151225; border: 1px solid #FFD400; border-top: 3px solid #FFD400">
+        <div style="height: 10px; align-self: stretch; background: repeating-linear-gradient(45deg, #FFD400 0 10px, #151225 10px 20px)" aria-hidden="true"></div>
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #FFD400">ACCESS DENIED // GM CLEARANCE REQUIRED</p>
+        <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px; color: #FFFFFF">{{t.lockTitle}}</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.75; color: #A9A5C2">{{t.lockBody}}</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <a href="account.html#role" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.switchRole}}</a>
+          <a href="characters.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border: 1.5px solid #3A3655; color: #D8D6E8; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.backMine}}</a>
+        </div>
+      </section>
+    </main>
+  </sc-if>
+
+  <!-- GM VIEW -->
+  <sc-if value="{{isGm}}" hint-placeholder-val="{{ true }}">
+    <main class="cpd-play" style="position: relative; max-width: 1400px; margin: 0 auto; padding: 28px 24px 96px">
+      <div class="crt" aria-hidden="true">
+        <p class="bl" style="--d: 0.2s">C.P.D. TACTICAL TABLE v26.0</p>
+        <p class="bl" style="--d: 0.3s">&gt; LINKING PLAYER SIGNALS...</p>
+        <p class="bl bl-ok" style="--d: 0.42s">&gt; LIVE</p>
+      </div>
+      <div class="cpd-body" style="display: flex; flex-direction: column; gap: 24px">
+
+        <!-- Title + table -->
+        <div style="display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid #2A2740">
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #FF3D6E"><span class="live-dot" style="width: 9px; height: 9px; background: #FF3D6E; border-radius: 50%" aria-hidden="true"></span>LIVE // {{curTableLabel}}</p>
+            <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 54px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">GM Monitor</h1>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+            <div style="position: relative">
+              <button type="button" onClick="{{toggleMenu}}" aria-expanded="{{menuExpanded}}" aria-haspopup="true" style="min-height: 48px; padding: 0 14px; display: inline-flex; align-items: center; gap: 10px; border: 1px solid #2EE6F0; background: #151225; color: #FFFFFF; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #2EE6F0">{{t.switchTable}}</span>{{curTableName}} <span aria-hidden="true" style="color: #2EE6F0">▾</span></button>
+              <sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+                <div role="menu" style="position: absolute; z-index: 5; top: calc(100% + 6px); right: 0; width: 320px; max-width: 80vw; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 12px 32px rgba(0,0,0,0.5)">
+                  <sc-for list="{{tableMenu}}" as="tm" hint-placeholder-count="2">
+                    <button type="button" role="menuitem" onClick="{{tm.pick}}" aria-current="{{tm.current}}" style="display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 14px; border: 0; border-bottom: 1px solid #2A2740; background: {{tm.bg}}; color: #FFFFFF; cursor: pointer; text-align: left">
+                      <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{tm.name}}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8C88A6">{{tm.code}} · {{tm.players}}</span></span>
+                      <span style="padding: 2px 8px; border: 1px solid {{tm.stColor}}; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: {{tm.stColor}}">{{tm.stLabel}}</span>
+                    </button>
+                  </sc-for>
+                  <a href="sessions.html" role="menuitem" style="display: flex; align-items: center; min-height: 44px; padding: 0 14px; color: #2EE6F0; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.manageTables}} →</a>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px; padding: 8px 14px; border: 1px solid #3A3655; background: #151225">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #8C88A6">{{t.tableCode}}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #FFD400; user-select: all">{{curCode}}</span>
+            </div>
+            <button type="button" onClick="{{copyCode}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{copyLabel}}</button>
+            <button type="button" onClick="{{togglePause}}" aria-pressed="{{pausedPressed}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{pauseLabel}}</button>
+          </div>
+        </div>
+        <sc-if value="{{hasSwitch}}" hint-placeholder-val="{{ false }}">
+          <div role="alertdialog" aria-label="{{t.oneRun}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px; background: #1F1A06; border: 1px solid #FFD400">
+            <div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+              <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; color: #FFD400">{{switchTitle}}</p>
+              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #EDE3B8">{{switchBody}}</p>
+            </div>
+            <button type="button" onClick="{{cancelSwitch}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.cancel}}</button>
+            <button type="button" onClick="{{doSwitch}}" style="min-height: 40px; padding: 0 16px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.doSwitch}}</button>
+          </div>
+        </sc-if>
+        </div>
+
+        <!-- Online + Turn order -->
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch">
+          <div style="flex: 0 1 220px; min-width: 180px; padding: 14px 16px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid #4ADE80; display: flex; flex-direction: column; gap: 4px">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #8C88A6">{{t.online}}</span>
+            <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 28px; color: #4ADE80">{{onlineCount}}</span>
+          </div>
+          <section aria-labelledby="turn-h" style="flex: 999 1 560px; min-width: 0; padding: 14px 16px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid #FFD400; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
+              <div style="display: flex; align-items: baseline; gap: 12px">
+                <h2 id="turn-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.06em; color: #FFFFFF">TURN ORDER</h2>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFD400">ROUND {{round}}</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                <button type="button" onClick="{{prevTurn}}" style="min-height: 38px; padding: 0 12px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.prev}}</button>
+                <button type="button" onClick="{{nextTurn}}" style="min-height: 38px; padding: 0 16px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.next}}</button>
+                <button type="button" onClick="{{resetRound}}" style="min-height: 38px; padding: 0 12px; border: 1px solid #3A3655; background: transparent; color: #8C88A6; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.resetRound}}</button>
+              </div>
+            </div>
+            <ol aria-label="Turn order" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{turns}}" as="tn" hint-placeholder-count="5">
+                <li style="{{tn.style}}">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{tn.numColor}}">{{tn.pos}}</span>
+                  <span style="display: flex; flex-direction: column; min-width: 0">
+                    <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: {{tn.nameColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{tn.name}}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: {{tn.kindColor}}">{{tn.kind}}</span>
+                  </span>
+                  <span style="display: flex; gap: 4px; margin-left: auto">
+                    <button type="button" aria-label="{{tn.upLabel}}" onClick="{{tn.up}}" disabled="{{tn.first}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: #0B0A12; color: #D8D6E8; cursor: pointer">◀</button>
+                    <button type="button" aria-label="{{tn.downLabel}}" onClick="{{tn.down}}" disabled="{{tn.last}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: #0B0A12; color: #D8D6E8; cursor: pointer">▶</button>
+                    <sc-if value="{{tn.isNpc}}" hint-placeholder-val="{{ false }}">
+                      <button type="button" aria-label="{{tn.rmLabel}}" onClick="{{tn.remove}}" style="width: 28px; height: 28px; border: 1px solid #4A1630; background: #0B0A12; color: #FF3D6E; cursor: pointer">×</button>
+                    </sc-if>
+                  </span>
+                </li>
+              </sc-for>
+            </ol>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+              <label for="npc-name" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #8C88A6">{{t.addNpc}}</label>
+              <input id="npc-name" class="fld" type="text" maxlength="30" placeholder="{{t.npcPh}}" value="{{npcName}}" onInput="{{setNpcName}}" style="flex: 1 1 200px; width: auto; min-height: 38px">
+              <button type="button" onClick="{{addNpc}}" style="min-height: 38px; padding: 0 16px; border: 1px solid #FF2E88; background: transparent; color: #FF2E88; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">+ NPC</button>
+            </div>
+          </section>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+          <!-- Party cards -->
+          <div style="flex: 999 1 640px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 16px">
+            <sc-for list="{{party}}" as="p" hint-placeholder-count="3">
+              <article class="{{p.flash}}" style="display: flex; flex-direction: column; gap: 12px; padding: 18px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{p.color}}">
+                <div style="display: flex; gap: 12px; align-items: center">
+                  <div style="position: relative; width: 52px; height: 52px; flex-shrink: 0; background: #0B0A12; border: 1px solid {{p.color}}; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: {{p.color}}" aria-hidden="true"><sc-if value="{{p.hasPortrait}}" hint-placeholder-val="{{ false }}"><img src="{{p.portrait}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{p.noPortrait}}" hint-placeholder-val="{{ true }}">{{p.initial}}</sc-if><span style="position: absolute; right: -4px; bottom: -4px; width: 12px; height: 12px; border: 2px solid #151225; background: {{p.onlineColor}}"></span></div>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                    <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 21px; color: #FFFFFF">{{p.name}}</h2>
+                    <p style="margin: 0; font-size: 12px; color: #A9A5C2">{{p.sub}}</p>
+                  </div>
+                  <span style="padding: 2px 8px; border: 1px solid {{p.color}}; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{p.color}}">{{p.factor}}</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 7px">
+                  <sc-for list="{{p.bars}}" as="b" hint-placeholder-count="2">
+                    <div style="display: flex; align-items: center; gap: 10px">
+                      <span style="width: 26px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{b.color}}">{{b.k}}</span>
+                      <div style="flex: 1; height: 10px; background: #0B0A12; border: 1px solid #2A2740" aria-hidden="true"><div style="height: 100%; width: {{b.pct}}; background: {{b.color}}; transition: width .5s"></div></div>
+                      <span style="width: 54px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #FFFFFF">{{b.v}}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: #2A2740; border: 1px solid #2A2740">
+                  <sc-for list="{{p.ba}}" as="s" hint-placeholder-count="4">
+                    <div style="padding: 6px 2px; background: #0B0A12; text-align: center"><span style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #8C88A6">{{s.k}}</span><span style="display: block; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; color: #FFFFFF">{{s.v}}</span></div>
+                  </sc-for>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px">
+                  <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #FFD400">SE {{p.se}}</span>
+                  <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #FF2E88">EX {{p.ex}}</span>
+                  <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #D8D6E8">ADV {{p.adv}}</span>
+                  <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #A9A5C2">COIN {{p.coins}}</span>
+                  <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #4ADE80">SLOT {{p.slots}}</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px">
+                  <sc-for list="{{p.loadout}}" as="lg" hint-placeholder-count="4">
+                    <div style="display: flex; flex-direction: column; gap: 4px">
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: {{lg.color}}">{{lg.k}}</span>
+                      <sc-if value="{{lg.empty}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #8C88A6">{{lg.emptyText}}</span></sc-if>
+                      <sc-for list="{{lg.items}}" as="it" hint-placeholder-count="1">
+                        <div style="display: flex; flex-direction: column; gap: 2px; padding: 6px 9px; background: #0B0A12; border: 1px solid #2A2740; border-left: 2px solid {{lg.color}}">
+                          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px"><b style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFFFFF">{{it.name}}</b><span style="flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #A9A5C2">{{it.meta}}</span></span>
+                          <span style="font-size: 12.5px; line-height: 1.5; color: #A9A5C2">{{it.fx}}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8C88A6">INJURIES</span>
+                  <sc-if value="{{p.noInj}}" hint-placeholder-val="{{ true }}"><span style="font-size: 13px; color: #8C88A6">—</span></sc-if>
+                  <sc-for list="{{p.inj}}" as="ij" hint-placeholder-count="1">
+                    <span style="padding: 2px 8px; background: #2A0F1C; border: 1px solid #FF3D6E; font-size: 12px; color: #FF8FA8">{{ij.n}}</span>
+                  </sc-for>
+                </div>
+                <details>
+                  <summary>{{t.details}}</summary>
+                  <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; font-size: 13px; line-height: 1.6; color: #A9A5C2">
+                    <sc-for list="{{p.detail}}" as="dl" hint-placeholder-count="4">
+                      <p style="margin: 0"><b style="color: #FFFFFF; font-weight: 600">{{dl.k}}</b> {{dl.v}}</p>
+                    </sc-for>
+                  </div>
+                </details>
+                <textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}" onInput="{{p.onNote}}">{{p.note}}</textarea>
+                <sc-if value="{{p.notConfirm}}" hint-placeholder-val="{{ true }}">
+                  <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 10px; border-top: 1px solid #2A2740">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{p.agoColor}}">{{p.ago}}</span>
+                    <button type="button" onClick="{{p.askDel}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #4A1630; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{t.remove}}</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{p.isConfirm}}" hint-placeholder-val="{{ false }}">
+                  <div role="alertdialog" aria-label="{{t.remove}} {{p.name}}" style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #1A0B14; border: 1px solid #FF3D6E">
+                    <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #E8C9D3">{{p.confirmText}}</p>
+                    <div style="display: flex; gap: 8px; justify-content: flex-end">
+                      <button type="button" onClick="{{p.cancelDel}}" style="min-height: 36px; padding: 0 12px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{t.cancel}}</button>
+                      <button type="button" onClick="{{p.doDel}}" style="min-height: 36px; padding: 0 12px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{t.confirmRemove}}</button>
+                    </div>
+                  </div>
+                </sc-if>
+              </article>
+            </sc-for>
+          </div>
+
+          <!-- Side: live feed + import -->
+          <aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+            <section style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
+              <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">LIVE FEED</h2><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{feedStateColor}}">{{feedState}}</span></div>
+              <ol role="log" aria-live="polite" style="margin: 0; padding: 8px 0; list-style: none; display: flex; flex-direction: column; max-height: 420px; overflow-y: auto">
+                <sc-for list="{{feed}}" as="fd" hint-placeholder-count="5">
+                  <li style="display: flex; gap: 10px; padding: 8px 16px; border-bottom: 1px solid #1D1930; font-size: 13px; line-height: 1.5">
+                    <span style="flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8C88A6; padding-top: 2px">{{fd.time}}</span>
+                    <span><b style="color: {{fd.color}}; font-weight: 600">{{fd.who}}</b> <span style="color: #D8D6E8">{{fd.what}}</span></span>
+                  </li>
+                </sc-for>
+              </ol>
+            </section>
+            <section style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+              <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">IMPORT / EXPORT</h2>
+              <label for="gm-file" style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 12px; border: 2px dashed #3A3655; text-align: center; font-size: 13px; line-height: 1.6; color: #A9A5C2; cursor: pointer">{{t.dropHint}}<span style="color: #2EE6F0; text-decoration: underline">{{t.pick}}</span></label>
+              <input id="gm-file" type="file" onChange="{{importFiles}}" accept=".json,application/json" multiple style="position: absolute; width: 1px; height: 1px; opacity: 0">
+              <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                <button type="button" onClick="{{exportParty}}" style="flex: 1; min-height: 40px; border: 1px solid #3A3655; background: #1D1930; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; text-transform: uppercase">{{t.exportParty}}</button>
+              </div>
+              <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #8C88A6">{{t.importNote}}</p>
+            </section>
+          </aside>
+        </div>
+
+        <!-- BGM bot (full-width bottom row) -->
+        <section aria-label="BGM" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{bgmColor}}">
+          <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center; gap: 10px">
+                <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">BGM BOT</h2>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: {{bgmStatusColor}}">{{bgmStatus}}</span>
+              </div>
+          <div style="padding: 16px; display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px 20px">
+            <div style="flex: 1 1 250px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">NOW PLAYING</span>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #0B0A12; border: 1px solid #2A2740">
+                  <span class="{{bgmEqClass}}" style="color: {{bgmColor}}" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                  <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #8C88A6">{{bgmNowCode}}</span>
+                    <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF">{{bgmNowTitle}}</span>
+                    <span style="font-size: 12px; color: #A9A5C2">{{bgmNowAmb}}</span>
+                  </span>
+                  <button type="button" onClick="{{bgmStop}}" aria-label="{{t.bgmStop}}" title="{{t.bgmStop}}" style="width: 40px; min-height: 40px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">■</button>
+                </div>
+            </div>
+            <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">MOOD</span>
+              <div role="group" aria-label="{{t.bgmMood}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+                  <sc-for list="{{bgmMoods}}" as="bm" hint-placeholder-count="3">
+                    <button type="button" aria-pressed="{{bm.pressed}}" onClick="{{bm.pick}}" title="{{bm.desc}}" style="{{bm.style}}"><span style="display: block; font-size: 14px">{{bm.label}}</span><span style="display: block; margin-top: 2px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 500; letter-spacing: 0.04em; opacity: 0.85">{{bm.title}}</span></button>
+                  </sc-for>
+                </div>
+            </div>
+            <div style="flex: 2 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">AMBIENCE</span>
+              <div role="group" aria-label="Ambience" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+                    <sc-for list="{{bgmAmbs}}" as="ba" hint-placeholder-count="6">
+                      <button type="button" aria-pressed="{{ba.pressed}}" onClick="{{ba.toggle}}" style="{{ba.style}}">{{ba.label}}</button>
+                    </sc-for>
+                  </div>
+            </div>
+            <div style="flex: 1 1 250px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+              <div style="display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 6px 10px; font-size: 12px; color: #A9A5C2">
+                  <label for="bgmVol">{{t.bgmMusic}}</label><input id="bgmVol" class="bgm-range" type="range" min="0" max="100" value="{{bgmVol}}" onInput="{{bgmSetVol}}">
+                  <label for="bgmAmbVol">Ambience</label><input id="bgmAmbVol" class="bgm-range" type="range" min="0" max="100" value="{{bgmAmbVol}}" onInput="{{bgmSetAmbVol}}">
+                </div>
+              <button type="button" role="switch" aria-checked="{{bgmSyncChecked}}" onClick="{{bgmToggleSync}}" style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 12px; border: 1px solid {{bgmSyncBorder}}; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; text-align: left">
+                  <span style="position: relative; flex-shrink: 0; width: 40px; height: 22px; border: 1.5px solid {{bgmSyncBorder}}; background: {{bgmSyncTrack}}"><span style="position: absolute; top: 2px; left: {{bgmSyncKnob}}; width: 15px; height: 15px; background: {{bgmSyncBorder}}; transition: left .15s"></span></span>
+                  <span style="display: flex; flex-direction: column; gap: 2px"><span>{{t.bgmSync}}</span><span style="font-family: 'IBM Plex Sans Thai', sans-serif; font-weight: 400; font-size: 11.5px; color: #8C88A6">{{bgmSyncSub}}</span></span>
+                </button>
+            </div>
+          </div>
+          <div style="padding: 0 16px 14px"><p style="margin: 0; font-size: 11.5px; line-height: 1.5; color: #8C88A6">{{t.bgmNote}}</p></div>
+        </section>
+
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.6; color: #8C88A6">{{t.protoNote}}</p>
+      </div>
+    </main>
+  </sc-if>
+</div>
+</template>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../assets/dc.js"></script>
+<script src="../assets/sp.js"></script>
+<script src="../assets/beta-common.js"></script>
+<script src="../assets/bgm.js"></script>
+<script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const now = Date.now();
+    this.state = {
+      lang: 'th', role: 'gm', paused: false, copied: false, confirm: null, removed: [], now: now,
+      cur: 't1', menu: false, pendingTable: null, snaps: {
+        t2: {
+          order: [{ id: 'nok', kind: 'pc' }, { id: 'npc1', kind: 'npc', name: 'C.P.D. Drone' }, { id: 'fah', kind: 'pc' }],
+          turn: 0, round: 1, removed: [],
+          chars: {
+            nok: { name: 'Nok', player: 'Beam', f: 'shifter', sub: 'Courier · Velocity Shifter', online: true, ip: 9, ipMax: 10, wm: 7, wmMax: 10, ba: [1, 3, 2, 2], se: 0, ex: 0, adv: 2, coins: 4, inj: [], at: now - 600000 },
+            fah: { name: 'Fah', player: 'Fah', f: 'norms', sub: 'Scavenger', online: true, ip: 10, ipMax: 10, wm: 0, wmMax: 10, ba: [2, 2, 3, 1], se: 0, ex: 0, adv: 3, coins: 5, inj: [], at: now - 900000 }
+          },
+          feed: [{ at: now - 600000, id: 'nok', th: 'เข้าร่วม session', en: 'joined the session' }]
+        }
+      },
+      order: [{ id: 'kaew', kind: 'pc' }, { id: 'npc1', kind: 'npc', name: 'Golden Crown Thug' }, { id: 'tum', kind: 'pc' }, { id: 'som', kind: 'pc' }, { id: 'npc2', kind: 'npc', name: 'Ironhide Sniper' }],
+      turn: 0, round: 1, npcName: '', npcSeq: 3,
+      chars: {
+        kaew: { portrait: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2314243A'/%3E%3Crect y='0' width='64' height='64' fill='url%28%23g%29'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232EE6F0' stop-opacity='.25'/%3E%3Cstop offset='1' stop-color='%23FF2E88' stop-opacity='.2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='26' r='11' fill='%230B0A12'/%3E%3Cpath d='M12 64c2-14 10-20 20-20s18 6 20 20z' fill='%230B0A12'/%3E%3Cpath d='M22 24h20' stroke='%232EE6F0' stroke-width='2.5'/%3E%3C/svg%3E", name: 'Kaew', player: 'Mint', f: 'shifter', sub: 'Street Doc · Area Shifter', online: true, ip: 8, ipMax: 10, wm: 6, wmMax: 10, ba: [1, 2, 3, 2], se: 1, ex: 0, adv: 4, coins: 3, inj: [], at: now - 12000 },
+        tum: { name: 'Tum', player: 'Ice', f: 'norms', sub: 'Synth-Tech Mechanic', online: true, ip: 10, ipMax: 10, wm: 0, wmMax: 10, ba: [2, 3, 2, 1], se: 0, ex: 1, adv: 5, coins: 6, inj: [], at: now - 40000 },
+        som: { name: 'Somying', player: 'Ploy', f: 'cpd', sub: 'Rank 2 · Division 9', online: false, ip: 12, ipMax: 12, wm: 0, wmMax: 0, ba: [3, 2, 1, 3], se: 0, ex: 0, adv: 3, coins: 2, inj: [], at: now - 300000 }
+      },
+      feed: [
+        { at: now - 12000, id: 'kaew', th: 'ใช้ Blink Rat (WM −2)', en: 'used Blink Rat (WM −2)' },
+        { at: now - 40000, id: 'tum', th: 'ได้รับ +1 EX', en: 'gained +1 EX' },
+        { at: now - 300000, id: 'som', th: 'ออฟไลน์', en: 'went offline' }
+      ],
+      step: 0
+    };
+  }
+  componentDidMount() {
+    try {
+      this._bc = new BroadcastChannel('sp-bgm');
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'hello') this.bgmBroadcast(); };
+    } catch (e) { this._bc = null; }
+    this._clock = setInterval(() => this.setState({ now: Date.now() }), 1000);
+    this._live = setInterval(() => this.tickLive(), 4500);
+  }
+  bgmEngine() {
+    if (!this._bgm && window.SPBGM) this._bgm = window.SPBGM.create();
+    return this._bgm;
+  }
+  bgmSnapshot() {
+    const e = this._bgm;
+    return e ? e.state() : { mood: null, ambients: [], volume: 0.8, ambVolume: 0.6, playing: false };
+  }
+  /* what players hear: sent over BroadcastChannel here, over Supabase realtime (sessions.bgm) on the live site */
+  bgmBroadcast() {
+    const s = this.bgmSnapshot();
+    const msg = { type: 'state', sync: this.state.bgmSync !== false, mood: s.mood, ambients: s.ambients, at: Date.now() };
+    if (this._bc) { try { this._bc.postMessage(msg); } catch (e) {} }
+    if (this.onBgmChange) this.onBgmChange(msg);
+  }
+  bgmDo(fn) {
+    const e = this.bgmEngine();
+    if (!e) return;
+    fn(e);
+    this.setState({ bgm: e.state() });
+    this.bgmBroadcast();
+  }
+  componentWillUnmount() {
+    if (this._bgm) this._bgm.close();
+    if (this._bc) this._bc.close();
+    clearInterval(this._clock);
+    clearInterval(this._live);
+  }
+  tickLive() {
+    if (this.state.paused || this.state.role !== 'gm') return;
+    const script = [
+      { id: 'kaew', fn: (c) => Object.assign({}, c, { ip: Math.max(0, c.ip - 2) }), th: 'เสีย 2 IP จากการปะทะ', en: 'lost 2 IP in a fight' },
+      { id: 'tum', fn: (c) => Object.assign({}, c, { adv: Math.max(0, c.adv - 1) }), th: 'ใช้ Advance pts 1 แต้ม', en: 'spent 1 Advance pt' },
+      { id: 'kaew', fn: (c) => Object.assign({}, c, { se: Math.min(3, c.se + 1) }), th: 'ทอยได้คู่ [8] ได้ +1 SE', en: 'rolled a pair of [8], +1 SE' },
+      { id: 'tum', fn: (c) => Object.assign({}, c, { inj: c.inj.indexOf('Bleeding') === -1 ? c.inj.concat(['Bleeding']) : c.inj }), th: 'ติดสถานะ Bleeding', en: 'is now Bleeding' },
+      { id: 'som', fn: (c) => Object.assign({}, c, { online: true }), th: 'กลับมาออนไลน์', en: 'came back online' },
+      { id: 'kaew', fn: (c) => Object.assign({}, c, { wm: Math.max(0, c.wm - 3) }), th: 'ใช้ Replace สลับวัตถุ (WM −3)', en: 'used Replace (WM −3)' },
+      { id: 'tum', fn: (c) => Object.assign({}, c, { ip: Math.max(0, c.ip - 3) }), th: 'เสีย 3 IP (Bleeding)', en: 'lost 3 IP (Bleeding)' },
+      { id: 'som', fn: (c) => Object.assign({}, c, { ex: Math.min(3, c.ex + 1) }), th: 'ได้รับ +1 EX', en: 'gained +1 EX' },
+      { id: 'kaew', fn: (c) => Object.assign({}, c, { ip: Math.min(c.ipMax, c.ip + 2), wm: Math.min(c.wmMax, c.wm + 1) }), th: 'ฟื้นฟู +2 IP / +1 WM', en: 'recovered +2 IP / +1 WM' }
+    ];
+    const ev = script[this.state.step % script.length];
+    if (!this.state.chars[ev.id]) { this.setState({ step: this.state.step + 1 }); return; }
+    if (this.state.removed.indexOf(ev.id) !== -1) { this.setState({ step: this.state.step + 1 }); return; }
+    const at = Date.now();
+    const chars = Object.assign({}, this.state.chars);
+    chars[ev.id] = Object.assign(ev.fn(chars[ev.id]), { at: at });
+    this.setState({ chars: chars, step: this.state.step + 1, feed: [{ at: at, id: ev.id, th: ev.th, en: ev.en }].concat(this.state.feed).slice(0, 12) });
+  }
+  renderVals() {
+    const th = this.state.lang !== 'en';
+    const L = (a, b) => (th ? a : b);
+    const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
+    const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
+    const C = { shifter: '#2EE6F0', norms: '#FF2E88', cpd: '#FFD400' };
+    const FN = { shifter: 'SHIFTER', norms: 'NORMS', cpd: 'C.P.D.' };
+    // Supplies / Bonded / Weapons / Gears / Cosmic, mirrored from each player's Character Sheet
+    const LO = {
+      kaew: { slots: 5,
+        bonded: [{ name: L('กระเป๋าหมอเถื่อนของแม่', 'Mom\'s street-doc bag'), fx: L('+1 Trick เมื่อรักษา · ถูกทำลาย: ฟื้นฟู +3 IP ทั้งปาร์ตี้', '+1 Trick when healing · On destroy: party recovers +3 IP') }],
+        weapons: [{ name: 'Scalpel Blade', range: 1, dmg: '2', fx: L('ทอยได้คู่ = เป้าหมายติด Bleeding', 'A pair inflicts Bleeding') }],
+        gears: [{ name: 'Med-Weave Coat', fx: 'AMR +1' }],
+        cosmic: [{ name: 'Area · Blink Rat', fx: L('วาร์ปตัวเองผ่านจุดอับสายตาไม่เกิน 10 ม.', 'Teleport through a blind spot up to 10 m'), cd: 1 }] },
+      tum: { slots: 8,
+        bonded: [{ name: L('ประแจของพ่อ', 'Dad\'s wrench'), fx: L('ซ่อม Gadget +1D8 · ถูกทำลาย: +1 SE', 'Repair gadgets +1D8 · On destroy: +1 SE') }],
+        weapons: [{ name: 'Rivet Gun', range: 3, dmg: '2', fx: L('ยิงตรึงเป้าหมายไว้กับที่ 1 เทิร์น', 'Pins a target in place for 1 turn') }],
+        gears: [{ name: 'Work Rig Harness', fx: 'Slot +2' }],
+        cosmic: [{ name: 'Cosmic Gadget · Phase Glove', fx: L('ทะลุผนังบางได้ 1 ครั้ง/ฉาก · แบต 2/3', 'Phase through a thin wall once per scene · battery 2/3'), cd: 1 }] },
+      som: { slots: 5,
+        bonded: [{ name: L('ป้ายชื่อรุ่นพี่ที่หายตัว', 'A missing senior\'s badge'), fx: L('+1 Sense เมื่อสืบสวน · ถูกทำลาย: +2 ADV', '+1 Sense when investigating · On destroy: +2 ADV') }],
+        weapons: [{ name: 'C.P.D. Stun Baton', range: 1, dmg: '1', fx: L('โดนแล้วติด Enervated', 'Enervated on hit') }, { name: 'Containment Pistol', range: 4, dmg: '2', fx: L('กระสุนกักกัน ไม่สังหาร', 'Non-lethal containment rounds') }],
+        gears: [{ name: 'Aegis Light Armor', fx: L('AMR +2 (อุปกรณ์ตามยศ)', 'AMR +2 (rank issue)') }],
+        cosmic: [] },
+      nok: { slots: 5,
+        bonded: [{ name: L('หมวกกันน็อกใบแรก', 'First helmet'), fx: L('+1 Tactical ตอนขับหนี · ถูกทำลาย: กันดาเมจ 1 ครั้ง', '+1 Tactical when fleeing · On destroy: block 1 hit') }],
+        weapons: [{ name: 'Shock Knuckle', range: 1, dmg: '1', fx: '—' }],
+        gears: [],
+        cosmic: [{ name: 'Velocity · Overdrive', fx: L('เร่งความเร็วตัวเอง 2 เท่า 1 เทิร์น', 'Double your speed for 1 turn'), cd: 1 }] },
+      fah: { slots: 8,
+        bonded: [{ name: L('กล่องดนตรีพังๆ', 'Broken music box'), fx: L('+1 Sense ตอนค้นของ · ถูกทำลาย: ล้าง Insane', '+1 Sense when scavenging · On destroy: clear Insane') }],
+        weapons: [{ name: 'Scrap Crossbow', range: 4, dmg: '2', fx: '—' }],
+        gears: [{ name: 'Patchwork Vest', fx: 'AMR +1' }],
+        cosmic: [{ name: 'Cosmic Gadget · Mass-Swap Ray', fx: L('สลับมวลวัตถุ 2 ชิ้น · แบต 1/3', 'Swap the mass of two objects · battery 1/3'), cd: 1 }] }
+    };
+    const loadout = (c) => {
+      const lo = LO[c.id] || { slots: c.f === 'norms' ? 8 : 5, bonded: [], weapons: [], gears: [], cosmic: [] };
+      const none = L('— ยังไม่มี', '— none yet');
+      const grp = (k, color, items, emptyText) => ({ k: k, color: color, items: items, empty: items.length === 0, emptyText: emptyText || none });
+      return {
+        slots: String(lo.slots),
+        groups: [
+          grp('BONDED ITEM', '#FF2E88', lo.bonded.map((b) => ({ name: b.name, meta: '', fx: b.fx }))),
+          grp('WEAPONS', '#FF3D6E', lo.weapons.map((w) => ({ name: w.name, meta: 'R' + w.range + ' · DMG ' + w.dmg, fx: w.fx }))),
+          grp('GEARS', '#2EE6F0', lo.gears.map((g) => ({ name: g.name, meta: '', fx: g.fx }))),
+          grp(c.f === 'norms' ? 'COSMIC GADGET' : 'COSMIC ABILITIES', '#C084FC', lo.cosmic.map((x) => ({ name: x.name, meta: 'CD ' + x.cd, fx: x.fx })), c.f === 'cpd' ? L('— C.P.D. ไม่มีพลังคอสมิค', '— C.P.D. has no cosmic power') : null)
+        ]
+      };
+    };
+    const now = this.state.now;
+    const ago = (at) => {
+      const s = Math.max(0, Math.round((now - at) / 1000));
+      if (s < 5) return L('อัปเดตเมื่อสักครู่', 'updated just now');
+      if (s < 60) return L('อัปเดต ' + s + ' วินาทีที่แล้ว', 'updated ' + s + 's ago');
+      return L('อัปเดต ' + Math.round(s / 60) + ' นาทีที่แล้ว', 'updated ' + Math.round(s / 60) + 'm ago');
+    };
+    const hhmmss = (at) => { const d = new Date(at); return [d.getHours(), d.getMinutes(), d.getSeconds()].map((n) => String(n).padStart(2, '0')).join(':'); };
+    const ids = Object.keys(this.state.chars).filter((k) => this.state.removed.indexOf(k) === -1);
+    const list = ids.map((k) => Object.assign({ id: k }, this.state.chars[k]));
+    const isGm = this.state.role === 'gm';
+    const TABLES = {
+      t1: { code: 'SP-K7QX', th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'active', n: (this.state.cur === 't1' ? Object.keys(this.state.chars).length - this.state.removed.length : 3) },
+      t2: { code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
+      t3: { code: 'SP-H2WD', th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', n: 4 }
+    };
+    const order = this.state.order.filter((o) => o.kind === 'npc' || this.state.removed.indexOf(o.id) === -1);
+    const low = list.filter((c) => c.ip / c.ipMax <= 0.5);
+    const injCount = list.reduce((a, c) => a + c.inj.length, 0);
+    return {
+      userMenuOpen: !!this.state.userMenu,
+      userMenuExpanded: this.state.userMenu ? 'true' : 'false',
+      toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
+      closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
+      menuIsGm: (this.state.menuRole || this.state.role) === 'gm',
+      menuNotGm: (this.state.menuRole || this.state.role) !== 'gm',
+      roleJustSwitched: this.state.menuSwitched === 'gm',
+      charJustSwitched: this.state.menuSwitched === 'player',
+      charWarn: !!this.state.charWarn,
+      charWarnExpanded: this.state.charWarn ? 'true' : 'false',
+      askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      roleWarn: !!this.state.roleWarn,
+      roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
+      askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
+      switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm', role: 'gm', switched: true }),
+      switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player', role: 'player', switched: true }),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
+      navLogout: () => this.setState({ userMenu: false }),
+      bgmMoods: (window.SPBGM ? window.SPBGM.MOODS : []).map((m) => {
+        const on = this.bgmSnapshot().mood === m.id;
+        return {
+          label: L(m.th, m.en), title: m.title, desc: L(m.descTh, m.descEn), pressed: on ? 'true' : 'false',
+          pick: () => this.bgmDo((e) => e.setMood(on ? null : m.id)),
+          style: 'min-height: 46px; padding: 5px 4px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; ' + (on ? 'border: 1px solid ' + m.color + '; background: ' + m.color + '; color: #0B0A12' : 'border: 1px solid #3A3655; background: #0B0A12; color: ' + m.color)
+        };
+      }),
+      bgmAmbs: (window.SPBGM ? window.SPBGM.AMBIENTS : []).map((a) => {
+        const on = this.bgmSnapshot().ambients.indexOf(a.id) !== -1;
+        return {
+          label: (on ? '● ' : '○ ') + L(a.th, a.en), pressed: on ? 'true' : 'false',
+          toggle: () => this.bgmDo((e) => e.setAmbient(a.id, !on)),
+          style: 'min-height: 38px; padding: 0 10px; cursor: pointer; text-align: left; font-size: 12.5px; font-family: IBM Plex Sans Thai, sans-serif; ' + (on ? 'border: 1px solid #4ADE80; background: rgba(74,222,128,0.12); color: #FFFFFF' : 'border: 1px solid #2A2740; background: #0B0A12; color: #A9A5C2')
+        };
+      }),
+      ...(() => {
+        const s = this.bgmSnapshot();
+        const M = window.SPBGM ? window.SPBGM.MOODS.find((m) => m.id === s.mood) : null;
+        const ambNames = (window.SPBGM ? window.SPBGM.AMBIENTS : []).filter((a) => s.ambients.indexOf(a.id) !== -1).map((a) => L(a.th, a.en));
+        const sync = this.state.bgmSync !== false;
+        const listeners = Object.keys(this.state.chars).filter((k) => this.state.removed.indexOf(k) === -1 && this.state.chars[k].online).length;
+        return {
+          bgmColor: M ? M.color : '#3A3655',
+          bgmEqClass: s.playing ? 'eq' : 'eq off',
+          bgmNowCode: M ? M.code + ' // ' + L(M.th, M.en).toUpperCase() : (ambNames.length ? 'AMBIENCE ONLY' : 'STANDBY'),
+          bgmNowTitle: M ? M.title : (ambNames.length ? L('เสียงบรรยากาศ', 'Ambience') : L('ยังไม่ได้เปิดเพลง', 'Nothing playing')),
+          bgmNowAmb: ambNames.length ? '+ ' + ambNames.join(', ') : L('เลือกอารมณ์เพลงด้านล่าง', 'Pick a mood below'),
+          bgmStatus: !s.playing ? L('○ ปิดอยู่', '○ OFF') : sync ? '● ON AIR · ' + listeners + L(' คนได้ยิน', ' LISTENING') : L('● GM ฟังคนเดียว', '● GM ONLY'),
+          bgmStatusColor: !s.playing ? '#8C88A6' : sync ? '#4ADE80' : '#FFD400',
+          bgmStop: () => this.bgmDo((e) => e.stopAll()),
+          bgmVol: String(Math.round(s.volume * 100)),
+          bgmAmbVol: String(Math.round(s.ambVolume * 100)),
+          bgmSetVol: (ev) => { const e = this.bgmEngine(); if (e) { e.setVolume((+ev.target.value || 0) / 100); this.setState({ bgm: e.state() }); } },
+          bgmSetAmbVol: (ev) => { const e = this.bgmEngine(); if (e) { e.setAmbientVolume((+ev.target.value || 0) / 100); this.setState({ bgm: e.state() }); } },
+          bgmSyncChecked: sync ? 'true' : 'false',
+          bgmSyncBorder: sync ? '#4ADE80' : '#3A3655',
+          bgmSyncTrack: sync ? 'rgba(74,222,128,0.18)' : '#0B0A12',
+          bgmSyncKnob: sync ? '20px' : '2px',
+          bgmSyncSub: sync ? L('ผู้เล่นใน session ได้ยินเพลงเดียวกัน (ปรับเสียงฝั่งตัวเองได้)', 'Players in the session hear the same mix (their own volume)') : L('ตอนนี้ได้ยินเฉพาะเครื่อง GM', 'Only this device hears it right now'),
+          bgmToggleSync: () => { this.setState({ bgmSync: !sync }); setTimeout(() => this.bgmBroadcast(), 0); }
+        };
+      })(),
+      setTh: () => this.setState({ lang: 'th' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      thPressed: th ? 'true' : 'false',
+      enPressed: th ? 'false' : 'true',
+      thStyle: th ? on : off,
+      enStyle: th ? off : on,
+      isGm: isGm,
+      locked: !isGm,
+      roleName: isGm ? 'GM' : L('ผู้เล่น', 'Player'),
+      roleColor: isGm ? '#FFD400' : '#2EE6F0',
+      previewRoles: [{ id: 'player', name: L('ผู้เล่น', 'Player') }, { id: 'gm', name: 'GM' }].map((r) => ({
+        name: r.name,
+        pressed: this.state.role === r.id ? 'true' : 'false',
+        pick: () => this.setState({ role: r.id }),
+        style: 'min-height: 32px; padding: 0 12px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 12px; ' + (this.state.role === r.id ? 'background: #3A3655; color: #FFFFFF' : 'background: transparent; color: #8C88A6')
+      })),
+      curTableName: L(TABLES[this.state.cur].th, TABLES[this.state.cur].en),
+      curTableLabel: L('Session: ' + TABLES[this.state.cur].th, 'SESSION: ' + TABLES[this.state.cur].en.toUpperCase()),
+      curCode: TABLES[this.state.cur].code,
+      menuOpen: this.state.menu,
+      menuExpanded: this.state.menu ? 'true' : 'false',
+      toggleMenu: () => this.setState({ menu: !this.state.menu }),
+      tableMenu: Object.keys(TABLES).filter((k) => TABLES[k].st !== 'ended').map((k) => {
+        const T = TABLES[k]; const isCur = k === this.state.cur;
+        return {
+          name: L(T.th, T.en), code: T.code, players: T.n + L(' ผู้เล่น', ' players'),
+          current: isCur ? 'true' : 'false', bg: isCur ? '#1D1930' : 'transparent',
+          stColor: isCur ? '#4ADE80' : '#8C88A6', stLabel: isCur ? 'LIVE' : L('พักอยู่', 'PAUSED'),
+          pick: () => this.setState(isCur ? { menu: false } : { menu: false, pendingTable: k })
+        };
+      }),
+      hasSwitch: !!this.state.pendingTable,
+      switchTitle: this.state.pendingTable ? L('เริ่ม session ที่ ' + TABLES[this.state.pendingTable].th + '?', 'Start a session at ' + TABLES[this.state.pendingTable].en + '?') : '',
+      switchBody: this.state.pendingTable ? L('1 บัญชีรันได้ทีละ 1 session session ' + TABLES[this.state.cur].th + ' จะถูกพักอัตโนมัติ ผู้เล่นที่นั่นจะเห็นสถานะ "รอ GM" และข้อมูลทั้งหมดยังอยู่ครบ', 'One live session per account. ' + TABLES[this.state.cur].en + ' will be paused; its players see "waiting for GM" and nothing is lost.') : '',
+      cancelSwitch: () => this.setState({ pendingTable: null }),
+      doSwitch: () => {
+        const to = this.state.pendingTable; const from = this.state.cur;
+        const snaps = Object.assign({}, this.state.snaps);
+        snaps[from] = { order: this.state.order, turn: this.state.turn, round: this.state.round, removed: this.state.removed, chars: this.state.chars, feed: this.state.feed };
+        const nx = snaps[to];
+        this.setState({ cur: to, pendingTable: null, snaps: snaps, order: nx.order, turn: nx.turn, round: nx.round, removed: nx.removed, chars: nx.chars, feed: nx.feed, confirm: null, copied: false, paused: false });
+      },
+      copyCode: () => {
+        try { if (navigator.clipboard) navigator.clipboard.writeText(TABLES[this.state.cur].code).catch(() => {}); } catch (e) {}
+        this.setState({ copied: true });
+      },
+      copyLabel: this.state.copied ? L('คัดลอกแล้ว', 'Copied') : L('คัดลอกรหัส', 'Copy code'),
+      togglePause: () => this.setState({ paused: !this.state.paused }),
+      pausedPressed: this.state.paused ? 'true' : 'false',
+      pauseLabel: this.state.paused ? L('▶ ติดตามต่อ', '▶ Resume') : L('❚❚ หยุดชั่วคราว', '❚❚ Pause'),
+      feedState: this.state.paused ? 'PAUSED' : 'STREAMING',
+      feedStateColor: this.state.paused ? '#8C88A6' : '#4ADE80',
+      onlineCount: list.filter((c) => c.online).length + ' / ' + list.length,
+      round: String(this.state.round),
+      npcName: this.state.npcName,
+      setNpcName: (e) => this.setState({ npcName: e && e.target ? e.target.value : '' }),
+      addNpc: () => {
+        const nm = (this.state.npcName || '').trim();
+        if (!nm) return;
+        const id = 'npc' + this.state.npcSeq;
+        this.setState({ order: this.state.order.concat([{ id: id, kind: 'npc', name: nm }]), npcName: '', npcSeq: this.state.npcSeq + 1 });
+      },
+      nextTurn: () => {
+        const n = order.length;
+        if (!n) return;
+        const nt = this.state.turn + 1;
+        if (nt >= n) this.setState({ turn: 0, round: this.state.round + 1 });
+        else this.setState({ turn: nt });
+      },
+      prevTurn: () => {
+        const n = order.length;
+        if (!n) return;
+        const pt = this.state.turn - 1;
+        if (pt < 0) { if (this.state.round > 1) this.setState({ turn: n - 1, round: this.state.round - 1 }); }
+        else this.setState({ turn: pt });
+      },
+      resetRound: () => this.setState({ turn: 0, round: 1 }),
+      turns: order.map((o, i) => {
+        const pc = o.kind === 'pc';
+        const c = pc ? this.state.chars[o.id] : null;
+        const active = i === Math.min(this.state.turn, order.length - 1);
+        const color = pc ? C[c.f] : '#FF2E88';
+        const move = (d) => () => {
+          const full = this.state.order.filter((x) => x.kind === 'npc' || this.state.removed.indexOf(x.id) === -1);
+          const j = i + d;
+          if (j < 0 || j >= full.length) return;
+          const curId = full[Math.min(this.state.turn, full.length - 1)].id;
+          const arr = full.slice(); const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+          this.setState({ order: arr, turn: arr.findIndex((x) => x.id === curId) });
+        };
+        return {
+          pos: String(i + 1).padStart(2, '0'),
+          name: pc ? c.name : o.name,
+          kind: pc ? 'PC · ' + FN[c.f] : 'NPC',
+          color: color,
+          isNpc: !pc,
+          first: i === 0,
+          last: i === order.length - 1,
+          up: move(-1), down: move(1),
+          upLabel: L('เลื่อน ', 'Move ') + (pc ? c.name : o.name) + L(' ขึ้นก่อน', ' earlier'),
+          downLabel: L('เลื่อน ', 'Move ') + (pc ? c.name : o.name) + L(' ไปทีหลัง', ' later'),
+          rmLabel: L('เอา ', 'Remove ') + o.name + L(' ออก', ''),
+          remove: () => {
+            const full = this.state.order.filter((x) => x.kind === 'npc' || this.state.removed.indexOf(x.id) === -1);
+            const arr = full.filter((x) => x.id !== o.id);
+            this.setState({ order: arr, turn: Math.min(this.state.turn > i ? this.state.turn - 1 : this.state.turn, Math.max(0, arr.length - 1)) });
+          },
+          numColor: active ? '#0B0A12' : '#8C88A6',
+          nameColor: active ? '#0B0A12' : '#FFFFFF',
+          kindColor: active ? '#2A2410' : color,
+          style: 'flex: 1 1 200px; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px 10px; ' + (active ? 'background: rgba(255,212,0,0.8); border: 1px solid rgba(255,212,0,0.8); box-shadow: 0 0 16px rgba(255,212,0,0.24)' : 'background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid ' + color)
+        };
+      }),
+      party: list.map((c) => ({
+        name: c.name, factor: FN[c.f], color: C[c.f], initial: c.name.charAt(0), portrait: c.portrait || '', hasPortrait: !!c.portrait, noPortrait: !c.portrait,
+        sub: L('ผู้เล่น: ', 'Player: ') + c.player + ' · ' + c.sub,
+        onlineColor: c.online ? '#4ADE80' : '#3A3655',
+        flash: now - c.at < 1300 ? 'flash' : '',
+        bars: [{ k: 'IP', color: '#FF3D6E', v: c.ip + '/' + c.ipMax, pct: Math.round(c.ip / c.ipMax * 100) + '%' }].concat(c.wmMax ? [{ k: 'WM', color: '#2EE6F0', v: c.wm + '/' + c.wmMax, pct: Math.round(c.wm / c.wmMax * 100) + '%' }] : []),
+        ba: ['FOR', 'TAC', 'TRI', 'SEN'].map((k, i) => ({ k: k, v: String(c.ba[i]) })),
+        se: String(c.se), ex: String(c.ex), adv: String(c.adv), coins: String(c.coins),
+        slots: loadout(c).slots,
+        loadout: loadout(c).groups,
+        inj: c.inj.map((n) => ({ n: n })),
+        noInj: c.inj.length === 0,
+        detail: [
+          { k: c.f === 'cpd' ? 'Division' : 'Trait', v: c.f === 'cpd' ? 'Division 9' : '—' },
+          { k: 'Flaw', v: '—' },
+          { k: 'Skills', v: '—' },
+          { k: 'Background', v: '—' }
+        ],
+        ago: ago(c.at),
+        agoColor: now - c.at < 15000 ? '#FFD400' : '#8C88A6',
+        isConfirm: this.state.confirm === c.id,
+        notConfirm: this.state.confirm !== c.id,
+        confirmText: L('เอา ' + c.name + ' ออกจาก session นี้? ใบตัวละครของผู้เล่นยังอยู่ แต่ GM จะไม่เห็นอีก', 'Remove ' + c.name + ' from this session? The player keeps their sheet, but you won\'t see it here.'),
+        askDel: () => this.setState({ confirm: c.id }),
+        cancelDel: () => this.setState({ confirm: null }),
+        doDel: () => this.setState({ removed: this.state.removed.concat([c.id]), confirm: null })
+      })),
+      feed: this.state.feed.filter((f) => this.state.removed.indexOf(f.id) === -1).map((f) => ({
+        time: hhmmss(f.at), who: this.state.chars[f.id].name, color: C[this.state.chars[f.id].f], what: th ? f.th : f.en
+      })),
+      t: {
+        bgmStop: L('หยุดทั้งหมด', 'Stop all'),
+        bgmMood: L('อารมณ์เพลง', 'Mood'),
+        bgmMusic: L('เพลง', 'Music'),
+        bgmSync: L('ส่งเสียงให้ผู้เล่น', 'Play for players'),
+        bgmNote: L('เพลงสร้างสดในเบราว์เซอร์ ไม่ซ้ำเดิม · ผู้เล่นกด "ฟังด้วย" ในใบตัวละครหนึ่งครั้งเพื่อเปิดเสียง', 'Music is generated live and never repeats exactly. Players tap "Listen" once on their sheet.'),
+        menuChars: L('ตัวละครของฉัน', 'My Characters'),
+        menuSessions: L('Session ของฉัน', 'My Sessions'),
+        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
+        menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
+        menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
+        menuLogout: L('ออกจากระบบ', 'Log out'),
+        advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
+        navHome: L('หน้าแรก', 'HOME'),
+        online: L('ผู้เล่นออนไลน์', 'PLAYERS ONLINE'),
+        next: L('เทิร์นถัดไป ▶', 'Next turn ▶'),
+        prev: L('◀ ย้อน', '◀ Back'),
+        resetRound: L('เริ่มรอบใหม่', 'Restart'),
+        addNpc: L('เพิ่ม NPC', 'ADD NPC'),
+        npcPh: L('ชื่อ NPC เช่น ลูกน้อง Golden Crown', 'NPC name, e.g. Golden Crown thug'),
+        previewAs: L('ดูหน้านี้ในฐานะ', 'VIEW THIS PAGE AS'),
+        lockTitle: L('หน้านี้สำหรับ GM เท่านั้น', 'This page is for GMs only'),
+        lockBody: L('ตอนนี้บัญชีของคุณใช้บทบาทผู้เล่น เปลี่ยนบทบาทเป็น GM ในหน้าตั้งค่าบัญชีก่อน แล้วกลับมาเปิด GM Monitor อีกครั้ง', 'Your account is using the Player role. Switch to GM in Account settings, then open the GM Monitor again.'),
+        switchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
+        backMine: L('กลับไปตัวละครของฉัน', 'Back to my characters'),
+        tableName: L('Session: ตรอกนีออนลาดพร้าว', 'SESSION: LAT PHRAO NEON ALLEY'),
+        navTables: L('Session ของฉัน', 'MY SESSIONS'),
+        switchTable: L('SESSION', 'SESSION'),
+        manageTables: L('จัดการ session ทั้งหมด / สร้าง session ใหม่', 'Manage sessions / new session'),
+        oneRun: L('1 บัญชีรันได้ทีละ 1 session', 'One live session per account'),
+        doSwitch: L('พัก session เดิม แล้วสลับ', 'Pause current & switch'),
+        tableCode: L('รหัสเชิญผู้เล่น', 'PLAYER INVITE CODE'),
+        details: L('รายละเอียดเต็ม', 'Full details'),
+        gmNote: L('โน้ต GM (ผู้เล่นไม่เห็น)', 'GM note (hidden from players)'),
+        remove: L('เอาออกจาก session', 'Remove from session'),
+        cancel: L('ยกเลิก', 'Cancel'),
+        confirmRemove: L('ยืนยันเอาออก', 'Remove'),
+        dropHint: L('ลากไฟล์ .json ของผู้เล่นมาวางที่นี่ หรือ', 'Drop players\' .json files here, or'),
+        pick: L('เลือกไฟล์', 'choose files'),
+        exportParty: L('Export ทั้งปาร์ตี้ (JSON)', 'Export party (JSON)'),
+        importNote: L('ใช้สำหรับผู้เล่นที่ยังไม่ได้เข้าร่วม session ออนไลน์ ชื่อตัวละครซ้ำจะอัปเดตทับข้อมูลเดิม', 'For players not yet in the online session. A matching character name updates the existing card.'),
+        protoNote: L('PROTOTYPE // ข้อมูลและการอัปเดตในหน้านี้เป็นการจำลอง ตอนเชื่อม Supabase จะรับการเปลี่ยนแปลงจริงจากใบตัวละครของผู้เล่นใน session ทันที', 'PROTOTYPE // Data and updates here are simulated. With Supabase, changes arrive live from the players\' sheets in this session.')
+      }
+    };
+  }
+}
+</script>
+<script src="../assets/beta-gm.js"></script>
+</body>
+</html>
