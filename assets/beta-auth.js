@@ -165,9 +165,10 @@
       v.msg = this.state.msg;
       v.msgColor = kind === 'error' ? '#FF3D6E' : kind === 'ok' ? '#4ADE80' : '#2EE6F0';
       v.publicId = p ? SP.publicId(p.public_no) : '';
-      v.goHref = 'account.html';
+      var isGm = !!(p && p.role === 'gm' && p.gm_allowed);
+      v.goHref = isGm ? 'sessions.html' : 'characters.html';
       v.goTarget = '_self';
-      v.goLabel = L('ไปที่บัญชีของฉัน', 'Go to my account');
+      v.goLabel = isGm ? L('Session ของฉัน', 'My Sessions') : L('ตัวละครของฉัน', 'My Characters');
       var invite = this.state.setPwKind === 'invite';
       v.setPwNeedsName = invite;
       v.setPwName = (p && p.display_name) || '';
