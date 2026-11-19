@@ -51,7 +51,7 @@
       this.setState({ busy: true, msg: '' });
       var r = await sb.auth.signUp({
         email: email, password: pw,
-        options: { emailRedirectTo: SP.base + 'auth.html', data: { display_name: name, role: this.state.role, news_opt_in: checked('news') } }
+        options: { emailRedirectTo: SP.base + 'auth.html', data: { display_name: name, news_opt_in: checked('news') } }
       });
       if (r.error) return this.fail(r.error);
       if (r.data.session) { await this.loadProfile(); return this.setState({ mode: 'done', busy: false, msg: '' }); }
@@ -78,7 +78,7 @@
       if (r.error) return this.fail(r.error);
       if (this.state.setPwKind === 'invite') {
         var u = r.data.user;
-        var up = await sb.from('profiles').update({ display_name: val('sp-name').trim(), role: this.state.role }).eq('id', u.id);
+        var up = await sb.from('profiles').update({ display_name: val('sp-name').trim() }).eq('id', u.id);
         if (up.error) return this.fail(up.error);
       }
       await this.loadProfile();

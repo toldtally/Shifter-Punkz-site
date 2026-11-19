@@ -23,11 +23,12 @@
       var u = s.user || {};
       var meta = u.user_metadata || {};
       this.setState({ spUser: { name: meta.display_name || (u.email || '').split('@')[0], role: 'player', avatar: '' } });
-      var r = await sb.from('profiles').select('display_name, role, avatar_path').eq('id', u.id).single();
+      var r = await sb.from('profiles').select('display_name, role, avatar_path, gm_allowed').eq('id', u.id).single();
       if (!r.error && r.data) {
         this.setState({ spUser: {
           name: r.data.display_name || this.state.spUser.name,
           role: r.data.role,
+          gmAllowed: !!r.data.gm_allowed,
           avatar: r.data.avatar_path ? SP.imageUrl(r.data.avatar_path) : ''
         } });
       }
@@ -49,6 +50,7 @@
       v.spToggle = () => this.setState({ spMenu: !this.state.spMenu, spWarn: false, spCharWarn: false, spSwitched: '' });
       v.spIsGm = !!(u && u.role === 'gm');
       v.spNotGm = !v.spIsGm;
+      v.spCanAskGm = v.spNotGm && !!(u && u.gmAllowed);
       v.spWarn = !!this.state.spWarn;
       v.spWarnExpanded = this.state.spWarn ? 'true' : 'false';
       v.spAskSessions = () => this.setState({ spWarn: !this.state.spWarn, spCharWarn: false });

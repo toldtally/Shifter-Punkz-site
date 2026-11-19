@@ -20,7 +20,7 @@
     async componentDidMount() {
       var me = await SP.requireUser('sessions.html');
       if (!me) return;
-      if (me.profile.role !== 'gm') { location.replace('gm.html'); return; }
+      if (me.profile.role !== 'gm') { location.replace(me.profile.gm_allowed ? 'gm.html' : 'characters.html'); return; }
       this.setState({ user: me.user, profile: me.profile, role: 'gm' });
       await this.load();
     }

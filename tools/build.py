@@ -58,16 +58,6 @@ SETPW = '''<sc-if value="{{isSetPw}}" hint-placeholder-val="{{ false }}">
               <input id="sp-pw" class="fld" type="password" autocomplete="new-password" placeholder="••••••••">
               <span style="font-size: 12px; color: #8C88A6">{{t.pwHint}}</span>
             </div>
-            <sc-if value="{{setPwNeedsName}}" hint-placeholder-val="{{ true }}">
-              <div style="display: flex; flex-direction: column; gap: 8px">
-                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.roleLabel}}</span>
-                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-                  <sc-for list="{{roles}}" as="rl" hint-placeholder-count="2">
-                    <button type="button" aria-pressed="{{rl.pressed}}" onClick="{{rl.pick}}" style="{{rl.style}}"><span style="display: block; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; color: {{rl.accent}}">{{rl.name}}</span><span style="display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.5; color: #A9A5C2">{{rl.desc}}</span></button>
-                  </sc-for>
-                </div>
-              </div>
-            </sc-if>
             ''' + MSG + '''            <button type="button" onClick="{{savePassword}}" style="min-height: 52px; border: 0; cursor: pointer; background: #FF2E88; color: #0B0A12; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 0.06em">{{setPwBtn}}</button>
           </div>
         </sc-if>
@@ -75,6 +65,7 @@ SETPW = '''<sc-if value="{{isSetPw}}" hint-placeholder-val="{{ false }}">
 
 BETA_LINKS = {"Main": "../index.html", "TRPG": "../trpg.html", "Account": "account.html", "Auth": "auth.html",
               "Character": "character.html", "MyCharacters": "characters.html", "GMTables": "sessions.html", "GMSheet": "gm.html"}
+ASK_GM = ('re:<sc-if value="\\{\\{menuNotGm\\}\\}"( hint-placeholder-val="\\{\\{ true \\}\\}">\\s*<button type="button" role="menuitem" onClick="\\{\\{askSessions\\}\\}")', '<sc-if value="{{menuCanAskGm}}"\\1', 1)
 ME = ('re:aria-hidden="true">N</span><span>Nox', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1)
 
 PAGES = [
@@ -88,6 +79,8 @@ PAGES = [
          desc="เข้าสู่ระบบ Shifter Punkz (beta)", beta="beta-auth.js",
          links=BETA_LINKS,
          markup=[
+             (r're:<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">\s*<legend[^>]*>\{\{t\.roleLabel\}\}</legend>.*?</fieldset>\s*', '', 1),
+
              ('<button type="button" onClick="{{submit}}"', MSG + '<button type="button" onClick="{{submit}}"', 2),
              ('<button type="button" onClick="{{logout}}"', MSG + '<button type="button" onClick="{{logout}}"', 1),
              ('<a href="#forgot"', '<a href="#forgot" onClick="{{forgot}}"', 1),
@@ -98,7 +91,9 @@ PAGES = [
     dict(src="Account.dc.html", out="beta/account.html", title="ตั้งค่าบัญชี · Shifter Punkz",
          desc="ตั้งค่าบัญชี Shifter Punkz (beta)", beta="beta-account.js",
          links=BETA_LINKS,
-         markup=[
+         markup=[ASK_GM,
+             (r're:(<!-- Role -->\s*)(<section id="role".*?</section>)', r'\1<sc-if value="{{canGm}}" hint-placeholder-val="{{ true }}">\2</sc-if>', 1),
+             
              ('<input id="acc-avatar" type="file" accept="image/*"', '<input id="acc-avatar" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{onAvatar}}"', 1),
              ('value="player@example.com" readonly', 'value="{{email}}" readonly', 1),
              ('SP-000127', '{{publicId}}', 1),
@@ -108,22 +103,22 @@ PAGES = [
          ]),
     dict(src="MyCharacters.dc.html", out="beta/characters.html", title="ตัวละครของฉัน · Shifter Punkz",
          desc="ตัวละครของฉัน Shifter Punkz (beta)", beta="beta-characters.js", common=True, links=BETA_LINKS,
-         markup=[ME,
+         markup=[ASK_GM, ME,
              (r're:<a href="character\.html"( style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; background: \{\{c\.color\}\})', r'<a href="{{c.href}}"\1', 1),
              (r're:<button type="button"( style="[^"]*">Export</button>)', r'<button type="button" onClick="{{c.exportJson}}"\1', 1),
              (r're:<span style="[^"]*">\{\{t\.sample\}\}</span>', '', 1),
          ]),
     dict(src="Character.dc.html", out="beta/character.html", title="ใบตัวละคร · Shifter Punkz",
          desc="ใบตัวละคร Shifter Punkz (beta)", beta="beta-character.js", common=True, bgm=True, links=BETA_LINKS,
-         markup=[ME]),
+         markup=[ASK_GM, ME]),
     dict(src="GMTables.dc.html", out="beta/sessions.html", title="Session ของฉัน · Shifter Punkz",
          desc="Session ของ GM Shifter Punkz (beta)", beta="beta-sessions.js", common=True, links=BETA_LINKS,
-         markup=[(r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
+         markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
              (r're:<a href="gm\.html"([^>]*>\{\{t\.openScreen\}\}</a>)', r'<a href="{{c.monitorHref}}"\1', 1),
          ]),
     dict(src="GMSheet.dc.html", out="beta/gm.html", title="GM Monitor · Shifter Punkz",
          desc="GM Monitor Shifter Punkz (beta)", beta="beta-gm.js", common=True, bgm=True, links=BETA_LINKS,
-         markup=[(r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
+         markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
              (r're:<!-- Prototype-only role preview -->\s*<div .*?</sc-for>\s*</span>\s*</div>', '', 1),
              ('<textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}"></textarea>',
               '<textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}" onInput="{{p.onNote}}">{{p.note}}</textarea>', 1),
@@ -171,7 +166,7 @@ def session_nav(body):
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{{{spSwitchedLabel}}}}</p>
               </sc-if>
             </sc-if>
-            <sc-if value="{{{{spNotGm}}}}">
+            <sc-if value="{{{{spCanAskGm}}}}">
               <button type="button" role="menuitem" onClick="{{{{spAskSessions}}}}" aria-expanded="{{{{spWarnExpanded}}}}" style="{MENU_ITEM}; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{{{spSessionsLabel}}}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
               <sc-if value="{{{{spWarn}}}}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">

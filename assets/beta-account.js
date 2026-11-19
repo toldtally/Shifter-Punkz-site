@@ -117,6 +117,8 @@
         this.patch({ display_name: n }, 'บันทึกโปรไฟล์แล้ว', 'Profile saved.');
       };
       v.savedMsg = '';
+      v.canGm = !!(p && p.gm_allowed);
+      v.menuCanAskGm = !!(p && p.gm_allowed && this.state.role !== 'gm');
       v.roles = v.roles.map((r) => Object.assign({}, r, {
         pick: () => { if (p && r.id !== this.state.role) this.patch({ role: r.id }).then((d) => { if (d) this.setState({ role: r.id, switched: true }); }); }
       }));

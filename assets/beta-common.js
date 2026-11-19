@@ -68,6 +68,7 @@
     v.meInitial = name.charAt(0).toUpperCase();
     v.menuIsGm = p.role === 'gm';
     v.menuNotGm = p.role !== 'gm';
+    v.menuCanAskGm = p.role !== 'gm' && !!p.gm_allowed;
     var setRole = async function (role) {
       var r = await sb.from('profiles').update({ role: role }).eq('id', p.id).select().single();
       if (r.error) return;

@@ -31,6 +31,7 @@
       var me = await SP.requireUser('gm.html');
       if (!me) return;
       this.setState({ user: me.user, profile: me.profile, role: me.profile.role });
+      if (!me.profile.gm_allowed) { location.replace('characters.html'); return; }
       if (me.profile.role !== 'gm') return;
       await this.loadSessions();
       var want = new URLSearchParams(location.search).get('s');

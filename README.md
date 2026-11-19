@@ -30,3 +30,7 @@ Published by Rollaholic Games · Game Designer: Jittrapa K. (Prim)
 ยังไม่เปิด: Character Sheet, My Characters, Session ของฉัน, GM Monitor
 
 > repo นี้เป็น public — ห้ามใส่เนื้อหาสำหรับ GM (spoiler) หรือข้อมูลลับลงใน repo
+
+## GM permission
+
+Only devs grant GM access. In the Supabase dashboard open Table Editor → `profiles`, find the account (`public_no` is the SP-000xxx number) and tick `gm_allowed`. Signed-in users can't change that column themselves; unticking it also drops the account back to player.

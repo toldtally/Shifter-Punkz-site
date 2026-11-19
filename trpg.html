@@ -124,7 +124,7 @@ html{scroll-behavior:smooth}
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{spSwitchedLabel}}</p>
               </sc-if>
             </sc-if>
-            <sc-if value="{{spNotGm}}">
+            <sc-if value="{{spCanAskGm}}">
               <button type="button" role="menuitem" onClick="{{spAskSessions}}" aria-expanded="{{spWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{spSessionsLabel}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
               <sc-if value="{{spWarn}}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">

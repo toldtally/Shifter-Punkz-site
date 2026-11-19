@@ -94,7 +94,7 @@ html{scroll-behavior:smooth}
                 <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitched}}</p>
               </sc-if>
             </sc-if>
-            <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
               <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
@@ -159,7 +159,7 @@ html{scroll-behavior:smooth}
         </section>
 
         <!-- Role -->
-        <section id="role" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{roleColor}}; display: flex; flex-direction: column; gap: 18px">
+        <sc-if value="{{canGm}}" hint-placeholder-val="{{ true }}"><section id="role" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{roleColor}}; display: flex; flex-direction: column; gap: 18px">
           <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px">
             <h2 id="role-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.roleTitle}}</h2>
             <p style="margin: 0; padding: 4px 10px; border: 1px solid {{roleColor}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: {{roleColor}}">{{roleChip}}</p>
@@ -179,7 +179,7 @@ html{scroll-behavior:smooth}
           <sc-if value="{{isPlayer}}" hint-placeholder-val="{{ true }}">
             <a href="characters.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openMine}}</a>
           </sc-if>
-        </section>
+        </section></sc-if>
 
         <!-- Sign-in methods -->
         <section id="signin" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0; display: flex; flex-direction: column; gap: 16px">
