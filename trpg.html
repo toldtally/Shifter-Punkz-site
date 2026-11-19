@@ -92,8 +92,8 @@ html{scroll-behavior:smooth}
       </a>
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
         <a href="index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
-        <a href="#lore" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">LORE</a>
         <a href="#howto" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHow}}</a>
+        <a href="#lore" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">LORE</a>
         <a href="#store" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navStore}}</a>
       </div>
       <span role="link" aria-disabled="true" title="Coming soon" data-soon style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 1px solid #FF2E88; color: #FF2E88; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.06em">{{t.navLogin}}<span class="soon-chip">SOON</span></span>
@@ -125,10 +125,64 @@ html{scroll-behavior:smooth}
     </div>
   </section>
 
-  <!-- 01 LORE (tabs) -->
+  <!-- 01 HOW TO PLAY -->
+  <section id="howto" data-rv="howto" style="background: #0F0D19; border-top: 1px solid #2A2740; border-bottom: 1px solid #2A2740">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 48px">
+      <div class="{{rv.howto}}" style="display: flex; flex-wrap: wrap; gap: 40px">
+        <div style="flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">01 // NEW TO TRPG?</p>
+          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.howTitle}}</h2>
+          <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.howP1}}</p>
+          <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.howP2}}</p>
+        </div>
+        <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+          <sc-for list="{{roles}}" as="ro" hint-placeholder-count="2">
+            <div style="padding: 22px; background: #151225; border: 1px solid #3A3655; border-left: 3px solid {{ro.accent}}">
+              <p style="margin: 0 0 6px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; color: {{ro.accent}}">{{ro.name}}</p>
+              <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #C3C0D6">{{ro.desc}}</p>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- Loop -->
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 26px; color: #FFFFFF">{{t.loopTitle}}</h3>
+        <ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+          <sc-for list="{{loop}}" as="lp" hint-placeholder-count="4">
+            <li class="{{lp.cls}}" style="position: relative; padding: 24px; background: #151225; border: 1px solid #2A2740; --d: {{lp.d}}">
+              <p style="margin: 0 0 10px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px; line-height: 1; color: #2A2740">{{lp.n}}</p>
+              <p style="margin: 0 0 6px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; color: #2EE6F0">{{lp.title}}</p>
+              <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #C3C0D6">{{lp.desc}}</p>
+            </li>
+          </sc-for>
+        </ol>
+      </div>
+
+      <!-- Example of play + what you need -->
+      <div style="display: flex; flex-wrap: wrap; gap: 24px">
+        <div style="flex: 1 1 520px; min-width: 0; padding: 23px 28px; background: #08070D; border: 1px solid #2EE6F0; display: flex; flex-direction: column; gap: 14px">
+          <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.1em; color: #2EE6F0">{{t.exampleLabel}}</p>
+          <sc-for list="{{example}}" as="ex" hint-placeholder-count="5">
+            <p style="margin: 0; display: flex; align-items: baseline; gap: 12px; font-size: 15px; line-height: 1.75"><span style="flex: 0 0 72px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em; color: {{ex.color}}">{{ex.who}}</span><span style="flex: 1; min-width: 0">{{ex.line}}</span></p>
+          </sc-for>
+        </div>
+        <div style="flex: 1 1 340px; min-width: 0; padding: 28px; background: #151225; border: 1px solid #3A3655; display: flex; flex-direction: column; gap: 14px">
+          <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.1em; color: #FFD400">{{t.needLabel}}</p>
+          <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+            <sc-for list="{{needs}}" as="nd" hint-placeholder-count="4">
+              <li style="display: flex; gap: 12px; font-size: 15px; line-height: 1.6"><span style="color: #FFD400" aria-hidden="true">▸</span><span><b style="color: #FFFFFF; font-weight: 600">{{nd.name}}</b> — {{nd.desc}}</span></li>
+            </sc-for>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 LORE (tabs) -->
   <section id="lore" data-rv="lore" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 32px">
     <div class="{{rv.lore}}" style="display: flex; flex-direction: column; gap: 10px">
-      <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">01 // LORE ARCHIVE</p>
+      <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">02 // LORE ARCHIVE</p>
       <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.loreTitle}}</h2>
       <p style="margin: 0; max-width: 680px; font-size: 16px; line-height: 1.7; color: #9A97B0">{{t.loreSub}}</p>
     </div>
@@ -307,62 +361,8 @@ html{scroll-behavior:smooth}
     </sc-if>
   </section>
 
-  <!-- 02 HOW TO PLAY -->
-  <section id="howto" data-rv="howto" style="background: #0F0D19; border-top: 1px solid #2A2740; border-bottom: 1px solid #2A2740">
-    <div style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 48px">
-      <div class="{{rv.howto}}" style="display: flex; flex-wrap: wrap; gap: 40px">
-        <div style="flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
-          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">02 // NEW TO TRPG?</p>
-          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.howTitle}}</h2>
-          <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.howP1}}</p>
-          <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.howP2}}</p>
-        </div>
-        <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
-          <sc-for list="{{roles}}" as="ro" hint-placeholder-count="2">
-            <div style="padding: 22px; background: #151225; border: 1px solid #3A3655; border-left: 3px solid {{ro.accent}}">
-              <p style="margin: 0 0 6px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; color: {{ro.accent}}">{{ro.name}}</p>
-              <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #C3C0D6">{{ro.desc}}</p>
-            </div>
-          </sc-for>
-        </div>
-      </div>
-
-      <!-- Loop -->
-      <div style="display: flex; flex-direction: column; gap: 16px">
-        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 26px; color: #FFFFFF">{{t.loopTitle}}</h3>
-        <ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
-          <sc-for list="{{loop}}" as="lp" hint-placeholder-count="4">
-            <li class="{{lp.cls}}" style="position: relative; padding: 24px; background: #151225; border: 1px solid #2A2740; --d: {{lp.d}}">
-              <p style="margin: 0 0 10px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px; line-height: 1; color: #2A2740">{{lp.n}}</p>
-              <p style="margin: 0 0 6px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; color: #2EE6F0">{{lp.title}}</p>
-              <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #C3C0D6">{{lp.desc}}</p>
-            </li>
-          </sc-for>
-        </ol>
-      </div>
-
-      <!-- Example of play + what you need -->
-      <div style="display: flex; flex-wrap: wrap; gap: 24px">
-        <div style="flex: 1 1 520px; min-width: 0; padding: 23px 28px; background: #08070D; border: 1px solid #2EE6F0; display: flex; flex-direction: column; gap: 14px">
-          <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.1em; color: #2EE6F0">{{t.exampleLabel}}</p>
-          <sc-for list="{{example}}" as="ex" hint-placeholder-count="5">
-            <p style="margin: 0; display: flex; align-items: baseline; gap: 12px; font-size: 15px; line-height: 1.75"><span style="flex: 0 0 72px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em; color: {{ex.color}}">{{ex.who}}</span><span style="flex: 1; min-width: 0">{{ex.line}}</span></p>
-          </sc-for>
-        </div>
-        <div style="flex: 1 1 340px; min-width: 0; padding: 28px; background: #151225; border: 1px solid #3A3655; display: flex; flex-direction: column; gap: 14px">
-          <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.1em; color: #FFD400">{{t.needLabel}}</p>
-          <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
-            <sc-for list="{{needs}}" as="nd" hint-placeholder-count="4">
-              <li style="display: flex; gap: 12px; font-size: 15px; line-height: 1.6"><span style="color: #FFD400" aria-hidden="true">▸</span><span><b style="color: #FFFFFF; font-weight: 600">{{nd.name}}</b> — {{nd.desc}}</span></li>
-            </sc-for>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- 03 RULES -->
-  <section data-rv="rules" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 48px">
+  <section data-rv="rules" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; border-top: 1px solid #2A2740; display: flex; flex-direction: column; gap: 48px">
     <div class="{{rv.rules}}" style="display: flex; flex-direction: column; gap: 10px">
       <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">03 // CORE RULES AT A GLANCE</p>
       <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.rulesTitle}}</h2>
@@ -507,8 +507,8 @@ html{scroll-behavior:smooth}
       </div>
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; font-family: 'Chakra Petch', sans-serif; font-size: 14px; font-weight: 600">
         <a href="index.html" style="padding: 12px 0">{{t.navHome}}</a>
-        <a href="#lore" style="padding: 12px 0">LORE</a>
         <a href="#howto" style="padding: 12px 0">{{t.navHow}}</a>
+        <a href="#lore" style="padding: 12px 0">LORE</a>
         <a href="#store" style="padding: 12px 0">{{t.navStore}}</a>
         <a href="#top" style="padding: 12px 0">{{t.backTop}}</a>
       </div>
