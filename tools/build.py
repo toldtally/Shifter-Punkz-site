@@ -211,7 +211,7 @@ def session_nav(body):
     body = body[:m.start()] + swap + body[m.end():]
     # "create a character" CTAs open the beta sheet for signed-in testers; visitors still see SOON
     cta = re.compile(r'<span role="link" aria-disabled="true" title="Coming soon" data-soon( style="[^"]*")>\{\{t\.ctaChar\}\}<span class="soon-chip">SOON</span></span>')
-    return cta.sub(lambda c: '<sc-if value="{{spSignedOut}}">%s</sc-if><sc-if value="{{spSignedIn}}"><a href="beta/character.html"%s>{{t.ctaChar}}</a></sc-if>' % (c.group(0), c.group(1)), body)
+    return cta.sub(lambda c: '<sc-if value="{{spSignedOut}}"><a href="beta/auth.html?next=character.html"%s>{{t.ctaChar}}</a></sc-if><sc-if value="{{spSignedIn}}"><a href="beta/character.html"%s>{{t.ctaChar}}</a></sc-if>' % (c.group(1), c.group(1)), body)
 
 
 def strip_spoilers(name, js):

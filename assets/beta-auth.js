@@ -5,6 +5,13 @@
   var val = function (id) { var el = document.getElementById(id); return el ? el.value : ''; };
   var checked = function (id) { var el = document.getElementById(id); return !!(el && el.checked); };
 
+  var NEXT_KEY = 'sp-next';
+  var takeNext = function () {
+    var n = new URLSearchParams(location.search).get('next');
+    try { if (!n) n = sessionStorage.getItem(NEXT_KEY); sessionStorage.removeItem(NEXT_KEY); } catch (e) {}
+    return n && /^[a-z-]+\.html$/.test(n) ? n : null;
+  };
+
   class Page extends Component {
     constructor(props) {
       super(props);
@@ -32,6 +39,8 @@
       if (SP.landing === 'invite' || SP.landing === 'recovery') {
         this.setState({ mode: 'setpw', setPwKind: SP.landing });
       } else {
+        var go = takeNext();
+        if (go) { location.replace(go); return; }
         this.setState({ mode: 'done' });
       }
     }
@@ -65,8 +74,8 @@
       var r = await sb.auth.signInWithPassword({ email: email, password: pw });
       if (r.error) return this.fail(r.error);
       await this.loadProfile();
-      var next = new URLSearchParams(location.search).get('next');
-      if (next && /^[a-z-]+\.html$/.test(next)) { location.href = next; return; }
+      var next = takeNext();
+      if (next) { location.href = next; return; }
       this.setState({ mode: 'done', busy: false, msg: '' });
     }
 
@@ -98,6 +107,8 @@
 
     async social(provider) {
       this.setState({ busy: true, msg: '' });
+      var n = new URLSearchParams(location.search).get('next');
+      try { if (n) sessionStorage.setItem(NEXT_KEY, n); } catch (e) {}
       var r = await sb.auth.signInWithOAuth({ provider: provider, options: { redirectTo: SP.base + 'auth.html' } });
       if (r.error) this.fail(r.error);
     }
