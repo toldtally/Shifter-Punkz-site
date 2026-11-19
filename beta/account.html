@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ตั้งค่าบัญชี · Shifter Punkz</title>
+<meta name="description" content="ตั้งค่าบัญชี Shifter Punkz (beta)">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="ตั้งค่าบัญชี · Shifter Punkz">
+<meta property="og:description" content="ตั้งค่าบัญชี Shifter Punkz (beta)">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0A12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%230B0A12'/%3E%3Cpath d='M4 4h12l8 8v12H12L4 16z' fill='none' stroke='%23FF2E88' stroke-width='2.5'/%3E%3Cpath d='M10 10h6v6h-6z' fill='%232EE6F0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;background:#0B0A12}
+a{color:#2EE6F0}a:hover{color:#FF2E88}
+.hero-gl{animation:glHero .9s linear var(--d,0s) both}
+@keyframes glHero{
+0%{opacity:0;clip-path:inset(40% 0 45% 0);transform:translate3d(-18px,0,0);text-shadow:-5px 0 #FF2E88,5px 0 #2EE6F0}
+7%{opacity:1;clip-path:inset(8% 0 72% 0);transform:translate3d(14px,0,0)}
+14%{clip-path:inset(58% 0 18% 0);transform:translate3d(-10px,0,0)}
+21%{clip-path:inset(0 0 0 0);transform:translate3d(6px,0,0);opacity:.45}
+29%{opacity:1;clip-path:inset(22% 0 52% 0);transform:translate3d(-14px,0,0)}
+37%{clip-path:inset(0 0 0 0);transform:translate3d(4px,0,0);text-shadow:-3px 0 #FF2E88,3px 0 #2EE6F0}
+54%{transform:translate3d(-3px,0,0);opacity:.75}
+66%{opacity:1;transform:translate3d(1px,0,0);text-shadow:-2px 0 rgba(255,46,136,.7),2px 0 rgba(46,230,240,.7)}
+100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+.fld{width:100%;box-sizing:border-box;min-height:46px;padding:10px 12px;background:#0B0A12;border:1px solid #3A3655;color:#FFFFFF;font-family:'IBM Plex Sans Thai',sans-serif;font-size:15px}
+.fld:focus{outline:2px solid #2EE6F0;outline-offset:-1px}
+.fld[readonly]{color:#A9A5C2}
+@media (prefers-reduced-motion: reduce){.hero-gl{animation:none}}
+
+[data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
+[data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+@media (max-width: 720px){
+  p.hero-gl{width:auto!important;height:auto!important;max-width:100%!important}
+  .hero-bg{justify-content:center!important;align-items:flex-end!important;padding:0 16px 20px!important;font-size:10px}
+  .hero-bg > *{opacity:.45}
+}
+[aria-busy="true"]{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<template id="dc-tpl">
+<div style="background: #0B0A12; color: #D8D6E8; font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; min-height: 100vh; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px)">
+
+  <div style="display: flex; align-items: stretch; background: #FFD400; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em">
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+    <p style="margin: 0; padding: 9px 16px; flex: 1; min-width: 0">{{t.advisory}}</p>
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+  </div>
+
+  <header style="border-bottom: 1px solid #2A2740">
+    <nav style="max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 4h12l8 8v12H12L4 16z" fill="none" stroke="#FF2E88" stroke-width="2.5"></path><path d="M10 10h6v6h-6z" fill="#2EE6F0"></path></svg>
+        <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
+        <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
+        <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+      </div>
+      <a href="#profile" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid {{roleColor}}; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">
+        <span style="width: 30px; height: 30px; background: #1D1930; border: 1px solid #3A3655; display: flex; align-items: center; justify-content: center; font-size: 13px; color: {{roleColor}}" aria-hidden="true">{{initial}}</span>
+        <span>{{shownName}}</span>
+      </a>
+      <div role="group" aria-label="Language" style="display: flex; border: 1px solid #2EE6F0">
+        <button type="button" onClick="{{setTh}}" aria-pressed="{{thPressed}}" style="{{thStyle}}">TH</button>
+        <button type="button" onClick="{{setEn}}" aria-pressed="{{enPressed}}" style="{{enStyle}}">EN</button>
+      </div>
+    </nav>
+  </header>
+
+  <main style="max-width: 1280px; margin: 0 auto; padding: 56px 24px 96px; display: flex; flex-direction: column; gap: 36px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <p class="hero-gl" style="--d: 0.05s; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">USER ID // {{publicId}}</p>
+      <h1 class="hero-gl" style="--d: 0.2s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.3)">{{t.title}}</h1>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+      <!-- Section index -->
+      <nav aria-label="{{t.title}}" style="flex: 1 1 220px; max-width: 260px; min-width: 0; display: flex; flex-direction: column; border: 1px solid #2A2740; background: #151225">
+        <sc-for list="{{sections}}" as="sc" hint-placeholder-count="5">
+          <a href="#{{sc.id}}" style="display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; border-bottom: 1px solid #2A2740; text-decoration: none; color: #D8D6E8; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 15px"><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{sc.accent}}">{{sc.code}}</span>{{sc.label}}</a>
+        </sc-for>
+      </nav>
+
+      <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+
+        <!-- Profile -->
+        <section id="profile" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; display: flex; flex-direction: column; gap: 20px">
+          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.profile}}</h2>
+          <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center">
+            <div style="width: 88px; height: 88px; flex-shrink: 0; background: #0B0A12; border: 1px solid {{roleColor}}; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 34px; color: {{roleColor}}" aria-hidden="true"><sc-if value="{{avatarUrl}}" hint-placeholder-val="{{ false }}"><img src="{{avatarUrl}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{noAvatar}}" hint-placeholder-val="{{ true }}">{{initial}}</sc-if></div>
+            <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+              <label for="acc-avatar" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.avatar}}</label>
+              <input id="acc-avatar" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{onAvatar}}" style="font-size: 13px; color: #A9A5C2; max-width: 100%">
+              <p style="margin: 0; font-size: 12px; color: #8C88A6">{{t.avatarHint}}</p>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <label for="acc-name" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.displayName}}</label>
+              <input id="acc-name" class="fld" type="text" maxlength="30" value="{{name}}" onInput="{{setName}}">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <label for="acc-email" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.email}}</label>
+              <input id="acc-email" class="fld" type="email" value="{{email}}" readonly>
+            </div>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
+            <button type="button" onClick="{{saveProfile}}" style="min-height: 46px; padding: 0 24px; border: 0; background: #FF2E88; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.06em; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.save}}</button>
+            <p role="status" style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #2EE6F0">{{savedMsg}}</p>
+          </div>
+        </section>
+
+        <!-- Role -->
+        <section id="role" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{roleColor}}; display: flex; flex-direction: column; gap: 18px">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px">
+            <h2 id="role-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.roleTitle}}</h2>
+            <p style="margin: 0; padding: 4px 10px; border: 1px solid {{roleColor}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: {{roleColor}}">{{roleChip}}</p>
+          </div>
+          <div role="group" aria-labelledby="role-h" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
+            <sc-for list="{{roles}}" as="rl" hint-placeholder-count="2">
+              <button type="button" aria-pressed="{{rl.pressed}}" onClick="{{rl.pick}}" style="{{rl.style}}">
+                <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px">{{rl.name}}</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{rl.accent}}">{{rl.state}}</span></span>
+                <span style="display: block; margin-top: 6px; font-size: 14px; line-height: 1.6; color: #A9A5C2">{{rl.desc}}</span>
+              </button>
+            </sc-for>
+          </div>
+          <p role="status" style="margin: 0; padding: 12px 14px; background: #0B0A12; border-left: 2px solid {{roleColor}}; font-size: 14px; line-height: 1.6; color: #D8D6E8">{{roleMsg}}</p>
+          <sc-if value="{{isGm}}" hint-placeholder-val="{{ false }}">
+            <span role="link" aria-disabled="true" title="Coming soon" data-soon style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openGm}}<span class="soon-chip">SOON</span></span>
+          </sc-if>
+          <sc-if value="{{isPlayer}}" hint-placeholder-val="{{ true }}">
+            <span role="link" aria-disabled="true" title="Coming soon" data-soon style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openMine}}<span class="soon-chip">SOON</span></span>
+          </sc-if>
+        </section>
+
+        <!-- Sign-in methods -->
+        <section id="signin" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0; display: flex; flex-direction: column; gap: 16px">
+          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.signin}}</h2>
+          <div style="display: flex; flex-direction: column; gap: 1px; background: #2A2740; border: 1px solid #2A2740">
+            <sc-for list="{{methods}}" as="me" hint-placeholder-count="3">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 16px 18px; background: #0B0A12">
+                <span style="width: 10px; height: 10px; flex-shrink: 0; background: {{me.dot}}" aria-hidden="true"></span>
+                <span style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px"><b style="font-family: 'Chakra Petch', sans-serif; font-size: 17px; color: #FFFFFF">{{me.name}}</b><span style="font-size: 13px; color: #A9A5C2">{{me.status}}</span></span>
+                <button type="button" onClick="{{me.act}}" style="{{me.btnStyle}}">{{me.btn}}</button>
+              </div>
+            </sc-for>
+          </div>
+          <p style="margin: 0; font-size: 13px; color: #8C88A6">{{t.signinHint}}</p>
+        </section>
+
+        <!-- Notifications -->
+        <section id="notify" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FFD400; display: flex; flex-direction: column; gap: 14px">
+          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.notify}}</h2>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; padding: 16px 18px; background: #0B0A12; border: 1px solid #2A2740">
+            <span style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 2px"><b id="news-l" style="font-family: 'Chakra Petch', sans-serif; font-size: 17px; color: #FFFFFF">{{t.newsTitle}}</b><span style="font-size: 13px; line-height: 1.6; color: #A9A5C2">{{t.newsDesc}}</span></span>
+            <button type="button" role="switch" aria-checked="{{newsChecked}}" aria-labelledby="news-l" onClick="{{toggleNews}}" style="{{newsTrack}}"><span style="{{newsKnob}}"></span></button>
+          </div>
+        </section>
+
+        <!-- Session / danger -->
+        <section id="danger" style="padding: 28px; background: #151225; border: 1px solid #4A1630; border-top: 3px solid #FF3D6E; display: flex; flex-direction: column; gap: 16px">
+          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.danger}}</h2>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px">
+            <a href="auth.html" onClick="{{logout}}" style="display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; border: 1.5px solid #3A3655; color: #D8D6E8; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.logout}}</a>
+            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{askDelete}}" style="min-height: 46px; padding: 0 22px; border: 1.5px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.del}}</button>
+            </sc-if>
+          </div>
+          <sc-if value="{{confirming}}" hint-placeholder-val="{{ false }}">
+            <div role="alert" style="display: flex; flex-direction: column; gap: 12px; padding: 18px; background: #1A0B14; border: 1px solid #FF3D6E">
+              <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; color: #FF3D6E">{{t.delTitle}}</p>
+              <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #E8C9D3">{{t.delBody}}</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 10px">
+                <button type="button" onClick="{{cancelDelete}}" style="min-height: 44px; padding: 0 20px; border: 1.5px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.cancel}}</button>
+                <a href="auth.html" onClick="{{doDelete}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; background: #FF3D6E; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.delConfirm}}</a>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.6; color: #8C88A6">{{t.protoNote}}</p>
+      </div>
+    </div>
+  </main>
+</div>
+</template>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../assets/dc.js"></script>
+<script src="../assets/sp.js"></script>
+<script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'th', role: 'player', name: 'Nox', news: true, saved: false, switched: false, confirm: false, google: true, discord: false };
+  }
+  renderVals() {
+    const th = this.state.lang !== 'en';
+    const L = (a, b) => (th ? a : b);
+    const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
+    const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
+    const roleDefs = [
+      { id: 'player', name: L('ผู้เล่น', 'Player'), accent: '#2EE6F0', desc: L('สร้างตัวละคร เข้าร่วม session และเล่นภารกิจกับ GM', 'Create characters, join sessions and play missions.') },
+      { id: 'gm', name: 'GM', accent: '#FFD400', desc: L('เปิด session เล่าเรื่อง และดูใบตัวละครของผู้เล่นใน GM Monitor', 'Run sessions, tell the story and see players\' sheets in the GM Monitor.') }
+    ];
+    const cur = roleDefs.find((r) => r.id === this.state.role) || roleDefs[0];
+    const nm = (this.state.name || '').trim();
+    const btnBase = 'min-height: 44px; padding: 0 18px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 14px; background: transparent; ';
+    const linked = (on) => (on ? 'border: 1.5px solid #3A3655; color: #D8D6E8' : 'border: 1.5px solid #2EE6F0; color: #2EE6F0');
+    const news = !!this.state.news;
+    return {
+      setTh: () => this.setState({ lang: 'th' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      thPressed: th ? 'true' : 'false',
+      enPressed: th ? 'false' : 'true',
+      thStyle: th ? on : off,
+      enStyle: th ? off : on,
+      name: this.state.name,
+      shownName: nm || L('ไม่มีชื่อ', 'No name'),
+      initial: (nm || '?').charAt(0).toUpperCase(),
+      setName: (e) => this.setState({ name: e && e.target ? e.target.value : '', saved: false }),
+      saveProfile: () => this.setState({ saved: true }),
+      savedMsg: this.state.saved ? L('> บันทึกโปรไฟล์แล้ว', '> PROFILE SAVED') : '',
+      roleColor: cur.accent,
+      isGm: cur.id === 'gm',
+      isPlayer: cur.id === 'player',
+      roleChip: 'ROLE // ' + cur.name.toUpperCase(),
+      roles: roleDefs.map((r) => Object.assign({}, r, {
+        pressed: r.id === cur.id ? 'true' : 'false',
+        state: r.id === cur.id ? L('● ใช้งานอยู่', '● ACTIVE') : L('สลับมาใช้', 'SWITCH'),
+        style: 'text-align: left; padding: 18px; cursor: pointer; background: #0B0A12; color: #FFFFFF; min-height: 44px; ' + (r.id === cur.id ? 'border: 2px solid ' + r.accent + '; box-shadow: 0 0 18px ' + (r.id === 'gm' ? 'rgba(255,212,0,0.18)' : 'rgba(46,230,240,0.18)') : 'border: 2px solid #3A3655'),
+        pick: () => { if (r.id !== this.state.role) this.setState({ role: r.id, switched: true }); }
+      })),
+      roleMsg: this.state.switched
+        ? L('เปลี่ยนบทบาทเป็น ', 'Role switched to ') + cur.name + L(' แล้ว 1 บัญชีเป็นได้ทีละ 1 บทบาท บทบาทเดิมจะปิดอัตโนมัติ', '. One account holds one role at a time, so your previous role is now off.')
+        : L('1 บัญชีเป็นได้ทีละ 1 บทบาท เลือกบทบาทที่ต้องการใช้ แล้วสลับได้ทุกเมื่อ', 'One account holds one role at a time. Pick the one you need and switch whenever you like.'),
+      methods: [
+        { name: L('อีเมล + รหัสผ่าน', 'Email + password'), dot: '#4ADE80', status: 'player@example.com', btn: L('เปลี่ยนรหัสผ่าน', 'Change password'), btnStyle: btnBase + 'border: 1.5px solid #3A3655; color: #D8D6E8', act: () => {} },
+        { name: 'Google', dot: this.state.google ? '#4ADE80' : '#3A3655', status: this.state.google ? L('เชื่อมต่อแล้ว', 'Connected') : L('ยังไม่เชื่อมต่อ', 'Not connected'), btn: this.state.google ? L('ยกเลิกการเชื่อมต่อ', 'Disconnect') : L('เชื่อมต่อ', 'Connect'), btnStyle: btnBase + linked(this.state.google), act: () => this.setState({ google: !this.state.google }) },
+        { name: 'Discord', dot: this.state.discord ? '#4ADE80' : '#3A3655', status: this.state.discord ? L('เชื่อมต่อแล้ว', 'Connected') : L('ยังไม่เชื่อมต่อ', 'Not connected'), btn: this.state.discord ? L('ยกเลิกการเชื่อมต่อ', 'Disconnect') : L('เชื่อมต่อ', 'Connect'), btnStyle: btnBase + linked(this.state.discord), act: () => this.setState({ discord: !this.state.discord }) }
+      ],
+      newsChecked: news ? 'true' : 'false',
+      toggleNews: () => this.setState({ news: !this.state.news }),
+      newsTrack: 'position: relative; flex-shrink: 0; width: 56px; height: 30px; padding: 0; cursor: pointer; border: 1.5px solid ' + (news ? '#FF2E88' : '#3A3655') + '; background: ' + (news ? 'rgba(255,46,136,0.18)' : '#151225'),
+      newsKnob: 'position: absolute; top: 3px; left: ' + (news ? '29px' : '3px') + '; width: 21px; height: 21px; background: ' + (news ? '#FF2E88' : '#8C88A6') + '; transition: left .15s',
+      confirming: !!this.state.confirm,
+      notConfirming: !this.state.confirm,
+      askDelete: () => this.setState({ confirm: true }),
+      cancelDelete: () => this.setState({ confirm: false }),
+      sections: [
+        { id: 'profile', code: '01', accent: '#FF2E88', label: L('โปรไฟล์', 'Profile') },
+        { id: 'role', code: '02', accent: cur.accent, label: L('บทบาท', 'Role') },
+        { id: 'signin', code: '03', accent: '#2EE6F0', label: L('วิธีเข้าสู่ระบบ', 'Sign-in methods') },
+        { id: 'notify', code: '04', accent: '#FFD400', label: L('การแจ้งเตือน', 'Notifications') },
+        { id: 'danger', code: '05', accent: '#FF3D6E', label: L('บัญชี', 'Account') }
+      ],
+      t: {
+        advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
+        navHome: L('หน้าแรก', 'HOME'),
+        title: L('ตั้งค่าบัญชี', 'Account settings'),
+        profile: L('โปรไฟล์', 'Profile'),
+        avatar: L('รูปโปรไฟล์', 'PROFILE PICTURE'),
+        avatarHint: L('JPG หรือ PNG ขนาดไม่เกิน 2 MB', 'JPG or PNG, up to 2 MB'),
+        displayName: L('ชื่อที่แสดง', 'DISPLAY NAME'),
+        email: L('อีเมล', 'EMAIL'),
+        save: L('บันทึก', 'Save'),
+        roleTitle: L('บทบาท', 'Role'),
+        openMine: L('ตัวละครของฉัน', 'My characters'),
+        openGm: L('Session ของฉัน', 'My sessions'),
+        signin: L('วิธีเข้าสู่ระบบ', 'Sign-in methods'),
+        signinHint: L('ต้องเหลือวิธีเข้าสู่ระบบอย่างน้อย 1 วิธีเสมอ', 'Keep at least one way to sign in.'),
+        notify: L('การแจ้งเตือน', 'Notifications'),
+        newsTitle: L('ข่าวสารทางอีเมล', 'Email news'),
+        newsDesc: L('ข่าวหนังสือ ภาคเสริม และอัปเดตของ Shifter Punkz', 'Books, expansions and Shifter Punkz updates'),
+        danger: L('บัญชี', 'Account'),
+        logout: L('ออกจากระบบ', 'Log out'),
+        del: L('ลบบัญชี', 'Delete account'),
+        delTitle: L('ลบบัญชีนี้ถาวร?', 'Delete this account for good?'),
+        delBody: L('บัญชี ตัวละครทั้งหมด และข้อมูล session GM ของคุณจะถูกลบ และกู้คืนไม่ได้', 'Your account, all your characters and your GM session data will be deleted. This can\'t be undone.'),
+        cancel: L('ยกเลิก', 'Cancel'),
+        delConfirm: L('ลบบัญชีถาวร', 'Delete permanently'),
+        protoNote: L('PROTOTYPE // ข้อมูลในหน้านี้เป็นตัวอย่าง ยังไม่เชื่อมระบบสมาชิกจริง', 'PROTOTYPE // Sample data only. Not connected to real accounts yet.')
+      }
+    };
+  }
+}
+</script>
+<script src="../assets/beta-account.js"></script>
+</body>
+</html>

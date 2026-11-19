@@ -9,6 +9,8 @@ Published by Rollaholic Games · Game Designer: Jittrapa K. (Prim)
 |---|---|
 | `index.html` | หน้า Home + Media Hub |
 | `trpg.html` | หน้า TRPG (Lore, วิธีเล่น, กฎย่อ, ร้านหนังสือ) |
+| `beta/auth.html`, `beta/account.html` | ระบบสมาชิกช่วงทดสอบ (เปิดเฉพาะผู้ได้รับเชิญ) |
+| `assets/sp.js`, `assets/beta-*.js` | เชื่อม Supabase (Auth, profiles, storage) |
 | `assets/dc.js` | ตัวเรนเดอร์เทมเพลตขนาดเล็ก (ภาษา TH/EN, เมนู, แท็บ, อนิเมชัน) |
 | `tools/build.py` | สคริปต์แปลง artboard จาก design canvas เป็นหน้าเว็บ |
 | `.github/workflows/static.yml` | deploy ขึ้น GitHub Pages อัตโนมัติเมื่อ push เข้า `main` |
@@ -20,9 +22,11 @@ Published by Rollaholic Games · Game Designer: Jittrapa K. (Prim)
 3. `python3 tools/build.py <โฟลเดอร์นั้น>`
 4. commit และ push เข้า `main` เว็บจะอัปเดตเองภายใน 1–2 นาที
 
-## ยังไม่เปิด (เฟส 2)
+## Beta (เฟส 2)
 
-เข้าสู่ระบบ, Character Sheet, My Characters, Session ของฉัน และ GM Monitor
-จะเปิดหลังเชื่อม Supabase (Google / Email / Discord) ตอนนี้ลิงก์เหล่านี้ขึ้นป้าย SOON
+หน้า `beta/` ใช้ Supabase project `Shifter Punkz site` ยังไม่มีลิงก์จากหน้าสาธารณะ
+(ปุ่มเข้าสู่ระบบบนหน้า Home/TRPG ยังเป็น SOON) — ทดสอบผ่านลิงก์ตรงเท่านั้น
+
+ยังไม่เปิด: Character Sheet, My Characters, Session ของฉัน, GM Monitor
 
 > repo นี้เป็น public — ห้ามใส่เนื้อหาสำหรับ GM (spoiler) หรือข้อมูลลับลงใน repo

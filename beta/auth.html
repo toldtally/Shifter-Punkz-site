@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เข้าสู่ระบบ · Shifter Punkz</title>
+<meta name="description" content="เข้าสู่ระบบ Shifter Punkz (beta)">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="เข้าสู่ระบบ · Shifter Punkz">
+<meta property="og:description" content="เข้าสู่ระบบ Shifter Punkz (beta)">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0A12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%230B0A12'/%3E%3Cpath d='M4 4h12l8 8v12H12L4 16z' fill='none' stroke='%23FF2E88' stroke-width='2.5'/%3E%3Cpath d='M10 10h6v6h-6z' fill='%232EE6F0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;background:#0B0A12}
+a{color:#2EE6F0}a:hover{color:#FF2E88}
+.hero-gl{animation:glHero .9s linear var(--d,0s) both}
+@keyframes glHero{
+0%{opacity:0;clip-path:inset(40% 0 45% 0);transform:translate3d(-18px,0,0);text-shadow:-5px 0 #FF2E88,5px 0 #2EE6F0}
+7%{opacity:1;clip-path:inset(8% 0 72% 0);transform:translate3d(14px,0,0)}
+14%{clip-path:inset(58% 0 18% 0);transform:translate3d(-10px,0,0)}
+21%{clip-path:inset(0 0 0 0);transform:translate3d(6px,0,0);opacity:.45}
+29%{opacity:1;clip-path:inset(22% 0 52% 0);transform:translate3d(-14px,0,0)}
+37%{clip-path:inset(0 0 0 0);transform:translate3d(4px,0,0);text-shadow:-3px 0 #FF2E88,3px 0 #2EE6F0}
+54%{transform:translate3d(-3px,0,0);opacity:.75}
+66%{opacity:1;transform:translate3d(1px,0,0);text-shadow:-2px 0 rgba(255,46,136,.7),2px 0 rgba(46,230,240,.7)}
+100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+.cpd-play .cpd-body{animation:cpdFade .3s ease-out .6s both}
+.crt{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:32px;pointer-events:none;background:#050508;background-image:repeating-linear-gradient(0deg,rgba(255,212,0,.07) 0 1px,transparent 1px 3px)}
+.cpd-play .crt{animation:crtOn .3s cubic-bezier(.2,.8,.2,1) both,crtOff .2s ease-in .55s forwards}
+.bl{margin:0;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.06em;color:#FFD400;white-space:nowrap;clip-path:inset(0 100% 0 0)}
+.bl-ok{color:#2EE6F0}
+.cpd-play .bl{animation:blType .12s steps(16) var(--d,0s) forwards}
+@keyframes crtOn{0%{transform:scale(0,.004);filter:brightness(4)}45%{transform:scale(1,.004);filter:brightness(3)}100%{transform:scale(1,1);filter:brightness(1)}}
+@keyframes crtOff{to{opacity:0;visibility:hidden}}
+@keyframes blType{to{clip-path:inset(0 0 0 0)}}
+@keyframes cpdFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fld{width:100%;box-sizing:border-box;min-height:46px;padding:10px 12px;background:#0B0A12;border:1px solid #3A3655;color:#FFFFFF;font-family:'IBM Plex Sans Thai',sans-serif;font-size:15px}
+.fld:focus{outline:2px solid #2EE6F0;outline-offset:-1px}
+.fld::placeholder{color:#8C88A6}
+@media (prefers-reduced-motion: reduce){.hero-gl,.cpd-play .cpd-body{animation:none}.crt{display:none}}
+
+[data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
+[data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+@media (max-width: 720px){
+  p.hero-gl{width:auto!important;height:auto!important;max-width:100%!important}
+  .hero-bg{justify-content:center!important;align-items:flex-end!important;padding:0 16px 20px!important;font-size:10px}
+  .hero-bg > *{opacity:.45}
+}
+[aria-busy="true"]{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<template id="dc-tpl">
+<div style="background: #0B0A12; color: #D8D6E8; font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; min-height: 100vh; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px)">
+
+  <!-- Advisory strip -->
+  <div style="display: flex; align-items: stretch; background: #FFD400; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em">
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+    <p style="margin: 0; padding: 9px 16px; flex: 1; min-width: 0">{{t.advisory}}</p>
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+  </div>
+
+  <!-- Nav -->
+  <header style="border-bottom: 1px solid #2A2740">
+    <nav style="max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 4h12l8 8v12H12L4 16z" fill="none" stroke="#FF2E88" stroke-width="2.5"></path><path d="M10 10h6v6h-6z" fill="#2EE6F0"></path></svg>
+        <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
+        <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
+        <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+      </div>
+      <div role="group" aria-label="Language" style="display: flex; border: 1px solid #2EE6F0">
+        <button type="button" onClick="{{setTh}}" aria-pressed="{{thPressed}}" style="{{thStyle}}">TH</button>
+        <button type="button" onClick="{{setEn}}" aria-pressed="{{enPressed}}" style="{{enStyle}}">EN</button>
+      </div>
+    </nav>
+  </header>
+
+  <main style="max-width: 1280px; margin: 0 auto; padding: 64px 24px 96px; display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start">
+
+    <!-- Left: why sign up -->
+    <section style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 22px; padding-top: 12px">
+      <div style="align-self: flex-start; display: flex; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid #FFD400; background: #17140A; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #FFD400">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="6" width="9" height="6.5" fill="none" stroke="#FFD400" stroke-width="1.5"></rect><path d="M4.5 6V4.2a2.5 2.5 0 0 1 5 0V6" fill="none" stroke="#FFD400" stroke-width="1.5"></path></svg>
+        ACCESS RESTRICTED // REGISTERED PLAYERS ONLY
+      </div>
+      <h1 class="hero-gl" style="--d: 0.1s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(40px, 5.5vw, 68px); line-height: 1.02; color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.35)">{{t.leftTitle}}</h1>
+      <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{perks}}" as="pk" hint-placeholder-count="3">
+          <li style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid {{pk.accent}}">
+            <span style="flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{pk.accent}}; padding-top: 3px">{{pk.code}}</span>
+            <span style="display: flex; flex-direction: column; gap: 2px"><b style="font-family: 'Chakra Petch', sans-serif; font-size: 17px; color: #FFFFFF">{{pk.title}}</b><span style="font-size: 14px; line-height: 1.6; color: #A9A5C2">{{pk.desc}}</span></span>
+          </li>
+        </sc-for>
+      </ul>
+    </section>
+
+    <!-- Right: auth card (CRT boot on open) -->
+    <section aria-label="Account" class="cpd-play" style="flex: 1 1 460px; min-width: 0; max-width: 560px; position: relative; overflow: hidden; background: #151225; border: 1px solid #3A3655; border-top: 3px solid #2EE6F0; box-shadow: 0 0 40px rgba(46,230,240,0.12)">
+      <div class="crt" aria-hidden="true">
+        <p class="bl" style="--d: 0.2s">C.P.D. CITIZEN REGISTRY v26.0</p>
+        <p class="bl" style="--d: 0.3s">&gt; VERIFYING IDENTITY...</p>
+        <p class="bl bl-ok" style="--d: 0.42s">&gt; READY</p>
+      </div>
+      <div class="cpd-body" style="padding: 32px; display: flex; flex-direction: column; gap: 22px">
+
+        <sc-if value="{{isSetPw}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 16px">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #4ADE80">ACCESS GRANTED // INVITE</p>
+              <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 26px; color: #FFFFFF">{{setPwTitle}}</h2>
+              <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #A9A5C2">{{setPwSub}}</p>
+            </div>
+            <sc-if value="{{setPwNeedsName}}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <label for="sp-name" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.displayName}}</label>
+                <input id="sp-name" class="fld" type="text" maxlength="30" value="{{setPwName}}" placeholder="{{t.displayPh}}">
+              </div>
+            </sc-if>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <label for="sp-pw" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{setPwLabel}}</label>
+              <input id="sp-pw" class="fld" type="password" autocomplete="new-password" placeholder="••••••••">
+              <span style="font-size: 12px; color: #8C88A6">{{t.pwHint}}</span>
+            </div>
+            <sc-if value="{{setPwNeedsName}}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; flex-direction: column; gap: 8px">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.roleLabel}}</span>
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+                  <sc-for list="{{roles}}" as="rl" hint-placeholder-count="2">
+                    <button type="button" aria-pressed="{{rl.pressed}}" onClick="{{rl.pick}}" style="{{rl.style}}"><span style="display: block; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; color: {{rl.accent}}">{{rl.name}}</span><span style="display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.5; color: #A9A5C2">{{rl.desc}}</span></button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><p role="status" aria-live="polite" style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid {{msgColor}}; font-size: 13.5px; line-height: 1.55; color: #E4E1F0">{{msg}}</p></sc-if>
+            <button type="button" onClick="{{savePassword}}" style="min-height: 52px; border: 0; cursor: pointer; background: #FF2E88; color: #0B0A12; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 0.06em">{{setPwBtn}}</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{notDone}}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; gap: 22px">
+            <!-- Tabs -->
+            <div role="tablist" aria-label="Account mode" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #3A3655">
+              <button type="button" role="tab" aria-selected="{{signupSel}}" onClick="{{goSignup}}" style="{{signupTab}}">{{t.tabSignup}}</button>
+              <button type="button" role="tab" aria-selected="{{loginSel}}" onClick="{{goLogin}}" style="{{loginTab}}">{{t.tabLogin}}</button>
+            </div>
+
+            <!-- Social -->
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <button type="button" onClick="{{socialGoogle}}" style="display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; border: 1px solid #3A3655; background: #FFFFFF; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.03em"><img src="data:image/png;base64,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" alt="" aria-hidden="true" style="width: auto; height: 20px; flex-shrink: 0; display: block">{{t.withGoogle}}</button>
+              <button type="button" onClick="{{socialDiscord}}" style="display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; border: 1px solid #5865F2; background: #5865F2; color: #FFFFFF; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.03em"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAAoCAYAAABerrI1AAAFwklEQVR42tWZTahVVRTHf/vc+zRNscyU1Mr8JCmttKJCiybiICqMGmjyhCAqG0gfo4YSFFLQpKAGBlEQBCalYBZaIH7UQMkijQqqp6j5kS+fvvfu+TdZW1bbc+89510Htw2Hc889Z6+9vvZa/7V2oM2QFIAMIITQcP9PBu4G7rf7LcAa4FNgFNCg/agBg8Aq4A1gP7AH+BrYG0I45darpTyMaJhA/nm6pKckbZJ0VJeOPSNc5/sCWn9I+ljSaklTWvGVjtBKoBCCTEPLgV5gGTDOfwbkjk4GPA/0ATOAScBVwBX2LgcGgNPACeA3YDbwur2LNLOEt9PAFmBjCOELz19poSRlRnyaudMd7nXDCZDOVytFtTJWE1q5c9M4dgEPAyfNHfOyQtVCCA1Jm4GHgCETIivBdG4MqYQwwa6shNC5XT3AhyGElZHPMv5ds/tj5tuD6p6RO36We36bWso2YADGAgeB652Pd8uIe/gwsNCip/z+SpnNzEfXATfY/ukmgSLPDWAu8JzxWyu0lAsOk4GfgPHO57ttxOBwEpgHnLKgodRSMUSuAyYkoZoutFZuKWOt8V37j6VcMrsGOGS5hS4WChddT5grnonWipaqmbS9wNXms90sUFR4A7gWWOWt5S1Vt4g3uwsjXrtIeBC4DchDCMok1U3KB4A5/yOB4t6Sgen7IqzLnG8+mUCTKtpq2KUO9kekMZL1Bay8GPDM/cYDv1g0KYvf1MSqjTRvtBlF3+cV0kluPPQBs0MIA5Ghe02gvIJAEbMdArYBe4FhYzCvoOVYU+02Oj87jKkK4X0qcJeHRxsMVw2VxF+SdETSo5J6HJ35kj639402dOL7TZLmORqjJD0h6XiyXqsR+V7vhdptfw6XEKgh6YykW2PklJQZIonP29rQi/9/5hGNXXFLLJbUb+u1EyzS2xGJTTUmy2glauQVmzs6AcR1u8+SNGD08gLF5JL+kXSjn+eUMtp+r0/Wbec9xyVNQtKykgLlrhSZ5a3TpHTZ3sRa8Xlrs9LBWe1m+z6vUJ4szYAFCUhsB0uOAX2Gjos2cjAX+jGZl9L5wZU6l6xl9PsMrJYJGrFYXJAB80cAT8pEyPplSq5VgcD8DJhZErz60mS6uV7RnNwQysImdOPzAvuuyALRtW8yLFomd8b3MzOL72URecMs0Gvu0ePbVZJ6Qgi5pIXAnS4PFSlniaTZ1gvpSarvutFf44Br2TENSX9VyAcxpJ+TdE+ysWMoHi1pV8mQ/pWLmMEHHkkPSrpQMqR7/vuQdH4EzQ9JOi2pV9KVjpHFknZWTL5fSrrd0RhnDdOzFZTtvzsTJI2kwvU+/rs1JSckkTSrgNsEHAD+tn00vYM+4mCQ1AmyzpuA0axDQNso2WMsGkOdCJVC/9BBo0buCh3Wc0N1Q9b1ikJEC4XLVFCGJm3nxghy1VAG9FdoE8eQXDcmhjssDlsVi7HFkFW0dn/mtFQWJm0H3gHO2aI1l0uGnTtW2ZfDTpCaXf3A28COJnCrWb+CDHjTJtSMuNowsA941pDFM8A3wAWbX082eO6EHXbM587tMqec88BO4GlgCrAW+K6NJykpTt+KuWGppAMFybFZLvhT0guSxtj8OZaz3pP0rUvo7cYJSfskvWuHa7OM3lhJL1kh2ipXeT73S1oSEXU8thkDvAy86A7WikKrD8EDwIoQwtakdJho8GsKMNFa2DEonbV28VHgSAjhZDL3EeAjO6grShFpKukHNgCvhRDOXyxlfE0jaa6k9xNEMFTwPGhHmJMk1ST1SKq3O7osOrG0eT0Gt66TdMzoDycIZCix0kZJc9Na7hLi7nmRpA8Mf6XYLxJfUUTMlfg1Yzi9ah4vFhSYqxNleve7YHwt8hV3S2VGZtzzPEmvSjqc+PMnzSrXDg/Po2BbkvUOGx++SVMrqr6rCDde0uOSNkv61dwkVCJacl27zzD33mzrjisrzL/f57ZSB6zYegAAAABJRU5ErkJggg==" alt="" aria-hidden="true" style="width: auto; height: 18px; flex-shrink: 0; display: block">{{t.withDiscord}}</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #8C88A6" aria-hidden="true">
+              <span style="flex: 1; height: 1px; background: #2A2740"></span>{{t.orEmail}}<span style="flex: 1; height: 1px; background: #2A2740"></span>
+            </div>
+
+            <!-- SIGN UP -->
+            <sc-if value="{{isSignup}}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; flex-direction: column; gap: 16px">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <label for="dname" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.displayName}}</label>
+                  <input id="dname" class="fld" type="text" maxlength="30" placeholder="{{t.displayPh}}" onInput="{{setName}}">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <label for="email" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.email}}</label>
+                  <input id="email" class="fld" type="email" autocomplete="email" placeholder="you@example.com">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <label for="pw" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.password}}</label>
+                  <input id="pw" class="fld" type="password" autocomplete="new-password" placeholder="••••••••">
+                  <p style="margin: 0; font-size: 12px; color: #8C88A6">{{t.pwHint}}</p>
+                </div>
+                <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+                  <legend style="padding: 0; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.roleLabel}}</legend>
+                  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+                    <sc-for list="{{roles}}" as="rl" hint-placeholder-count="2">
+                      <button type="button" aria-pressed="{{rl.pressed}}" onClick="{{rl.pick}}" style="{{rl.style}}">
+                        <span style="display: block; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px">{{rl.name}}</span>
+                        <span style="display: block; margin-top: 2px; font-size: 13px; line-height: 1.5; color: #A9A5C2">{{rl.desc}}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                  <p style="margin: 4px 0 0; font-size: 12px; line-height: 1.6; color: #8C88A6">{{t.roleHint}}</p>
+                </fieldset>
+                <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.6; color: #D8D6E8; cursor: pointer">
+                  <input id="news" type="checkbox" checked style="width: 18px; height: 18px; margin-top: 2px; accent-color: #FF2E88; flex-shrink: 0">
+                  <span>{{t.newsOpt}}</span>
+                </label>
+                <sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><p role="status" aria-live="polite" style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid {{msgColor}}; font-size: 13.5px; line-height: 1.55; color: #E4E1F0">{{msg}}</p></sc-if>
+<button type="button" onClick="{{submit}}" style="min-height: 52px; border: 0; background: #FF2E88; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 0.06em; clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%)">{{t.createBtn}}</button>
+                <p style="margin: 0; text-align: center; font-size: 14px; color: #A9A5C2">{{t.haveAcc}} <button type="button" onClick="{{goLogin}}" style="padding: 4px; border: 0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: inherit; font-size: 14px; text-decoration: underline">{{t.tabLogin}}</button></p>
+              </div>
+            </sc-if>
+
+            <!-- LOG IN -->
+            <sc-if value="{{isLogin}}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; flex-direction: column; gap: 16px">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <label for="lemail" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.email}}</label>
+                  <input id="lemail" class="fld" type="email" autocomplete="email" placeholder="you@example.com">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+                    <label for="lpw" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.password}}</label>
+                    <a href="#forgot" onClick="{{forgot}}" style="font-size: 13px">{{t.forgot}}</a>
+                  </div>
+                  <input id="lpw" class="fld" type="password" autocomplete="current-password" placeholder="••••••••">
+                </div>
+                <sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><p role="status" aria-live="polite" style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid {{msgColor}}; font-size: 13.5px; line-height: 1.55; color: #E4E1F0">{{msg}}</p></sc-if>
+<button type="button" onClick="{{submit}}" style="min-height: 52px; border: 0; background: #2EE6F0; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 0.06em; clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%)">{{t.loginBtn}}</button>
+                <p style="margin: 0; text-align: center; font-size: 14px; color: #A9A5C2">{{t.noAcc}} <button type="button" onClick="{{goSignup}}" style="padding: 4px; border: 0; background: transparent; color: #FF2E88; cursor: pointer; font-family: inherit; font-size: 14px; text-decoration: underline">{{t.tabSignup}}</button></p>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <!-- SIGNED IN -->
+        <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
+          <div class="hero-gl" style="display: flex; flex-direction: column; gap: 18px; align-items: flex-start">
+            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #2EE6F0">&gt; ACCESS GRANTED</p>
+            <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 34px; line-height: 1.15; color: #FFFFFF">{{welcome}}</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <p style="margin: 0; padding: 4px 10px; border: 1px solid {{roleColor}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: {{roleColor}}">{{roleChip}}</p>
+              <p style="margin: 0; padding: 4px 10px; border: 1px solid #3A3655; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: #A9A5C2">USER ID // {{publicId}}</p>
+            </div>
+            <div style="align-self: stretch; display: flex; gap: 16px; align-items: center; padding: 14px; border: 1px dashed #3A3655; background: #0B0A12">
+              <div style="width: 64px; height: 64px; flex-shrink: 0; border: 1px dashed #3A3655; background: #151225; display: flex; align-items: center; justify-content: center" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 30 30"><circle cx="15" cy="11" r="5.5" fill="none" stroke="#8C88A6" stroke-width="1.6"></circle><path d="M5 26c1.8-5 5.6-7.5 10-7.5S23.2 21 25 26" fill="none" stroke="#8C88A6" stroke-width="1.6"></path></svg>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+                <label for="avatar" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.avatar}}</label>
+                <input id="avatar" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{onAvatar}}" style="font-size: 13px; color: #A9A5C2; max-width: 100%">
+              </div>
+            </div>
+            <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #A9A5C2">{{doneSub}}</p>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px">
+              <a href="{{goHref}}" target="{{goTarget}}" rel="noopener" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 24px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.06em; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{goLabel}}</a>
+              <a href="account.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border: 1.5px solid {{roleColor}}; color: {{roleColor}}; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.settings}}</a>
+              <a href="../trpg.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border: 1.5px solid #3A3655; color: #D8D6E8; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.backTrpg}}</a>
+            </div>
+            <sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><p role="status" aria-live="polite" style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid {{msgColor}}; font-size: 13.5px; line-height: 1.55; color: #E4E1F0">{{msg}}</p></sc-if>
+<button type="button" onClick="{{logout}}" style="padding: 6px 0; border: 0; background: transparent; color: #8C88A6; cursor: pointer; font-family: inherit; font-size: 13px; text-decoration: underline">{{t.logout}}</button>
+          </div>
+        </sc-if>
+
+        <p style="margin: 0; padding-top: 14px; border-top: 1px dashed #2A2740; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.6; letter-spacing: 0.04em; color: #8C88A6">{{t.protoNote}}</p>
+      </div>
+    </section>
+  </main>
+</div>
+</template>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../assets/dc.js"></script>
+<script src="../assets/sp.js"></script>
+<script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'th', mode: 'signup', role: 'player', name: '', switched: false };
+  }
+  renderVals() {
+    const th = this.state.lang !== 'en';
+    const L = (a, b) => (th ? a : b);
+    const mode = this.state.mode;
+    const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
+    const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
+    const tabBase = 'min-height: 48px; border: 0; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.04em; ';
+    const tabOn = tabBase + 'background: #2EE6F0; color: #0B0A12';
+    const tabOff = tabBase + 'background: transparent; color: #D8D6E8';
+    const roleBase = 'text-align: left; padding: 14px; cursor: pointer; background: #0B0A12; color: #FFFFFF; min-height: 44px; ';
+    const roleDefs = [
+      { id: 'player', name: L('ผู้เล่น', 'Player'), accent: '#2EE6F0', desc: L('สร้างตัวละครและเข้าร่วม session', 'Make characters and join sessions') },
+      { id: 'gm', name: 'GM', accent: '#FFD400', desc: L('เปิด session และดูตัวละครของผู้เล่น', 'Run sessions and see players\' sheets') }
+    ];
+    const cur = roleDefs.find((r) => r.id === this.state.role) || roleDefs[0];
+    const nm = (this.state.name || '').trim();
+    return {
+      setTh: () => this.setState({ lang: 'th' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      thPressed: th ? 'true' : 'false',
+      enPressed: th ? 'false' : 'true',
+      thStyle: th ? on : off,
+      enStyle: th ? off : on,
+      isSignup: mode === 'signup',
+      isLogin: mode === 'login',
+      isDone: mode === 'done',
+      notDone: mode !== 'done',
+      signupSel: mode === 'signup' ? 'true' : 'false',
+      loginSel: mode === 'login' ? 'true' : 'false',
+      signupTab: mode === 'signup' ? tabOn : tabOff,
+      loginTab: mode === 'login' ? tabOn : tabOff,
+      goSignup: () => this.setState({ mode: 'signup' }),
+      goLogin: () => this.setState({ mode: 'login' }),
+      submit: () => this.setState({ mode: 'done' }),
+      socialGoogle: () => this.setState({ mode: 'done' }),
+      socialDiscord: () => this.setState({ mode: 'done' }),
+      logout: () => this.setState({ mode: 'login' }),
+      setName: (e) => this.setState({ name: e && e.target ? e.target.value : '' }),
+      roles: roleDefs.map((r) => Object.assign({}, r, {
+        pressed: r.id === cur.id ? 'true' : 'false',
+        style: roleBase + (r.id === cur.id ? 'border: 2px solid ' + r.accent + '; box-shadow: 0 0 16px ' + (r.id === 'gm' ? 'rgba(255,212,0,0.2)' : 'rgba(46,230,240,0.2)') : 'border: 2px solid #3A3655'),
+        pick: () => this.setState({ role: r.id })
+      })),
+      roleSwitch: roleDefs.map((r) => Object.assign({}, r, {
+        pressed: r.id === cur.id ? 'true' : 'false',
+        style: 'min-height: 44px; border: 0; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em; ' + (r.id === cur.id ? 'background: ' + r.accent + '; color: #0B0A12' : 'background: transparent; color: #D8D6E8'),
+        pick: () => { if (r.id !== this.state.role) this.setState({ role: r.id, switched: true }); }
+      })),
+      roleMsg: this.state.switched ? L('เปลี่ยนบทบาทเป็น ', 'Role switched to ') + cur.name + L(' แล้ว · 1 บัญชีเป็นได้ทีละ 1 บทบาท', ' · One account holds one role at a time') : L('1 บัญชีเป็นได้ทีละ 1 บทบาท สลับได้ทุกเมื่อ', 'One account holds one role at a time. Switch whenever you like.'),
+      doneSub: cur.id === 'gm' ? L('คุณกำลังใช้บทบาท GM เปิด GM Monitor เพื่อดูตัวละครของผู้เล่นใน session ได้เลย', 'You are playing as GM. Open the GM Monitor to see your players\' characters.') : L('บัญชีพร้อมแล้ว ไปสร้างตัวละครตัวแรกของคุณได้เลย', 'Your account is ready. Go make your first character.'),
+      goHref: cur.id === 'gm' ? '#' : '#',
+      goTarget: '_self',
+      goLabel: cur.id === 'gm' ? L('เปิด GM Monitor', 'Open GM Monitor') : L('สร้างตัวละคร', 'Create a character'),
+      welcome: L('ยินดีต้อนรับ, ', 'Welcome, ') + (nm || L('นักเล่นหน้าใหม่', 'new recruit')),
+      roleChip: 'ROLE // ' + cur.name.toUpperCase(),
+      roleColor: cur.accent,
+      perks: [
+        { code: 'SAVE', accent: '#2EE6F0', title: L('ตัวละครผูกกับบัญชีของคุณ', 'Characters tied to your account'), desc: L('สร้างและเก็บตัวละครไว้ในบัญชี เปิดต่อได้จากทุกเครื่อง', 'Build and keep characters in your account, on any device.') },
+        { code: 'SESSION', accent: '#FFD400', title: L('เข้าร่วม session กับ GM', 'Join a GM\'s session'), desc: L('GM เห็นใบตัวละครของผู้เล่นใน session ได้ทันที ไม่ต้องส่งไฟล์', 'Your GM sees your sheet in the session, no files to send.') },
+        { code: 'NEWS', accent: '#FF2E88', title: L('รับข่าวก่อนใคร', 'Hear it first'), desc: L('ข่าวหนังสือ ภาคเสริม และอัปเดตของ Shifter Punkz ถ้าคุณเลือกรับ', 'Books, expansions and Shifter Punkz updates, if you opt in.') }
+      ],
+      t: {
+        advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
+        navHome: L('หน้าแรก', 'HOME'),
+        leftTitle: L('ลงทะเบียนเข้าสู่เมือง', 'Register to enter the city'),
+        leftSub: L('ต้องมีบัญชีสมาชิกก่อน จึงจะสร้างตัวละครและเริ่มเล่น Shifter Punkz TRPG ได้', 'You need a member account to create a character and start playing Shifter Punkz TRPG.'),
+        tabSignup: L('สมัครสมาชิก', 'Sign up'),
+        tabLogin: L('เข้าสู่ระบบ', 'Log in'),
+        withGoogle: L('ดำเนินการต่อด้วย Google', 'Continue with Google'),
+        withDiscord: L('ดำเนินการต่อด้วย Discord', 'Continue with Discord'),
+        orEmail: L('หรือใช้อีเมล', 'OR WITH EMAIL'),
+        avatar: L('เพิ่มรูปโปรไฟล์ (ไม่บังคับ ใส่ทีหลังได้)', 'ADD A PROFILE PICTURE (OPTIONAL, ANYTIME)'),
+        displayName: L('ชื่อที่แสดง', 'DISPLAY NAME'),
+        displayPh: L('ชื่อที่ผู้เล่นคนอื่นใน session จะเห็น', 'The name other players see'),
+        email: L('อีเมล', 'EMAIL'),
+        password: L('รหัสผ่าน', 'PASSWORD'),
+        pwHint: L('อย่างน้อย 8 ตัวอักษร', 'At least 8 characters'),
+        roleLabel: L('บทบาทเริ่มต้น', 'STARTING ROLE'),
+        roleHint: L('เปลี่ยนเป็นผู้เล่นหรือ GM ได้ทุกเมื่อหลังสมัคร', 'Switch between Player and GM any time after signing up'),
+        settings: L('ตั้งค่าบัญชี', 'Account settings'),
+        switchLabel: L('บทบาทปัจจุบัน', 'CURRENT ROLE'),
+        newsOpt: L('รับข่าวสารและอัปเดตของ Shifter Punkz ทางอีเมล', 'Email me Shifter Punkz news and updates'),
+        createBtn: L('สร้างบัญชี', 'Create account'),
+        haveAcc: L('มีบัญชีอยู่แล้ว?', 'Already have an account?'),
+        forgot: L('ลืมรหัสผ่าน?', 'Forgot password?'),
+        loginBtn: L('เข้าสู่ระบบ', 'Log in'),
+        noAcc: L('ยังไม่มีบัญชี?', 'No account yet?'),
+        doneSub: L('บัญชีพร้อมแล้ว ไปสร้างตัวละครตัวแรกของคุณได้เลย', 'Your account is ready. Go make your first character.'),
+        goChar: L('สร้างตัวละคร', 'Create a character'),
+        backTrpg: L('กลับหน้า TRPG', 'Back to TRPG'),
+        logout: L('ออกจากระบบ', 'Log out'),
+        protoNote: L('PROTOTYPE // หน้านี้ยังไม่เก็บข้อมูลจริง ระบบสมาชิกจะเชื่อม Supabase ตอนขึ้นเว็บ GitHub Pages', 'PROTOTYPE // Nothing is stored yet. Accounts connect to Supabase on the GitHub Pages site.')
+      }
+    };
+  }
+}
+</script>
+<script src="../assets/beta-auth.js"></script>
+</body>
+</html>
