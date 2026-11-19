@@ -76,13 +76,16 @@ html{scroll-behavior:smooth}
             <span role="menuitem" aria-disabled="true" title="Coming soon" data-soon onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}<span class="soon-chip">SOON</span></span>
             <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
               <span role="menuitem" aria-disabled="true" title="Coming soon" data-soon onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span class="soon-chip">SOON</span></span>
+              <sc-if value="{{roleJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitched}}</p>
+              </sc-if>
             </sc-if>
             <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
               <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
-                  <a href="account.html#role" onClick="{{closeUserMenu}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.menuSwitchRole}}</a>
+                  <button type="button" onClick="{{switchToGm}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchRole}}</button>
                 </div>
               </sc-if>
             </sc-if>
@@ -284,14 +287,16 @@ class Component extends DCLogic {
       },
       userMenuOpen: !!this.state.userMenu,
       userMenuExpanded: this.state.userMenu ? 'true' : 'false',
-      toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false }),
+      toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, menuSwitched: false }),
       closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
-      menuIsGm: (this.state.role) === 'gm',
-      menuNotGm: (this.state.role) !== 'gm',
+      menuIsGm: (this.state.menuRole || this.state.role) === 'gm',
+      menuNotGm: (this.state.menuRole || this.state.role) !== 'gm',
+      roleJustSwitched: !!this.state.menuSwitched,
       roleWarn: !!this.state.roleWarn,
       roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
       askSessions: () => this.setState({ roleWarn: !this.state.roleWarn }),
-      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนบทบาทเป็น GM ในหน้าตั้งค่าบัญชีก่อนเข้า', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM in Settings first.'),
+      switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, menuSwitched: true, role: 'gm', switched: true }),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
       setTh: () => this.setState({ lang: 'th' }),
@@ -347,7 +352,8 @@ class Component extends DCLogic {
         pwSave: L('บันทึกรหัสผ่าน', 'Save password'),
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
-        menuSwitchRole: L('ไปเปลี่ยนบทบาท', 'Switch role'),
+        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
         menuLogout: L('ออกจากระบบ', 'Log out'),
         advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),

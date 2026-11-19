@@ -46,16 +46,25 @@
       v.spNoAvatar = !v.spAvatar;
       v.spMenuOpen = !!this.state.spMenu;
       v.spExpanded = this.state.spMenu ? 'true' : 'false';
-      v.spToggle = () => this.setState({ spMenu: !this.state.spMenu, spWarn: false });
+      v.spToggle = () => this.setState({ spMenu: !this.state.spMenu, spWarn: false, spSwitched: false });
       v.spIsGm = !!(u && u.role === 'gm');
       v.spNotGm = !v.spIsGm;
       v.spWarn = !!this.state.spWarn;
       v.spWarnExpanded = this.state.spWarn ? 'true' : 'false';
       v.spAskSessions = () => this.setState({ spWarn: !this.state.spWarn });
-      v.spWarnText = th ? 'Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนบทบาทเป็น GM ในหน้าตั้งค่าบัญชีก่อนเข้า' : 'My Sessions is for the GM role. Your account is a Player right now; switch to GM in Settings first.';
+      v.spWarnText = this.state.spErr || (th ? 'Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).');
+      v.spSwitched = !!this.state.spSwitched;
+      v.spSwitchedLabel = th ? '✓ เปลี่ยนบทบาทเป็น GM แล้ว' : '✓ You are now a GM';
+      v.spSwitchToGm = async () => {
+        var s = (await sb.auth.getSession()).data.session;
+        if (!s) return;
+        var r = await sb.from('profiles').update({ role: 'gm' }).eq('id', s.user.id);
+        if (r.error) return this.setState({ spErr: SP.err(r.error, th) });
+        this.setState({ spUser: Object.assign({}, this.state.spUser, { role: 'gm' }), spWarn: false, spSwitched: true, spErr: '' });
+      };
       v.spCharsLabel = th ? 'ตัวละครของฉัน' : 'My Characters';
       v.spSessionsLabel = th ? 'Session ของฉัน' : 'My Sessions';
-      v.spSwitchLabel = th ? 'ไปเปลี่ยนบทบาท' : 'Switch role';
+      v.spSwitchLabel = th ? 'เปลี่ยนเป็น GM' : 'Switch to GM';
       v.spKey = (e) => { if (e && e.key === 'Escape') this.setState({ spMenu: false }); };
       v.spLogout = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
