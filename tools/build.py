@@ -98,10 +98,10 @@ BOOKS = '''<!-- Books: a code printed in any book unlocks the GM role -->
 PAGES = [
     dict(src="Main.dc.html", out="index.html", title="Shifter Punkz",
          desc="Shifter Punkz — จักรวาลกึ่งไซเบอร์พังก์ในกรุงเทพ 26XX ผ่านแอนิเมชัน TRPG เกมดิจิทัล และบอร์ดเกม",
-         links={"Main": "index.html", "TRPG": "trpg.html"}, beta="session-nav.js", session_nav=True),
+         links={"Main": "index.html", "TRPG": "trpg.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
     dict(src="TRPG.dc.html", out="trpg.html", title="Shifter Punkz TRPG",
          desc="Shifter Punkz TRPG — เกมเล่นบทบาทสมมติระบบ D8 Dice Pool เล่นเป็น Shifter, Norms หรือ C.P.D.",
-         links={"Main": "index.html", "TRPG": "trpg.html"}, beta="session-nav.js", session_nav=True),
+         links={"Main": "index.html", "TRPG": "trpg.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
     dict(src="Auth.dc.html", out="beta/auth.html", title="เข้าสู่ระบบ · Shifter Punkz",
          desc="เข้าสู่ระบบ Shifter Punkz (beta)", beta="beta-auth.js",
          links=BETA_LINKS,
@@ -163,7 +163,7 @@ MENU_ITEM = ("display: flex; align-items: center; gap: 10px; min-height: 44px; p
 
 def session_nav(body):
     """Public pages: signed-in testers get their name + a Settings / Log out menu instead of the login chip."""
-    pat = re.compile(r'<span role="link" aria-disabled="true" title="Coming soon" data-soon[^>]*>\{\{t\.navLogin\}\}<span class="soon-chip">SOON</span></span>')
+    pat = re.compile(r'<a href="beta/auth\.html"[^>]*>\{\{t\.navLogin\}\}</a>')
     m = pat.search(body)
     assert m, "login chip not found"
     user = f'''<div data-sp-menu style="position: relative" onKeyDown="{{{{spKey}}}}">
