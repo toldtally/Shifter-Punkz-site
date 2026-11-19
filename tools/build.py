@@ -76,10 +76,10 @@ SETPW = '''<sc-if value="{{isSetPw}}" hint-placeholder-val="{{ false }}">
 PAGES = [
     dict(src="Main.dc.html", out="index.html", title="Shifter Punkz",
          desc="Shifter Punkz — จักรวาลกึ่งไซเบอร์พังก์ในกรุงเทพ 26XX ผ่านแอนิเมชัน TRPG เกมดิจิทัล และบอร์ดเกม",
-         links={"Main": "index.html", "TRPG": "trpg.html"}),
+         links={"Main": "index.html", "TRPG": "trpg.html"}, beta="session-nav.js", session_nav=True),
     dict(src="TRPG.dc.html", out="trpg.html", title="Shifter Punkz TRPG",
          desc="Shifter Punkz TRPG — เกมเล่นบทบาทสมมติระบบ D8 Dice Pool เล่นเป็น Shifter, Norms หรือ C.P.D.",
-         links={"Main": "index.html", "TRPG": "trpg.html"}),
+         links={"Main": "index.html", "TRPG": "trpg.html"}, beta="session-nav.js", session_nav=True),
     dict(src="Auth.dc.html", out="beta/auth.html", title="เข้าสู่ระบบ · Shifter Punkz",
          desc="เข้าสู่ระบบ Shifter Punkz (beta)", beta="beta-auth.js",
          links={"Main": "../index.html", "TRPG": "../trpg.html", "Account": "account.html", "Auth": "auth.html"},
@@ -103,6 +103,32 @@ PAGES = [
              (r're:<a href="auth.html"([^>]*)>\{\{t\.delConfirm\}\}</a>', r'<a href="auth.html" onClick="{{doDelete}}"\1>{{t.delConfirm}}</a>', 1),
          ]),
 ]
+
+
+CHEVRON = ('<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5L5 7l3.5-3.5" '
+           'fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>')
+MENU_ITEM = ("display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; "
+             "font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px")
+
+
+def session_nav(body):
+    """Public pages: signed-in testers get their name + a Settings / Log out menu instead of the login chip."""
+    pat = re.compile(r'<span role="link" aria-disabled="true" title="Coming soon" data-soon[^>]*>\{\{t\.navLogin\}\}<span class="soon-chip">SOON</span></span>')
+    m = pat.search(body)
+    assert m, "login chip not found"
+    user = f'''<div data-sp-menu style="position: relative" onKeyDown="{{{{spKey}}}}">
+        <button type="button" onClick="{{{{spToggle}}}}" aria-haspopup="true" aria-expanded="{{{{spExpanded}}}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid {{{{spColor}}}}; background: transparent; cursor: pointer; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">
+          <span style="width: 30px; height: 30px; overflow: hidden; background: #1D1930; border: 1px solid #3A3655; display: flex; align-items: center; justify-content: center; font-size: 13px; color: {{{{spColor}}}}" aria-hidden="true"><sc-if value="{{{{spAvatar}}}}"><img src="{{{{spAvatar}}}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{{{spNoAvatar}}}}">{{{{spInitial}}}}</sc-if></span><span>{{{{spName}}}}</span>{CHEVRON}
+        </button>
+        <sc-if value="{{{{spMenuOpen}}}}">
+          <div role="menu" style="position: absolute; z-index: 40; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
+            <a role="menuitem" href="beta/account.html" style="{MENU_ITEM}; color: #D8D6E8; border-bottom: 1px solid #2A2740">{{{{spSettingsLabel}}}}</a>
+            <a role="menuitem" href="#" onClick="{{{{spLogout}}}}" style="{MENU_ITEM}; color: #FF3D6E">{{{{spLogoutLabel}}}}</a>
+          </div>
+        </sc-if>
+      </div>'''
+    swap = '<sc-if value="{{spSignedOut}}">%s</sc-if><sc-if value="{{spSignedIn}}">%s</sc-if>' % (m.group(0), user)
+    return body[:m.start()] + swap + body[m.end():]
 
 
 def strip_spoilers(name, js):
@@ -136,6 +162,8 @@ def build(cfg):
         js = js.replace("'%s.dc.html'" % page, "'%s'" % target)
     locked = [p for p in ALL if p not in links]
     body = lock_links(body, locked)
+    if cfg.get("session_nav"):
+        body = session_nav(body)
     # JS-built hrefs to unpublished pages fall back to the current page.
     for page in locked:
         js = js.replace("'%s.dc.html'" % page, "'#'")
@@ -163,7 +191,7 @@ def build(cfg):
         scripts = ('<script src="%s"></script>\n' % SUPABASE_JS + scripts
                    + '<script src="%sassets/sp.js"></script>\n' % up)
         mount = '</script>\n<script src="%sassets/%s"></script>' % (up, cfg["beta"])
-        robots = '<meta name="robots" content="noindex">\n'
+        robots = '<meta name="robots" content="noindex">\n' if out.startswith("beta/") else ""
     else:
         mount = "DC.mount(Component, document.getElementById('app'));\n</script>"
         robots = ""
