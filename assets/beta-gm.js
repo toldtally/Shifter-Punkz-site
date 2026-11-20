@@ -8,7 +8,7 @@
     var s = ch.sheet || {}, F = SP.FACTOR[ch.factor] || SP.FACTOR.shifter, ba = s.ba || {}, inj = s.inj || {};
     return {
       name: ch.name, player: player || '—', f: F.key, sub: s.job || '—', online: !!online,
-      ip: SP.num(s.hpCur), ipMax: SP.num(s.hpMax) || 1, wm: SP.num(s.spCur), wmMax: ch.factor === 'cpd' ? 0 : SP.num(s.spMax),
+      ip: SP.num(s.hpCur), ipMax: SP.num(s.hpMax) || 1, wm: SP.num(s.spCur), wmMax: ch.factor !== 'shifter' ? 0 : SP.num(s.spMax),
       ba: [SP.num(ba.force), SP.num(ba.tactical), SP.num(ba.trick), SP.num(ba.sense)],
       se: SP.num(s.se), ex: SP.num(s.ex), adv: SP.num(s.adv), coins: SP.num(s.coins),
       inj: Object.keys(inj).filter(function (k) { return inj[k]; }),

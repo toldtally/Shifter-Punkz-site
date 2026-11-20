@@ -355,14 +355,14 @@ html{scroll-behavior:smooth}
           <div class="ph"><h2 style="color: #2EE6F0">Whelm</h2></div>
           <div class="pb">
             <div class="row">
-              <div class="field narrow"><label class="lbl" for="spCur">Current</label><input id="spCur" class="fld" type="number" min="0" max="10" value="{{s.spCur}}" onInput="{{on.spCur}}" disabled="{{isCpd}}"></div>
-              <div class="field narrow"><label class="lbl" for="spMax">Max WM</label><input id="spMax" class="fld" type="number" min="1" max="10" value="{{s.spMax}}" onInput="{{on.spMax}}" disabled="{{isCpd}}"></div>
-              <div class="field narrow"><label class="lbl" for="spPwr">PWR+</label><input id="spPwr" class="fld" type="number" min="0" max="2" value="{{s.spPwr}}" onInput="{{on.spPwr}}" disabled="{{isCpd}}"></div>
-              <div class="field narrow"><label class="lbl" for="spRgn">RGN+</label><input id="spRgn" class="fld" type="number" min="0" max="2" value="{{s.spRgn}}" onInput="{{on.spRgn}}" disabled="{{isCpd}}"></div>
+              <div class="field narrow"><label class="lbl" for="spCur">Current</label><input id="spCur" class="fld" type="number" min="0" max="10" value="{{s.spCur}}" onInput="{{on.spCur}}" disabled="{{noWm}}"></div>
+              <div class="field narrow"><label class="lbl" for="spMax">Max WM</label><input id="spMax" class="fld" type="number" min="1" max="10" value="{{s.spMax}}" onInput="{{on.spMax}}" disabled="{{noWm}}"></div>
+              <div class="field narrow"><label class="lbl" for="spPwr">PWR+</label><input id="spPwr" class="fld" type="number" min="0" max="2" value="{{s.spPwr}}" onInput="{{on.spPwr}}" disabled="{{noWm}}"></div>
+              <div class="field narrow"><label class="lbl" for="spRgn">RGN+</label><input id="spRgn" class="fld" type="number" min="0" max="2" value="{{s.spRgn}}" onInput="{{on.spRgn}}" disabled="{{noWm}}"></div>
             </div>
             <div class="meter" aria-hidden="true"><div style="width: {{spPct}}; background: #2EE6F0"></div></div>
             <p style="margin: 3px 0 0; font-size: 12px; color: #A9A5C2">{{spNums}}</p>
-            <sc-if value="{{isCpd}}" hint-placeholder-val="{{ false }}"><p style="margin: 6px 0 0; font-size: 12px; font-style: italic; color: #8C88A6">{{t.cpdNoWm}}</p></sc-if>
+            <sc-if value="{{noWm}}" hint-placeholder-val="{{ false }}"><p style="margin: 6px 0 0; font-size: 12px; font-style: italic; color: #8C88A6">{{noWmNote}}</p></sc-if>
           </div>
         </div>
 
@@ -557,12 +557,13 @@ class Component extends DCLogic {
     const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
     const F = {
       shifter: { label: 'Shifter', color: '#2EE6F0', desc: L('ผู้มีพลังคอสมิค เริ่มต้นด้วย 1 Cosmic Ability พร้อม 1 Cosmic Die (CD) ติดตัวทันที. WM RGN+ เริ่มต้นที่ 1.', 'Has cosmic power. Starts with 1 Cosmic Ability and 1 Cosmic Die (CD). WM RGN+ starts at 1.'), spMax: 10, spCur: 10, spRgn: 1, bonus: 0 },
-      outlaw: { label: 'Norms', color: '#FF2E88', desc: L('คนธรรมดาที่ไม่มีพลังคอสมิคใดๆ มีสกิลเริ่มต้น 4 สกิล และ Item Slot เริ่มที่ 8', 'An ordinary person with no cosmic power. Starts with 4 skills and 8 Item Slots.'), spMax: 10, spCur: 0, spRgn: 0, bonus: 0 },
+      outlaw: { label: 'Norms', color: '#FF2E88', desc: L('คนธรรมดาที่ไม่มีพลังคอสมิคใดๆ มีสกิลเริ่มต้น 4 สกิล และ Item Slot เริ่มที่ 8', 'An ordinary person with no cosmic power. Starts with 4 skills and 8 Item Slots.'), spMax: 0, spCur: 0, spRgn: 0, bonus: 0 },
       cpd: { label: 'C.P.D.', color: '#FFD400', desc: L('หน่วยงานรัฐ ปราบปรามภัยจากพลังคอสมิค ไม่มีพลังคอสมิคใด ๆ ติดตัว (ไม่มี WM). มี +1 Basic Die ตั้งแต่เริ่ม และอาวุธ/เกราะตามยศ (ไม่ต้องซื้อ).', 'Government agents who contain cosmic threats. No cosmic power (no WM). Start with +1 Basic Die and rank-issued weapons and armor (free).'), spMax: 0, spCur: 0, spRgn: 0, bonus: 1 }
     };
     const fk = s.factor;
     const f = F[fk];
     const cpd = fk === 'cpd';
+    const noWm = fk !== 'shifter'; // only Shifters carry Whelm
     const slotsStart = () => (this.state.s.factor === 'outlaw' ? '8' : '5');
     const repCur = num(s.repCur);
 
@@ -600,7 +601,7 @@ class Component extends DCLogic {
     // HP / SP clamped values for display (applied on blur-free render)
     const hpMax = Math.max(10, Math.min(20, num(s.hpMax) || 10));
     const hpCur = Math.max(0, Math.min(hpMax, num(s.hpCur)));
-    const spMax = cpd ? 0 : Math.max(1, Math.min(10, num(s.spMax)));
+    const spMax = noWm ? 0 : Math.max(1, Math.min(10, num(s.spMax)));
     const spCur = Math.max(0, Math.min(spMax, num(s.spCur)));
 
     // dynamic rows
@@ -790,7 +791,7 @@ class Component extends DCLogic {
         pick: () => {
           if (k === this.state.s.factor) return;
           const nf = F[k];
-          this.upd({ factor: k, spMax: String(nf.spMax), spCur: String(nf.spCur), spRgn: String(nf.spRgn), spPwr: k === 'cpd' ? '0' : this.state.s.spPwr, slots: k === 'outlaw' ? '8' : '5', job: k === 'cpd' ? '' : this.state.s.job });
+          this.upd({ factor: k, spMax: String(nf.spMax), spCur: String(nf.spCur), spRgn: String(nf.spRgn), spPwr: k !== 'shifter' ? '0' : this.state.s.spPwr, slots: k === 'outlaw' ? '8' : '5', job: k === 'cpd' ? '' : this.state.s.job });
         },
         style: 'min-height: 42px; padding: 0 6px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; background: #1D1930; ' + (k === fk ? 'border: 1px solid ' + F[k].color + '; color: ' + F[k].color + '; box-shadow: inset 0 0 0 1px ' + F[k].color : 'border: 1px solid #2A2740; color: #A9A5C2')
       })),
@@ -820,7 +821,9 @@ class Component extends DCLogic {
       hpNums: hpCur + ' / ' + hpMax,
       spPct: (spMax ? Math.round(spCur / spMax * 100) : 0) + '%',
       spNums: spCur + ' / ' + spMax,
-      spOpacity: cpd ? '0.4' : '1',
+      spOpacity: noWm ? '0.4' : '1',
+      noWm: noWm,
+      noWmNote: cpd ? L('C.P.D. ไม่มีพลังคอสมิค — ไม่มี WM', 'C.P.D. has no cosmic power — no WM') : L('Norms ไม่มีพลังคอสมิค — ไม่มี WM', 'Norms have no cosmic power — no WM'),
       injuries: injDefs.map((g) => ({
         group: g.group,
         items: g.items.map((it) => ({
