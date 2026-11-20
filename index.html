@@ -109,8 +109,6 @@ html{scroll-behavior:smooth}
         <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
       </a>
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
-        <a href="#world" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navWorld}}</a>
-        <a href="#factions" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navFactions}}</a>
         <div style="position: relative">
           <button type="button" onClick="{{toggleGame}}" aria-expanded="{{gameExpanded}}" aria-controls="game-menu" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; color: {{gameColor}}">GAME<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style="{{caretStyle}}"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg></button>
           <sc-if value="{{gameOpen}}" hint-placeholder-val="{{ false }}">
@@ -315,7 +313,21 @@ html{scroll-behavior:smooth}
             <div style="height: 120px; border: 1px dashed #3A3655; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #9A97B0">{{m.thumb}}</div>
             <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{m.title}}</h3>
             <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #C3C0D6; flex: 1">{{m.desc}}</p>
-            <a href="{{m.href}}" style="align-self: flex-start; min-height: 44px; display: inline-flex; align-items: center; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.06em; color: {{m.accent}}; text-decoration: none">{{m.cta}} →</a>
+            <a href="{{m.href}}" tabindex="{{m.tab}}" style="align-self: flex-start; min-height: 44px; display: inline-flex; align-items: center; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.06em; color: {{m.accent}}; text-decoration: none">{{m.cta}} →</a>
+            <sc-if value="{{m.locked}}" hint-placeholder-val="{{ false }}">
+              <div role="img" aria-label="{{m.lockLabel}}" style="position: absolute; inset: 0; display: flex; flex-direction: column; background: #0A0912">
+                <div style="height: 12px; background: repeating-linear-gradient(45deg, #FFD400 0 12px, #0A0912 12px 24px)" aria-hidden="true"></div>
+                <div class="tv" style="flex: 1; display: flex; background-image: repeating-linear-gradient(0deg, rgba(255,212,0,0.05) 0 1px, transparent 1px 3px)"><div class="tv-in" style="flex: 1; padding: 32px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; animation-delay: {{m.tvDelay}}">
+                  <p class="tv-txt" style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.2em; color: #FFD400; animation-delay: {{m.tvDelay}}">CLASSIFIED // {{m.kind}}</p>
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px" aria-hidden="true">
+                    <span style="width: 150px; height: 18px; background: #2A2740"></span>
+                    <span style="width: 100px; height: 18px; background: #2A2740"></span>
+                  </div>
+                  <p class="tv-txt" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.08em; color: #FFFFFF; animation-delay: {{m.tvDelay2}}">COMING SOON</p>
+                </div></div>
+                <div style="height: 12px; background: repeating-linear-gradient(45deg, #FFD400 0 12px, #0A0912 12px 24px)" aria-hidden="true"></div>
+              </div>
+            </sc-if>
           </article>
         </sc-for>
       </div>
@@ -455,7 +467,11 @@ class Component extends DCLogic {
       ],
       chars: [],
     };
-    out.media = stag(out.media, 'hub');
+    out.media = stag(out.media, 'hub').map((m, i) => {
+      const locked = m.kind !== 'TRPG';
+      return Object.assign({}, m, { locked: locked, tab: locked ? '-1' : '0', lockLabel: 'CLASSIFIED: ' + m.kind + ' · COMING SOON',
+        tvDelay: (-0.9 * i).toFixed(1) + 's', tvDelay2: (-0.9 * i - 1.3).toFixed(1) + 's' });
+    });
     out.timeline = stag(out.timeline, 'world', 0.15);
     out.factions = stag(out.factions, 'fac').map((f) => Object.assign({ isCpd: false }, f));
     out.shifters = stag(out.shifters, 'shift', 0.1);
