@@ -478,7 +478,7 @@ html{scroll-behavior:smooth}
         </div>
 
         <div class="panel" style="border-top-color: #C084FC; opacity: {{cosOpacity}}">
-          <div class="ph"><h2>Cosmic Abilities</h2></div>
+          <div class="ph"><h2>{{cosTitle}}</h2></div>
           <div class="pb">
             <div class="thead" style="grid-template-columns: .5fr 1.5fr 52px 28px"><div>Type</div><div>Effect</div><div>Cosmic Dice</div><div></div></div>
             <sc-for list="{{cosmic}}" as="r" hint-placeholder-count="0">
@@ -863,7 +863,8 @@ class Component extends DCLogic {
       cosmic: rows('cosmic', ['name', 'fx', 'cd'], { cd: [0, 3] }),
       addCos: cpd ? () => {} : add('cosmic', { name: '', fx: '', cd: '' }, cosCap),
       cosFull: cpd || s.cosmic.length >= cosCap,
-      cosLabel: cosCap > 1 ? L('+ เพิ่ม Cosmic Ability (สูงสุด ', '+ Add Cosmic Ability (max ') + cosCap + L(' — Rep. ทุก 4 ได้เพิ่ม 1)', ' — +1 every 4 Rep.)') : L('+ เพิ่ม Cosmic Ability (สูงสุด 1 ตอนสร้าง)', '+ Add Cosmic Ability (max 1 at creation)'),
+      cosTitle: fk === 'outlaw' ? 'Cosmic Gadgets' : 'Cosmic Abilities',
+      cosLabel: (fk === 'outlaw' ? L('+ เพิ่ม Cosmic Gadget', '+ Add Cosmic Gadget') : L('+ เพิ่ม Cosmic Ability', '+ Add Cosmic Ability')) + (cosCap > 1 ? L(' (สูงสุด ', ' (max ') + cosCap + L(' — Rep. ทุก 4 ได้เพิ่ม 1)', ' — +1 every 4 Rep.)') : L(' (สูงสุด 1 ตอนสร้าง)', ' (max 1 at creation)')),
       cosPh: fk === 'outlaw' ? 'Cosmic Gadget' : L('ประเภทของพลัง', 'Power type'),
       cosNote: cpd ? L('C.P.D. ไม่มีพลังคอสมิคติดตัว', 'C.P.D. agents have no cosmic power') : '',
       cosOpacity: cpd ? '0.4' : '1',
@@ -935,7 +936,7 @@ class Component extends DCLogic {
         phGear: L('ชื่อชุด/เกราะ', 'Outfit / armor name'),
         rmGear: L('ลบชุด/เกราะ', 'Remove outfit / armor'),
         addGear: L('+ เพิ่มชุด/เกราะ', '+ Add outfit / armor'),
-        rmCos: L('ลบ Cosmic Ability', 'Remove Cosmic Ability'),
+        rmCos: s.factor === 'outlaw' ? L('ลบ Cosmic Gadget', 'Remove Cosmic Gadget') : L('ลบ Cosmic Ability', 'Remove Cosmic Ability'),
         importTip: L('นำเข้าไฟล์ตัวละคร (.json) ที่เคย Export ไว้ — จะแทนที่ใบตัวละครปัจจุบัน', 'Import a character file (.json) you exported before. It replaces the current sheet.')
       }
     };
