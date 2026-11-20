@@ -76,14 +76,14 @@ a{color:#2EE6F0}a:hover{color:#FF2E88}
 95%{transform:translateX(2px);text-shadow:-1px 0 rgba(255,46,136,.6),1px 0 rgba(46,230,240,.6)}
 96%{transform:none;text-shadow:none}}
 @media (prefers-reduced-motion: reduce){.tv::before,.tv::after,.tv-in,.tv-txt{animation:none}}
-/* nav logo: light glitch on a loop (placeholder until the official logo) */
+/* hero logo: light glitch on a loop (placeholder until the official logo) */
 .logo-gl{animation:logoJit 4.8s steps(1,end) infinite}
 .logo-gl .logo-txt{animation:logoTxt 4.8s steps(1,end) infinite}
 @keyframes logoJit{0%,100%{transform:none;filter:none}
-88%{transform:translateX(-2px);filter:drop-shadow(-2px 0 rgba(255,46,136,.75)) drop-shadow(2px 0 rgba(46,230,240,.75))}
-89%{transform:translateX(3px);filter:drop-shadow(2px 0 rgba(255,46,136,.75)) drop-shadow(-2px 0 rgba(46,230,240,.75))}
+88%{transform:translateX(-.02em);filter:drop-shadow(-.02em 0 rgba(255,46,136,.75)) drop-shadow(.02em 0 rgba(46,230,240,.75))}
+89%{transform:translateX(.03em);filter:drop-shadow(.02em 0 rgba(255,46,136,.75)) drop-shadow(-.02em 0 rgba(46,230,240,.75))}
 90%{transform:none;filter:none}
-94%{transform:translateX(1px);filter:drop-shadow(-1px 0 rgba(255,46,136,.6)) drop-shadow(1px 0 rgba(46,230,240,.6))}
+94%{transform:translateX(.01em);filter:drop-shadow(-.01em 0 rgba(255,46,136,.6)) drop-shadow(.01em 0 rgba(46,230,240,.6))}
 95%{transform:none;filter:none}}
 @keyframes logoTxt{0%,100%{clip-path:none;opacity:1}
 88%{clip-path:inset(0 0 55% 0)}
@@ -120,9 +120,9 @@ html{scroll-behavior:smooth}
   <!-- Nav -->
   <header style="border-bottom: 1px solid #2A2740">
     <nav style="max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
-      <a class="logo-gl" href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+      <a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
         <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 4h12l8 8v12H12L4 16z" fill="none" stroke="#FF2E88" stroke-width="2.5"></path><path d="M10 10h6v6h-6z" fill="#2EE6F0"></path></svg>
-        <span class="logo-txt" style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
+        <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
       </a>
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
         <a href="#hub" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">MEDIA HUB</a>
@@ -198,7 +198,7 @@ html{scroll-behavior:smooth}
     <div style="position: relative; width: 100%; max-width: 1280px; margin: 0 auto; padding: 96px 24px; box-sizing: border-box">
     <div style="max-width: 640px; display: flex; flex-direction: column; gap: 24px">
       <p class="hero-gl" style="--d: 0.15s; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">CYBERPUNK · BIOPUNK · ACTION · BANGKOK 26XX</p>
-      <h1 class="hero-gl" style="--d: 0.3s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(56px, 9vw, 120px); line-height: 0.9; letter-spacing: 0.02em; color: #FFFFFF; text-shadow: 0 0 24px rgba(255,46,136,0.55)">SHIFTER<br><span style="color: #FF2E88">PUNKZ</span></h1>
+      <h1 class="hero-gl" style="--d: 0.3s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(56px, 9vw, 120px); line-height: 0.9; letter-spacing: 0.02em; color: #FFFFFF; text-shadow: 0 0 24px rgba(255,46,136,0.55)"><span class="logo-gl" style="display: inline-block"><span class="logo-txt" style="display: inline-block">SHIFTER<br><span style="color: #FF2E88">PUNKZ</span></span></span></h1>
       <p class="hero-gl" style="--d: 0.5s; margin: 0; font-size: 19px; line-height: 1.7; max-width: 600px; color: #D8D6E8; width: 660px; height: 105px">{{t.heroSub}}</p>
     </div>
     </div>
