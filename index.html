@@ -109,6 +109,7 @@ html{scroll-behavior:smooth}
         <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
       </a>
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
+        <a href="#hub" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">MEDIA HUB</a>
         <div style="position: relative">
           <button type="button" onClick="{{toggleGame}}" aria-expanded="{{gameExpanded}}" aria-controls="game-menu" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; color: {{gameColor}}">GAME<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style="{{caretStyle}}"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg></button>
           <sc-if value="{{gameOpen}}" hint-placeholder-val="{{ false }}">
@@ -293,12 +294,36 @@ html{scroll-behavior:smooth}
     </div>
   </section>
 
+  <!-- Boardgame -->
+  <section id="boardgame" style="background: #0B0A12; border-top: 1px solid #2A2740">
+    <div data-rv="board" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 40px">
+      <div class="{{rv.board}}" style="display: flex; flex-direction: column; gap: 10px">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">05 // BOARDGAME</p>
+        <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">COMING SOON</h2>
+        <p style="margin: 0; max-width: 680px; font-size: 16px; line-height: 1.7; color: #9A97B0">{{t.boardSoon}}</p>
+      </div>
+      <div class="{{rv.board}}" style="--d: 0.15s; display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740">
+        <div style="height: 12px; background: repeating-linear-gradient(45deg, #FFD400 0 12px, #151225 12px 24px)" aria-hidden="true"></div>
+        <div class="tv" style="min-height: 240px; background: #0A0912; background-image: repeating-linear-gradient(0deg, rgba(255,212,0,0.05) 0 1px, transparent 1px 3px)"><div class="tv-in" style="min-height: 240px; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center">
+          <p class="tv-txt" style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.2em; color: #FFD400">CLASSIFIED // BOARDGAME</p>
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px" aria-hidden="true">
+            <span style="width: 180px; height: 22px; background: #2A2740"></span>
+            <span style="width: 120px; height: 22px; background: #2A2740"></span>
+            <span style="width: 220px; height: 22px; background: #2A2740"></span>
+          </div>
+          <p class="tv-txt" style="margin: 0; font-size: 15px; color: #D8D6E8; animation-delay: -1.3s">{{t.boardLocked}}</p>
+        </div></div>
+        <div style="height: 12px; background: repeating-linear-gradient(45deg, #FFD400 0 12px, #151225 12px 24px)" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- Media Hub -->
   <section id="hub" style="border-top: 1px solid #2A2740; border-bottom: 1px solid #2A2740; background: #0F0D19">
     <div data-rv="hub" style="max-width: 1280px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; gap: 40px">
       <div class="{{rv.hub}}" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
         <div style="display: flex; flex-direction: column; gap: 10px">
-          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">05 // MEDIA HUB</p>
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">06 // MEDIA HUB</p>
           <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.hubTitle}}</h2>
         </div>
         <p style="margin: 0 0 0 auto; max-width: 480px; text-align: right; font-size: 16px; line-height: 1.7; color: #9A97B0; width: 496px">{{t.hubSub}}</p>
@@ -362,7 +387,7 @@ class Component extends DCLogic {
     this.state = { lang: 'th', gameOpen: false, seen: {} };
   }
   componentDidMount() {
-    const all = { hub: 1, world: 1, fac: 1, shift: 1, chars: 1 };
+    const all = { hub: 1, world: 1, fac: 1, shift: 1, chars: 1, board: 1 };
     const start = () => {
       const els = document.querySelectorAll('[data-rv]');
       const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -396,7 +421,7 @@ class Component extends DCLogic {
     const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
     const soon = '#9A97B0';
     const out = {
-      rv: { hub: gl('hub'), world: gl('world'), fac: gl('fac'), shift: gl('shift'), chars: gl('chars') },
+      rv: { hub: gl('hub'), world: gl('world'), fac: gl('fac'), shift: gl('shift'), chars: gl('chars'), board: gl('board') },
       gameOpen: !!this.state.gameOpen,
       gameExpanded: this.state.gameOpen ? 'true' : 'false',
       gameColor: this.state.gameOpen ? '#2EE6F0' : '#D8D6E8',
@@ -406,7 +431,7 @@ class Component extends DCLogic {
       gameMenu: [
         { label: 'TRPG', href: 'trpg.html', accent: '#2EE6F0', sub: L('Shifter Punkz · TRPG', 'Shifter Punkz · TRPG') },
         { label: 'DIGITAL', href: '#hub', accent: '#FFD400', sub: L('เกมดิจิทัล · เร็วๆ นี้', 'Digital game · Coming soon') },
-        { label: 'BOARDGAME', href: '#hub', accent: '#FFD400', sub: L('บอร์ดเกม · เร็วๆ นี้', 'Board game · Coming soon') }
+        { label: 'BOARDGAME', href: '#boardgame', accent: '#FFD400', sub: L('บอร์ดเกม · เร็วๆ นี้', 'Board game · Coming soon') }
       ],
       setTh: () => this.setState({ lang: 'th' }),
       setEn: () => this.setState({ lang: 'en' }),
@@ -424,6 +449,8 @@ class Component extends DCLogic {
         ctaTrpg: L('เริ่มเล่น TRPG', 'PLAY THE TRPG'),
         keyArt: L('[ FULL-BLEED KEY ART ]\nภาพหลักคลุมเต็ม section', '[ FULL-BLEED KEY ART ]\nHero image'),
         seriesSoon: L('ซีรีส์แอนิเมชันเรื่องแรกของจักรวาล Shifter Punkz กำลังอยู่ระหว่างการผลิต ติดตามการเปิดตัวได้เร็วๆ นี้', 'The first animated series in the Shifter Punkz universe is in production. Stay tuned for the reveal.'),
+        boardSoon: L('บอร์ดเกมจากจักรวาล Shifter Punkz กำลังอยู่ระหว่างการพัฒนา ชวนเพื่อนมานั่งล้อมโต๊ะ แล้วออกไปลุยบนถนนของเมืองนี้ด้วยกัน ติดตามการเปิดตัวได้เร็วๆ นี้', 'A Shifter Punkz board game is in development. Gather your crew around the table and take to the streets of this city together. Watch for the reveal.'),
+        boardLocked: L('กล่องเกมยังถูกปิดผนึก', 'The box is still sealed.'),
         seriesLocked: L('ข้อมูลตัวละครยังไม่เปิดเผย', 'Character files are still sealed.'),
         hubTitle: L('จักรวาลเดียว หลายรูปแบบ', 'One universe, every format'),
         hubSub: L('ติดตามเรื่องราวของ Shifter Punkz ผ่านแอนิเมชัน TRPG เกมดิจิทัล และบอร์ดเกม', 'Follow Shifter Punkz across animation, TRPG, digital games and board games.'),
