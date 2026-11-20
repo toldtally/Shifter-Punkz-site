@@ -76,6 +76,22 @@ a{color:#2EE6F0}a:hover{color:#FF2E88}
 95%{transform:translateX(2px);text-shadow:-1px 0 rgba(255,46,136,.6),1px 0 rgba(46,230,240,.6)}
 96%{transform:none;text-shadow:none}}
 @media (prefers-reduced-motion: reduce){.tv::before,.tv::after,.tv-in,.tv-txt{animation:none}}
+/* nav logo: light glitch on a loop (placeholder until the official logo) */
+.logo-gl{animation:logoJit 4.8s steps(1,end) infinite}
+.logo-gl .logo-txt{animation:logoTxt 4.8s steps(1,end) infinite}
+@keyframes logoJit{0%,100%{transform:none;filter:none}
+88%{transform:translateX(-2px);filter:drop-shadow(-2px 0 rgba(255,46,136,.75)) drop-shadow(2px 0 rgba(46,230,240,.75))}
+89%{transform:translateX(3px);filter:drop-shadow(2px 0 rgba(255,46,136,.75)) drop-shadow(-2px 0 rgba(46,230,240,.75))}
+90%{transform:none;filter:none}
+94%{transform:translateX(1px);filter:drop-shadow(-1px 0 rgba(255,46,136,.6)) drop-shadow(1px 0 rgba(46,230,240,.6))}
+95%{transform:none;filter:none}}
+@keyframes logoTxt{0%,100%{clip-path:none;opacity:1}
+88%{clip-path:inset(0 0 55% 0)}
+89%{clip-path:inset(45% 0 0 0);opacity:.85}
+90%{clip-path:none;opacity:1}
+94%{opacity:.7}
+95%{opacity:1}}
+@media (prefers-reduced-motion: reduce){.logo-gl,.logo-gl .logo-txt{animation:none}}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
 [data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
@@ -104,9 +120,9 @@ html{scroll-behavior:smooth}
   <!-- Nav -->
   <header style="border-bottom: 1px solid #2A2740">
     <nav style="max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
-      <a href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+      <a class="logo-gl" href="#top" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
         <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 4h12l8 8v12H12L4 16z" fill="none" stroke="#FF2E88" stroke-width="2.5"></path><path d="M10 10h6v6h-6z" fill="#2EE6F0"></path></svg>
-        <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
+        <span class="logo-txt" style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
       </a>
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
         <a href="#hub" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">MEDIA HUB</a>
