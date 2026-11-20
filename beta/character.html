@@ -863,7 +863,7 @@ class Component extends DCLogic {
       cosmic: rows('cosmic', ['name', 'fx', 'cd'], { cd: [0, 3] }),
       addCos: cpd ? () => {} : add('cosmic', { name: '', fx: '', cd: '' }, cosCap),
       cosFull: cpd || s.cosmic.length >= cosCap,
-      cosTitle: fk === 'outlaw' ? 'Cosmic Gadgets' : 'Cosmic Abilities',
+      cosTitle: fk === 'outlaw' ? 'Cosmic Gadgets' : 'Cosmic Ability',
       cosLabel: (fk === 'outlaw' ? L('+ เพิ่ม Cosmic Gadget', '+ Add Cosmic Gadget') : L('+ เพิ่ม Cosmic Ability', '+ Add Cosmic Ability')) + (fk === 'shifter' ? L(' (มีได้ 1 อย่าง)', ' (one per Shifter)') : cosCap > 1 ? L(' (สูงสุด ', ' (max ') + cosCap + L(' — Rep. ทุก 4 ได้เพิ่ม 1)', ' — +1 every 4 Rep.)') : L(' (สูงสุด 1 ตอนสร้าง)', ' (max 1 at creation)')),
       cosPh: fk === 'outlaw' ? 'Cosmic Gadget' : L('ประเภทของพลัง', 'Power type'),
       cosNote: cpd ? L('C.P.D. ไม่มีพลังคอสมิคติดตัว', 'C.P.D. agents have no cosmic power') : '',
