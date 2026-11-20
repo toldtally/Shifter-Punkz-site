@@ -32,6 +32,9 @@
           avatar: r.data.avatar_path ? SP.imageUrl(r.data.avatar_path) : ''
         } });
       }
+      // book owners (a registered book code) get the One-Shot downloads
+      var b = await sb.from('book_codes').select('book').limit(1);
+      if (!b.error) this.setState({ spOwnsBook: (b.data || []).length > 0 });
     }
 
     renderVals() {
@@ -39,6 +42,18 @@
       var th = this.state.lang !== 'en';
       var u = this.state.spUser;
       v.spSignedIn = !!u;
+      if (v.books) {
+        var owns = !!(u && this.state.spOwnsBook);
+        v.books = v.books.map((bk) => {
+          if (!bk.download) return bk;
+          return Object.assign({}, bk, {
+            dlColor: owns ? '#4ADE80' : '#FFD400',
+            dlText: owns
+              ? (th ? 'ไฟล์ One-Shot กำลังเตรียมอยู่ จะเปิดให้ดาวน์โหลดที่นี่เร็วๆ นี้' : 'The One-Shot files are being prepared. Downloads open here soon.')
+              : (th ? '🔒 เปิดให้ดาวน์โหลดฟรีสำหรับผู้ที่ซื้อหนังสือแล้วเท่านั้น' : '🔒 Free download for book owners only.') + (u ? (th ? ' ลงทะเบียนรหัสหนังสือได้ที่หน้าตั้งค่าบัญชี' : ' Register your book code in Settings.') : (th ? ' เข้าสู่ระบบแล้วลงทะเบียนรหัสหนังสือที่หน้าตั้งค่าบัญชี' : ' Sign in and register your book code in Settings.'))
+          });
+        });
+      }
       v.spSignedOut = !u;
       v.spName = u ? u.name : '';
       v.spInitial = u ? (u.name || '?').charAt(0).toUpperCase() : '';
