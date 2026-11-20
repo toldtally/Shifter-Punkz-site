@@ -135,7 +135,10 @@ html{scroll-behavior:smooth}
                 <span style="padding: 2px 8px; border: 1px solid {{c.color}}; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: {{c.color}}">{{c.factor}}</span>
                 
               </div>
-              <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{c.name}}</h2>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 10px">
+                <h2 style="margin: 0; min-width: 0; overflow-wrap: anywhere; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{c.name}}</h2>
+                <span style="flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: {{c.color}}">{{c.repTag}}</span>
+              </div>
               <p style="margin: 0; font-size: 13px; color: #A9A5C2">{{c.sub}}</p>
             </div>
           </div>
@@ -199,7 +202,7 @@ html{scroll-behavior:smooth}
           </div>
           <sc-if value="{{c.notConfirm}}" hint-placeholder-val="{{ true }}">
             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid #2A2740">
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8C88A6">{{c.rep}}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8C88A6">{{c.edited}}</span>
               <span style="display: flex; gap: 8px">
                 <button type="button" onClick="{{c.askDel}}" aria-label="{{c.delLabel}}" title="{{c.delLabel}}" style="width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #4A1630; background: transparent; color: #FF3D6E; cursor: pointer"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.6 6.5v5M9.4 6.5v5" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg></button>
                 <button type="button" onClick="{{c.exportJson}}" style="min-height: 40px; padding: 0 14px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">Export</button>
@@ -301,7 +304,7 @@ class Component extends DCLogic {
         style: 'min-height: 40px; padding: 0 16px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 14px; ' + (d.id === cur ? 'border: 1px solid ' + d.color + '; background: ' + d.color + '; color: #0B0A12' : 'border: 1px solid #3A3655; background: transparent; color: #D8D6E8')
       })),
       chars: shown.map((c, i) => ({
-        name: c.name, factor: c.factor, sub: c.sub, rep: c.rep, color: C[c.f], initial: c.name.charAt(0), portrait: c.portrait || '', hasPortrait: !!c.portrait, noPortrait: !c.portrait,
+        name: c.name, factor: c.factor, sub: c.sub, rep: c.rep, repTag: c.rep.split(' · ')[0], edited: c.rep.split(' · ').slice(1).join(' · '), color: C[c.f], initial: c.name.charAt(0), portrait: c.portrait || '', hasPortrait: !!c.portrait, noPortrait: !c.portrait,
         isConfirm: this.state.confirm === c.id,
         notConfirm: this.state.confirm !== c.id,
         delLabel: L('ลบ ', 'Delete ') + c.name,

@@ -72,6 +72,7 @@
           name: row.name, factor: c.F.label, color: c.F.color, initial: row.name.charAt(0).toUpperCase(),
           sub: (s.job ? 'Job: ' + s.job : L('ยังไม่ได้ใส่อาชีพ', 'No job yet')),
           rep: 'REP ' + SP.num(s.repCur) + ' · ' + SP.timeAgo(row.updated_at, th),
+          repTag: 'REP ' + SP.num(s.repCur), edited: SP.timeAgo(row.updated_at, th),
           portrait: portrait, hasPortrait: !!portrait, noPortrait: !portrait,
           href: 'character.html?id=' + id,
           exportJson: () => SP.download((row.name || 'character') + '.json', Object.assign({}, s, { name: row.name, factor: row.factor })),
