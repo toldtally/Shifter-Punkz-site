@@ -220,6 +220,15 @@ def strip_spoilers(name, js):
         js = re.sub(r"\n\s*twinsSub: L\((?:[^()]|\([^()]*\))*\),", "", js)
         js = re.sub(r"chars: \[\n.*?\n\s*\],?", "chars: [],", js, flags=re.S)
         assert "DAF" not in js and "DIZ" not in js and "ฝาแฝด" not in js, "spoiler left in Main"
+    if name == "TRPG.dc.html":
+        # One-Shot missions are sealed (free download for book owners): ship only their numbers.
+        def seal(m):
+            nums = re.findall(r"no: '(\d+)'", m.group(1))
+            assert nums, "One-Shot numbers missing"
+            return "hooks: [" + ", ".join("{ no: '%s' }" % n for n in nums) + "] }"
+        js, n = re.subn(r"hooks: \[\n(.*?)\n\s*\] \}", seal, js, flags=re.S)
+        assert n == 1, "One-Shot hooks not sealed"
+        assert "ตื่นในแคปซูล" not in js and "Twisted Ruins" not in js and "Cosmic Case Job" not in js, "One-Shot text left in TRPG"
     return js
 
 

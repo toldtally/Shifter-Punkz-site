@@ -58,6 +58,23 @@ a{color:#2EE6F0}a:hover{color:#FF2E88}
 .gl-wait{opacity:1}
 .gl-play,.tab-in,.cpd-play .cpd-body{animation:none}
 .crt{display:none}}
+/* sealed One-Shot entries: broken-TV glitch, same as the Home page */
+.tv{position:relative;overflow:hidden;isolation:isolate}
+.tv::before{content:"";position:absolute;inset:-50%;z-index:-1;opacity:.13;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:tvNoise .4s steps(4) infinite}
+.tv::after{content:"";position:absolute;left:0;right:0;top:-30%;height:28%;z-index:-1;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,212,0,.07) 45%,rgba(255,255,255,.1) 50%,rgba(255,212,0,.07) 55%,transparent);animation:tvRoll 5.5s linear infinite}
+.tv-in{animation:tvFlick 4.2s steps(1,end) infinite}
+.tv-txt{animation:tvJit 3.7s steps(1,end) infinite}
+@keyframes tvNoise{0%{transform:translate(0,0)}25%{transform:translate(-8%,5%)}50%{transform:translate(6%,-7%)}75%{transform:translate(-5%,-4%)}100%{transform:translate(0,0)}}
+@keyframes tvRoll{to{top:110%}}
+@keyframes tvFlick{0%,100%{opacity:1}61%{opacity:.82}62%{opacity:1}88%{opacity:.7}89%{opacity:1}90%{opacity:.88}91%{opacity:1}}
+@keyframes tvJit{0%,100%{transform:none;text-shadow:none;clip-path:none}
+84%{transform:translateX(-3px);text-shadow:-2px 0 rgba(255,46,136,.7),2px 0 rgba(46,230,240,.7)}
+85%{transform:translateX(4px);clip-path:inset(30% 0 40% 0)}
+86%{transform:translateX(-1px);clip-path:none;text-shadow:1px 0 rgba(255,46,136,.6),-1px 0 rgba(46,230,240,.6)}
+87%{transform:none;text-shadow:none}
+95%{transform:translateX(2px);text-shadow:-1px 0 rgba(255,46,136,.6),1px 0 rgba(46,230,240,.6)}
+96%{transform:none;text-shadow:none}}
+@media (prefers-reduced-motion: reduce){.tv::before,.tv::after,.tv-in,.tv-txt{animation:none}}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
 [data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
@@ -504,7 +521,19 @@ html{scroll-behavior:smooth}
             </div>
             <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 21px; line-height: 1.25; color: #FFFFFF">{{bk.title}}</h3>
             <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #C3C0D6; flex: 1">{{bk.desc}}</p>
-            <sc-if value="{{bk.hasHooks}}" hint-placeholder-val="{{ false }}">
+            <!-- One-Shot missions are sealed: free download for book owners only -->
+            <sc-if value="{{bk.hooksLocked}}" hint-placeholder-val="{{ false }}">
+              <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+                <sc-for list="{{bk.hooks}}" as="hk" hint-placeholder-count="3">
+                  <li class="tv" style="padding: 10px 12px; background: #0B0A12; border-left: 2px solid #FFD400; display: flex; flex-direction: column; gap: 7px">
+                    <span class="tv-txt" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: #FFD400">CLASSIFIED // ONE-SHOT {{hk.no}}</span>
+                    <span style="display: flex; flex-wrap: wrap; gap: 6px" aria-hidden="true"><span style="width: 46%; height: 9px; background: #2A2740"></span><span style="width: 30%; height: 9px; background: #2A2740"></span><span style="width: 62%; height: 9px; background: #2A2740"></span></span>
+                  </li>
+                </sc-for>
+              </ul>
+              <p style="margin: 0; font-size: 12.5px; line-height: 1.6; color: #A9A5C2">{{t.hooksNote}}</p>
+            </sc-if>
+            <sc-if value="{{bk.hooksOpen}}" hint-placeholder-val="{{ false }}">
               <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
                 <sc-for list="{{bk.hooks}}" as="hk" hint-placeholder-count="3">
                   <li style="padding: 10px 12px; background: #0B0A12; border-left: 2px solid #FF2E88; font-size: 13px; line-height: 1.6; color: #C3C0D6"><b style="display: block; color: #FFFFFF; font-weight: 600">{{hk.name}}</b>{{hk.desc}}</li>
@@ -681,6 +710,7 @@ class Component extends DCLogic {
         rollP: L('ทอย D8 เท่ากับจำนวนช่อง Basic Ability ที่ถมไว้ แล้วเลือกค่าสูงสุดเป็นผลลัพธ์ แต่ทุกลูกที่ออกหน้า 1 จะลดค่าสูงสุดลง 1 สถานการณ์ได้เปรียบ +1 ลูก เสียเปรียบ −1 ลูก', 'Roll one D8 per filled Basic Ability box and keep the highest. Every 1 you roll lowers that result by one. Advantage adds a die; disadvantage removes one.'),
         gadgetTitle: L('อุปกรณ์สังเคราะห์ (Cosmic Gadgets)', 'Cosmic Gadgets'),
         gadgetP: L('ไม่มีพลังคอสมิคก็ไม่ได้แปลว่าต้องยอมแพ้ ในตรอกหลังร้านซ่อมของเมืองนี้ มนุษย์ธรรมดาเอาชิ้นส่วนเทคโนคอสมิคมาดัดแปลงเป็นอุปกรณ์สังเคราะห์ ให้ใช้พลังได้เสมือนเป็น Shifter เสียเอง แลกกับแบตเตอรี่ที่ต้องคอยดูแล และร่างกายที่อาจไม่ใช่ของตัวเองทั้งหมดอีกต่อไป', 'No cosmic power? No problem. In the back-alley workshops of this city, ordinary humans hack scraps of cosmic tech into synthetic gear that lets them wield power as if they were Shifters, at the cost of a battery to keep charged and a body that may not be entirely their own anymore.'),
+        hooksNote: L('🔒 เปิดให้ดาวน์โหลดฟรีสำหรับผู้ที่ซื้อหนังสือแล้วเท่านั้น', '🔒 Free download for book owners only.'),
         growTitle: L('เติบโตด้วยชื่อเสียง', 'Grow through Reputation'),
         growP: L('ตัวละครใน Shifter Punkz เติบโตด้วย "ชื่อเสียง" (Reputation) ซึ่งเป็นทั้งตัวบ่งบอกเลเวลและค่าประสบการณ์ไปพร้อมกัน ยิ่งชื่อเสียงของตัวละครดังขึ้นในเมืองนี้ ก็ยิ่งแกร่งขึ้น', 'Characters in Shifter Punkz grow through Reputation, which works as both their level and their experience. The bigger their name in this city, the stronger they get.'),
         storeTitle: L('หนังสือ Core Rules และภาคเสริม', 'Core Rules & expansions'),
@@ -804,11 +834,7 @@ class Component extends DCLogic {
         { kind: 'CORE RULEBOOK', accent: '#FF2E88', title: 'Shifter Punkz TRPG — Core Rulebook', desc: L('หนังสือกฎหลัก ครบทั้งการสร้างตัวละคร ระบบเต๋า ความสามารถ การเติบโตของตัวละคร และ Lore ของโลก', 'The core rules: character creation, dice, abilities, advancement and the world\'s lore.'), buyable: false, soon: true, hasHooks: false, hooks: [] },
         { kind: 'EXPANSION', accent: '#FFD400', title: L('Shifter แฟ้มลับ C.P.D.', 'Shifter Dossier: C.P.D. Edition'), desc: L('หนังสือรวมประเภทของ Shifter', 'A compendium of Shifter types.'), buyable: false, soon: true, hasHooks: false, hooks: [] },
         { kind: 'EXPANSION', accent: '#2EE6F0', title: 'Gadget Blueprint', desc: L('หนังสือรวม Blueprint ของ Gadget ต่างๆ สำหรับสาย Norms และ Punkz', 'A collection of gadget blueprints for Norms and Punkz.'), buyable: false, soon: true, hasHooks: false, hooks: [] },
-        { kind: 'STORY EXPANSION', accent: '#C084FC', title: L('ชุด One-Shot', 'One-Shot Collection'), desc: L('ภารกิจจบในตัวสำหรับเล่นครั้งเดียว', 'Self-contained missions for a single session.'), buyable: false, soon: true, hasHooks: true, hooks: [
-          { name: L('งานขโมยกระเป๋าคอสมิค', 'The Cosmic Case Job'), desc: L('Outlaws รับงานจาก Golden Crown บุกห้องวิจัยลับเพื่อขโมยกระเป๋าที่กักเก็บพลังงานคอสมิค', 'Outlaws hired by Golden Crown break into a secret lab for a case that holds cosmic energy.') },
-          { name: L('ซากอาคารบิดมิติ', 'The Twisted Ruins'), desc: L('ทีม C.P.D. รับแจ้งการขนอาวุธสังเคราะห์ของ Golden Crown แต่เมื่อไปถึงกลับพบเพียงซากอาคารที่ถูกบิดมิติ', 'A C.P.D. team answers a tip about Golden Crown synthetic-weapon smuggling, and finds only ruins twisted by dimensional force.') },
-          { name: L('ตื่นในแคปซูล', 'Wake in the Capsule'), desc: L('ผู้เล่นตื่นขึ้นในแคปซูลทดลองของ Apex Cybernetics ความทรงจำเลือนราง และต้องหาทางหนีออกไป', 'You wake in an Apex Cybernetics test capsule with fading memories, and must find a way out.') }
-        ] }
+        { kind: 'STORY EXPANSION', accent: '#C084FC', title: L('ชุด One-Shot', 'One-Shot Collection'), desc: L('ภารกิจจบในตัวสำหรับเล่นครั้งเดียว', 'Self-contained missions for a single session.'), buyable: false, soon: true, hasHooks: true, hooksLocked: true, hooksOpen: false, hooks: [{ no: '01' }, { no: '02' }, { no: '03' }] }
       ], 'store', 0.15),
       credits: [
         { role: 'PUBLISHED BY', names: 'Rollaholic Games' },
