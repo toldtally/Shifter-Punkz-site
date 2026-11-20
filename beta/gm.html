@@ -362,6 +362,57 @@ html{scroll-behavior:smooth}
           </aside>
         </div>
 
+        <!-- Session notes: the GM's private story log, one entry per play -->
+        <section aria-labelledby="notes-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #C084FC">
+          <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
+            <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
+              <h2 id="notes-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">SESSION NOTES</h2>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #8C88A6">{{t.notesSub}}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span role="status" aria-live="polite" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{noteStatusColor}}">{{noteStatus}}</span>
+              <button type="button" onClick="{{newNote}}" style="min-height: 36px; padding: 0 14px; border: 1px solid #C084FC; background: transparent; color: #C084FC; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.newNote}}</button>
+            </div>
+          </div>
+          <sc-if value="{{noNotes}}" hint-placeholder-val="{{ false }}">
+            <p style="margin: 0; padding: 28px 16px; text-align: center; font-size: 14px; line-height: 1.7; color: #A9A5C2">{{t.notesEmpty}}</p>
+          </sc-if>
+          <sc-if value="{{hasNotes}}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; flex-wrap: wrap; align-items: stretch">
+              <nav aria-label="{{t.notesListLabel}}" style="flex: 1 1 220px; min-width: 0; max-height: 380px; overflow-y: auto; border-right: 1px solid #2A2740; padding: 8px 0">
+                <sc-for list="{{notes}}" as="nt" hint-placeholder-count="3">
+                  <button type="button" onClick="{{nt.pick}}" aria-current="{{nt.current}}" style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 10px 16px; border: 0; border-left: 3px solid {{nt.mark}}; background: {{nt.bg}}; cursor: pointer; text-align: left">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #C084FC">#{{nt.no}} · {{nt.date}}</span>
+                    <span style="font-size: 14px; font-weight: 600; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%">{{nt.label}}</span>
+                  </button>
+                </sc-for>
+              </nav>
+              <div style="flex: 999 1 480px; min-width: 0; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #C084FC">{{noteHead}}</span>
+                </div>
+                <label for="note-title" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.noteTitleLabel}}</label>
+                <input id="note-title" class="fld" type="text" maxlength="120" value="{{noteTitle}}" onInput="{{onNoteTitle}}" placeholder="{{t.noteTitlePh}}" style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px">
+                <label for="note-body" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.noteBodyLabel}}</label>
+                <textarea id="note-body" class="fld" rows="12" onInput="{{onNoteBody}}" placeholder="{{t.noteBodyPh}}" style="resize: vertical; min-height: 220px; font-size: 14px; line-height: 1.7">{{noteBody}}</textarea>
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
+                  <span style="font-size: 12px; color: #8C88A6">{{t.notesPrivate}}</span>
+                  <sc-if value="{{noteAskDel}}" hint-placeholder-val="{{ false }}">
+                    <span role="alertdialog" aria-label="{{t.noteDelQ}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+                      <span style="font-size: 13px; color: #FF3D6E">{{t.noteDelQ}}</span>
+                      <button type="button" onClick="{{cancelDelNote}}" style="min-height: 34px; padding: 0 12px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{t.cancel}}</button>
+                      <button type="button" onClick="{{doDelNote}}" style="min-height: 34px; padding: 0 12px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{t.noteDel}}</button>
+                    </span>
+                  </sc-if>
+                  <sc-if value="{{noteNoAsk}}" hint-placeholder-val="{{ true }}">
+                    <button type="button" onClick="{{askDelNote}}" style="min-height: 34px; padding: 0 12px; border: 1px solid #3A3655; background: transparent; color: #A9A5C2; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{t.noteDel}}</button>
+                  </sc-if>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </section>
+
         <!-- BGM bot (full-width bottom row) -->
         <section aria-label="BGM" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{bgmColor}}">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center; gap: 10px">
@@ -428,6 +479,10 @@ class Component extends DCLogic {
     super(props);
     const now = Date.now();
     this.state = {
+      notes: [
+        { id: 'n2', no: 2, at: now - 86400000 * 6, title: 'บุกโกดังท่าเรือ', body: '' },
+        { id: 'n1', no: 1, at: now - 86400000 * 13, title: 'รับงานแรก', body: '' }
+      ], noteSel: 'n2', noteSavedAt: now - 86400000 * 6, noteDirty: false, noteAskDel: false,
       lang: 'th', role: 'gm', paused: false, copied: false, confirm: null, removed: [], now: now,
       cur: 't1', menu: false, pendingTable: null, snaps: {
         t2: {
@@ -625,6 +680,42 @@ class Component extends DCLogic {
           style: 'min-height: 38px; padding: 0 10px; cursor: pointer; text-align: left; font-size: 12.5px; font-family: IBM Plex Sans Thai, sans-serif; ' + (on ? 'border: 1px solid #4ADE80; background: rgba(74,222,128,0.12); color: #FFFFFF' : 'border: 1px solid #2A2740; background: #0B0A12; color: #A9A5C2')
         };
       }),
+      ...(() => {
+        // session notes (prototype keeps them in memory; the live site saves them per session)
+        const notes = this.state.notes || [];
+        const sel = notes.find((n) => n.id === this.state.noteSel) || notes[0] || null;
+        const fmt = (ms) => new Date(ms).toLocaleDateString(this.state.lang === 'en' ? 'en-GB' : 'th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+        const hm = (ms) => new Date(ms).toLocaleTimeString(this.state.lang === 'en' ? 'en-GB' : 'th-TH', { hour: '2-digit', minute: '2-digit' });
+        const edit = (patch) => this.setState({ notes: notes.map((n) => (sel && n.id === sel.id ? Object.assign({}, n, patch) : n)), noteDirty: false, noteSavedAt: Date.now() });
+        return {
+          hasNotes: notes.length > 0, noNotes: notes.length === 0,
+          notes: notes.map((n) => ({
+            no: n.no, date: fmt(n.at), label: n.title || L('(ยังไม่ตั้งชื่อ)', '(untitled)'),
+            current: sel && n.id === sel.id ? 'true' : 'false',
+            mark: sel && n.id === sel.id ? '#C084FC' : 'transparent',
+            bg: sel && n.id === sel.id ? '#1D1930' : 'transparent',
+            pick: () => this.setState({ noteSel: n.id, noteAskDel: false })
+          })),
+          noteHead: sel ? L('รอบที่ ', 'PLAY #') + sel.no + ' · ' + fmt(sel.at) : '',
+          noteTitle: sel ? sel.title : '', noteBody: sel ? sel.body : '',
+          onNoteTitle: (e) => edit({ title: String(e && e.target ? e.target.value : '') }),
+          onNoteBody: (e) => edit({ body: String(e && e.target ? e.target.value : '') }),
+          noteStatus: this.state.noteSavedAt ? L('บันทึกอัตโนมัติ · ', 'AUTOSAVED · ') + hm(this.state.noteSavedAt) : '',
+          noteStatusColor: '#8C88A6',
+          newNote: () => {
+            const no = notes.reduce((m, n) => Math.max(m, n.no), 0) + 1;
+            const n = { id: 'n' + Date.now(), no: no, at: Date.now(), title: '', body: '' };
+            this.setState({ notes: [n].concat(notes), noteSel: n.id, noteAskDel: false, noteSavedAt: Date.now() });
+          },
+          noteAskDel: !!this.state.noteAskDel, noteNoAsk: !this.state.noteAskDel,
+          askDelNote: () => this.setState({ noteAskDel: true }),
+          cancelDelNote: () => this.setState({ noteAskDel: false }),
+          doDelNote: () => {
+            const rest = notes.filter((n) => !sel || n.id !== sel.id);
+            this.setState({ notes: rest, noteSel: rest[0] ? rest[0].id : null, noteAskDel: false });
+          }
+        };
+      })(),
       ...(() => {
         const s = this.bgmSnapshot();
         const M = window.SPBGM ? window.SPBGM.MOODS.find((m) => m.id === s.mood) : null;
@@ -847,6 +938,17 @@ class Component extends DCLogic {
         gmNote: L('โน้ต GM (ผู้เล่นไม่เห็น)', 'GM note (hidden from players)'),
         remove: L('เอาออกจาก session', 'Remove from session'),
         cancel: L('ยกเลิก', 'Cancel'),
+        notesSub: L('บันทึกเนื้อเรื่อง · เห็นเฉพาะ GM', 'STORY LOG · GM ONLY'),
+        newNote: L('+ บันทึกรอบใหม่', '+ New play log'),
+        notesEmpty: L('ยังไม่มีบันทึก กด "+ บันทึกรอบใหม่" เพื่อจดเนื้อเรื่องของรอบนี้', 'No notes yet. Press "+ New play log" to start writing up this play.'),
+        notesListLabel: L('บันทึกแต่ละรอบ', 'Play logs'),
+        noteTitleLabel: L('หัวข้อบันทึก', 'Log title'),
+        noteTitlePh: L('หัวข้อของรอบนี้ เช่น บุกโกดังท่าเรือ', 'A title for this play'),
+        noteBodyLabel: L('เนื้อหาบันทึก', 'Log text'),
+        noteBodyPh: L('เกิดอะไรขึ้นบ้าง: เหตุการณ์สำคัญ NPC ที่เจอ เบาะแส ปมที่ยังค้าง สิ่งที่ผู้เล่นสัญญาไว้ และสิ่งที่ต้องเตรียมรอบหน้า', 'What happened: key events, NPCs met, clues, loose threads, promises made, and what to prep for next time.'),
+        notesPrivate: L('🔒 ผู้เล่นมองไม่เห็นบันทึกนี้', '🔒 Players never see these notes.'),
+        noteDel: L('ลบบันทึกนี้', 'Delete log'),
+        noteDelQ: L('ลบบันทึกรอบนี้ถาวร?', 'Delete this log for good?'),
         confirmRemove: L('ยืนยันเอาออก', 'Remove'),
         dropHint: L('ลากไฟล์ .json ของผู้เล่นมาวางที่นี่ หรือ', 'Drop players\' .json files here, or'),
         pick: L('เลือกไฟล์', 'choose files'),

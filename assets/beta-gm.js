@@ -23,7 +23,11 @@
   class Page extends Component {
     constructor(props) {
       super(props);
-      Object.assign(this.state, { chars: {}, order: [], feed: [], events: [], removed: [], turn: 0, round: 1, sessions: [], sid: null, members: [], ready: false, online: {} });
+      Object.assign(this.state, { chars: {}, order: [], feed: [], events: [], removed: [], turn: 0, round: 1, sessions: [], sid: null, members: [], ready: false, online: {},
+        notes: [], noteSel: null, noteSavedAt: null, noteAskDel: false });
+      window.addEventListener('beforeunload', (e) => {
+        if (this._notePend && Object.keys(this._notePend).length) { this.flushNotes(); e.preventDefault(); e.returnValue = ''; }
+      });
     }
 
     async componentDidMount() {
@@ -63,6 +67,7 @@
     }
 
     async open(sid) {
+      if (this._notePend && Object.keys(this._notePend).length) { clearTimeout(this._noteT); await this.flushNotes(); }
       this.unsub();
       var sess = this.state.sessions.find((s) => s.id === sid);
       this.apply({ sid: sid, session: sess, turn: sess.turn || 0, round: sess.round || 1, order: sess.turn_order || [], copied: false, confirm: null });
@@ -70,7 +75,35 @@
       await this.loadParty();
       var ev = await sb.from('session_events').select('*').eq('session_id', sid).order('created_at', { ascending: false }).limit(30);
       this.apply({ events: ev.data || [], ready: true });
+      await this.loadNotes();
       this.subscribe(sid);
+    }
+
+    /* Session notes: the GM's private log for this session, one entry per play. */
+    async loadNotes() {
+      var sid = this.state.sid;
+      var r = await sb.from('session_notes').select('*').eq('session_id', sid).order('play_no', { ascending: false });
+      if (sid !== this.state.sid) return;
+      var rows = (r.data || []).map(function (n) { return { id: n.id, no: n.play_no, at: new Date(n.created_at).getTime(), title: n.title, body: n.body, upd: new Date(n.updated_at).getTime() }; });
+      this.apply({ notes: rows, noteSel: rows[0] ? rows[0].id : null, noteAskDel: false, noteErr: false,
+        noteSavedAt: rows.reduce(function (m, n) { return Math.max(m, n.upd); }, 0) || null, noteSaving: false });
+    }
+    editNote(id, patch) {
+      this.apply({ notes: this.state.notes.map(function (n) { return n.id === id ? Object.assign({}, n, patch) : n; }), noteSaving: true, noteErr: false });
+      this._notePend = this._notePend || {};
+      this._notePend[id] = Object.assign(this._notePend[id] || {}, patch);
+      clearTimeout(this._noteT);
+      this._noteT = setTimeout(() => this.flushNotes(), 700);
+    }
+    async flushNotes() {
+      var pend = this._notePend || {}; this._notePend = {};
+      var ok = true;
+      for (var id in pend) {
+        var r = await sb.from('session_notes').update(pend[id]).eq('id', id);
+        if (r.error) { ok = false; this._notePend[id] = Object.assign(pend[id], this._notePend[id] || {}); }
+      }
+      this.apply(ok ? { noteSaving: false, noteSavedAt: Date.now() } : { noteSaving: false, noteErr: true });
+      if (!ok) { clearTimeout(this._noteT); this._noteT = setTimeout(() => this.flushNotes(), 5000); }
     }
 
     async loadParty() {
@@ -195,6 +228,35 @@
         location.href = 'sessions.html';
       };
       v.hasEnded = false;
+      // session notes, saved to Supabase (GM only)
+      var notes = this.state.notes || [];
+      var selNote = notes.find((n) => n.id === this.state.noteSel) || notes[0] || null;
+      var hm = (ms) => new Date(ms).toLocaleTimeString(th ? 'th-TH' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+      v.onNoteTitle = (e) => { if (selNote) this.editNote(selNote.id, { title: String(e && e.target ? e.target.value : '').slice(0, 120) }); };
+      v.onNoteBody = (e) => { if (selNote) this.editNote(selNote.id, { body: String(e && e.target ? e.target.value : '').slice(0, 50000) }); };
+      v.noteStatus = this.state.noteErr ? L('บันทึกไม่สำเร็จ กำลังลองใหม่…', 'Save failed, retrying…')
+        : this.state.noteSaving ? L('กำลังบันทึก…', 'SAVING…')
+        : this.state.noteSavedAt ? L('บันทึกอัตโนมัติ · ', 'AUTOSAVED · ') + hm(this.state.noteSavedAt) : '';
+      v.noteStatusColor = this.state.noteErr ? '#FF3D6E' : this.state.noteSaving ? '#FFD400' : '#8C88A6';
+      v.newNote = async () => {
+        if (!sess || this._noteAdding) return;
+        this._noteAdding = true;
+        var no = Math.max(notes.reduce((m, n) => Math.max(m, n.no), 0) + 1, 1);
+        var r = await sb.from('session_notes').insert({ session_id: sess.id, play_no: no }).select().single();
+        this._noteAdding = false;
+        if (r.error) return this.setState({ toast: SP.err(r.error, th) });
+        var n = { id: r.data.id, no: r.data.play_no, at: new Date(r.data.created_at).getTime(), title: '', body: '' };
+        this.apply({ notes: [n].concat(this.state.notes || []), noteSel: n.id, noteAskDel: false, noteSavedAt: Date.now() });
+        setTimeout(() => { var el = document.getElementById('note-title'); if (el) el.focus(); }, 50);
+      };
+      v.doDelNote = async () => {
+        if (!selNote) return;
+        var r = await sb.from('session_notes').delete().eq('id', selNote.id);
+        if (r.error) return this.setState({ noteAskDel: false, toast: SP.err(r.error, th) });
+        var rest = notes.filter((n) => n.id !== selNote.id);
+        if (this._notePend) delete this._notePend[selNote.id];
+        this.apply({ notes: rest, noteSel: rest[0] ? rest[0].id : null, noteAskDel: false });
+      };
       v.copyCode = () => { try { if (navigator.clipboard && sess) navigator.clipboard.writeText(sess.invite_code).catch(() => {}); } catch (e) {} this.setState({ copied: true }); };
       var ids = Object.keys(this.state.chars);
       v.party = v.party.map((p, i) => {
