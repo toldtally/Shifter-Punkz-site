@@ -181,8 +181,15 @@ html{scroll-behavior:smooth}
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #FFD400; user-select: all">{{curCode}}</span>
             </div>
             <button type="button" onClick="{{copyCode}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{copyLabel}}</button>
+            <sc-if value="{{showCtl}}" hint-placeholder-val="{{ true }}">
             <button type="button" onClick="{{togglePause}}" aria-pressed="{{pausedPressed}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FFD400; background: {{pauseBg}}; color: {{pauseFg}}; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{pauseLabel}}</button>
-            <button type="button" onClick="{{askEnd}}" aria-expanded="{{endExpanded}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.endSession}}</button>
+              <sc-if value="{{showEndPlay}}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{askEnd}}" aria-expanded="{{endExpanded}}" style="min-height: 48px; padding: 0 16px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.endSession}}</button>
+              </sc-if>
+              <sc-if value="{{isCampaign}}" hint-placeholder-val="{{ false }}">
+                <button type="button" onClick="{{askEndCamp}}" aria-expanded="{{endCampExpanded}}" style="min-height: 48px; padding: 0 16px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.endCampaign}}</button>
+              </sc-if>
+            </sc-if>
           </div>
         </div>
         <sc-if value="{{hasSwitch}}" hint-placeholder-val="{{ false }}">
@@ -199,14 +206,23 @@ html{scroll-behavior:smooth}
           <div role="alertdialog" aria-labelledby="end-h" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px; background: #24060E; border: 1px solid #FF3D6E">
             <div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
               <p id="end-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; color: #FF3D6E">{{endTitle}}</p>
-              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #F2C9D3">{{t.endBody}}</p>
+              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #F2C9D3">{{endBody}}</p>
             </div>
             <button type="button" onClick="{{cancelEnd}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.cancel}}</button>
-            <button type="button" onClick="{{doEnd}}" style="min-height: 40px; padding: 0 16px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.doEnd}}</button>
+            <button type="button" onClick="{{doEnd}}" style="min-height: 40px; padding: 0 16px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{endOk}}</button>
           </div>
         </sc-if>
         <sc-if value="{{hasEnded}}" hint-placeholder-val="{{ false }}">
-          <p role="status" style="margin: 0; padding: 12px 14px; background: #151225; border-left: 3px solid #8C88A6; font-size: 14px; color: #D8D6E8">{{endedNote}} <a href="sessions.html" style="color: #2EE6F0; font-weight: 700">{{t.backSessions}}</a></p>
+          <div role="status" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 14px; background: #151225; border: 1px solid #3A3655; border-left: 3px solid #8C88A6">
+            <p style="margin: 0; display: flex; flex-direction: column; gap: 2px">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #8C88A6">ARCHIVE // {{endedNote}}</span>
+              <span style="font-size: 14px; color: #D8D6E8">{{t.archiveNote}}</span>
+            </p>
+            <a href="sessions.html" style="color: #2EE6F0; font-weight: 700; font-size: 14px">{{t.backSessions}}</a>
+          </div>
+        </sc-if>
+        <sc-if value="{{hasIdle}}" hint-placeholder-val="{{ false }}">
+          <p role="status" style="margin: 0; padding: 12px 14px; background: #151225; border-left: 3px solid #C084FC; font-size: 14px; line-height: 1.6; color: #D8D6E8">{{idleNote}}</p>
         </sc-if>
         </div>
 
@@ -483,7 +499,7 @@ class Component extends DCLogic {
         { id: 'n2', no: 2, at: now - 86400000 * 6, title: 'บุกโกดังท่าเรือ', body: '' },
         { id: 'n1', no: 1, at: now - 86400000 * 13, title: 'รับงานแรก', body: '' }
       ], noteSel: 'n2', noteSavedAt: now - 86400000 * 6, noteDirty: false, noteAskDel: false,
-      lang: 'th', role: 'gm', paused: false, copied: false, confirm: null, removed: [], now: now,
+      lang: 'th', role: 'gm', paused: false, phase: 'live', copied: false, confirm: null, removed: [], now: now,
       cur: 't1', menu: false, pendingTable: null, snaps: {
         t2: {
           order: [{ id: 'nok', kind: 'pc' }, { id: 'npc1', kind: 'npc', name: 'C.P.D. Drone' }, { id: 'fah', kind: 'pc' }],
@@ -636,9 +652,9 @@ class Component extends DCLogic {
       try { const ch = new BroadcastChannel('sp-demo-sessions'); ch.postMessage(map); ch.close(); } catch (e) {}
     };
     const TABLES = {
-      t1: { code: 'SP-K7QX', th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'active', n: (this.state.cur === 't1' ? Object.keys(this.state.chars).length - this.state.removed.length : 3) },
-      t2: { code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
-      t3: { code: 'SP-H2WD', th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', n: 4 }
+      t1: { type: 'campaign', code: 'SP-K7QX', th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'active', n: (this.state.cur === 't1' ? Object.keys(this.state.chars).length - this.state.removed.length : 3) },
+      t2: { type: 'oneshot', code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
+      t3: { type: 'oneshot', code: 'SP-H2WD', th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', n: 4 }
     };
     const order = this.state.order.filter((o) => o.kind === 'npc' || this.state.removed.indexOf(o.id) === -1);
     const low = list.filter((c) => c.ip / c.ipMax <= 0.5);
@@ -783,26 +799,40 @@ class Component extends DCLogic {
         const snaps = Object.assign({}, this.state.snaps);
         snaps[from] = { order: this.state.order, turn: this.state.turn, round: this.state.round, removed: this.state.removed, chars: this.state.chars, feed: this.state.feed };
         const nx = snaps[to];
-        this.setState({ cur: to, pendingTable: null, snaps: snaps, order: nx.order, turn: nx.turn, round: nx.round, removed: nx.removed, chars: nx.chars, feed: nx.feed, confirm: null, copied: false, paused: false });
+        this.setState({ cur: to, pendingTable: null, snaps: snaps, order: nx.order, turn: nx.turn, round: nx.round, removed: nx.removed, chars: nx.chars, feed: nx.feed, confirm: null, copied: false, paused: false, phase: 'live', ending: false, ended: false });
       },
       copyCode: () => {
         try { if (navigator.clipboard) navigator.clipboard.writeText(TABLES[this.state.cur].code).catch(() => {}); } catch (e) {}
         this.setState({ copied: true });
       },
       copyLabel: this.state.copied ? L('คัดลอกแล้ว', 'Copied') : L('คัดลอกรหัส', 'Copy code'),
-      togglePause: () => { const np = !this.state.paused; this.setState({ paused: np, ending: false }); demoSt(this.state.cur, np ? 'paused' : 'live'); },
-      pauseBg: this.state.paused ? '#FFD400' : 'transparent',
-      pauseFg: this.state.paused ? '#0B0A12' : '#FFD400',
-      askEnd: () => this.setState({ ending: !this.state.ending, pendingTable: null }),
-      endExpanded: this.state.ending ? 'true' : 'false',
-      hasEnd: !!this.state.ending && !this.state.ended,
-      endTitle: L('จบ session ' + TABLES[this.state.cur].th + '?', 'End ' + TABLES[this.state.cur].en + '?'),
-      cancelEnd: () => this.setState({ ending: false }),
-      doEnd: () => { this.setState({ ending: false, ended: true, paused: true }); demoSt(this.state.cur, 'ended'); },
-      hasEnded: !!this.state.ended,
-      endedNote: L('จบ session ' + TABLES[this.state.cur].th + ' แล้ว', TABLES[this.state.cur].en + ' has ended.'),
-      pausedPressed: this.state.paused ? 'true' : 'false',
-      pauseLabel: this.state.paused ? L('▶ เริ่ม session ต่อ', '▶ Resume session') : L('❚❚ พัก session', '❚❚ Pause session'),
+      /* play controls: pause / resume, end this play (campaign) or the whole session, end the campaign */
+      ...(() => {
+        const T = TABLES[this.state.cur], camp = T.type === 'campaign', ph = this.state.phase || 'live';
+        const go = (phase) => { this.setState({ phase: phase, paused: phase !== 'live', ending: false, ended: phase === 'ended' }); demoSt(this.state.cur, phase); };
+        return {
+          isCampaign: camp, showCtl: ph !== 'ended', showEndPlay: !(camp && ph === 'idle'),
+          togglePause: () => go(ph === 'live' ? 'paused' : 'live'),
+          pauseBg: ph === 'live' ? 'transparent' : '#FFD400',
+          pauseFg: ph === 'live' ? '#FFD400' : '#0B0A12',
+          askEnd: () => (camp ? go('idle') : this.setState({ ending: this.state.ending === 'session' ? false : 'session', pendingTable: null })),
+          askEndCamp: () => this.setState({ ending: this.state.ending === 'campaign' ? false : 'campaign', pendingTable: null }),
+          endExpanded: this.state.ending === 'session' ? 'true' : 'false',
+          endCampExpanded: this.state.ending === 'campaign' ? 'true' : 'false',
+          hasEnd: !!this.state.ending && ph !== 'ended',
+          endTitle: camp ? L('จบแคมเปญ ' + T.th + '?', 'End the campaign ' + T.en + '?') : L('จบ session ' + T.th + '?', 'End ' + T.en + '?'),
+          endBody: camp ? L('แคมเปญจะปิดถาวร ผู้เล่นทุกคนออกจากแคมเปญ และรหัสเชิญใช้ไม่ได้อีก ตัวละครยังอยู่ในบัญชีของผู้เล่น ส่วน Session Notes ยังเปิดดูได้ ย้อนกลับไม่ได้', 'The campaign closes for good: every player leaves and the invite code stops working. Characters stay in each player\'s account and your Session Notes stay readable. This can\'t be undone.') : L('ผู้เล่นทุกคนจะออกจาก session นี้ และรหัสเชิญจะใช้ไม่ได้อีก ตัวละครยังอยู่ในบัญชีของผู้เล่น ส่วน Session Notes ยังเปิดดูได้ ย้อนกลับไม่ได้', 'Every player leaves this session and the invite code stops working. Characters stay in each player\'s account and your Session Notes stay readable. This can\'t be undone.'),
+          endOk: camp ? L('จบแคมเปญ', 'End campaign') : L('จบ session', 'End session'),
+          cancelEnd: () => this.setState({ ending: false }),
+          doEnd: () => go('ended'),
+          hasEnded: ph === 'ended',
+          endedNote: camp ? L('แคมเปญ ' + T.th + ' จบแล้ว', T.en + ' (campaign) has ended') : L('session ' + T.th + ' จบแล้ว', T.en + ' has ended'),
+          hasIdle: ph === 'idle',
+          idleNote: L('จบรอบเล่นนี้แล้ว ผู้เล่นยังอยู่ในแคมเปญ และรหัสเชิญยังใช้ได้ กด "▶ เริ่ม session ใหม่" เมื่อพร้อมเล่นรอบถัดไป', 'This play is over. Players stay in the campaign and the invite code still works. Press "▶ Start next session" when you\'re ready for the next play.'),
+          pausedPressed: ph === 'live' ? 'false' : 'true',
+          pauseLabel: ph === 'live' ? L('❚❚ พัก session', '❚❚ Pause session') : ph === 'idle' ? L('▶ เริ่ม session ใหม่', '▶ Start next session') : L('▶ เริ่ม session ต่อ', '▶ Resume session')
+        };
+      })(),
       feedState: this.state.paused ? 'PAUSED' : 'STREAMING',
       feedStateColor: this.state.paused ? '#8C88A6' : '#4ADE80',
       onlineCount: list.filter((c) => c.online).length + ' / ' + list.length,
@@ -930,6 +960,8 @@ class Component extends DCLogic {
         oneRun: L('1 บัญชีรันได้ทีละ 1 session', 'One live session per account'),
         doSwitch: L('พัก session เดิม แล้วสลับ', 'Pause current & switch'),
         endSession: L('■ จบ session', '■ End session'),
+        endCampaign: L('จบแคมเปญ', 'End campaign'),
+        archiveNote: L('Session Notes ด้านล่างยังเปิดดูและแก้ไขได้', 'Your Session Notes below are still here to read and edit.'),
         endBody: L('ผู้เล่นทุกคนจะออกจาก session นี้ และรหัสเชิญจะใช้ไม่ได้อีก ตัวละครยังอยู่ในบัญชีของผู้เล่น ย้อนกลับไม่ได้', 'Every player leaves this session and the invite code stops working. Characters stay in each player\'s account. This can\'t be undone.'),
         doEnd: L('จบ session', 'End session'),
         backSessions: L('กลับไปหน้า Session ของฉัน →', 'Back to My Sessions →'),

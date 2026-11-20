@@ -7,7 +7,8 @@
     SESSION_NOT_FOUND: ['ไม่พบ session นี้ ลองขอรหัสใหม่จาก GM', 'No session with that code.'],
     SESSION_ENDED: ['Session นี้จบไปแล้ว รหัสใช้ไม่ได้อีก', 'That session has ended.'],
     SESSION_FULL: ['Session นี้ที่นั่งเต็มแล้ว', 'That session is full.'],
-    OWN_SESSION: ['นี่คือ session ของคุณเอง (ในฐานะ GM)', 'That is your own session (as GM).']
+    OWN_SESSION: ['นี่คือ session ของคุณเอง (ในฐานะ GM)', 'That is your own session (as GM).'],
+    CHARACTER_SEATED: ['ตัวละครนี้อยู่ใน session อื่นอยู่แล้ว ใช้ตัวละครอื่นเข้าร่วม หรือออกจาก session เดิมก่อน', 'This character already sits in another session. Use another character, or leave that session first.']
   };
 
   class Page extends Component {
@@ -43,16 +44,15 @@
     }
 
     async loadSeat() {
-      var m = await sb.from('session_members').select('session_id, character_id, sessions(id, name, invite_code, status, bgm), characters(name)').eq('user_id', this.state.profile.id).maybeSingle();
-      var seat = m.data && m.data.sessions ? m.data : null;
-      var mine = seat && seat.character_id === this.state.charId;
-      this.setState({ seat: seat, tbl: Object.assign({}, this.state.tbl, {
-        joined: mine ? seat.sessions.invite_code : '',
-        other: seat && !mine ? { name: seat.characters ? seat.characters.name : '?', code: seat.sessions.invite_code } : null,
-        pending: '', leaving: false
+      // a player may sit in one campaign and one one-shot at a time; this sheet cares about its own seat
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format), characters(name)').eq('user_id', this.state.profile.id);
+      var seats = (m.data || []).filter(function (x) { return x.sessions; });
+      var seat = seats.find((x) => x.character_id === this.state.charId) || null;
+      this.setState({ seats: seats, seat: seat, conflict: null, tbl: Object.assign({}, this.state.tbl, {
+        joined: seat ? seat.sessions.invite_code : '', other: null, pending: '', leaving: false
       }) });
       this.unsub();
-      if (mine) this.subscribe(seat.sessions);
+      if (seat) this.subscribe(seat.sessions);
     }
 
     subscribe(sess) {
@@ -110,7 +110,11 @@
       var r = await sb.rpc('join_session', { p_code: code, p_character: this.state.charId, p_move: !!move });
       if (r.error) {
         var m = String(r.error.message);
-        if (m.indexOf('ALREADY_SEATED') !== -1) return this.setState({ tbl: Object.assign({}, this.state.tbl, { pending: code, err: '' }) });
+        if (m.indexOf('ALREADY_SEATED') !== -1) {
+          var sid = (m.split('ALREADY_SEATED:')[1] || '').trim().slice(0, 36);
+          var hit = (this.state.seats || []).find((x) => x.session_id === sid) || null;
+          return this.setState({ conflict: hit, tbl: Object.assign({}, this.state.tbl, { pending: code, err: '' }) });
+        }
         var txt = SP.err(r.error, th);
         for (var k in JOIN_ERR) if (m.indexOf(k) !== -1) txt = JOIN_ERR[k][th ? 0 : 1];
         return this.setState({ tbl: Object.assign({}, this.state.tbl, { err: txt, pending: '' }) });
@@ -131,14 +135,14 @@
       var mine = !!(seat && seat.character_id === this.state.charId && this.state.charId);
       var sess = mine ? seat.sessions : null;
       var live = sess && sess.status === 'live';
-      var other = seat && !mine ? seat : null;
+      var other = tbl.pending ? this.state.conflict : null;
       v.tb = Object.assign({}, v.tb, {
         out: !mine && !tbl.pending, live: mine, conflict: !!tbl.pending,
         accent: mine ? (live ? '#4ADE80' : '#FFD400') : tbl.pending ? '#FFD400' : '#3A3655',
-        hasOther: !!other,
+        hasOther: false,
         otherNote: other ? L('บัญชีนี้อยู่ที่ session ' + other.sessions.name + ' กับ ' + (other.characters ? other.characters.name : '?') + ' แล้ว (1 บัญชีเล่นได้ทีละ 1 session)', 'Your account is already at ' + other.sessions.name + ' with ' + (other.characters ? other.characters.name : '?') + ' (one session per account).') : '',
         join: (e) => { if (e && e.preventDefault) e.preventDefault(); this.join(String(tbl.code || '').trim().toUpperCase(), false); },
-        conflictBody: other && tbl.pending ? L((other.characters ? other.characters.name : '?') + ' อยู่ที่ session ' + other.sessions.name + ' ถ้าย้าย จะออกจาก session เดิม แล้วตัวละครนี้เข้า ' + tbl.pending + ' แทน', (other.characters ? other.characters.name : '?') + ' is at ' + other.sessions.name + '. Moving takes them out and seats this character at ' + tbl.pending + '.') : '',
+        conflictBody: other && tbl.pending ? L((other.characters ? other.characters.name : '?') + ' อยู่ที่ session ' + other.sessions.name + ' ถ้าย้าย จะออกจาก session เดิม แล้วตัวละครนี้เข้า ' + tbl.pending + ' แทน', (other.characters ? other.characters.name : '?') + ' is at ' + other.sessions.name + '. Moving takes them out and seats this character at ' + tbl.pending + '.') : tbl.pending ? L('บัญชีนี้อยู่ใน session ประเภทเดียวกันอยู่แล้ว ถ้าย้าย ตัวละครเดิมจะออกจาก session นั้น แล้วตัวละครนี้เข้า ' + tbl.pending + ' แทน', 'Your account already sits in a session of this kind. Moving takes that character out and seats this one at ' + tbl.pending + '.') : '',
         doMove: () => this.join(tbl.pending, true),
         stColor: live ? '#4ADE80' : '#FFD400',
         stLabel: live ? 'LIVE' : sess && sess.status === 'ended' ? 'ENDED' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
@@ -146,7 +150,7 @@
         tableName: sess ? L('Session: ', 'SESSION: ') + sess.name : '',
         liveText: live ? L('ทุกครั้งที่กดบันทึก GM จะเห็นการเปลี่ยนแปลงทันที', 'Every save reaches your GM instantly.') : L('เข้า session แล้ว GM จะเห็นตัวละครนี้เมื่อเริ่ม session', 'You\'re seated. Your GM sees this sheet once the session starts.'),
         doLeave: async () => {
-          var r = await sb.rpc('leave_session');
+          var r = await sb.rpc('leave_session', { p_session: sess ? sess.id : null });
           if (r.error) return this.setState({ msg: SP.err(r.error, th) });
           if (this._bgm) this._bgm.stopAll();
           this.setState({ bgmOn: false });

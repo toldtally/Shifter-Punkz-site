@@ -141,7 +141,6 @@ PAGES = [
     dict(src="GMTables.dc.html", out="beta/sessions.html", title="Session ของฉัน · Shifter Punkz",
          desc="Session ของ GM Shifter Punkz (beta)", beta="beta-sessions.js", common=True, links=BETA_LINKS,
          markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
-             (r're:<a href="gm\.html"([^>]*>\{\{t\.openScreen\}\}</a>)', r'<a href="{{c.monitorHref}}"\1', 1),
          ]),
     dict(src="GMSheet.dc.html", out="beta/gm.html", title="GM Monitor · Shifter Punkz",
          desc="GM Monitor Shifter Punkz (beta)", beta="beta-gm.js", common=True, bgm=True, links=BETA_LINKS,

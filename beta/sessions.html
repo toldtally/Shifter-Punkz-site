@@ -223,10 +223,12 @@ html{scroll-behavior:smooth}
                 <button type="button" onClick="{{c.pause}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8">{{t.pause}}</button>
               </sc-if>
               <sc-if value="{{c.isPaused}}" hint-placeholder-val="{{ false }}">
-                <button type="button" onClick="{{c.askStart}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; background: #4ADE80; color: #0B0A12">▶ {{t.start}}</button>
-                <button type="button" onClick="{{c.askEnd}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #3A3655; background: transparent; color: #A9A5C2">{{t.end}}</button>
+                <button type="button" onClick="{{c.askStart}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; background: #4ADE80; color: #0B0A12">▶ {{c.startLabel}}</button>
+                <a href="{{c.monitorHref}}" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid #FFD400; color: #FFD400; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.openScreen}}</a>
+                <button type="button" onClick="{{c.askEnd}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #3A3655; background: transparent; color: #A9A5C2">{{c.endLabel}}</button>
               </sc-if>
               <sc-if value="{{c.isEnded}}" hint-placeholder-val="{{ false }}">
+                <a href="{{c.monitorHref}}" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid #C084FC; color: #C084FC; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.openNotes}}</a>
                 <button type="button" onClick="{{c.askDel}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #4A1630; background: transparent; color: #FF3D6E">{{t.del}}</button>
               </sc-if>
             </div>
@@ -262,7 +264,7 @@ class Component extends DCLogic {
   }
   /* prototype only: follow pause / resume / end pressed on the GM Monitor artboard */
   componentDidMount() {
-    const LAB = { live: ['กำลังเล่น', 'Running now'], paused: ['พักเมื่อสักครู่', 'Paused just now'], ended: ['จบเมื่อสักครู่', 'Ended just now'] };
+    const LAB = { live: ['กำลังเล่น', 'Running now'], paused: ['พักเมื่อสักครู่', 'Paused just now'], idle: ['จบรอบเล่นเมื่อสักครู่', 'Play ended just now'], ended: ['จบเมื่อสักครู่', 'Ended just now'] };
     const applySt = (map) => {
       if (!map) return;
       this.setState({ tables: this.state.tables.map((y) => (map[y.id] && map[y.id] !== y.st && y.st !== 'ended'
@@ -285,10 +287,12 @@ class Component extends DCLogic {
     const ST = {
       live: { color: '#4ADE80', label: 'LIVE', dot: 'live-dot' },
       paused: { color: '#FFD400', label: L('พักอยู่', 'PAUSED'), dot: '' },
+      idle: { color: '#C084FC', label: L('รอรอบถัดไป', 'BETWEEN PLAYS'), dot: '' },
       ended: { color: '#8C88A6', label: L('จบแล้ว', 'ENDED'), dot: '' }
     };
     const cur = this.state.filter;
-    const shown = tables.filter((x) => cur === 'all' || x.st === cur);
+    const fst = (x) => (x.st === 'idle' ? 'paused' : x.st); // 'between plays' shows under Paused
+    const shown = tables.filter((x) => cur === 'all' || fst(x) === cur);
     const fdefs = [
       { id: 'all', label: L('ทั้งหมด', 'All'), color: '#D8D6E8' },
       { id: 'live', label: 'LIVE', color: '#4ADE80' },
@@ -351,12 +355,12 @@ class Component extends DCLogic {
         if (!n) return this.setState({ nameErr: true });
         const code = newCode();
         const id = 'n' + (this.state.seq + 1);
-        const t = { id: id, code: code, th: n, en: n, type: this.state.fType, st: 'paused', max: this.state.fMax, players: [], lastTh: 'สร้างเมื่อสักครู่', lastEn: 'Created just now', sessions: 0 };
+        const t = { id: id, code: code, th: n, en: n, type: this.state.fType, st: 'idle', max: this.state.fMax, players: [], lastTh: 'สร้างเมื่อสักครู่', lastEn: 'Created just now', sessions: 0 };
         this.setState({ tables: [t].concat(this.state.tables), seq: this.state.seq + 1, create: false, fName: '', nameErr: false, filter: 'all', toast: L('สร้าง session "' + n + '" แล้ว · รหัสเชิญ ' + code, 'Session "' + n + '" created · invite code ' + code) });
       },
       filters: fdefs.map((d) => ({
         label: d.label,
-        count: String(d.id === 'all' ? tables.length : tables.filter((x) => x.st === d.id).length),
+        count: String(d.id === 'all' ? tables.length : tables.filter((x) => fst(x) === d.id).length),
         pressed: d.id === cur ? 'true' : 'false',
         pick: () => this.setState({ filter: d.id }),
         style: 'min-height: 40px; padding: 0 16px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 14px; ' + (d.id === cur ? 'border: 1px solid ' + d.color + '; background: ' + d.color + '; color: #0B0A12' : 'border: 1px solid #3A3655; background: transparent; color: #D8D6E8')
@@ -377,9 +381,11 @@ class Component extends DCLogic {
           cOk = L('สร้างรหัสใหม่', 'New code');
           confirm = () => { const c = newCode(); this.setState({ tables: setT(x.id, { code: c }), confirm: null, copied: null, toast: L('รหัสใหม่: ' + c, 'New code: ' + c) }); };
         } else if (mine === 'end') {
-          cTitle = L('จบ session นี้?', 'End this session?');
-          cBody = L('รหัสเชิญจะปิดถาวร ผู้เล่นทุกคนออกจาก session ตัวละครยังอยู่ในบัญชีของผู้เล่นครบ', 'The invite code closes for good and everyone is unseated. Characters stay in each player\'s account.');
-          cOk = L('จบ session', 'End session'); cColor = '#FF3D6E'; cBg = '#1A0B14';
+          cTitle = x.type === 'campaign' ? L('จบแคมเปญนี้?', 'End this campaign?') : L('จบ session นี้?', 'End this session?');
+          cBody = x.type === 'campaign'
+            ? L('แคมเปญจะปิดถาวร รหัสเชิญใช้ไม่ได้อีก ผู้เล่นทุกคนออกจากแคมเปญ ตัวละครยังอยู่ในบัญชีของผู้เล่นครบ ส่วนบันทึก session ยังเปิดดูได้', 'The campaign closes for good: the invite code stops working and everyone is unseated. Characters stay in each player\'s account, and your session notes stay readable.')
+            : L('รหัสเชิญจะปิดถาวร ผู้เล่นทุกคนออกจาก session ตัวละครยังอยู่ในบัญชีของผู้เล่นครบ ส่วนบันทึก session ยังเปิดดูได้', 'The invite code closes for good and everyone is unseated. Characters stay in each player\'s account, and your session notes stay readable.');
+          cOk = x.type === 'campaign' ? L('จบแคมเปญ', 'End campaign') : L('จบ session', 'End session'); cColor = '#FF3D6E'; cBg = '#1A0B14';
           confirm = () => this.setState({ tables: setT(x.id, { st: 'ended', lastTh: 'จบเมื่อสักครู่', lastEn: 'Ended just now' }), confirm: null, toast: L('จบ session "' + nm(x) + '" แล้ว', 'Ended "' + nm(x) + '"') });
         } else if (mine === 'del') {
           cTitle = L('ลบ session นี้ถาวร?', 'Delete this session for good?');
@@ -403,7 +409,10 @@ class Component extends DCLogic {
           copy: () => { try { if (navigator.clipboard) navigator.clipboard.writeText(x.code).catch(() => {}); } catch (e) {} this.setState({ copied: x.id }); },
           players: x.players.map((n) => ({ n: n })),
           seats: x.players.length + ' / ' + x.max + L(' ที่นั่ง', ' seats'),
-          isLive: x.st === 'live', isPaused: x.st === 'paused', isEnded: x.st === 'ended',
+          isLive: x.st === 'live', isPaused: x.st === 'paused' || x.st === 'idle', isEnded: x.st === 'ended',
+          monitorHref: 'gm.html',
+          startLabel: x.st === 'paused' ? L('เริ่มต่อ', 'Resume') : x.type === 'campaign' && x.sessions > 0 ? L('เริ่ม session ใหม่', 'Start next session') : L('เริ่ม session', 'Start session'),
+          endLabel: x.type === 'campaign' ? L('จบแคมเปญ', 'End campaign') : L('จบ session', 'End session'),
           hasConfirm: !!mine, noConfirm: !mine,
           cTitle: cTitle, cBody: cBody, cOk: cOk, cColor: cColor, cBg: cBg,
           confirm: confirm,
@@ -441,6 +450,7 @@ class Component extends DCLogic {
         code: L('รหัสเชิญผู้เล่น', 'PLAYER INVITE CODE'),
         resetCode: L('สร้างรหัสใหม่', 'New code'),
         openScreen: L('เปิด GM Monitor', 'Open GM Monitor'),
+        openNotes: L('เปิดดูบันทึก', 'Open notes'),
         pause: L('❚❚ พัก session', '❚❚ Pause'),
         start: L('เริ่ม session', 'Start session'),
         end: L('จบ session', 'End session'),

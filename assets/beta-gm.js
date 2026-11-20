@@ -40,6 +40,10 @@
       await this.loadSessions();
       var want = new URLSearchParams(location.search).get('s');
       var ss = this.state.sessions;
+      if (want && !ss.find((s) => s.id === want)) {
+        var arch = await sb.from('sessions').select('*').eq('id', want).eq('gm_id', me.profile.id).maybeSingle();
+        if (arch.data) { ss = ss.concat([arch.data]); this.apply({ sessions: ss }); }
+      }
       var pick = ss.find((s) => s.id === want) || ss.find((s) => s.status === 'live') || ss[0];
       if (pick) await this.open(pick.id);
       else this.setState({ ready: true });
@@ -63,7 +67,10 @@
 
     async loadSessions() {
       var r = await sb.from('sessions').select('*').eq('gm_id', this.state.profile.id).neq('status', 'ended').order('created_at', { ascending: false });
-      this.apply({ sessions: r.data || [] });
+      var list = r.data || [];
+      var cur = this.state.session;
+      if (cur && !list.find((x) => x.id === cur.id)) list = list.concat([Object.assign({}, cur, { status: 'ended' })]);
+      this.apply({ sessions: list });
     }
 
     async open(sid) {
@@ -169,7 +176,7 @@
       var sess = this.state.session, ss = this.state.sessions;
       var stName = function (st) { return st === 'live' ? 'LIVE' : L('พักอยู่', 'PAUSED'); };
       v.curTableName = sess ? sess.name : L('ยังไม่มี session', 'No session yet');
-      v.curTableLabel = sess ? L('Session: ', 'SESSION: ') + sess.name + (sess.status !== 'live' ? L(' · พักอยู่ (เลือกใน SESSION ▾ เพื่อเริ่ม)', ' · PAUSED (pick it in SESSION ▾ to start)') : '') : L('สร้าง session ก่อนที่ Session ของฉัน', 'Create one in My Sessions first');
+      v.curTableLabel = sess ? L('Session: ', 'SESSION: ') + sess.name + ({ live: '', paused: L(' · พักอยู่', ' · PAUSED'), idle: L(' · รอรอบถัดไป', ' · BETWEEN PLAYS'), ended: L(' · จบแล้ว (ARCHIVE)', ' · ENDED (ARCHIVE)') }[sess.status] || '') : L('สร้าง session ก่อนที่ Session ของฉัน', 'Create one in My Sessions first');
       v.curCode = sess ? sess.invite_code : '—';
       v.tableMenu = ss.map((s) => {
         var isCur = sess && s.id === sess.id;
@@ -196,38 +203,54 @@
         await this.loadSessions();
         await this.open(to);
       };
-      // pause / resume / end the open session for real
-      var isLive = !!(sess && sess.status === 'live');
+      // play controls on the real session: pause / resume / start next play, end the play (campaign),
+      // end the session (one-shot) or the whole campaign; an ended session opens as a read-only archive
+      var st = sess ? sess.status : 'idle';
+      var camp = !!(sess && sess.format === 'campaign');
       var refresh = async () => {
+        var one = await sb.from('sessions').select('*').eq('id', sess.id).single();
         await this.loadSessions();
-        var fresh = this.state.sessions.find((s) => sess && s.id === sess.id);
-        if (fresh) this.apply({ session: fresh });
+        if (!one.error) this.apply({ session: one.data });
+        await this.loadParty();
       };
-      v.pausedPressed = sess && !isLive ? 'true' : 'false';
-      v.pauseLabel = sess && !isLive ? L('▶ เริ่ม session ต่อ', '▶ Resume session') : L('❚❚ พัก session', '❚❚ Pause session');
-      v.pauseBg = sess && !isLive ? '#FFD400' : 'transparent';
-      v.pauseFg = sess && !isLive ? '#0B0A12' : '#FFD400';
-      v.feedState = sess && !isLive ? 'PAUSED' : 'STREAMING';
-      v.feedStateColor = sess && !isLive ? '#8C88A6' : '#4ADE80';
-      v.togglePause = async () => {
-        if (!sess || this._busy) return;
+      var rpc = async (fn) => {
+        if (!sess || this._busy) return false;
         this._busy = true;
-        var r = await sb.rpc(isLive ? 'pause_session' : 'start_session', { p_session: sess.id });
+        var r = await sb.rpc(fn, { p_session: sess.id });
         this._busy = false;
+        if (r.error) { this.setState({ ending: false, toast: SP.err(r.error, th) }); return false; }
         this.setState({ ending: false });
-        if (r.error) return this.setState({ toast: SP.err(r.error, th) });
         await refresh();
+        return true;
       };
-      v.askEnd = () => { if (sess) this.setState({ ending: !this.state.ending, pendingTable: null }); };
-      v.hasEnd = !!(this.state.ending && sess);
-      v.endTitle = sess ? L('จบ session ' + sess.name + '?', 'End ' + sess.name + '?') : '';
-      v.doEnd = async () => {
+      v.isCampaign = camp && st !== 'ended';
+      v.showCtl = !!sess && st !== 'ended';
+      v.showEndPlay = !(camp && st === 'idle');
+      v.pausedPressed = st === 'live' ? 'false' : 'true';
+      v.pauseLabel = st === 'live' ? L('❚❚ พัก session', '❚❚ Pause session')
+        : st === 'paused' ? L('▶ เริ่ม session ต่อ', '▶ Resume session')
+        : (camp && sess && sess.play_count > 0) ? L('▶ เริ่ม session ใหม่', '▶ Start next session') : L('▶ เริ่ม session', '▶ Start session');
+      v.pauseBg = st === 'live' ? 'transparent' : '#FFD400';
+      v.pauseFg = st === 'live' ? '#FFD400' : '#0B0A12';
+      v.feedState = st === 'live' ? 'STREAMING' : st === 'ended' ? 'ARCHIVE' : 'PAUSED';
+      v.feedStateColor = st === 'live' ? '#4ADE80' : '#8C88A6';
+      v.togglePause = () => rpc(st === 'live' ? 'pause_session' : 'start_session');
+      v.askEnd = async () => {
         if (!sess) return;
-        var r = await sb.rpc('end_session', { p_session: sess.id });
-        if (r.error) return this.setState({ ending: false, toast: SP.err(r.error, th) });
-        location.href = 'sessions.html';
+        if (camp) { if (await rpc('finish_play')) this.setState({ toast: L('จบรอบเล่นแล้ว ผู้เล่นยังอยู่ในแคมเปญ', 'Play ended. Players stay in the campaign.') }); return; }
+        this.setState({ ending: this.state.ending === 'session' ? false : 'session', pendingTable: null });
       };
-      v.hasEnded = false;
+      v.askEndCamp = () => { if (sess) this.setState({ ending: this.state.ending === 'campaign' ? false : 'campaign', pendingTable: null }); };
+      v.endExpanded = this.state.ending === 'session' ? 'true' : 'false';
+      v.endCampExpanded = this.state.ending === 'campaign' ? 'true' : 'false';
+      v.hasEnd = !!(this.state.ending && sess && st !== 'ended');
+      v.endTitle = sess ? (camp ? L('จบแคมเปญ ' + sess.name + '?', 'End the campaign ' + sess.name + '?') : L('จบ session ' + sess.name + '?', 'End ' + sess.name + '?')) : '';
+      v.endOk = camp ? L('จบแคมเปญ', 'End campaign') : L('จบ session', 'End session');
+      v.doEnd = async () => { if (await rpc('end_session')) this.setState({ toast: camp ? L('จบแคมเปญแล้ว', 'Campaign ended') : L('จบ session แล้ว', 'Session ended') }); };
+      v.cancelEnd = () => this.setState({ ending: false });
+      v.hasEnded = !!(sess && st === 'ended');
+      v.endedNote = sess ? (camp ? L('แคมเปญ ' + sess.name + ' จบแล้ว', sess.name + ' (campaign) has ended') : L('session ' + sess.name + ' จบแล้ว', sess.name + ' has ended')) : '';
+      v.hasIdle = !!(sess && camp && st === 'idle' && sess.play_count > 0);
       // session notes, saved to Supabase (GM only)
       var notes = this.state.notes || [];
       var selNote = notes.find((n) => n.id === this.state.noteSel) || notes[0] || null;

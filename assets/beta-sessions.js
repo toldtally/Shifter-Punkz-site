@@ -39,8 +39,8 @@
       this.setState({ loading: false, tables: r.data.map(function (s) {
         return { id: s.id, code: s.invite_code, th: s.name, en: s.name, type: s.format, st: s.status, max: s.max_players,
           players: bySes[s.id] || [], sessions: s.play_count,
-          lastTh: s.status === 'live' ? 'กำลังเล่น' : s.status === 'ended' ? 'จบแล้ว' : ago(s.last_played_at, true),
-          lastEn: s.status === 'live' ? 'Running now' : s.status === 'ended' ? 'Ended' : ago(s.last_played_at, false) };
+          lastTh: s.status === 'live' ? 'กำลังเล่น' : s.status === 'ended' ? 'จบแล้ว' : s.play_count === 0 ? 'ยังไม่เคยเล่น' : ago(s.last_played_at, true),
+          lastEn: s.status === 'live' ? 'Running now' : s.status === 'ended' ? 'Ended' : s.play_count === 0 ? 'Not played yet' : ago(s.last_played_at, false) };
       }) });
     }
 
@@ -71,7 +71,7 @@
         var mine = cf && cf.id === x.id ? cf.kind : null;
         if (mine === 'start') patch.confirm = () => this.act(() => sb.rpc('start_session', { p_session: x.id }), 'เริ่ม session "' + nm + '" แล้ว', 'Session started: ' + nm);
         if (mine === 'reset') patch.confirm = () => this.act(() => sb.rpc('regenerate_invite_code', { p_session: x.id }), 'สร้างรหัสเชิญใหม่แล้ว', 'New invite code ready');
-        if (mine === 'end') patch.confirm = () => this.act(() => sb.rpc('end_session', { p_session: x.id }), 'จบ session "' + nm + '" แล้ว', 'Ended "' + nm + '"');
+        if (mine === 'end') patch.confirm = () => this.act(() => sb.rpc('end_session', { p_session: x.id }), (x.type === 'campaign' ? 'จบแคมเปญ "' : 'จบ session "') + nm + '" แล้ว · บันทึกยังเปิดดูได้', 'Ended "' + nm + '" · notes stay readable');
         if (mine === 'del') patch.confirm = () => this.act(() => sb.from('sessions').delete().eq('id', x.id), 'ลบ "' + nm + '" แล้ว', 'Deleted "' + nm + '"');
         return Object.assign({}, c, patch);
       });

@@ -8,7 +8,8 @@
     SESSION_ENDED: ['Session นี้จบไปแล้ว รหัสใช้ไม่ได้อีก', 'That session has ended.'],
     SESSION_FULL: ['Session นี้ที่นั่งเต็มแล้ว', 'That session is full.'],
     OWN_SESSION: ['นี่คือ session ของคุณเอง (ในฐานะ GM)', 'That is your own session (as GM).'],
-    NOT_YOUR_CHARACTER: ['ตัวละครนี้ไม่ใช่ของบัญชีนี้', 'That character is not yours.']
+    NOT_YOUR_CHARACTER: ['ตัวละครนี้ไม่ใช่ของบัญชีนี้', 'That character is not yours.'],
+    CHARACTER_SEATED: ['ตัวละครนี้อยู่ใน session อื่นอยู่แล้ว ใช้ตัวละครอื่น หรือออกจาก session เดิมก่อน', 'This character already sits in another session.']
   };
   var joinErr = function (e, th) {
     var m = String((e && e.message) || e);
@@ -19,7 +20,7 @@
   class Page extends Component {
     constructor(props) {
       super(props);
-      Object.assign(this.state, { list: [], seat: null, tbl: {}, loading: true });
+      Object.assign(this.state, { list: [], seats: [], tbl: {}, loading: true });
     }
 
     async componentDidMount() {
@@ -33,8 +34,9 @@
     async load() {
       var uid = this.state.profile.id;
       var r = await sb.from('characters').select('id, name, factor, portrait_path, sheet, updated_at').eq('owner_id', uid).order('updated_at', { ascending: false });
-      var m = await sb.from('session_members').select('session_id, character_id, sessions(id, name, invite_code, status)').eq('user_id', uid).maybeSingle();
-      this.setState({ list: r.data || [], seat: (m.data && m.data.sessions) ? m.data : null, loading: false, toast: r.error ? SP.err(r.error, this.state.lang !== 'en') : this.state.toast });
+      // one campaign seat and one one-shot seat per account
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, format)').eq('user_id', uid);
+      this.setState({ list: r.data || [], seats: (m.data || []).filter(function (x) { return x.sessions; }), loading: false, toast: r.error ? SP.err(r.error, this.state.lang !== 'en') : this.state.toast });
     }
 
     renderVals() {
@@ -54,13 +56,15 @@
         var id = ['all', 'shifter', 'norms', 'cpd'][i];
         return Object.assign({}, fl, { count: String(id === 'all' ? list.length : list.filter((c) => c.f === id).length) });
       });
-      var seat = this.state.seat;
+      var seats = this.state.seats || [];
       var put = (id, patch) => this.setState({ tbl: Object.assign({}, this.state.tbl, { [id]: Object.assign({}, this.state.tbl[id] || {}, patch) }) });
       var seatName = (sess) => sess ? sess.name : '';
       v.chars = shown.map((c, i) => {
         var row = c.row, s = c.s, id = row.id;
         var tb = this.state.tbl[id] || {};
-        var seatedHere = !!(seat && seat.character_id === id);
+        var seat = seats.find((x) => x.character_id === id) || null;
+        var seatedHere = !!seat;
+        var cseat = tb.csid ? seats.find((x) => x.session_id === tb.csid) || null : null;
         var mode = tb.mode || (seatedHere ? 'live' : 'idle');
         if (!seatedHere && (mode === 'live' || mode === 'leaving')) mode = 'idle';
         var sess = seatedHere ? seat.sessions : null;
@@ -100,7 +104,7 @@
           tableName: seatName(sess),
           code: tb.input || '', hasErr: !!tb.err, err: tb.err || '', invalid: tb.err ? 'true' : 'false',
           fldBorder: tb.err ? '#FF3D6E' : '#3A3655',
-          conflictBody: seat && tb.pending ? L('บัญชีนี้นั่งอยู่ที่ session ' + seatName(seat.sessions) + ' แล้ว ถ้าย้าย ตัวละครเดิมจะออกจาก session นั้น แล้ว ' + row.name + ' เข้า ' + tb.pending + ' แทน', 'Your account is seated at ' + seatName(seat.sessions) + '. Moving takes that character out and seats ' + row.name + ' at ' + tb.pending + '.') : '',
+          conflictBody: tb.pending && cseat ? L('บัญชีนี้นั่งอยู่ที่ session ' + seatName(cseat.sessions) + ' แล้ว ถ้าย้าย ตัวละครเดิมจะออกจาก session นั้น แล้ว ' + row.name + ' เข้า ' + tb.pending + ' แทน', 'Your account is seated at ' + seatName(cseat.sessions) + '. Moving takes that character out and seats ' + row.name + ' at ' + tb.pending + '.') : tb.pending ? L('บัญชีนี้อยู่ใน session ประเภทเดียวกันแล้ว ถ้าย้าย ตัวละครเดิมจะออกจาก session นั้น แล้ว ' + row.name + ' เข้า ' + tb.pending + ' แทน', 'Your account already sits in a session of this kind. Moving seats ' + row.name + ' at ' + tb.pending + ' instead.') : '',
           openJoin: () => put(id, { mode: 'form', input: '', err: '' }),
           closeJoin: () => put(id, { mode: 'idle', err: '' }),
           onCode: (e) => put(id, { input: String(e && e.target ? e.target.value : '').toUpperCase(), err: '' }),
@@ -108,7 +112,7 @@
             if (e && e.preventDefault) e.preventDefault();
             var code = String(tb.input || '').trim().toUpperCase();
             var r = await sb.rpc('join_session', { p_code: code, p_character: id, p_move: false });
-            if (r.error && String(r.error.message).indexOf('ALREADY_SEATED') !== -1) return put(id, { mode: 'conflict', pending: code, err: '' });
+            if (r.error && String(r.error.message).indexOf('ALREADY_SEATED') !== -1) return put(id, { mode: 'conflict', pending: code, err: '', csid: (String(r.error.message).split('ALREADY_SEATED:')[1] || '').trim().slice(0, 36) });
             if (r.error) return put(id, { err: joinErr(r.error, th) });
             put(id, { mode: null, input: '', err: '' });
             await this.load();
@@ -125,7 +129,7 @@
           askLeave: () => put(id, { mode: 'leaving' }),
           cancelLeave: () => put(id, { mode: null }),
           doLeave: async () => {
-            var r = await sb.rpc('leave_session');
+            var r = await sb.rpc('leave_session', { p_session: sess ? sess.id : null });
             if (r.error) return this.setState({ toast: SP.err(r.error, th) });
             this.setState({ tbl: {} });
             await this.load();
