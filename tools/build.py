@@ -101,7 +101,8 @@ PAGES = [
          links={"Main": "index.html", "TRPG": "trpg.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
     dict(src="TRPG.dc.html", out="trpg.html", title="Shifter Punkz TRPG",
          desc="Shifter Punkz TRPG — เกมเล่นบทบาทสมมติระบบ D8 Dice Pool เล่นเป็น Shifter, Norms หรือ C.P.D.",
-         links={"Main": "index.html", "TRPG": "trpg.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
+         links={"Main": "index.html", "TRPG": "trpg.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True,
+         markup=[(r're:\s*<!-- GM only: ways to play.*?</sc-if>\n', '\n', 1)]),
     dict(src="Auth.dc.html", out="beta/auth.html", title="เข้าสู่ระบบ · Shifter Punkz",
          desc="เข้าสู่ระบบ Shifter Punkz (beta)", beta="beta-auth.js",
          links=BETA_LINKS,
@@ -220,6 +221,11 @@ def strip_spoilers(name, js):
         js = re.sub(r"\n\s*twinsSub: L\((?:[^()]|\([^()]*\))*\),", "", js)
         js = re.sub(r"chars: \[\n.*?\n\s*\],?", "chars: [],", js, flags=re.S)
         assert "DAF" not in js and "DIZ" not in js and "ฝาแฝด" not in js, "spoiler left in Main"
+    if name == "TRPG.dc.html":
+        # "Ways to play" is GM material: keep it out of the public page entirely.
+        js, n = re.subn(r"frames: \[\n.*?\n\s*\],", "frames: [],", js, flags=re.S)
+        assert n == 1, "TRPG frames not stripped"
+        js = re.sub(r"\n\s*frameTitle: L\((?:[^()]|\([^()]*\))*\),", "", js)
     return js
 
 

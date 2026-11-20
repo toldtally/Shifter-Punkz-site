@@ -470,14 +470,6 @@ html{scroll-behavior:smooth}
         <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: #FFFFFF">{{t.growTitle}}</h3>
         <p style="margin: 0; font-size: 15px; line-height: 1.8; color: #C3C0D6">{{t.growP}}</p>
       </div>
-      <div style="flex: 1 1 460px; min-width: 0; padding: 28px; background: #151225; border: 1px solid #2A2740; display: flex; flex-direction: column; gap: 12px">
-        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: #FFFFFF">{{t.frameTitle}}</h3>
-        <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
-          <sc-for list="{{frames}}" as="fr" hint-placeholder-count="3">
-            <li style="display: flex; gap: 12px; font-size: 15px; line-height: 1.7; color: #C3C0D6"><span style="color: #FF2E88" aria-hidden="true">▸</span><span>{{fr.text}}</span></li>
-          </sc-for>
-        </ul>
-      </div>
     </div>
   </section>
 
@@ -679,7 +671,6 @@ class Component extends DCLogic {
         rollP: L('ทอย D8 เท่ากับจำนวนช่อง Basic Ability ที่ถมไว้ แล้วเลือกค่าสูงสุดเป็นผลลัพธ์ แต่ทุกลูกที่ออกหน้า 1 จะลดค่าสูงสุดลง 1 สถานการณ์ได้เปรียบ +1 ลูก เสียเปรียบ −1 ลูก', 'Roll one D8 per filled Basic Ability box and keep the highest. Every 1 you roll lowers that result by one. Advantage adds a die; disadvantage removes one.'),
         growTitle: L('เติบโตด้วยชื่อเสียง', 'Grow through Reputation'),
         growP: L('จบแต่ละ session ตัวละครได้รับ Reputation 1–3 แต้ม จากการรอดชีวิตหรือรอดจากการถูกจับกุม ทำภารกิจหลักและภารกิจรองสำเร็จ นำมาอัปเกรดได้ เช่น เพิ่ม Trait (8 rep) เพิ่มช่อง Basic Ability (5 rep) ซื้อหรืออัปเลเวลสกิล ส่วน C.P.D. จะเลื่อนยศเมื่อมี 3 / 5 / 8 / 12 rep', 'After each session a character earns 1–3 Reputation for surviving or escaping arrest, and for completing main and side missions. Spend it on a new Trait (8 rep), another Basic Ability box (5 rep), or new and higher-level skills. C.P.D. agents rank up at 3 / 5 / 8 / 12 rep.'),
-        frameTitle: L('รูปแบบการเล่น', 'Ways to play'),
         storeTitle: L('หนังสือ Core Rules และภาคเสริม', 'Core Rules & expansions'),
         storeSub: L('มีทั้งฉบับรูปเล่ม (Physical) และฉบับดิจิทัล (PDF)', 'Available in print (physical) and digital (PDF).'),
         physical: L('รูปเล่ม', 'Physical'),
@@ -793,11 +784,8 @@ class Component extends DCLogic {
         { code: 'EX', color: '#FF2E88', name: 'Exhaustion', desc: L('ดีบัฟที่เพิ่มความยาก สูงสุด 3 ใช้ทอยเป็น D4 แทนเต๋าหลักเพื่อล้างออก', 'A debuff that raises difficulty, max 3; spend it as D4s in place of D8s to clear it.') },
         { code: 'CD', color: '#C084FC', name: 'Cosmic Die', desc: L('D4 ที่ทอยร่วมเมื่อใช้พลังคอสมิค ตามเลเวลของพลัง', 'D4s rolled alongside cosmic powers, per power level.') }
       ],
-      frames: [
-        { text: L('เล่นเป็น Shifter หรือ Norms ต่อสู้กับ C.P.D. หรือร่วมกันลักลอบทำบางอย่างโดยไม่ให้ถูกจับ', 'Play Shifters or Norms against the C.P.D., or pull off something together without getting caught.') },
-        { text: L('เล่นเป็น C.P.D. ปราบ Shifter ที่คุมพลังไม่ได้ และกลุ่มที่ลักลอบสร้างอุปกรณ์คอสมิค', 'Play the C.P.D., taking down uncontrolled Shifters and cosmic-gadget smugglers.') },
-        { text: L('ทั้ง 3 ฝ่ายร่วมงานกัน จากการจ้างของใครบางคน หรือเหตุการณ์ใหญ่บางอย่าง', 'All three sides team up, hired by someone or caught in something big.') }
-      ],
+      showGmFrames: false,
+      frames: [],
       books: stag([
         { kind: 'CORE RULEBOOK', accent: '#FF2E88', title: 'Shifter Punkz TRPG — Core Rulebook', desc: L('หนังสือกฎหลัก ครบทั้งการสร้างตัวละคร ระบบเต๋า ความสามารถ การเติบโตของตัวละคร และ Lore ของโลก', 'The core rules: character creation, dice, abilities, advancement and the world\'s lore.'), buyable: false, soon: true, hasHooks: false, hooks: [] },
         { kind: 'EXPANSION', accent: '#FFD400', title: L('Shifter แฟ้มลับ C.P.D.', 'Shifter Dossier: C.P.D. Edition'), desc: L('หนังสือรวมประเภทของ Shifter', 'A compendium of Shifter types.'), buyable: false, soon: true, hasHooks: false, hooks: [] },
