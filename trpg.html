@@ -528,7 +528,19 @@ html{scroll-behavior:smooth}
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(max(260px, calc((100% - 60px) / 4)), 1fr)); gap: 20px">
         <sc-for list="{{books}}" as="bk" hint-placeholder-count="4">
           <article class="{{bk.cls}}" style="display: flex; flex-direction: column; gap: 14px; padding: 20px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{bk.accent}}; --d: {{bk.d}}">
-            <div style="aspect-ratio: 3 / 4; border: 1px dashed #3A3655; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #9A97B0; background: #0B0A12">[ COVER ]</div>
+            <!-- cover art pending: classified placeholder (swap for the real cover image later) -->
+            <div class="tv" role="img" aria-label="{{bk.name}}: CLASSIFIED" style="aspect-ratio: 3 / 4; max-width: 100%; display: flex; flex-direction: column; background: #0A0912; border: 1px solid #2A2740">
+              <div style="height: 12px; background: repeating-linear-gradient(45deg, {{bk.accent}} 0 12px, #0A0912 12px 24px)" aria-hidden="true"></div>
+              <div class="tv-in" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 20px; text-align: center; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 3px)">
+                <p class="tv-txt" style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: {{bk.accent}}">FILE // COVER ART</p>
+                <p class="tv-txt" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: 0.1em; color: #FFFFFF; animation-delay: -1.3s">CLASSIFIED</p>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 7px" aria-hidden="true">
+                  <span style="width: 120px; height: 12px; background: #2A2740"></span>
+                  <span style="width: 84px; height: 12px; background: #2A2740"></span>
+                </div>
+              </div>
+              <div style="height: 12px; background: repeating-linear-gradient(45deg, {{bk.accent}} 0 12px, #0A0912 12px 24px)" aria-hidden="true"></div>
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
               <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: {{bk.accent}}">{{bk.kind}}</p>
               <sc-if value="{{bk.soon}}" hint-placeholder-val="{{ false }}">
