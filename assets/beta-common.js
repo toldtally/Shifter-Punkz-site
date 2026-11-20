@@ -19,6 +19,8 @@
   };
 
   SP.num = function (v) { var n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
+  /* Basic Ability as the sheet shows it: every ability starts at 1, plus the points spent on it. */
+  SP.baVal = function (v) { return 1 + SP.num(v); };
 
   SP.timeAgo = function (iso, th) {
     var s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
