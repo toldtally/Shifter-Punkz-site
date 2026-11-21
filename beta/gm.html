@@ -357,7 +357,7 @@ html{scroll-behavior:smooth}
             </sc-for>
           </div>
 
-          <!-- Side: live feed + import -->
+          <!-- Side: live feed -->
           <aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
             <section style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
               <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">LIVE FEED</h2><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{feedStateColor}}">{{feedState}}</span></div>
@@ -369,15 +369,6 @@ html{scroll-behavior:smooth}
                   </li>
                 </sc-for>
               </ol>
-            </section>
-            <section style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0; padding: 16px; display: flex; flex-direction: column; gap: 10px">
-              <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">IMPORT / EXPORT</h2>
-              <label for="gm-file" style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 18px 12px; border: 2px dashed #3A3655; text-align: center; font-size: 13px; line-height: 1.6; color: #A9A5C2; cursor: pointer">{{t.dropHint}}<span style="color: #2EE6F0; text-decoration: underline">{{t.pick}}</span></label>
-              <input id="gm-file" type="file" onChange="{{importFiles}}" accept=".json,application/json" multiple style="position: absolute; width: 1px; height: 1px; opacity: 0">
-              <div style="display: flex; flex-wrap: wrap; gap: 8px">
-                <button type="button" onClick="{{exportParty}}" style="flex: 1; min-height: 40px; border: 1px solid #3A3655; background: #1D1930; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; text-transform: uppercase">{{t.exportParty}}</button>
-              </div>
-              <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #8C88A6">{{t.importNote}}</p>
             </section>
           </aside>
         </div>
@@ -1139,8 +1130,6 @@ class Component extends DCLogic {
         confirmRemove: L('ยืนยันเอาออก', 'Remove'),
         dropHint: L('ลากไฟล์ .json ของผู้เล่นมาวางที่นี่ หรือ', 'Drop players\' .json files here, or'),
         pick: L('เลือกไฟล์', 'choose files'),
-        exportParty: L('Export ทั้งปาร์ตี้ (JSON)', 'Export party (JSON)'),
-        importNote: L('ใช้สำหรับผู้เล่นที่ยังไม่ได้เข้าร่วม session ออนไลน์ ชื่อตัวละครซ้ำจะอัปเดตทับข้อมูลเดิม', 'For players not yet in the online session. A matching character name updates the existing card.'),
         protoNote: L('PROTOTYPE // ข้อมูลและการอัปเดตในหน้านี้เป็นการจำลอง ตอนเชื่อม Supabase จะรับการเปลี่ยนแปลงจริงจากใบตัวละครของผู้เล่นใน session ทันที', 'PROTOTYPE // Data and updates here are simulated. With Supabase, changes arrive live from the players\' sheets in this session.')
       }
     };

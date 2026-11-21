@@ -393,25 +393,7 @@
         else what = e.kind;
         return { time: hhmmss(e.created_at), who: c ? c.name : (e.kind === 'status' ? 'GM' : L('ผู้เล่น', 'Player')), color: c ? C[c.f] : '#FFD400', what: what };
       });
-      v.exportParty = () => SP.download('party-' + (sess ? sess.invite_code : 'session') + '.json', Object.keys(chars).map((id) => Object.assign({ name: chars[id].name, factor: chars[id].factor }, chars[id].sheet)));
-      v.importFiles = async (e) => {
-        var files = Array.prototype.slice.call((e && e.target && e.target.files) || []);
-        if (e && e.target) e.target.value = '';
-        var add = Object.assign({}, this.state.chars), order = this.state.order.slice();
-        for (var f of files) {
-          try {
-            var d = JSON.parse(await f.text()); var arr = Array.isArray(d) ? d : [d];
-            arr.forEach((s) => {
-              var id = 'file-' + String(s.name || f.name).toLowerCase().replace(/\s+/g, '-');
-              add[id] = toCard({ name: s.name || f.name, factor: s.factor || 'shifter', sheet: s, updated_at: new Date().toISOString() }, L('ไฟล์', 'file'), false);
-              if (!order.some((o) => o.id === id)) order.push({ id: id, kind: 'pc' });
-            });
-          } catch (err) {}
-        }
-        this.apply({ chars: add, order: order });
-      };
       v.onlineCount = Object.keys(chars).filter((k) => chars[k].online).length + ' / ' + Object.keys(chars).length;
-      v.t = Object.assign({}, v.t, { importNote: L('การ์ดจากไฟล์ .json แสดงเฉพาะในเครื่องนี้ ไม่บันทึกลง session · โน้ต GM เก็บไว้ในเบราว์เซอร์นี้', 'Cards from .json files stay on this device only. GM notes are kept in this browser.') });
       if (this.state.ready && !sess) v.curTableLabel = L('ยังไม่มี session — สร้างที่ "Session ของฉัน"', 'No session yet: create one in My Sessions');
       return v;
     }

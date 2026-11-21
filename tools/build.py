@@ -148,8 +148,6 @@ PAGES = [
              (r're:<!-- Prototype-only role preview -->\s*<div .*?</sc-for>\s*</span>\s*</div>', '', 1),
              ('<textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}"></textarea>',
               '<textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}" onInput="{{p.onNote}}">{{p.note}}</textarea>', 1),
-             (r're:<button type="button"( style="[^"]*">\{\{t\.exportParty\}\}</button>)', r'<button type="button" onClick="{{exportParty}}"\1', 1),
-             ('<input id="gm-file" type="file"', '<input id="gm-file" type="file" onChange="{{importFiles}}"', 1),
          ]),
 ]
 
