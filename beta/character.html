@@ -73,17 +73,17 @@ textarea.fld{resize:vertical;line-height:1.45}
 .scw-off .scrt{display:none}
 @keyframes scwOff{0%{transform:none;filter:none;opacity:1}40%{transform:scale(1,.004);filter:brightness(3);opacity:1}75%{transform:scale(.03,.004);filter:brightness(5);opacity:1}100%{transform:scale(0,0);opacity:0}}
 .scw-a{animation:scwOnA .32s cubic-bezier(.2,.8,.2,1) both}
-.scw-a .scrt{animation:scrtOffA .2s ease-in 1s forwards}
+.scw-a .scrt{animation:scrtOffA .2s ease-in .7s forwards}
 .scw-a .sbl{animation:sblA .14s steps(18) var(--d,0s) forwards}
-.scw-a .scimg{animation:scimgA .3s ease-out 1s both}
+.scw-a .scimg{animation:scimgA .3s ease-out .7s both}
 @keyframes scwOnA{0%{transform:scale(0,.004);filter:brightness(4)}45%{transform:scale(1,.004);filter:brightness(3)}100%{transform:none;filter:none}}
 @keyframes scrtOffA{to{opacity:0;visibility:hidden}}
 @keyframes sblA{to{clip-path:inset(0 0 0 0)}}
 @keyframes scimgA{from{opacity:0;filter:brightness(2.5) contrast(1.4)}to{opacity:1;filter:none}}
 .scw-b{animation:scwOnB .32s cubic-bezier(.2,.8,.2,1) both}
-.scw-b .scrt{animation:scrtOffB .2s ease-in 1s forwards}
+.scw-b .scrt{animation:scrtOffB .2s ease-in .7s forwards}
 .scw-b .sbl{animation:sblB .14s steps(18) var(--d,0s) forwards}
-.scw-b .scimg{animation:scimgB .3s ease-out 1s both}
+.scw-b .scimg{animation:scimgB .3s ease-out .7s both}
 @keyframes scwOnB{0%{transform:scale(0,.004);filter:brightness(4)}45%{transform:scale(1,.004);filter:brightness(3)}100%{transform:none;filter:none}}
 @keyframes scrtOffB{to{opacity:0;visibility:hidden}}
 @keyframes sblB{to{clip-path:inset(0 0 0 0)}}
@@ -259,10 +259,10 @@ html{scroll-behavior:smooth}
         <div style="position: relative; min-height: 150px; background: #000000">
           <img class="scimg" src="{{sceneUrl}}" alt="{{sceneTitle}}" draggable="false" style="display: block; width: 100%; height: auto; max-height: 78vh; object-fit: contain">
           <div class="scrt" aria-hidden="true">
-            <p class="sbl" style="--d: 0.3s">&gt; SCENE.LINK // GM FEED</p>
-            <p class="sbl" style="--d: 0.45s">&gt; HANDSHAKE .......... OK</p>
-            <p class="sbl" style="--d: 0.6s">&gt; DECODING FRAME .... OK</p>
-            <p class="sbl sbl-ok" style="--d: 0.78s">&gt; RENDER ▮ ON SCREEN</p>
+            <p class="sbl" style="--d: 0.2s">&gt; SCENE.LINK // GM FEED</p>
+            <p class="sbl" style="--d: 0.3s">&gt; HANDSHAKE .......... OK</p>
+            <p class="sbl" style="--d: 0.4s">&gt; DECODING FRAME .... OK</p>
+            <p class="sbl sbl-ok" style="--d: 0.5s">&gt; RENDER ▮ ON SCREEN</p>
           </div>
         </div>
         <div data-scene-resize aria-hidden="true" title="{{sceneResizeTip}}" style="position: absolute; right: -1px; bottom: -1px; width: 22px; height: 22px; cursor: nwse-resize; touch-action: none; background: linear-gradient(135deg, transparent 0 55%, #FF2E88 55% 62%, transparent 62% 72%, #FF2E88 72% 79%, transparent 79%)"></div>
