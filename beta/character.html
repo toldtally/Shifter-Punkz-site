@@ -65,6 +65,30 @@ textarea.fld{resize:vertical;line-height:1.45}
 .eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}
 .eq.off i{animation:none;height:3px;opacity:.5}
 @keyframes eqB{0%,100%{height:4px}50%{height:16px}}
+/* scene window: CRT boot when the GM puts a picture up, CRT power-off when it comes down */
+.scrt{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:16px 18px;pointer-events:none;background:#050508;background-image:repeating-linear-gradient(0deg,rgba(255,46,136,.08) 0 1px,transparent 1px 3px)}
+.sbl{margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;color:#FF2E88;white-space:nowrap;overflow:hidden;clip-path:inset(0 100% 0 0)}
+.sbl-ok{color:#2EE6F0}
+.scw-off{animation:scwOff .38s cubic-bezier(.6,0,.9,.4) forwards;pointer-events:none}
+.scw-off .scrt{display:none}
+@keyframes scwOff{0%{transform:none;filter:none;opacity:1}40%{transform:scale(1,.004);filter:brightness(3);opacity:1}75%{transform:scale(.03,.004);filter:brightness(5);opacity:1}100%{transform:scale(0,0);opacity:0}}
+.scw-a{animation:scwOnA .32s cubic-bezier(.2,.8,.2,1) both}
+.scw-a .scrt{animation:scrtOffA .2s ease-in 1s forwards}
+.scw-a .sbl{animation:sblA .14s steps(18) var(--d,0s) forwards}
+.scw-a .scimg{animation:scimgA .3s ease-out 1s both}
+@keyframes scwOnA{0%{transform:scale(0,.004);filter:brightness(4)}45%{transform:scale(1,.004);filter:brightness(3)}100%{transform:none;filter:none}}
+@keyframes scrtOffA{to{opacity:0;visibility:hidden}}
+@keyframes sblA{to{clip-path:inset(0 0 0 0)}}
+@keyframes scimgA{from{opacity:0;filter:brightness(2.5) contrast(1.4)}to{opacity:1;filter:none}}
+.scw-b{animation:scwOnB .32s cubic-bezier(.2,.8,.2,1) both}
+.scw-b .scrt{animation:scrtOffB .2s ease-in 1s forwards}
+.scw-b .sbl{animation:sblB .14s steps(18) var(--d,0s) forwards}
+.scw-b .scimg{animation:scimgB .3s ease-out 1s both}
+@keyframes scwOnB{0%{transform:scale(0,.004);filter:brightness(4)}45%{transform:scale(1,.004);filter:brightness(3)}100%{transform:none;filter:none}}
+@keyframes scrtOffB{to{opacity:0;visibility:hidden}}
+@keyframes sblB{to{clip-path:inset(0 0 0 0)}}
+@keyframes scimgB{from{opacity:0;filter:brightness(2.5) contrast(1.4)}to{opacity:1;filter:none}}
+@media (prefers-reduced-motion: reduce){.scw-a,.scw-b,.scw-off,.scw-a .scimg,.scw-b .scimg{animation:none}.scrt{display:none}}
 @media (prefers-reduced-motion: reduce){.eq i{animation:none;height:8px}}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
@@ -224,7 +248,7 @@ html{scroll-behavior:smooth}
 
     <!-- Scene window: the picture the GM is showing; players drag the header to move it and the corner to resize -->
     <sc-if value="{{sceneOn}}" hint-placeholder-val="{{ true }}">
-      <div id="scene-win" role="dialog" aria-label="{{sceneLabel}}" style="position: fixed; z-index: 60; left: {{sceneX}}px; top: {{sceneY}}px; width: {{sceneW}}px; max-width: calc(100vw - 16px); display: flex; flex-direction: column; background: #0B0A12; border: 1px solid #FF2E88; box-shadow: 0 18px 48px rgba(0,0,0,0.6)">
+      <div id="scene-win" class="{{sceneAnim}}" role="dialog" aria-label="{{sceneLabel}}" style="position: fixed; z-index: 60; left: {{sceneX}}px; top: {{sceneY}}px; width: {{sceneW}}px; max-width: calc(100vw - 16px); display: flex; flex-direction: column; background: #0B0A12; border: 1px solid #FF2E88; box-shadow: 0 18px 48px rgba(0,0,0,0.6)">
         <div data-scene-drag title="{{sceneDragTip}}" style="display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; background: #1D1930; border-bottom: 1px solid #2A2740; cursor: move; touch-action: none; user-select: none">
           <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #FF2E88; white-space: nowrap">● SCENE</span>
           <span style="flex: 1; min-width: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sceneTitle}}</span>
@@ -232,7 +256,15 @@ html{scroll-behavior:smooth}
           <button type="button" onClick="{{sceneBigger}}" aria-label="{{sceneBiggerLabel}}" title="{{sceneBiggerLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">+</button>
           <button type="button" onClick="{{sceneMinimize}}" aria-label="{{sceneMinLabel}}" title="{{sceneMinLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">▁</button>
         </div>
-        <img src="{{sceneUrl}}" alt="{{sceneTitle}}" draggable="false" style="display: block; width: 100%; height: auto; max-height: 78vh; object-fit: contain; background: #000000">
+        <div style="position: relative; min-height: 150px; background: #000000">
+          <img class="scimg" src="{{sceneUrl}}" alt="{{sceneTitle}}" draggable="false" style="display: block; width: 100%; height: auto; max-height: 78vh; object-fit: contain">
+          <div class="scrt" aria-hidden="true">
+            <p class="sbl" style="--d: 0.3s">&gt; SCENE.LINK // GM FEED</p>
+            <p class="sbl" style="--d: 0.45s">&gt; HANDSHAKE .......... OK</p>
+            <p class="sbl" style="--d: 0.6s">&gt; DECODING FRAME .... OK</p>
+            <p class="sbl sbl-ok" style="--d: 0.78s">&gt; RENDER ▮ ON SCREEN</p>
+          </div>
+        </div>
         <div data-scene-resize aria-hidden="true" title="{{sceneResizeTip}}" style="position: absolute; right: -1px; bottom: -1px; width: 22px; height: 22px; cursor: nwse-resize; touch-action: none; background: linear-gradient(135deg, transparent 0 55%, #FF2E88 55% 62%, transparent 62% 72%, #FF2E88 72% 79%, transparent 79%)"></div>
       </div>
     </sc-if>
@@ -826,19 +858,33 @@ class Component extends DCLogic {
       }
     };
 
-    const sc = this.sceneNow();
-    const scMin = !!(sc && this.state.scMinAt === sc.at);
+    // keep the last picture around for the power-off animation, and flip the boot class so each new picture reboots
+    const scRaw = this.sceneNow();
+    if (this._scPrev && !scRaw) {
+      this._scGhost = this._scPrev;
+      clearTimeout(this._scGhostT);
+      this._scGhostT = setTimeout(() => { this._scGhost = null; this.setState({ scTick: Date.now() }); }, 420);
+    }
+    if (scRaw) { this._scGhost = null; if (!this._scPrev || this._scPrev.at !== scRaw.at) this._scFlip = !this._scFlip; }
+    this._scPrev = scRaw;
+    const sc = scRaw || this._scGhost || null;
+    const scMin = !!(scRaw && this.state.scMinAt === scRaw.at);
     const geo = this.sceneGeom();
     const resizeBy = (d) => this.sceneSetPos(Object.assign({}, geo, { w: geo.w + d }));
     const sceneVals = {
       sceneOn: !!sc && !scMin, sceneMin: scMin,
+      sceneAnim: !scRaw || this.state.scTucking ? 'scw-off' : this._scFlip ? 'scw-a' : 'scw-b',
       sceneUrl: sc ? sc.url : '', sceneTitle: sc ? (sc.title || L('ภาพจาก GM', 'From your GM')) : '',
       sceneLabel: L('ภาพจาก GM: ', 'Picture from your GM: ') + (sc ? sc.title || '' : ''),
       sceneX: geo.x, sceneY: geo.y, sceneW: geo.w, sceneChipY: geo.y,
       sceneDragTip: L('ลากเพื่อย้าย', 'Drag to move'), sceneResizeTip: L('ลากเพื่อปรับขนาด', 'Drag to resize'),
       sceneSmaller: () => resizeBy(-80), sceneBigger: () => resizeBy(80),
       sceneSmallerLabel: L('ย่อภาพ', 'Smaller'), sceneBiggerLabel: L('ขยายภาพ', 'Bigger'),
-      sceneMinimize: () => this.setState({ scMinAt: sc ? sc.at : null }),
+      sceneMinimize: () => {
+        if (!scRaw || this.state.scTucking) return;
+        this.setState({ scTucking: true });
+        setTimeout(() => this.setState({ scTucking: false, scMinAt: scRaw.at }), 380);
+      },
       sceneMinLabel: L('พับเก็บ (ภาพใหม่จาก GM จะเด้งขึ้นมาเอง)', 'Tuck away (a new picture from the GM pops back up)'),
       sceneRestore: () => this.setState({ scMinAt: null })
     };
