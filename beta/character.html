@@ -530,10 +530,17 @@ html{scroll-behavior:smooth}
         <div class="panel" style="border-top-color: #C084FC; opacity: {{cosOpacity}}">
           <div class="ph"><h2>{{cosTitle}}</h2></div>
           <div class="pb">
-            <div class="thead" style="grid-template-columns: .5fr 1.5fr 52px 28px"><div>Type</div><div>Effect</div><div>Cosmic Dice</div><div></div></div>
+            <div class="thead" style="grid-template-columns: .75fr 1.25fr 52px 28px"><div>Type / Name</div><div>Effect</div><div>Cosmic Dice</div><div></div></div>
             <sc-for list="{{cosmic}}" as="r" hint-placeholder-count="0">
-              <div class="rowline" style="grid-template-columns: .5fr 1.5fr 52px 28px; align-items: start">
-                <input class="fld" type="text" aria-label="Cosmic type" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}">
+              <div class="rowline" style="grid-template-columns: .75fr 1.25fr 52px 28px; align-items: start">
+                <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+                  <select class="fld" aria-label="Cosmic type" onChange="{{r.on_type}}" style="color: {{r.typeColor}}">
+                    <sc-for list="{{r.typeOpts}}" as="o" hint-placeholder-count="9">
+                      <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
+                    </sc-for>
+                  </select>
+                  <input class="fld" type="text" aria-label="Cosmic name" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                </div>
                 <textarea class="fld" rows="1" aria-label="Cosmic effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
                 <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
                 <button type="button" class="rm" aria-label="{{t.rmCos}}" onClick="{{r.remove}}">×</button>
@@ -586,6 +593,8 @@ function sceneArt(sky, glow, label) {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 100'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + sky + "'/><stop offset='1' stop-color='#0B0A12'/></linearGradient></defs><rect width='160' height='100' fill='url(#s)'/><circle cx='118' cy='26' r='12' fill='" + glow + "' opacity='.35'/>" + blds + wins + "<text x='8' y='14' font-family='monospace' font-size='6' letter-spacing='1' fill='" + glow + "'>" + label + "</text></svg>";
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
+/* the 8 Cosmic Types from the rulebook: [name, the Basic Ability it runs on] */
+const COSMIC_TYPES = [['Shape', 'FORCE'], ['Heat', 'FORCE'], ['Energy', 'TACTICAL'], ['Velocity', 'TACTICAL'], ['Space', 'TRICK'], ['Impulse', 'TRICK'], ['Entropy', 'SENSE'], ['Density', 'SENSE']];
 class Component extends DCLogic {
   componentDidMount() {
     try {
@@ -1005,12 +1014,15 @@ class Component extends DCLogic {
       gears: rows('gears', ['name', 'fx']),
       addGear: add('gears', { name: '', fx: '' }, 2),
       gearFull: s.gears.length >= 2,
-      cosmic: rows('cosmic', ['name', 'fx', 'cd'], { cd: [0, 3] }),
-      addCos: cpd ? () => {} : add('cosmic', { name: '', fx: '', cd: '' }, cosCap),
+      cosmic: rows('cosmic', ['type', 'name', 'fx', 'cd'], { cd: [0, 3] }).map((r) => Object.assign(r, {
+        typeColor: r.type ? '#FFFFFF' : '#6E6A88',
+        typeOpts: [{ v: '', label: L('— Type —', '— Type —'), sel: !r.type }].concat(COSMIC_TYPES.map((c) => ({ v: c[0], label: c[0], sel: r.type === c[0] })))
+      })),
+      addCos: cpd ? () => {} : add('cosmic', { type: '', name: '', fx: '', cd: '' }, cosCap),
       cosFull: cpd || s.cosmic.length >= cosCap,
       cosTitle: fk === 'outlaw' ? 'Cosmic Gadgets' : 'Cosmic Ability',
       cosLabel: (fk === 'outlaw' ? L('+ เพิ่ม Cosmic Gadget', '+ Add Cosmic Gadget') : L('+ เพิ่ม Cosmic Ability', '+ Add Cosmic Ability')) + (fk === 'shifter' ? L(' (มีได้ 1 อย่าง)', ' (one per Shifter)') : cosCap > 1 ? L(' (สูงสุด ', ' (max ') + cosCap + L(' — Rep. ทุก 4 ได้เพิ่ม 1)', ' — +1 every 4 Rep.)') : L(' (สูงสุด 1 ตอนสร้าง)', ' (max 1 at creation)')),
-      cosPh: fk === 'outlaw' ? 'Cosmic Gadget' : L('ประเภทของพลัง', 'Power type'),
+      cosPh: fk === 'outlaw' ? L('ชื่อ Cosmic Gadget', 'Cosmic Gadget name') : L('ชื่อพลัง', 'Power name'),
       cosNote: cpd ? L('C.P.D. ไม่มีพลังคอสมิคติดตัว', 'C.P.D. agents have no cosmic power') : '',
       cosOpacity: cpd ? '0.4' : '1',
       reset: () => {
