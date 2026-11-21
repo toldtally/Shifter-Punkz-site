@@ -596,7 +596,7 @@ class Component extends DCLogic {
       order: [{ id: 'kaew', kind: 'pc' }, { id: 'npc1', kind: 'npc', name: 'Golden Crown Thug' }, { id: 'tum', kind: 'pc' }, { id: 'som', kind: 'pc' }, { id: 'npc2', kind: 'npc', name: 'Ironhide Sniper' }],
       turn: 0, round: 1, npcName: '', npcSeq: 3,
       chars: {
-        kaew: { portrait: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2314243A'/%3E%3Crect y='0' width='64' height='64' fill='url%28%23g%29'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232EE6F0' stop-opacity='.25'/%3E%3Cstop offset='1' stop-color='%23FF2E88' stop-opacity='.2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='26' r='11' fill='%230B0A12'/%3E%3Cpath d='M12 64c2-14 10-20 20-20s18 6 20 20z' fill='%230B0A12'/%3E%3Cpath d='M22 24h20' stroke='%232EE6F0' stroke-width='2.5'/%3E%3C/svg%3E", name: 'Kaew', player: 'Mint', f: 'shifter', sub: 'Street Doc · Area Shifter', online: true, ip: 8, ipMax: 10, wm: 6, wmMax: 10, ba: [1, 2, 3, 2], se: 1, ex: 0, adv: 4, coins: 3, inj: [], at: now - 12000 },
+        kaew: { portrait: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2314243A'/%3E%3Crect y='0' width='64' height='64' fill='url%28%23g%29'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232EE6F0' stop-opacity='.25'/%3E%3Cstop offset='1' stop-color='%23FF2E88' stop-opacity='.2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='26' r='11' fill='%230B0A12'/%3E%3Cpath d='M12 64c2-14 10-20 20-20s18 6 20 20z' fill='%230B0A12'/%3E%3Cpath d='M22 24h20' stroke='%232EE6F0' stroke-width='2.5'/%3E%3C/svg%3E", name: 'Kaew', player: 'Mint', f: 'shifter', sub: 'Street Doc · Space Shifter', online: true, ip: 8, ipMax: 10, wm: 6, wmMax: 10, ba: [1, 2, 3, 2], se: 1, ex: 0, adv: 4, coins: 3, inj: [], at: now - 12000 },
         tum: { name: 'Tum', player: 'Ice', f: 'norms', sub: 'Synth-Tech Mechanic', online: true, ip: 10, ipMax: 10, wm: 0, wmMax: 0, ba: [2, 3, 2, 1], se: 0, ex: 1, adv: 5, coins: 6, inj: [], at: now - 40000 },
         som: { name: 'Somying', player: 'Ploy', f: 'cpd', sub: 'Rank 2 · Division 9', online: false, ip: 12, ipMax: 12, wm: 0, wmMax: 0, ba: [3, 2, 1, 3], se: 0, ex: 0, adv: 3, coins: 2, inj: [], at: now - 300000 }
       },
@@ -703,7 +703,7 @@ class Component extends DCLogic {
         bonded: [{ name: L('กระเป๋าหมอเถื่อนของแม่', 'Mom\'s street-doc bag'), fx: L('+1 Trick เมื่อรักษา · ถูกทำลาย: ฟื้นฟู +3 IP ทั้งปาร์ตี้', '+1 Trick when healing · On destroy: party recovers +3 IP') }],
         weapons: [{ name: 'Scalpel Blade', range: 1, dmg: '2', fx: L('ทอยได้คู่ = เป้าหมายติด Bleeding', 'A pair inflicts Bleeding') }],
         gears: [{ name: 'Med-Weave Coat', fx: 'AMR +1' }],
-        cosmic: [{ name: 'Area · Blink Rat', fx: L('วาร์ปตัวเองผ่านจุดอับสายตาไม่เกิน 10 ม.', 'Teleport through a blind spot up to 10 m'), cd: 1 }] },
+        cosmic: [{ name: 'Space · Blink Rat', fx: L('วาร์ปตัวเองผ่านจุดอับสายตาไม่เกิน 10 ม.', 'Teleport through a blind spot up to 10 m'), cd: 1 }] },
       tum: { slots: 8,
         bonded: [{ name: L('ประแจของพ่อ', 'Dad\'s wrench'), fx: L('ซ่อม Gadget +1D8 · ถูกทำลาย: +1 SE', 'Repair gadgets +1D8 · On destroy: +1 SE') }],
         weapons: [{ name: 'Rivet Gun', range: 3, dmg: '2', fx: L('ยิงตรึงเป้าหมายไว้กับที่ 1 เทิร์น', 'Pins a target in place for 1 turn') }],
