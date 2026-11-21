@@ -539,7 +539,16 @@ html{scroll-behavior:smooth}
                       <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
                     </sc-for>
                   </select>
-                  <input class="fld" type="text" aria-label="Cosmic name" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                  <sc-if value="{{r.namePick}}" hint-placeholder-val="{{ true }}">
+                    <select class="fld" aria-label="Cosmic name" onChange="{{r.on_name}}" disabled="{{r.nameOff}}" style="color: {{r.nameColor}}">
+                      <sc-for list="{{r.nameOpts}}" as="o" hint-placeholder-count="9">
+                        <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
+                      </sc-for>
+                    </select>
+                  </sc-if>
+                  <sc-if value="{{r.nameFree}}" hint-placeholder-val="{{ false }}">
+                    <input class="fld" type="text" aria-label="Cosmic name" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                  </sc-if>
                 </div>
                 <textarea class="fld" rows="1" aria-label="Cosmic effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
                 <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
@@ -595,6 +604,17 @@ function sceneArt(sky, glow, label) {
 }
 /* the 8 Cosmic Types from the rulebook: [name, the Basic Ability it runs on] */
 const COSMIC_TYPES = [['Shape', 'FORCE'], ['Heat', 'FORCE'], ['Energy', 'TACTICAL'], ['Velocity', 'TACTICAL'], ['Space', 'TRICK'], ['Impulse', 'TRICK'], ['Entropy', 'SENSE'], ['Density', 'SENSE']];
+/* the Cosmic Abilities of each type (8 per type; unnamed slots are still to come) */
+const COSMIC_NAMES = {
+  Shape: ['Vapor', 'Shadow Bringer', 'Chameleon', 'Camouflage', 'Re-shape', 'Scalise', 'Sharpen', 'Labyrinth'],
+  Heat: ['Burner', 'Glacier', 'Burst'],
+  Energy: ['Magnet', 'Voltage', 'Luminary', 'Breeze', 'Devour'],
+  Velocity: ['Haste', 'Quickness', 'Redirect', 'Snitch', 'Acceleration', 'Slow', 'Jump', 'Anchor'],
+  Space: ['Replace', 'Maze', 'Room', 'Compress', 'Blink Rat', 'Image Mind', 'Space Fold', 'Checkpoint'],
+  Impulse: ['Emotion', 'Fracture'],
+  Entropy: ['Reverse', 'Transfer', 'Unstable', 'Jam', 'Isolation', 'Decay'],
+  Density: ['Weight', 'Noise', 'Mass', 'Solidify', 'Stuff', 'Gravity', 'Elastic', 'Matter']
+};
 class Component extends DCLogic {
   componentDidMount() {
     try {
@@ -1014,7 +1034,24 @@ class Component extends DCLogic {
       gears: rows('gears', ['name', 'fx']),
       addGear: add('gears', { name: '', fx: '' }, 2),
       gearFull: s.gears.length >= 2,
-      cosmic: rows('cosmic', ['type', 'name', 'fx', 'cd'], { cd: [0, 3] }).map((r) => Object.assign(r, {
+      cosmic: rows('cosmic', ['type', 'name', 'fx', 'cd'], { cd: [0, 3] }).map((r, i) => Object.assign(r, (() => {
+        // Shifters pick the name from the chosen type's list; Norms name their gadget freely
+        const list = COSMIC_NAMES[r.type] || [];
+        const pick = fk !== 'outlaw';
+        const names = r.name && list.indexOf(r.name) < 0 ? list.concat([r.name]) : list;
+        return {
+          namePick: pick, nameFree: !pick, nameOff: pick && !r.type,
+          nameColor: r.name ? '#FFFFFF' : '#6E6A88',
+          nameOpts: [{ v: '', label: r.type ? L('— Name —', '— Name —') : L('เลือก Type ก่อน', 'Pick a Type first'), sel: !r.name }].concat(names.map((n) => ({ v: n, label: n, sel: r.name === n }))),
+          on_type: (e) => {
+            const t = e && e.target ? e.target.value : '';
+            const arr = this.state.s.cosmic.slice();
+            const keep = pick ? (COSMIC_NAMES[t] || []).indexOf(arr[i].name) >= 0 : true;
+            arr[i] = Object.assign({}, arr[i], { type: t, name: keep ? arr[i].name : '' });
+            this.upd({ cosmic: arr });
+          }
+        };
+      })(), {
         typeColor: r.type ? '#FFFFFF' : '#6E6A88',
         typeOpts: [{ v: '', label: L('— Type —', '— Type —'), sel: !r.type }].concat(COSMIC_TYPES.map((c) => ({ v: c[0], label: c[0], sel: r.type === c[0] })))
       })),
