@@ -12,13 +12,13 @@
 
   var MOODS = [
     { id: 'normal', code: 'TRK-01', title: 'Neon Streets', th: 'ปกติ', en: 'Calm', color: '#2EE6F0',
-      descTh: 'ซินธ์เวฟเดินเมืองยามค่ำ เหมาะกับสำรวจ คุยกับ NPC', descEn: 'Night-city synthwave for exploring and talking' },
+      descTh: 'อินดัสเทรียลอิเล็กโทร 112 BPM กลองหนักแน่น เบสปั๊มตามจังหวะ เสียงโลหะกระทบ สำหรับเดินเมือง สำรวจ คุยกับ NPC', descEn: '112 BPM industrial electro: punchy drums, pumping bass and metal hits for roaming the city' },
     { id: 'intense', code: 'TRK-02', title: 'C.P.D. Raid', th: 'เร้าใจ', en: 'Intense', color: '#FF2E88',
-      descTh: '140 BPM เบสแตก กลองรัว มีช่วง build-up ก่อนระเบิด สำหรับไล่ล่า ต่อสู้ บุกจับ', descEn: '140 BPM, distorted bass, drum fills and a build-up before each drop' },
+      descTh: '150 BPM อินดัสเทรียลแอ็กชัน เบสรีสแตก ไซเรนซินธ์ กลิตช์ build-up แล้วดรอปหนัก สำหรับไล่ล่า ต่อสู้ บุกจับ', descEn: '150 BPM industrial action: torn reese bass, siren synth, glitch build-ups and heavy drops' },
     { id: 'sad', code: 'TRK-03', title: 'Rain on Concrete', th: 'เศร้า', en: 'Sad', color: '#C084FC',
       descTh: 'เปียโนช้า ๆ บนเครื่องสายและเชลโล สำหรับการสูญเสีย บทอำลา ฉากเงียบ', descEn: 'Slow piano over strings and cello for loss and farewells' },
     { id: 'mystery', code: 'TRK-04', title: 'Data Trail', th: 'น่าสงสัย', en: 'Suspicious', color: '#FFD400',
-      descTh: 'นัวร์ไซเบอร์ 84 BPM เสียงนาฬิกาเดิน เบสดีดเบา ๆ คีย์บอร์ดสั่นไหว สำหรับสืบสวน ตามรอย แอบฟัง', descEn: 'Cyber-noir with a ticking clock, muted bass and wavering keys for investigations' }
+      descTh: 'ดาร์กอินดัสเทรียล 92 BPM เสียงหัวใจเต้น โดรนต่ำ สัญญาณกลิตช์ สำหรับแทรกซึม สืบสวน ตามรอย', descEn: '92 BPM dark industrial: heartbeat kick, low drone and data glitches for stealth and investigations' }
   ];
   var AMBIENTS = [
     { id: 'rain', th: 'ฝนตก', en: 'Rain' },
@@ -30,7 +30,7 @@
   ];
 
   // loudness trims so moods and ambiences sit at a similar level
-  var TRIM = { normal: 1.2, intense: 0.65, sad: 2.1, mystery: 1.4, rain: 0.3, city: 1.2, neon: 3, siren: 3, wind: 0.6, geiger: 3 };
+  var TRIM = { normal: 1.15, intense: 0.55, sad: 2.1, mystery: 1.0, rain: 0.3, city: 1.2, neon: 3, siren: 3, wind: 0.6, geiger: 3 };
 
   var mtof = function (m) { return 440 * Math.pow(2, (m - 69) / 12); };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
@@ -39,43 +39,57 @@
   // ---- track definitions (16th-note steps, 16 steps per bar) ----
   var TRACKS = {
     normal: {
-      bpm: 96,
-      chords: [[45, [57, 60, 64]], [41, [57, 60, 65]], [48, [55, 60, 64]], [43, [55, 59, 62]]], // Am F C G
+      // Neon Streets — industrial electro groove: punchy kick, gated snare, pumping 16th bass, metal hats, clanks
+      bpm: 112,
+      chords: [[40, [64, 67, 71]], [40, [64, 67, 71]], [36, [64, 67, 72]], [38, [62, 66, 69]],
+               [40, [64, 67, 71]], [40, [64, 67, 71]], [36, [64, 67, 72]], [35, [63, 66, 71]]], // Em Em C D | Em Em C B
       step: function (e, s, bar, t, ch, out, dur) {
-        var root = ch[0], tones = ch[1];
-        if (s === 0) e.pad(t, tones, dur * 16, out, 0.05);
-        if (s % 4 === 0 || s % 4 === 3) e.bass(t, mtof(root + (s % 8 === 4 ? 12 : 0)), dur * 1.6, out, 0.18);
-        if (s % 2 === 0) e.hat(t, out, s % 4 === 2 ? 0.035 : 0.02, false);
-        if (s === 0 || s === 8) e.kick(t, out, 0.35);
-        if (bar % 4 >= 1 && Math.random() < (s % 2 ? 0.25 : 0.55)) e.lead(t, mtof(pick(tones) + 12), dur * 1.5, out, 0.035, 'triangle');
+        var root = ch[0], tones = ch[1], phase = bar % 8, intro = bar < 2;
+        // drums
+        if (s === 0 || s === 8 || (s === 10 && bar % 2 === 1) || (s === 14 && phase === 7)) e.ikick(t, out, 0.62);
+        if (!intro && (s === 4 || s === 12)) e.isnare(t, out, 0.2);
+        if (s % 4 === 2) e.metal(t, out, 0.05, 9000);
+        else if (!intro && s % 2 === 1) e.metal(t, out, 0.018, 11000);
+        if (!intro && (s === 7 || (s === 15 && phase % 2 === 1))) e.clank(t, out, 0.05);
+        // pumping bass: rests on the kick, octave jumps on the off-beats
+        var bp = [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1], oct = [0, 0, 12, 0, 0, 0, 12, 7, 0, 0, 12, 0, 0, 12, 0, 12];
+        if (bp[s]) e.gbass(t, mtof(root + oct[s]), dur * 0.8, out, 0.22);
+        // ducked pad, a hook every other bar, glitch at the end of the 8-bar phrase
+        if (s === 0) e.dpad(t, tones, dur * 16, dur * 4, out, 0.045);
+        var hook = [0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 0, 0, 3, 0, 2, 0];
+        if (bar % 2 === 1 && !intro && hook[s]) e.lead(t, mtof(tones[hook[s] - 1] + 12), dur * 1.2, out, 0.035, 'square');
+        if (phase === 7 && s >= 12) e.glitch(t, dur, out, 0.05);
       }
     },
     intense: {
-      // C.P.D. Raid — 8-bar loop: 4 bars build, 4 bars full assault, riser + crash at the turn
-      bpm: 140,
+      // C.P.D. Raid — 8-bar loop: 4 bars of tension (reese, siren synth, riser), 4 bars of full industrial assault
+      bpm: 150,
       chords: [[38, [62, 65, 69]], [38, [62, 65, 69]], [34, [62, 65, 70]], [36, [60, 64, 67]],
                [38, [62, 65, 69]], [38, [62, 65, 69]], [34, [62, 65, 70]], [33, [61, 64, 69]]], // Dm Dm Bb C | Dm Dm Bb A
       step: function (e, s, bar, t, ch, out, dur) {
         var root = ch[0], tones = ch[1], phase = bar % 8, full = phase >= 4;
-        var bassPat = [0, 0, 12, 0, 0, 12, 0, 7, 0, 0, 12, 0, 0, 12, 7, 12];
-        e.dbass(t, mtof(root + bassPat[s]), dur * 0.85, out, full ? 0.2 : 0.16);
-        if (s % 4 === 0 || (full && s === 14) || (phase === 3 && s >= 12)) e.kick(t, out, 0.75);
-        if (s === 4 || s === 12) e.snare(t, out, full ? 0.3 : 0.2);
-        e.hat(t, out, s % 2 ? 0.02 : 0.045, full && s % 4 === 2);
-        if (phase === 0 && s === 0 && bar > 0) e.crash(t, out, 0.12);
-        if (phase === 7 && s === 0) e.riser(t, dur * 16, out, 0.09);
-        if (phase === 7 && s >= 8) e.snare(t, out, 0.06 + (s - 8) * 0.035);
-        if (phase === 7 && s >= 12) e.tom(t, mtof(50 - (s - 12) * 3), out, 0.25);
-        if (full) {
-          var arp = [0, 1, 2, 3, 2, 1, 0, 2, 1, 2, 3, 2, 1, 0, 1, 2];
-          var oct = [12, 12, 12, 24, 12, 12, 12, 24];
-          var note = arp[s] === 3 ? tones[0] + 12 : tones[arp[s]];
-          e.lead(t, mtof(note + oct[s % 8]), dur * 0.75, out, 0.05, 'sawtooth');
-          if (s === 0 || s === 3 || s === 6 || s === 10) e.stab(t, tones, dur * 1.2, out, 0.08);
-        } else if (phase >= 2 && s % 2 === 0) {
-          e.lead(t, mtof(tones[(s / 2) % 3] + 12), dur * 0.5, out, 0.03, 'square');
+        if (!full) {
+          // tension: four-on-the-floor, ticking metal, a long torn reese and a rising siren
+          if (s % 4 === 0) e.ikick(t, out, 0.7);
+          e.metal(t, out, s % 4 === 2 ? 0.05 : 0.02, 10000);
+          if (s === 0) e.reese(t, mtof(root), dur * 16, out, 0.08);
+          if (s === 0 && phase >= 2) e.siren(t, mtof(tones[0] + 12), dur * 16, out, 0.045);
+          if (phase === 3) { e.isnare(t, out, 0.05 + s * 0.016); if (s === 0) e.riser(t, dur * 16, out, 0.1); }
+          if (phase === 3 && s >= 12) e.glitch(t, dur, out, 0.06);
+        } else {
+          // drop: kick + snare, 16th distorted bass, stabs, metal and clank hits
+          if (phase === 4 && s === 0) { e.impact(t, out, 0.5); e.crash(t, out, 0.14); }
+          if (s % 4 === 0 || s === 14 || (phase === 7 && s === 10)) e.ikick(t, out, 0.8);
+          if (s === 4 || s === 12) e.isnare(t, out, 0.32);
+          e.metal(t, out, s % 2 ? 0.02 : 0.045, 9500);
+          if (s === 6 || s === 15) e.clank(t, out, 0.06);
+          var bassPat = [0, 0, 12, 0, 0, 12, 0, 7, 0, 0, 12, 0, 0, 12, 7, 12];
+          e.dbass(t, mtof(root + bassPat[s]), dur * 0.85, out, 0.26);
+          if (s === 0 || s === 3 || s === 6 || s === 10) e.stab(t, tones, dur * 1.1, out, 0.09);
+          var arp = [0, 1, 2, 1, 0, 2, 1, 2, 0, 1, 2, 1, 2, 1, 0, 2];
+          if (phase >= 6) e.lead(t, mtof(tones[arp[s]] + 24), dur * 0.7, out, 0.04, 'sawtooth');
+          if (phase === 7 && s >= 12) e.glitch(t, dur, out, 0.07);
         }
-        if (s === 0) e.pad(t, tones, dur * 16, out, full ? 0.03 : 0.045);
       }
     },
     sad: {
@@ -107,35 +121,34 @@
     }
     ,
     mystery: {
-      // Data Trail — cyber-noir: clock ticks, muted walking bass, tremolo keys, a semitone motif that never resolves
-      bpm: 84,
-      chords: [[38, [60, 64, 65, 69]], [34, [57, 62, 65, 69]], [43, [58, 62, 64, 67]], [33, [58, 61, 64, 67]],
-               [38, [60, 64, 65, 69]], [34, [57, 62, 65, 69]], [31, [58, 62, 65, 67]], [33, [58, 61, 64, 67]]], // Dm9 Bbmaj7 Gm6 A7b9 | Dm9 Bbmaj7 Gm7/G A7b9
-      motif: [[74, 0, 0, 0, 77, 0, 0, 76, 0, 0, 0, 0, 70, 0, 69, 0], [0, 0, 0, 0, 74, 0, 73, 0, 0, 0, 70, 0, 0, 0, 0, 0]],
+      // Data Trail — dark industrial stealth: heartbeat kick, low drone, ticking metal, data glitches, a cold bell motif
+      bpm: 92,
+      chords: [[38, [62, 65, 69]], [38, [62, 65, 69]], [34, [62, 65, 70]], [37, [61, 64, 68]],
+               [38, [62, 65, 69]], [38, [62, 65, 69]], [43, [62, 67, 70]], [37, [61, 64, 68]]], // Dm Dm Bb C#dim | Dm Dm Gm C#dim
+      motif: [[74, 0, 0, 0, 0, 0, 73, 0, 0, 0, 0, 0, 70, 0, 0, 0], [0, 0, 69, 0, 0, 0, 0, 0, 68, 0, 0, 0, 0, 0, 0, 0]],
       step: function (e, s, bar, t, ch, out, dur) {
         var root = ch[0], tones = ch[1], phase = bar % 8;
-        // ticking clock: 8ths, accent on the beat
-        if (s % 2 === 0) e.tick(t, out, s % 4 === 0 ? 0.05 : 0.025);
-        // muted bass: 1, the "and" of 2, and a chromatic approach into the next bar
-        if (s === 0) e.mbass(t, mtof(root), dur * 3, out, 0.22);
-        if (s === 6) e.mbass(t, mtof(root + 7), dur * 2, out, 0.16);
-        if (s === 10) e.mbass(t, mtof(root + 12), dur * 2, out, 0.14);
-        if (s === 14) e.mbass(t, mtof(root + (phase % 4 === 3 ? 6 : 1)), dur * 2, out, 0.15);
-        if (s === 0) e.kick(t, out, 0.22);
-        if (s === 8) e.rim(t, out, 0.09);
-        // tremolo keys, syncopated
-        if (s === 0 || s === 11) e.keys(t, tones, dur * (s === 0 ? 10 : 5), out, s === 0 ? 0.06 : 0.04);
-        // the motif on bars 2-3 and its answer on 6-7
+        if (s === 0) e.drone(t, mtof(root - 12), dur * 16, out, 0.12);
+        // heartbeat
+        if (s === 0 || s === 3) e.ikick(t, out, s ? 0.3 : 0.45);
+        if (s === 8 && phase % 2 === 1) e.ikick(t, out, 0.25);
+        // ticking metal 16ths with accents, a clank on the backbeat
+        e.metal(t, out, s % 4 === 0 ? 0.035 : 0.012, 12000);
+        if (s === 12 && phase >= 2) e.clank(t, out, 0.035);
+        if (s === 4 && phase >= 4) e.isnare(t, out, 0.06);
+        // low pulse bass
+        if (s === 0 || s === 6 || s === 10) e.mbass(t, mtof(root + (s === 10 ? 1 : 0)), dur * 2, out, 0.18);
+        // cold bell motif and its answer
         var mot = (phase === 2 || phase === 6) ? TRACKS.mystery.motif[0] : (phase === 3 || phase === 7) ? TRACKS.mystery.motif[1] : null;
-        if (mot && mot[s]) e.lead(t, mtof(mot[s] - (phase >= 6 ? 12 : 0)), dur * 2.5, out, 0.045, 'sine');
-        // glassy pings now and then
-        if (s === 13 && Math.random() < 0.35) e.bell(t, mtof(pick(tones) + 24), out, 0.03);
+        if (mot && mot[s]) e.bell(t, mtof(mot[s]), out, 0.04);
+        // data glitches here and there
+        if ((s === 14 && Math.random() < 0.4) || (phase === 7 && s >= 13)) e.glitch(t, dur, out, 0.035);
       }
     }
   };
 
   function create() {
-    var distCurve = null;
+    var distCurve = null, hardCurve = null;
     var ctx = null, master, musicBus, ambBus, reverb, revSend, delay, delaySend, noiseBuf;
     var st = { mood: null, ambients: {}, volume: 0.8, ambVolume: 0.6, playing: false };
     var voices = {};   // mood -> { gain, step, bar, nextTime, stopAt }
@@ -162,8 +175,8 @@
       delay = ctx.createDelay(1); delay.delayTime.value = 0.34;
       var fb = ctx.createGain(); fb.gain.value = 0.32; delay.connect(fb); fb.connect(delay);
       delaySend = ctx.createGain(); delaySend.gain.value = 0.25; delaySend.connect(delay); delay.connect(master);
-      distCurve = new Float32Array(1024);
-      for (var k = 0; k < 1024; k++) { var x = k / 512 - 1; distCurve[k] = Math.tanh(x * 3.2); }
+      distCurve = new Float32Array(1024); hardCurve = new Float32Array(1024);
+      for (var k = 0; k < 1024; k++) { var x = k / 512 - 1; distCurve[k] = Math.tanh(x * 3.2); hardCurve[k] = Math.tanh(x * 7) * 0.9; }
       noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
       var nd = noiseBuf.getChannelData(0); for (var j = 0; j < nd.length; j++) nd[j] = Math.random() * 2 - 1;
       timer = setInterval(tick, 25);
@@ -326,6 +339,108 @@
       rim: function (t, out, v) {
         var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'square'; o.frequency.value = 1700;
         env(g, t, 0.0008, v, 0.03); o.connect(g); g.connect(out); g.connect(revSend); o.start(t); o.stop(t + 0.05);
+      },
+      // industrial kit
+      ikick: function (t, out, v) {
+        var o = ctx.createOscillator(), ws = ctx.createWaveShaper(), g = ctx.createGain();
+        ws.curve = hardCurve;
+        o.frequency.setValueAtTime(190, t); o.frequency.exponentialRampToValueAtTime(46, t + 0.09);
+        env(g, t, 0.002, v, 0.3); o.connect(ws); ws.connect(g); g.connect(out); o.start(t); o.stop(t + 0.4);
+        var c = noise(t, 0.01), cf = ctx.createBiquadFilter(), cg = ctx.createGain();
+        cf.type = 'highpass'; cf.frequency.value = 2500; env(cg, t, 0.0005, v * 0.35, 0.008);
+        c.connect(cf); cf.connect(cg); cg.connect(out);
+      },
+      isnare: function (t, out, v) {
+        var n = noise(t, 0.14), f = ctx.createBiquadFilter(), ws = ctx.createWaveShaper(), g = ctx.createGain();
+        f.type = 'bandpass'; f.frequency.value = 2400; f.Q.value = 0.6; ws.curve = hardCurve;
+        g.gain.setValueAtTime(v, t); g.gain.setValueAtTime(v, t + 0.07); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1); // gated
+        n.connect(f); f.connect(ws); ws.connect(g); g.connect(out); g.connect(revSend);
+        var o = ctx.createOscillator(), og = ctx.createGain(); o.type = 'triangle';
+        o.frequency.setValueAtTime(260, t); o.frequency.exponentialRampToValueAtTime(160, t + 0.06);
+        env(og, t, 0.001, v * 0.7, 0.07); o.connect(og); og.connect(out); o.start(t); o.stop(t + 0.1);
+      },
+      metal: function (t, out, v, hp) {
+        var g = ctx.createGain(), f = ctx.createBiquadFilter();
+        f.type = 'highpass'; f.frequency.value = hp || 8000;
+        [263, 400, 421, 474, 587, 845].forEach(function (fr) {
+          var o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = fr * 2; o.connect(f); o.start(t); o.stop(t + 0.08);
+        });
+        env(g, t, 0.0008, v, 0.05); f.connect(g); g.connect(out);
+      },
+      clank: function (t, out, v) {
+        [[523, 1], [1187, 0.6], [1823, 0.45], [2711, 0.3]].forEach(function (h) {
+          var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.value = h[0] * rnd(0.98, 1.02);
+          env(g, t, 0.001, v * h[1], 0.35); o.connect(g); g.connect(out); g.connect(revSend); o.start(t); o.stop(t + 0.4);
+        });
+      },
+      gbass: function (t, f, dur, out, v) {
+        var o = ctx.createOscillator(), o2 = ctx.createOscillator(), fl = ctx.createBiquadFilter(), ws = ctx.createWaveShaper(), g = ctx.createGain();
+        o.type = 'sawtooth'; o.frequency.value = f; o2.type = 'square'; o2.frequency.value = f / 2;
+        fl.type = 'lowpass'; fl.Q.value = 9;
+        fl.frequency.setValueAtTime(260, t); fl.frequency.exponentialRampToValueAtTime(1800, t + 0.012); fl.frequency.exponentialRampToValueAtTime(300, t + dur);
+        ws.curve = distCurve; env(g, t, 0.003, v, dur);
+        o.connect(fl); o2.connect(fl); fl.connect(ws); ws.connect(g); g.connect(out);
+        o.start(t); o2.start(t); o.stop(t + dur + 0.05); o2.stop(t + dur + 0.05);
+      },
+      reese: function (t, f, dur, out, v) {
+        var fl = ctx.createBiquadFilter(), ws = ctx.createWaveShaper(), g = ctx.createGain(), l = ctx.createOscillator(), lg = ctx.createGain();
+        fl.type = 'lowpass'; fl.Q.value = 5; fl.frequency.value = 700; l.frequency.value = 0.6; lg.gain.value = 450; l.connect(lg); lg.connect(fl.frequency);
+        ws.curve = hardCurve;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.05); g.gain.setValueAtTime(v, t + dur * 0.85); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        [-18, 18, 0].forEach(function (det, i) {
+          var o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = i === 2 ? f / 2 : f; o.detune.value = det;
+          o.connect(fl); o.start(t); o.stop(t + dur + 0.05);
+        });
+        fl.connect(ws); ws.connect(g); g.connect(out); l.start(t); l.stop(t + dur + 0.05);
+      },
+      siren: function (t, f, dur, out, v) {
+        var o = ctx.createOscillator(), fl = ctx.createBiquadFilter(), g = ctx.createGain(), l = ctx.createOscillator(), lg = ctx.createGain();
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 1.5, t + dur);
+        l.frequency.value = 3; lg.gain.value = 40; l.connect(lg); lg.connect(o.detune);
+        fl.type = 'bandpass'; fl.frequency.value = 1800; fl.Q.value = 1.5;
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + dur * 0.8); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+        o.connect(fl); fl.connect(g); g.connect(out); g.connect(delaySend); o.start(t); l.start(t); o.stop(t + dur + 0.05); l.stop(t + dur + 0.05);
+      },
+      glitch: function (t, dur, out, v) {
+        var n = 3 + Math.floor(Math.random() * 3), step = dur / n;
+        for (var i = 0; i < n; i++) {
+          var o = ctx.createOscillator(), g = ctx.createGain(), tt = t + i * step;
+          o.type = 'square'; o.frequency.value = pick([220, 440, 880, 1320, 1760, 3520]) * rnd(0.97, 1.03);
+          env(g, tt, 0.0005, v, step * 0.6); o.connect(g); g.connect(out); g.connect(delaySend); o.start(tt); o.stop(tt + step);
+        }
+      },
+      impact: function (t, out, v) {
+        var o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(30, t + 0.8);
+        env(g, t, 0.003, v, 1.1); o.connect(g); g.connect(out); g.connect(revSend); o.start(t); o.stop(t + 1.2);
+        var n = noise(t, 0.6), f = ctx.createBiquadFilter(), ng = ctx.createGain(); f.type = 'lowpass'; f.frequency.value = 1200;
+        env(ng, t, 0.002, v * 0.5, 0.5); n.connect(f); f.connect(ng); ng.connect(out); ng.connect(revSend);
+      },
+      dpad: function (t, notes, dur, beat, out, v) {
+        // pad ducked on every beat, like a sidechained synth
+        var g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t);
+        for (var b = 0; b * beat < dur; b++) {
+          var bt = t + b * beat; g.gain.setValueAtTime(0.0001, bt); g.gain.linearRampToValueAtTime(v, bt + beat * 0.55);
+        }
+        g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.2);
+        notes.forEach(function (m) {
+          [-10, 10].forEach(function (det) {
+            var o = ctx.createOscillator(), fl = ctx.createBiquadFilter(), og = ctx.createGain();
+            o.type = 'sawtooth'; o.frequency.value = mtof(m); o.detune.value = det; og.gain.value = 1 / notes.length;
+            fl.type = 'lowpass'; fl.frequency.value = 1500;
+            o.connect(fl); fl.connect(og); og.connect(g); o.start(t); o.stop(t + dur + 0.3);
+          });
+        });
+        g.connect(out); g.connect(revSend);
+      },
+      drone: function (t, f, dur, out, v) {
+        var fl = ctx.createBiquadFilter(), g = ctx.createGain(), l = ctx.createOscillator(), lg = ctx.createGain();
+        fl.type = 'lowpass'; fl.frequency.value = 260; fl.Q.value = 4; l.frequency.value = 0.15; lg.gain.value = 120; l.connect(lg); lg.connect(fl.frequency);
+        g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + dur * 0.3); g.gain.setValueAtTime(v, t + dur * 0.8); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.5);
+        [0, 7, -5].forEach(function (det) {
+          var o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = det; o.connect(fl); o.start(t); o.stop(t + dur + 0.6);
+        });
+        fl.connect(g); g.connect(out); g.connect(revSend); l.start(t); l.stop(t + dur + 0.6);
       },
       kick: function (t, out, v) {
         var o = ctx.createOscillator(), g = ctx.createGain();
