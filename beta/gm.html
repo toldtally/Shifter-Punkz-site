@@ -733,9 +733,9 @@ class Component extends DCLogic {
         slots: String(lo.slots),
         groups: [
           grp('BONDED ITEM', '#FF2E88', lo.bonded.map((b) => ({ name: b.name, meta: '', fx: b.fx }))),
+          ...(c.f === 'cpd' ? [] : [grp(c.f === 'norms' ? 'COSMIC GADGETS' : 'COSMIC ABILITIES', '#C084FC', lo.cosmic.map((x) => ({ name: (x.type ? x.type + ' · ' : '') + x.name, meta: 'CD ' + x.cd, fx: x.fx })))]),
           grp('WEAPONS', '#FF3D6E', lo.weapons.map((w) => ({ name: w.name, meta: 'R' + w.range + ' · DMG ' + w.dmg, fx: w.fx }))),
-          grp('GEARS', '#2EE6F0', lo.gears.map((g) => ({ name: g.name, meta: '', fx: g.fx }))),
-          grp(c.f === 'norms' ? 'COSMIC GADGETS' : 'COSMIC ABILITIES', '#C084FC', lo.cosmic.map((x) => ({ name: (x.type ? x.type + ' · ' : '') + x.name, meta: 'CD ' + x.cd, fx: x.fx })), c.f === 'cpd' ? L('— C.P.D. ไม่มีพลังคอสมิค', '— C.P.D. has no cosmic power') : null)
+          grp('GEARS', '#2EE6F0', lo.gears.map((g) => ({ name: g.name, meta: '', fx: g.fx })))
         ]
       };
     };

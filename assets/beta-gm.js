@@ -355,9 +355,9 @@
           slots: String(SP.num(s.slots) || 5),
           loadout: [
             grp('BONDED ITEM', '#FF2E88', named(s.bonded).map((b) => ({ name: b.name, meta: '', fx: b.effect || '' }))),
+            ...(c.f === 'cpd' ? [] : [grp(c.f === 'norms' ? 'COSMIC GADGETS' : 'COSMIC ABILITIES', '#C084FC', named(s.cosmic).map((x) => ({ name: (x.type ? x.type + ' · ' : '') + x.name, meta: 'CD ' + (x.cd || 0), fx: x.fx || '' })))]),
             grp('WEAPONS', '#FF3D6E', named(s.weapons).map((w) => ({ name: w.name, meta: 'R' + (w.range || '-') + ' · DMG ' + (w.dmg || '-'), fx: w.fx || '' }))),
-            grp('GEARS', '#2EE6F0', named(s.gears).map((g) => ({ name: g.name, meta: '', fx: g.fx || '' }))),
-            grp(c.f === 'norms' ? 'COSMIC GADGETS' : 'COSMIC ABILITIES', '#C084FC', named(s.cosmic).map((x) => ({ name: (x.type ? x.type + ' · ' : '') + x.name, meta: 'CD ' + (x.cd || 0), fx: x.fx || '' })), c.f === 'cpd' ? L('— C.P.D. ไม่มีพลังคอสมิค', '— C.P.D. has no cosmic power') : null)
+            grp('GEARS', '#2EE6F0', named(s.gears).map((g) => ({ name: g.name, meta: '', fx: g.fx || '' })))
           ],
           detail: [
             { k: 'Trait', v: s.traitName ? s.traitName + (s.traitFx ? ' — ' + s.traitFx : '') : '—' },
