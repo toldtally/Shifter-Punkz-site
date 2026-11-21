@@ -479,6 +479,39 @@ html{scroll-behavior:smooth}
           </div>
         </div>
 
+        <div class="panel" style="border-top-color: #C084FC; opacity: {{cosOpacity}}">
+          <div class="ph"><h2>{{cosTitle}}</h2></div>
+          <div class="pb">
+            <div class="thead" style="grid-template-columns: .75fr 1.25fr 52px 28px"><div>Type / Name</div><div>Effect</div><div>Cosmic Dice</div><div></div></div>
+            <sc-for list="{{cosmic}}" as="r" hint-placeholder-count="0">
+              <div class="rowline" style="grid-template-columns: .75fr 1.25fr 52px 28px; align-items: start">
+                <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+                  <select class="fld" aria-label="Cosmic type" onChange="{{r.on_type}}" style="color: {{r.typeColor}}">
+                    <sc-for list="{{r.typeOpts}}" as="o" hint-placeholder-count="9">
+                      <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
+                    </sc-for>
+                  </select>
+                  <sc-if value="{{r.namePick}}" hint-placeholder-val="{{ true }}">
+                    <select class="fld" aria-label="Cosmic name" onChange="{{r.on_name}}" disabled="{{r.nameOff}}" style="color: {{r.nameColor}}">
+                      <sc-for list="{{r.nameOpts}}" as="o" hint-placeholder-count="9">
+                        <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
+                      </sc-for>
+                    </select>
+                  </sc-if>
+                  <sc-if value="{{r.nameFree}}" hint-placeholder-val="{{ false }}">
+                    <input class="fld" type="text" aria-label="Cosmic name" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                  </sc-if>
+                </div>
+                <textarea class="fld" rows="1" aria-label="Cosmic effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
+                <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
+                <button type="button" class="rm" aria-label="{{t.rmCos}}" onClick="{{r.remove}}">×</button>
+              </div>
+            </sc-for>
+            <button type="button" class="add" onClick="{{addCos}}" disabled="{{cosFull}}">{{cosLabel}}</button>
+            <p class="hint">{{cosNote}}</p>
+          </div>
+        </div>
+
         <div class="panel pk">
           <div class="ph"><h2>General Skills</h2></div>
           <div class="pb">
@@ -524,39 +557,6 @@ html{scroll-behavior:smooth}
               </div>
             </sc-for>
             <button type="button" class="add" onClick="{{addGear}}" disabled="{{gearFull}}">{{t.addGear}}</button>
-          </div>
-        </div>
-
-        <div class="panel" style="border-top-color: #C084FC; opacity: {{cosOpacity}}">
-          <div class="ph"><h2>{{cosTitle}}</h2></div>
-          <div class="pb">
-            <div class="thead" style="grid-template-columns: .75fr 1.25fr 52px 28px"><div>Type / Name</div><div>Effect</div><div>Cosmic Dice</div><div></div></div>
-            <sc-for list="{{cosmic}}" as="r" hint-placeholder-count="0">
-              <div class="rowline" style="grid-template-columns: .75fr 1.25fr 52px 28px; align-items: start">
-                <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
-                  <select class="fld" aria-label="Cosmic type" onChange="{{r.on_type}}" style="color: {{r.typeColor}}">
-                    <sc-for list="{{r.typeOpts}}" as="o" hint-placeholder-count="9">
-                      <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
-                    </sc-for>
-                  </select>
-                  <sc-if value="{{r.namePick}}" hint-placeholder-val="{{ true }}">
-                    <select class="fld" aria-label="Cosmic name" onChange="{{r.on_name}}" disabled="{{r.nameOff}}" style="color: {{r.nameColor}}">
-                      <sc-for list="{{r.nameOpts}}" as="o" hint-placeholder-count="9">
-                        <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
-                      </sc-for>
-                    </select>
-                  </sc-if>
-                  <sc-if value="{{r.nameFree}}" hint-placeholder-val="{{ false }}">
-                    <input class="fld" type="text" aria-label="Cosmic name" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}">
-                  </sc-if>
-                </div>
-                <textarea class="fld" rows="1" aria-label="Cosmic effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
-                <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
-                <button type="button" class="rm" aria-label="{{t.rmCos}}" onClick="{{r.remove}}">×</button>
-              </div>
-            </sc-for>
-            <button type="button" class="add" onClick="{{addCos}}" disabled="{{cosFull}}">{{cosLabel}}</button>
-            <p class="hint">{{cosNote}}</p>
           </div>
         </div>
       </div>
