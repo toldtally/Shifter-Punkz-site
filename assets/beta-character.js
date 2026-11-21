@@ -31,6 +31,7 @@
     componentWillUnmount() { this.unsub(); if (this._bgm) this._bgm.close(); }
 
     th() { return this.state.lang !== 'en'; }
+    factorLocked() { var seat = this.state.seat; return !!(seat && this.state.charId && seat.character_id === this.state.charId); }
     /* the picture the GM has up for this sheet's session (sessions.scene, kept fresh by realtime) */
     sceneNow() {
       var seat = this.state.seat;
@@ -174,6 +175,7 @@
         if (!data || typeof data !== 'object') throw new Error('bad');
         var s = Object.assign(initialSheet(), data, { portrait: this.state.s.portrait });
         if (['shifter', 'outlaw', 'cpd'].indexOf(s.factor) === -1) s.factor = 'shifter';
+        if (this.factorLocked()) s.factor = this.state.s.factor;
         this.setState({ s: s, dirty: true, msg: L('นำเข้าแล้ว กด "บันทึกตัวละคร" เพื่อเก็บลงบัญชี', 'Imported. Press "Save character" to keep it.') });
       }).catch((e) => { if (e && e.message !== 'NONE') this.setState({ msg: L('อ่านไฟล์นี้ไม่ได้ ต้องเป็น .json ที่ Export จากใบตัวละคร', 'Couldn\'t read that file; use a .json exported from a sheet.') }); });
       if (this.state.loading) v.saveStatus = L('กำลังโหลด…', 'Loading…');

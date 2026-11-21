@@ -309,9 +309,12 @@ html{scroll-behavior:smooth}
               <span class="lbl" id="factor-l">Factor</span>
               <div role="group" aria-labelledby="factor-l" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
                 <sc-for list="{{factors}}" as="fc" hint-placeholder-count="3">
-                  <button type="button" aria-pressed="{{fc.pressed}}" onClick="{{fc.pick}}" style="{{fc.style}}">{{fc.name}}</button>
+                  <button type="button" aria-pressed="{{fc.pressed}}" onClick="{{fc.pick}}" disabled="{{fc.off}}" style="{{fc.style}}">{{fc.name}}</button>
                 </sc-for>
               </div>
+              <sc-if value="{{factorLocked}}" hint-placeholder-val="{{ false }}">
+                <p role="note" style="margin: 8px 0 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; line-height: 1.5; color: #FFD400"><svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true"><path d="M3 6V4a3 3 0 0 1 6 0v2 M1.5 6h9v7h-9z" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.factorLock}}</p>
+              </sc-if>
               <p style="margin: 8px 0 0; padding: 8px 10px; background: #0B0A12; border-left: 2px solid {{factorColor}}; font-size: 12.5px; line-height: 1.6; color: #A9A5C2">{{factorDesc}}</p>
             </div>
             <div class="row" style="margin-top: 12px">
@@ -638,6 +641,8 @@ class Component extends DCLogic {
   }
   /* the picture the GM is showing (canvas: BroadcastChannel; live site: sessions.scene of the seated session) */
   sceneNow() { return this.state.scene || null; }
+  /* a seated character keeps its Factor until it leaves the session */
+  factorLocked() { return !!(this.state.tbl && this.state.tbl.joined); }
   sceneSetPos(p) {
     this.setState({ scPos: p });
     try { localStorage.setItem('sp-scene-pos', JSON.stringify(p)); } catch (e) {}
@@ -959,15 +964,17 @@ class Component extends DCLogic {
       s: s,
       on: onH,
       charTag: (s.name.trim() || L('ยังไม่ได้ตั้งชื่อ', 'Unnamed')) + '  ·  ' + f.label,
+      factorLocked: this.factorLocked(),
       factors: Object.keys(F).map((k) => ({
         name: F[k].label,
         pressed: k === fk ? 'true' : 'false',
+        off: this.factorLocked() && k !== fk,
         pick: () => {
-          if (k === this.state.s.factor) return;
+          if (k === this.state.s.factor || this.factorLocked()) return;
           const nf = F[k];
           this.upd({ factor: k, spMax: String(nf.spMax), spCur: String(nf.spCur), spRgn: String(nf.spRgn), spPwr: k !== 'shifter' ? '0' : this.state.s.spPwr, slots: k === 'outlaw' ? '8' : '5', job: k === 'cpd' ? '' : this.state.s.job });
         },
-        style: 'min-height: 42px; padding: 0 6px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; background: #1D1930; ' + (k === fk ? 'border: 1px solid ' + F[k].color + '; color: ' + F[k].color + '; box-shadow: inset 0 0 0 1px ' + F[k].color : 'border: 1px solid #2A2740; color: #A9A5C2')
+        style: (this.factorLocked() && k !== fk ? 'opacity: 0.4; cursor: not-allowed; ' : 'cursor: pointer; ') + 'min-height: 42px; padding: 0 6px; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; background: #1D1930; ' + (k === fk ? 'border: 1px solid ' + F[k].color + '; color: ' + F[k].color + '; box-shadow: inset 0 0 0 1px ' + F[k].color : 'border: 1px solid #2A2740; color: #A9A5C2')
       })),
       factorDesc: f.desc,
       factorColor: f.color,
@@ -1070,7 +1077,7 @@ class Component extends DCLogic {
           return;
         }
         clearTimeout(this._rt);
-        this.setState({ s: initialSheet(), resetArmed: false, dirty: false, savedAt: null, msg: L('ล้างใบตัวละครแล้ว', 'Sheet cleared') });
+        this.setState({ s: Object.assign(initialSheet(), this.factorLocked() ? { factor: this.state.s.factor, slots: this.state.s.slots, spMax: this.state.s.spMax, spCur: this.state.s.spMax, spRgn: this.state.s.spRgn } : {}), resetArmed: false, dirty: false, savedAt: null, msg: L('ล้างใบตัวละครแล้ว', 'Sheet cleared') });
       },
       resetLabel: this.state.resetArmed ? L('กดอีกครั้งเพื่อยืนยันการล้างข้อมูล', 'Click again to clear the sheet') : 'Reset',
       resetStyle: this.state.resetArmed ? 'border-color: #FF3D6E; color: #FF3D6E' : '',
@@ -1116,6 +1123,7 @@ class Component extends DCLogic {
         phBondFx: L('ความสามารถ / บัฟเมื่อถูกทำลาย', 'Ability / buff on destroy'),
         rmBond: L('ลบ Bonded Item', 'Remove Bonded Item'),
         addBond: L('+ เพิ่ม Bonded Item', '+ Add Bonded Item'),
+        factorLock: L('ล็อก Factor ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Factor is locked while this character is in a session. Leave the session to change it.'),
         cpdNoWm: L('C.P.D. ไม่มีพลังคอสมิค — ไม่มี WM', 'C.P.D. has no cosmic power — no WM'),
         dcTip: L('DC ที่ต้องทอยให้ผ่าน', 'DC to beat'),
         phNotes: L('บันทึกส่วนตัวของผู้เล่น...', 'Your private notes...'),
