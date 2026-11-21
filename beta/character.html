@@ -767,7 +767,7 @@ class Component extends DCLogic {
     const setTbl = (patch) => this.setState({ tbl: Object.assign({}, this.state.tbl, patch) });
     const TABLES = {
       'SP-K7QX': { th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'live', lv: 4 },
-      'SP-R4MZ': { th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'paused', lv: 2 },
+      'SP-R4MZ': { th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'paused' },
       'SP-H2WD': { th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', lv: 3 }
     };
     const tName = (c) => (TABLES[c] ? L(TABLES[c].th, TABLES[c].en) : c);
@@ -800,7 +800,7 @@ class Component extends DCLogic {
       stLabel: joinedT && joinedT.st === 'live' ? 'LIVE' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
       joinedCode: tbl.joined,
       tableName: tbl.joined ? L('Session: ', 'SESSION: ') + tName(tbl.joined) : '',
-      hasLv: !!(tbl.joined && TABLES[tbl.joined]), lv: tbl.joined && TABLES[tbl.joined] ? TABLES[tbl.joined].lv : '',
+      hasLv: !!(tbl.joined && TABLES[tbl.joined] && TABLES[tbl.joined].lv), lv: tbl.joined && TABLES[tbl.joined] ? TABLES[tbl.joined].lv : '',
       askLeave: () => setTbl({ leaving: true }),
       cancelLeave: () => setTbl({ leaving: false }),
       doLeave: () => { setTbl({ joined: '', leaving: false }); if (this._bgm) this._bgm.stopAll(); this.setState({ bgmOn: false }); },

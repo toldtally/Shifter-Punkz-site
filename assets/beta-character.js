@@ -153,7 +153,7 @@
         stLabel: live ? 'LIVE' : sess && sess.status === 'ended' ? 'ENDED' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
         joinedCode: sess ? sess.invite_code : '',
         tableName: sess ? L('Session: ', 'SESSION: ') + sess.name : '',
-        hasLv: !!sess, lv: sess ? sess.level || 1 : '',
+        hasLv: !!(sess && sess.level), lv: sess && sess.level ? sess.level : '',
         liveText: live ? L('ทุกครั้งที่กดบันทึก GM จะเห็นการเปลี่ยนแปลงทันที', 'Every save reaches your GM instantly.') : L('เข้า session แล้ว GM จะเห็นตัวละครนี้เมื่อเริ่ม session', 'You\'re seated. Your GM sees this sheet once the session starts.'),
         doLeave: async () => {
           var r = await sb.rpc('leave_session', { p_session: sess ? sess.id : null });

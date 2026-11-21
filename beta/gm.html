@@ -760,7 +760,7 @@ class Component extends DCLogic {
     };
     const TABLES = {
       t1: { type: 'campaign', lv: 4, code: 'SP-K7QX', th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'active', n: (this.state.cur === 't1' ? Object.keys(this.state.chars).length - this.state.removed.length : 3) },
-      t2: { type: 'oneshot', lv: 2, code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
+      t2: { type: 'oneshot', code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
       t3: { type: 'oneshot', lv: 3, code: 'SP-H2WD', th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', n: 4 }
     };
     const order = this.state.order.filter((o) => o.kind === 'npc' || this.state.removed.indexOf(o.id) === -1);
@@ -921,7 +921,7 @@ class Component extends DCLogic {
       curTableName: L(TABLES[this.state.cur].th, TABLES[this.state.cur].en),
       curTableLabel: L('Session: ' + TABLES[this.state.cur].th, 'SESSION: ' + TABLES[this.state.cur].en.toUpperCase()),
       curCode: TABLES[this.state.cur].code,
-      curLv: TABLES[this.state.cur].lv || 1,
+      curLv: TABLES[this.state.cur].lv || '-',
       menuOpen: this.state.menu,
       menuExpanded: this.state.menu ? 'true' : 'false',
       toggleMenu: () => this.setState({ menu: !this.state.menu }),

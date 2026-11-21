@@ -37,7 +37,7 @@
       });
       var th = this.state.lang !== 'en';
       this.setState({ loading: false, tables: r.data.map(function (s) {
-        return { id: s.id, code: s.invite_code, th: s.name, en: s.name, type: s.format, st: s.status, lv: s.level || 1, max: s.max_players,
+        return { id: s.id, code: s.invite_code, th: s.name, en: s.name, type: s.format, st: s.status, lv: s.level || null, max: s.max_players,
           players: bySes[s.id] || [], sessions: s.play_count,
           lastTh: s.status === 'live' ? 'กำลังเล่น' : s.status === 'ended' ? 'จบแล้ว' : s.play_count === 0 ? 'ยังไม่เคยเล่น' : ago(s.last_played_at, true),
           lastEn: s.status === 'live' ? 'Running now' : s.status === 'ended' ? 'Ended' : s.play_count === 0 ? 'Not played yet' : ago(s.last_played_at, false) };
@@ -79,9 +79,9 @@
         if (e && e.preventDefault) e.preventDefault();
         var n = String(this.state.fName || '').trim();
         if (!n) return this.setState({ nameErr: true });
-        var r = await sb.from('sessions').insert({ name: n.slice(0, 60), format: this.state.fType, max_players: this.state.fMax, level: Math.min(20, Math.max(1, parseInt(this.state.fLv, 10) || 1)) }).select().single();
+        var r = await sb.from('sessions').insert({ name: n.slice(0, 60), format: this.state.fType, max_players: this.state.fMax, level: (function (n) { return n >= 1 && n <= 20 ? n : null; })(parseInt(this.state.fLv, 10)) }).select().single();
         if (r.error) return this.setState({ toast: SP.err(r.error, th) });
-        this.setState({ create: false, fName: '', fLv: '1', nameErr: false, filter: 'all', toast: L('สร้าง session "' + n + '" แล้ว · รหัสเชิญ ' + r.data.invite_code, 'Session "' + n + '" created · invite code ' + r.data.invite_code) });
+        this.setState({ create: false, fName: '', fLv: '', nameErr: false, filter: 'all', toast: L('สร้าง session "' + n + '" แล้ว · รหัสเชิญ ' + r.data.invite_code, 'Session "' + n + '" created · invite code ' + r.data.invite_code) });
         await this.load();
       };
       v.countLabel = this.state.loading ? L('กำลังโหลด…', 'LOADING…') : this.state.tables.length + L(' SESSION', ' SESSIONS');
