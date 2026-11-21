@@ -326,7 +326,18 @@ html{scroll-behavior:smooth}
               <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: {{m.accent}}">{{m.kind}}</p>
               <p style="margin: 0; padding: 4px 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; border: 1px solid {{m.statusColor}}; color: {{m.statusColor}}">{{m.status}}</p>
             </div>
-            <div style="height: 120px; border: 1px dashed #3A3655; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #9A97B0">{{m.thumb}}</div>
+            <div style="position: relative; height: 120px; border: 1px dashed #3A3655; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #9A97B0">{{m.thumb}}
+              <sc-if value="{{m.wip}}" hint-placeholder-val="{{ false }}">
+                <div role="img" aria-label="{{m.thumb}} · IN PROGRESS" style="position: absolute; inset: 0; display: flex; flex-direction: column; background: #0A0912">
+                  <div style="height: 8px; background: repeating-linear-gradient(45deg, #2EE6F0 0 10px, #0A0912 10px 20px)" aria-hidden="true"></div>
+                  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background-image: repeating-linear-gradient(0deg, rgba(46,230,240,0.05) 0 1px, transparent 1px 3px)">
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: #2EE6F0">RULEBOOK COVER</span>
+                    <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.1em; color: #FFFFFF">IN PROGRESS</span>
+                  </div>
+                  <div style="height: 8px; background: repeating-linear-gradient(45deg, #2EE6F0 0 10px, #0A0912 10px 20px)" aria-hidden="true"></div>
+                </div>
+              </sc-if>
+            </div>
             <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{m.title}}</h3>
             <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #C3C0D6; flex: 1">{{m.desc}}</p>
             <a href="{{m.href}}" tabindex="{{m.tab}}" style="align-self: flex-start; min-height: 44px; display: inline-flex; align-items: center; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.06em; color: {{m.accent}}; text-decoration: none">{{m.cta}} →</a>
@@ -496,7 +507,7 @@ class Component extends DCLogic {
     ];
     out.media = stag(out.media, 'hub').map((m, i) => {
       const locked = m.kind !== 'TRPG';
-      return Object.assign({}, m, { locked: locked, tab: locked ? '-1' : '0', lockLabel: 'CLASSIFIED: ' + m.kind + ' · COMING SOON',
+      return Object.assign({}, m, { locked: locked, wip: m.kind === 'TRPG', tab: locked ? '-1' : '0', lockLabel: 'CLASSIFIED: ' + m.kind + ' · COMING SOON',
         tvDelay: (-0.9 * i).toFixed(1) + 's', tvDelay2: (-0.9 * i - 1.3).toFixed(1) + 's' });
     });
     out.timeline = stag(out.timeline, 'world', 0.15);
