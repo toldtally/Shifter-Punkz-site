@@ -30,7 +30,7 @@
   ];
 
   // loudness trims so moods and ambiences sit at a similar level
-  var TRIM = { normal: 1.15, intense: 0.55, sad: 2.1, mystery: 1.0, rain: 0.3, city: 1.2, neon: 3, siren: 3, wind: 0.6, geiger: 3 };
+  var TRIM = { normal: 1.15, intense: 0.55, sad: 2.1, mystery: 1.0, rain: 0.3, city: 3.5, neon: 3, siren: 3, wind: 0.6, geiger: 3 };
 
   var mtof = function (m) { return 440 * Math.pow(2, (m - 69) / 12); };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
@@ -516,20 +516,62 @@
         } };
       },
       city: function (g) {
-        var a = loopNoise(g, 'lowpass', 260, 0.5);
-        var l = lfo(a.filter.frequency, 0.05, 120);
-        var next = ctx.currentTime + rnd(4, 9);
-        return { nodes: [a.src, l], tick: function (now) {
-          if (now < next) return;
-          var t = now + 0.05, dur = rnd(0.4, 1.1);
-          [0, 4].forEach(function (semi) {
-            var o = ctx.createOscillator(), f = ctx.createBiquadFilter(), hg = ctx.createGain();
-            o.type = 'sawtooth'; o.frequency.value = mtof(pick([55, 57, 58]) + semi);
-            f.type = 'bandpass'; f.frequency.value = 900; f.Q.value = 2;
-            hg.gain.setValueAtTime(0.0001, t); hg.gain.linearRampToValueAtTime(0.03, t + 0.05); hg.gain.linearRampToValueAtTime(0.0001, t + dur);
-            o.connect(f); f.connect(hg); hg.connect(g); hg.connect(revSend); o.start(t); o.stop(t + dur + 0.1);
-          });
-          next = now + rnd(6, 16);
+        // Bangkok at night: a far-off traffic bed, cars, motorbikes and the odd bus passing by, a horn now and then
+        var bed = loopNoise(g, 'lowpass', 170, 0.4), bedG = ctx.createGain(); bedG.gain.value = 0.16;
+        bed.filter.disconnect(); bed.filter.connect(bedG); bedG.connect(g);
+        var l1 = lfo(bedG.gain, 0.045, 0.06);
+        var far = loopNoise(g, 'bandpass', 750, 0.7), farG = ctx.createGain(); farG.gain.value = 0.05;
+        far.filter.disconnect(); far.filter.connect(farG); farG.connect(g); farG.connect(revSend);
+        var l2 = lfo(farG.gain, 0.07, 0.03);
+        var nextCar = ctx.currentTime + rnd(0.8, 2.5), nextHorn = ctx.currentTime + rnd(10, 22);
+        function pass(t, kind) {
+          // kind: car | bike | bus — a whoosh that swells and fades, an engine note that drops as it goes by (doppler)
+          var K = { car: { dur: rnd(2.6, 4.2), eng: rnd(70, 105), wave: 'sawtooth', lvl: rnd(0.35, 0.6), hiss: 1 },
+                    bike: { dur: rnd(1.8, 2.8), eng: rnd(140, 210), wave: 'square', lvl: rnd(0.2, 0.32), hiss: 0.7 },
+                    bus: { dur: rnd(4.5, 6.5), eng: rnd(42, 58), wave: 'sawtooth', lvl: rnd(0.5, 0.75), hiss: 1.4 } }[kind];
+          var d = K.dur, mid = t + d * rnd(0.42, 0.55), dir = Math.random() < 0.5 ? -1 : 1, near = rnd(0.55, 1);
+          var pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null, out = ctx.createGain();
+          out.gain.setValueAtTime(0.0001, t);
+          out.gain.exponentialRampToValueAtTime(K.lvl * near, mid);
+          out.gain.exponentialRampToValueAtTime(0.0001, t + d);
+          if (pan) { pan.pan.setValueAtTime(-0.9 * dir, t); pan.pan.linearRampToValueAtTime(0.9 * dir, t + d); out.connect(pan); pan.connect(g); pan.connect(revSend); }
+          else { out.connect(g); out.connect(revSend); }
+          // tyre and air whoosh
+          var n = noise(t, d), bf = ctx.createBiquadFilter(), hg = ctx.createGain();
+          bf.type = 'bandpass'; bf.Q.value = 0.9;
+          bf.frequency.setValueAtTime(420, t); bf.frequency.exponentialRampToValueAtTime(1300 * near, mid); bf.frequency.exponentialRampToValueAtTime(380, t + d);
+          hg.gain.value = 0.9 * K.hiss; n.connect(bf); bf.connect(hg); hg.connect(out);
+          // engine note
+          var o = ctx.createOscillator(), lp = ctx.createBiquadFilter(), eg = ctx.createGain(), vib = ctx.createOscillator(), vg = ctx.createGain();
+          o.type = K.wave;
+          o.frequency.setValueAtTime(K.eng * 1.06, t); o.frequency.linearRampToValueAtTime(K.eng * 1.04, mid - 0.15); o.frequency.linearRampToValueAtTime(K.eng * 0.9, mid + 0.25); o.frequency.linearRampToValueAtTime(K.eng * 0.86, t + d);
+          vib.frequency.value = kind === 'bike' ? rnd(9, 14) : rnd(4, 7); vg.gain.value = K.eng * 0.015; vib.connect(vg); vg.connect(o.frequency);
+          lp.type = 'lowpass'; lp.frequency.setValueAtTime(260, t); lp.frequency.linearRampToValueAtTime(kind === 'bike' ? 1500 : 700, mid); lp.frequency.linearRampToValueAtTime(240, t + d);
+          eg.gain.value = kind === 'bike' ? 0.22 : 0.3;
+          o.connect(lp); lp.connect(eg); eg.connect(out);
+          o.start(t); vib.start(t); o.stop(t + d + 0.1); vib.stop(t + d + 0.1);
+        }
+        function horn(t) {
+          // a short car or tuk-tuk horn somewhere down the street
+          var two = Math.random() < 0.5, base = pick([392, 440, 466, 523]);
+          for (var i = 0; i < (two ? 2 : 1); i++) {
+            var tt = t + i * 0.22, dur = two ? 0.14 : rnd(0.25, 0.5);
+            [1, 1.26].forEach(function (m) {
+              var o = ctx.createOscillator(), f = ctx.createBiquadFilter(), hg = ctx.createGain();
+              o.type = 'square'; o.frequency.value = base * m;
+              f.type = 'bandpass'; f.frequency.value = 1100; f.Q.value = 1.5;
+              hg.gain.setValueAtTime(0.0001, tt); hg.gain.linearRampToValueAtTime(0.03, tt + 0.02); hg.gain.setValueAtTime(0.03, tt + dur - 0.03); hg.gain.linearRampToValueAtTime(0.0001, tt + dur);
+              o.connect(f); f.connect(hg); hg.connect(g); hg.connect(revSend); o.start(tt); o.stop(tt + dur + 0.05);
+            });
+          }
+        }
+        return { nodes: [bed.src, far.src, l1, l2], tick: function (now) {
+          if (now >= nextCar) {
+            var r = Math.random(), kind = r < 0.55 ? 'car' : r < 0.9 ? 'bike' : 'bus';
+            pass(now + 0.05, kind);
+            nextCar = now + (Math.random() < 0.25 ? rnd(0.6, 1.4) : rnd(2.2, 6.5));
+          }
+          if (now >= nextHorn) { horn(now + 0.05); nextHorn = now + rnd(14, 34); }
         } };
       },
       neon: function (g) {
