@@ -255,11 +255,41 @@ html{scroll-behavior:smooth}
     </div>
   </section>
 
+  <!-- TRPG: open for playtest -->
+  <section id="trpg" style="background: #0B0A12; border-top: 1px solid #2A2740">
+    <div data-rv="trpg" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 40px">
+      <div class="{{rv.trpg}}" style="display: flex; flex-direction: column; gap: 10px">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">03 // TRPG</p>
+        <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">PLAYTEST OPEN</h2>
+        <p style="margin: 0; max-width: 680px; font-size: 16px; line-height: 1.7; color: #9A97B0">{{t.trpgPitch}}</p>
+      </div>
+      <div class="{{rv.trpg}}" style="--d: 0.15s; display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740">
+        <div style="height: 12px; background: repeating-linear-gradient(45deg, #2EE6F0 0 12px, #151225 12px 24px)" aria-hidden="true"></div>
+        <div style="padding: 28px 24px; display: flex; flex-direction: column; gap: 24px; background-image: repeating-linear-gradient(0deg, rgba(46,230,240,0.04) 0 1px, transparent 1px 3px)">
+          <ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px">
+            <sc-for list="{{trpgFeatures}}" as="tf" hint-placeholder-count="4">
+              <li style="padding: 18px; background: #0B0A12; border: 1px solid #2A2740; border-top: 2px solid #2EE6F0; display: flex; flex-direction: column; gap: 8px">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: #2EE6F0">{{tf.code}}</span>
+                <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; color: #FFFFFF">{{tf.title}}</span>
+                <span style="font-size: 14px; line-height: 1.65; color: #A9A5C2">{{tf.desc}}</span>
+              </li>
+            </sc-for>
+          </ul>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px">
+            <a href="trpg.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em">{{t.trpgGo}}</a>
+            <sc-if value="{{spSignedOut}}"><a href="beta/auth.html?next=character.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border: 1px solid #2EE6F0; color: #2EE6F0; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em">{{t.ctaChar}}</a></sc-if><sc-if value="{{spSignedIn}}"><a href="beta/character.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border: 1px solid #2EE6F0; color: #2EE6F0; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em">{{t.ctaChar}}</a></sc-if>
+          </div>
+        </div>
+        <div style="height: 12px; background: repeating-linear-gradient(45deg, #2EE6F0 0 12px, #151225 12px 24px)" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- Boardgame -->
-  <section id="boardgame" style="background: #0B0A12; border-top: 1px solid #2A2740">
+  <section id="boardgame" style="background: #0F0D19; border-top: 1px solid #2A2740">
     <div data-rv="board" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 40px">
       <div class="{{rv.board}}" style="display: flex; flex-direction: column; gap: 10px">
-        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">03 // BOARDGAME</p>
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">04 // BOARDGAME</p>
         <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">COMING SOON</h2>
         <p style="margin: 0; max-width: 680px; font-size: 16px; line-height: 1.7; color: #9A97B0">{{t.boardSoon}}</p>
       </div>
@@ -284,7 +314,7 @@ html{scroll-behavior:smooth}
     <div data-rv="hub" style="max-width: 1280px; margin: 0 auto; padding: 80px 24px; display: flex; flex-direction: column; gap: 40px">
       <div class="{{rv.hub}}" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
         <div style="display: flex; flex-direction: column; gap: 10px">
-          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">04 // MEDIA HUB</p>
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">05 // MEDIA HUB</p>
           <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.hubTitle}}</h2>
         </div>
         <p style="margin: 0 0 0 auto; max-width: 480px; text-align: right; font-size: 16px; line-height: 1.7; color: #9A97B0; width: 496px">{{t.hubSub}}</p>
@@ -348,7 +378,7 @@ class Component extends DCLogic {
     this.state = { lang: 'th', gameOpen: false, seen: {} };
   }
   componentDidMount() {
-    const all = { hub: 1, world: 1, fac: 1, shift: 1, chars: 1, board: 1 };
+    const all = { hub: 1, world: 1, fac: 1, shift: 1, chars: 1, board: 1, trpg: 1 };
     const start = () => {
       const els = document.querySelectorAll('[data-rv]');
       const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -382,7 +412,7 @@ class Component extends DCLogic {
     const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
     const soon = '#9A97B0';
     const out = {
-      rv: { hub: gl('hub'), world: gl('world'), fac: gl('fac'), shift: gl('shift'), chars: gl('chars'), board: gl('board') },
+      rv: { hub: gl('hub'), world: gl('world'), fac: gl('fac'), shift: gl('shift'), chars: gl('chars'), board: gl('board'), trpg: gl('trpg') },
       gameOpen: !!this.state.gameOpen,
       gameExpanded: this.state.gameOpen ? 'true' : 'false',
       gameColor: this.state.gameOpen ? '#2EE6F0' : '#D8D6E8',
@@ -410,6 +440,9 @@ class Component extends DCLogic {
         ctaTrpg: L('เริ่มเล่น TRPG', 'PLAY THE TRPG'),
         keyArt: L('[ FULL-BLEED KEY ART ]\nภาพหลักคลุมเต็ม section', '[ FULL-BLEED KEY ART ]\nHero image'),
         seriesSoon: L('ซีรีส์แอนิเมชันเรื่องแรกของจักรวาล Shifter Punkz กำลังอยู่ระหว่างการผลิต ติดตามการเปิดตัวได้เร็วๆ นี้', 'The first animated series in the Shifter Punkz universe is in production. Stay tuned for the reveal.'),
+        trpgPitch: L('เกมเล่นตามบทบาทบนโต๊ะในจักรวาล Shifter Punkz รับบทเป็น Shifter, Norms หรือ C.P.D. แล้วเอาตัวรอดในกรุงเทพฯ ปี 26xx ตอนนี้เปิดให้ลอง playtest แล้ว พร้อมเครื่องมือออนไลน์สำหรับผู้เล่นและ GM', 'A tabletop roleplaying game set in the Shifter Punkz universe. Play a Shifter, a Norm or a C.P.D. agent and survive Bangkok, 26xx. Playtesting is open now, with online tools for players and GMs.'),
+        trpgGo: L('อ่านกฎและ Lore →', 'Read the rules & lore →'),
+        ctaChar: L('สร้างตัวละคร', 'Create a character'),
         boardSoon: L('บอร์ดเกมจากจักรวาล Shifter Punkz กำลังอยู่ระหว่างการพัฒนา ชวนเพื่อนมานั่งล้อมโต๊ะ แล้วออกไปลุยบนถนนของเมืองนี้ด้วยกัน ติดตามการเปิดตัวได้เร็วๆ นี้', 'A Shifter Punkz board game is in development. Gather your crew around the table and take to the streets of this city together. Watch for the reveal.'),
         boardLocked: L('กล่องเกมยังถูกปิดผนึก', 'The box is still sealed.'),
         seriesLocked: L('ข้อมูลตัวละครยังไม่เปิดเผย', 'Character files are still sealed.'),
@@ -455,6 +488,12 @@ class Component extends DCLogic {
       ],
       chars: [],
     };
+    out.trpgFeatures = [
+      { code: 'TOOL-01', title: L('ใบตัวละครออนไลน์', 'Online character sheet'), desc: L('สร้างและเก็บตัวละครไว้ในบัญชี คำนวณค่าต่างๆ ให้อัตโนมัติ เปิดต่อได้จากทุกเครื่อง', 'Build and keep characters in your account. The math is done for you, on any device.') },
+      { code: 'TOOL-02', title: L('เข้าร่วม session', 'Join a session'), desc: L('กรอกรหัสเชิญ SP-XXXX จาก GM แล้วตัวละครก็พร้อมลงเล่นทันที', 'Enter your GM\'s SP-XXXX invite code and your character is at the table.') },
+      { code: 'TOOL-03', title: 'GM Monitor', desc: L('GM เห็นค่าพลังและเหตุการณ์ของทุกคนแบบเรียลไทม์ จัดลำดับเทิร์น และจดบันทึกเนื้อเรื่องของแคมเปญ', 'Your GM sees everyone\'s stats and moves live, runs the turn order and keeps the campaign log.') },
+      { code: 'TOOL-04', title: 'BGM BOT', desc: L('เพลงประกอบและเสียงบรรยากาศที่ GM เลือก ดังพร้อมกันในเครื่องของผู้เล่นทุกคน', 'Music and ambience picked by the GM, playing on every player\'s device at once.') }
+    ];
     out.media = stag(out.media, 'hub').map((m, i) => {
       const locked = m.kind !== 'TRPG';
       return Object.assign({}, m, { locked: locked, tab: locked ? '-1' : '0', lockLabel: 'CLASSIFIED: ' + m.kind + ' · COMING SOON',
