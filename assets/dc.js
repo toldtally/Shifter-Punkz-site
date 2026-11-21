@@ -89,6 +89,8 @@
     var kids = [];
     renderKids(node, scope, kids);
     for (var k = 0; k < kids.length; k++) el.appendChild(kids[k]);
+    // a textarea ignores its value attribute: give a freshly built one its text so it shows saved content
+    if (tag === 'textarea' && el.hasAttribute('value')) el.textContent = el.getAttribute('value');
     out.push(el);
   }
   function renderKids(node, scope, out) {
