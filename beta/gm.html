@@ -177,6 +177,10 @@ html{scroll-behavior:smooth}
               </sc-if>
             </div>
             <div style="display: flex; flex-direction: column; gap: 2px; padding: 8px 14px; border: 1px solid #3A3655; background: #151225">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #8C88A6">SESSION LV</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2EE6F0">{{curLv}}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px; padding: 8px 14px; border: 1px solid #3A3655; background: #151225">
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #8C88A6">{{t.tableCode}}</span>
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #FFD400; user-select: all">{{curCode}}</span>
             </div>
@@ -755,9 +759,9 @@ class Component extends DCLogic {
       try { const ch = new BroadcastChannel('sp-demo-sessions'); ch.postMessage(map); ch.close(); } catch (e) {}
     };
     const TABLES = {
-      t1: { type: 'campaign', code: 'SP-K7QX', th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'active', n: (this.state.cur === 't1' ? Object.keys(this.state.chars).length - this.state.removed.length : 3) },
-      t2: { type: 'oneshot', code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
-      t3: { type: 'oneshot', code: 'SP-H2WD', th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', n: 4 }
+      t1: { type: 'campaign', lv: 4, code: 'SP-K7QX', th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'active', n: (this.state.cur === 't1' ? Object.keys(this.state.chars).length - this.state.removed.length : 3) },
+      t2: { type: 'oneshot', lv: 2, code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
+      t3: { type: 'oneshot', lv: 3, code: 'SP-H2WD', th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', n: 4 }
     };
     const order = this.state.order.filter((o) => o.kind === 'npc' || this.state.removed.indexOf(o.id) === -1);
     const low = list.filter((c) => c.ip / c.ipMax <= 0.5);
@@ -917,6 +921,7 @@ class Component extends DCLogic {
       curTableName: L(TABLES[this.state.cur].th, TABLES[this.state.cur].en),
       curTableLabel: L('Session: ' + TABLES[this.state.cur].th, 'SESSION: ' + TABLES[this.state.cur].en.toUpperCase()),
       curCode: TABLES[this.state.cur].code,
+      curLv: TABLES[this.state.cur].lv || 1,
       menuOpen: this.state.menu,
       menuExpanded: this.state.menu ? 'true' : 'false',
       toggleMenu: () => this.setState({ menu: !this.state.menu }),

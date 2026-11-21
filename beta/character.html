@@ -219,7 +219,7 @@ html{scroll-behavior:smooth}
         <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
           <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
             <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: {{tb.stColor}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{tb.stColor}}" aria-hidden="true"></span>{{tb.stLabel}} · {{tb.joinedCode}}</p>
-            <p style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; color: #FFFFFF">{{tb.tableName}}</p>
+            <p style="margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; color: #FFFFFF">{{tb.tableName}}<sc-if value="{{tb.hasLv}}" hint-placeholder-val="{{ true }}"><span title="Session Lv" style="padding: 1px 8px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 11px; letter-spacing: 0.06em; color: #2EE6F0">LV {{tb.lv}}</span></sc-if></p>
             <p style="margin: 0; font-size: 13px; color: #A9A5C2">{{tb.liveText}}</p>
           </div>
           <sc-if value="{{tb.notLeaving}}" hint-placeholder-val="{{ true }}">
@@ -766,9 +766,9 @@ class Component extends DCLogic {
     const tbl = this.state.tbl;
     const setTbl = (patch) => this.setState({ tbl: Object.assign({}, this.state.tbl, patch) });
     const TABLES = {
-      'SP-K7QX': { th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'live' },
-      'SP-R4MZ': { th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'paused' },
-      'SP-H2WD': { th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended' }
+      'SP-K7QX': { th: 'ตรอกนีออนลาดพร้าว', en: 'Lat Phrao Neon Alley', st: 'live', lv: 4 },
+      'SP-R4MZ': { th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'paused', lv: 2 },
+      'SP-H2WD': { th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', lv: 3 }
     };
     const tName = (c) => (TABLES[c] ? L(TABLES[c].th, TABLES[c].en) : c);
     const joinedT = tbl.joined ? TABLES[tbl.joined] : null;
@@ -800,6 +800,7 @@ class Component extends DCLogic {
       stLabel: joinedT && joinedT.st === 'live' ? 'LIVE' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
       joinedCode: tbl.joined,
       tableName: tbl.joined ? L('Session: ', 'SESSION: ') + tName(tbl.joined) : '',
+      hasLv: !!(tbl.joined && TABLES[tbl.joined]), lv: tbl.joined && TABLES[tbl.joined] ? TABLES[tbl.joined].lv : '',
       askLeave: () => setTbl({ leaving: true }),
       cancelLeave: () => setTbl({ leaving: false }),
       doLeave: () => { setTbl({ joined: '', leaving: false }); if (this._bgm) this._bgm.stopAll(); this.setState({ bgmOn: false }); },

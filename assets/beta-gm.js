@@ -241,6 +241,7 @@
       v.curTableName = sess ? sess.name : L('ยังไม่มี session', 'No session yet');
       v.curTableLabel = sess ? L('Session: ', 'SESSION: ') + sess.name + ({ live: '', paused: L(' · พักอยู่', ' · PAUSED'), idle: L(' · รอรอบถัดไป', ' · BETWEEN PLAYS'), ended: L(' · จบแล้ว (ARCHIVE)', ' · ENDED (ARCHIVE)') }[sess.status] || '') : L('สร้าง session ก่อนที่ Session ของฉัน', 'Create one in My Sessions first');
       v.curCode = sess ? sess.invite_code : '—';
+      v.curLv = sess ? sess.level || 1 : '—';
       v.tableMenu = ss.map((s) => {
         var isCur = sess && s.id === sess.id;
         return {
