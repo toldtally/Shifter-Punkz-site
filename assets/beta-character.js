@@ -31,6 +31,11 @@
     componentWillUnmount() { this.unsub(); if (this._bgm) this._bgm.close(); }
 
     th() { return this.state.lang !== 'en'; }
+    /* the picture the GM has up for this sheet's session (sessions.scene, kept fresh by realtime) */
+    sceneNow() {
+      var seat = this.state.seat;
+      return seat && seat.character_id === this.state.charId && this.state.charId && seat.sessions ? seat.sessions.scene || null : null;
+    }
     say(th, en) { this.setState({ msg: this.th() ? th : en }); }
 
     async loadChar() {
@@ -45,7 +50,7 @@
 
     async loadSeat() {
       // a player may sit in one campaign and one one-shot at a time; this sheet cares about its own seat
-      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format), characters(name)').eq('user_id', this.state.profile.id);
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene), characters(name)').eq('user_id', this.state.profile.id);
       var seats = (m.data || []).filter(function (x) { return x.sessions; });
       var seat = seats.find((x) => x.character_id === this.state.charId) || null;
       this.setState({ seats: seats, seat: seat, conflict: null, tbl: Object.assign({}, this.state.tbl, {

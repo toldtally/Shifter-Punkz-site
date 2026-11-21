@@ -378,6 +378,70 @@ html{scroll-behavior:smooth}
           </aside>
         </div>
 
+        <!-- Scene screen: pictures the GM puts up for every seated player -->
+        <section aria-labelledby="scene-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88">
+          <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
+            <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
+              <h2 id="scene-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">SCENE SCREEN</h2>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #8C88A6">{{t.sceneSub}}</span>
+            </div>
+            <span role="status" aria-live="polite" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: {{sceneStatusColor}}">{{sceneStatus}}</span>
+          </div>
+          <div style="padding: 16px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 20px">
+            <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.sceneNow}}</span>
+              <div style="aspect-ratio: 16 / 10; max-width: 100%; background: #0B0A12; border: 1px solid {{sceneFrame}}; display: flex; align-items: center; justify-content: center; overflow: hidden">
+                <sc-if value="{{sceneHasShown}}" hint-placeholder-val="{{ true }}">
+                  <img src="{{sceneShownUrl}}" alt="{{sceneShownTitle}}" style="width: 100%; height: 100%; object-fit: contain; display: block">
+                </sc-if>
+                <sc-if value="{{sceneNoShown}}" hint-placeholder-val="{{ false }}">
+                  <span style="padding: 16px; text-align: center; font-size: 13px; line-height: 1.6; color: #8C88A6">{{t.sceneOff}}</span>
+                </sc-if>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
+                <span style="min-width: 0; flex: 1 1 140px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sceneShownTitle}}</span>
+                <button type="button" onClick="{{sceneClear}}" disabled="{{sceneClearOff}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #FF2E88; background: transparent; color: #FF2E88">{{t.sceneClear}}</button>
+              </div>
+            </div>
+            <div style="flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+                <label for="scene-file" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; background: #FF2E88; color: #0B0A12">{{t.sceneUpload}}</label>
+                <input id="scene-file" type="file" accept="image/png,image/jpeg,image/webp" multiple onChange="{{sceneFiles}}" style="position: absolute; width: 1px; height: 1px; opacity: 0">
+                <form onSubmit="{{sceneLinkAdd}}" style="flex: 1 1 260px; min-width: 0; display: flex; gap: 8px; margin: 0">
+                  <label for="scene-link" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.sceneLinkLabel}}</label>
+                  <input id="scene-link" class="fld" type="url" inputmode="url" value="{{sceneLink}}" onInput="{{sceneLinkInput}}" placeholder="{{t.sceneLinkPh}}" style="flex: 1; min-width: 0">
+                  <button type="submit" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #FF2E88; background: transparent; color: #FF2E88; white-space: nowrap">{{t.sceneLinkAdd}}</button>
+                </form>
+              </div>
+              <sc-if value="{{sceneHasMsg}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; font-size: 13px; color: {{sceneMsgColor}}">{{sceneMsg}}</p>
+              </sc-if>
+              <sc-if value="{{sceneNoLib}}" hint-placeholder-val="{{ false }}">
+                <p style="margin: 0; padding: 24px 12px; border: 1px dashed #3A3655; text-align: center; font-size: 13px; line-height: 1.7; color: #A9A5C2">{{t.sceneEmpty}}</p>
+              </sc-if>
+              <sc-if value="{{sceneHasLib}}" hint-placeholder-val="{{ true }}">
+                <ul aria-label="{{t.sceneLib}}" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; max-height: 420px; overflow-y: auto">
+                  <sc-for list="{{scenes}}" as="sc" hint-placeholder-count="3">
+                    <li style="display: flex; flex-direction: column; background: #0B0A12; border: 1px solid {{sc.border}}">
+                      <button type="button" onClick="{{sc.show}}" aria-pressed="{{sc.pressed}}" aria-label="{{sc.showLabel}}" title="{{sc.showLabel}}" style="position: relative; display: block; width: 100%; padding: 0; border: 0; background: #000000; cursor: pointer; aspect-ratio: 16 / 10; overflow: hidden">
+                        <img src="{{sc.url}}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block">
+                        <sc-if value="{{sc.on}}" hint-placeholder-val="{{ false }}">
+                          <span style="position: absolute; top: 6px; left: 6px; padding: 2px 6px; background: #FF2E88; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">ON SCREEN</span>
+                        </sc-if>
+                      </button>
+                      <div style="display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 10px">
+                        <span style="flex: 1; min-width: 0; font-size: 12px; color: #D8D6E8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sc.title}}</span>
+                        <button type="button" onClick="{{sc.del}}" aria-label="{{sc.delLabel}}" title="{{sc.delLabel}}" style="min-width: 32px; min-height: 32px; padding: 0 8px; border: 1px solid {{sc.delColor}}; background: transparent; color: {{sc.delColor}}; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{sc.delText}}</button>
+                      </div>
+                    </li>
+                  </sc-for>
+                </ul>
+              </sc-if>
+              <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #8C88A6">{{t.sceneHint}}</p>
+            </div>
+          </div>
+        </section>
+
         <!-- Session notes: the GM's private story log, one entry per play -->
         <section aria-labelledby="notes-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #C084FC">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
@@ -490,11 +554,25 @@ html{scroll-behavior:smooth}
 <script src="../assets/beta-common.js"></script>
 <script src="../assets/bgm.js"></script>
 <script>
+/* demo scene pictures for the prototype (the live site uses the GM's uploads or links) */
+function sceneArt(sky, glow, label) {
+  const b = [[0,52,14,38],[12,40,10,50],[24,58,16,32],[38,30,9,60],[49,48,13,42],[64,36,11,54],[77,56,15,34],[94,26,8,64],[104,44,14,46],[120,54,12,36],[134,34,10,56],[146,50,14,40]];
+  const blds = b.map((r) => "<rect x='" + r[0] + "' y='" + r[1] + "' width='" + r[2] + "' height='" + r[3] + "' fill='#0B0A12'/>").join('');
+  const wins = b.filter((r, i) => i % 2 === 0).map((r) => "<rect x='" + (r[0] + 3) + "' y='" + (r[1] + 6) + "' width='2' height='2' fill='" + glow + "'/><rect x='" + (r[0] + 7) + "' y='" + (r[1] + 14) + "' width='2' height='2' fill='" + glow + "'/>").join('');
+  const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 100'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + sky + "'/><stop offset='1' stop-color='#0B0A12'/></linearGradient></defs><rect width='160' height='100' fill='url(#s)'/><circle cx='118' cy='26' r='12' fill='" + glow + "' opacity='.35'/>" + blds + wins + "<text x='8' y='14' font-family='monospace' font-size='6' letter-spacing='1' fill='" + glow + "'>" + label + "</text></svg>";
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     const now = Date.now();
+    const demoScenes = [
+      { id: 'sc1', title: 'ตรอกนีออนลาดพร้าว', url: sceneArt('#3A1030', '#FF2E88', 'LAT PHRAO // 26xx') },
+      { id: 'sc2', title: 'โกดังท่าเรือคลองเตย', url: sceneArt('#0E2A3A', '#2EE6F0', 'KHLONG TOEI DOCK') },
+      { id: 'sc3', title: 'ชายขอบ Extincted Zone', url: sceneArt('#3A300A', '#FFD400', 'EXTINCTED ZONE') }
+    ];
     this.state = {
+      scenes: demoScenes, sceneShown: Object.assign({ at: now }, demoScenes[0]), sceneLink: '', sceneAskDel: null, sceneMsg: '',
       notes: [
         { id: 'n2', no: 2, at: now - 86400000 * 6, title: 'บุกโกดังท่าเรือ', body: '' },
         { id: 'n1', no: 1, at: now - 86400000 * 13, title: 'รับงานแรก', body: '' }
@@ -529,10 +607,35 @@ class Component extends DCLogic {
   componentDidMount() {
     try {
       this._bc = new BroadcastChannel('sp-bgm');
-      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'hello') this.bgmBroadcast(); };
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'hello') { this.bgmBroadcast(); this.sceneBroadcast(this.state.sceneShown); } };
     } catch (e) { this._bc = null; }
     this._clock = setInterval(() => this.setState({ now: Date.now() }), 1000);
     this._live = setInterval(() => this.tickLive(), 4500);
+  }
+  /* scene screen: the picture every seated player sees (BroadcastChannel here, sessions.scene on the live site) */
+  sceneBroadcast(sc) { if (this._bc) { try { this._bc.postMessage({ type: 'scene', scene: sc || null }); } catch (e) {} } }
+  sceneShow(it) {
+    const sc = { id: it.id, url: it.url, title: it.title || '', at: Date.now() };
+    this.setState({ sceneShown: sc, sceneAskDel: null });
+    this.sceneBroadcast(sc);
+  }
+  sceneClear() { this.setState({ sceneShown: null, sceneAskDel: null }); this.sceneBroadcast(null); }
+  sceneAddFiles(files) {
+    files.filter((f) => /^image\/(png|jpeg|webp)$/.test(f.type)).forEach((f) => {
+      const r = new FileReader();
+      r.onload = () => this.setState({ scenes: [{ id: 's' + Date.now() + Math.random(), url: r.result, title: f.name.replace(/\.[^.]+$/, '').slice(0, 80) }].concat(this.state.scenes || []), sceneMsg: '' });
+      r.readAsDataURL(f);
+    });
+  }
+  sceneAddLink(url) {
+    const th = this.state.lang !== 'en';
+    if (!/^https:\/\/\S+$/i.test(url)) return this.setState({ sceneMsg: th ? 'ใส่ลิงก์รูปที่ขึ้นต้นด้วย https://' : 'Use an image link that starts with https://', sceneMsgErr: true });
+    const title = decodeURIComponent(url.split('?')[0].split('/').pop() || '').replace(/\.[^.]+$/, '').slice(0, 80);
+    this.setState({ scenes: [{ id: 's' + Date.now(), url: url, title: title }].concat(this.state.scenes || []), sceneLink: '', sceneMsg: '' });
+  }
+  sceneDel(it) {
+    if (this.state.sceneShown && this.state.sceneShown.id === it.id) this.sceneClear();
+    this.setState({ scenes: (this.state.scenes || []).filter((x) => x.id !== it.id), sceneAskDel: null });
   }
   bgmEngine() {
     if (!this._bgm && window.SPBGM) this._bgm = window.SPBGM.create();
@@ -696,6 +799,42 @@ class Component extends DCLogic {
           style: 'min-height: 38px; padding: 0 10px; cursor: pointer; text-align: left; font-size: 12.5px; font-family: IBM Plex Sans Thai, sans-serif; ' + (on ? 'border: 1px solid #4ADE80; background: rgba(74,222,128,0.12); color: #FFFFFF' : 'border: 1px solid #2A2740; background: #0B0A12; color: #A9A5C2')
         };
       }),
+      ...(() => {
+        // scene screen
+        const list = this.state.scenes || [];
+        const shown = this.state.sceneShown || null;
+        const ask = this.state.sceneAskDel;
+        const untitled = L('(ไม่มีชื่อ)', '(untitled)');
+        return {
+          scenes: list.map((it) => {
+            const on = !!(shown && shown.id === it.id), asking = ask === it.id;
+            return {
+              url: it.url, title: it.title || untitled, on: on, pressed: on ? 'true' : 'false', border: on ? '#FF2E88' : '#2A2740',
+              showLabel: (on ? L('กำลังแสดง: ', 'On screen: ') : L('ขึ้นจอให้ผู้เล่น: ', 'Show players: ')) + (it.title || untitled),
+              show: () => { if (!on) this.sceneShow(it); },
+              del: () => (asking ? this.sceneDel(it) : this.setState({ sceneAskDel: it.id })),
+              delText: asking ? L('ลบ?', 'Delete?') : '✕', delColor: asking ? '#FF3D6E' : '#3A3655',
+              delLabel: asking ? L('ยืนยันลบภาพนี้', 'Confirm delete') : L('ลบภาพนี้ออกจากคลัง', 'Remove from library')
+            };
+          }),
+          sceneHasLib: list.length > 0, sceneNoLib: list.length === 0,
+          sceneHasShown: !!shown, sceneNoShown: !shown,
+          sceneShownUrl: shown ? shown.url : '', sceneShownTitle: shown ? (shown.title || untitled) : '',
+          sceneFrame: shown ? '#FF2E88' : '#2A2740',
+          sceneStatus: shown ? L('● ผู้เล่นทุกคนเห็นภาพนี้', '● ON EVERY PLAYER\'S SCREEN') : L('ไม่มีภาพบนจอผู้เล่น', 'NOTHING ON SCREEN'),
+          sceneStatusColor: shown ? '#FF2E88' : '#8C88A6',
+          sceneClear: () => this.sceneClear(), sceneClearOff: !shown,
+          sceneFiles: (e) => {
+            const fs = Array.prototype.slice.call((e && e.target && e.target.files) || []);
+            if (e && e.target) e.target.value = '';
+            this.sceneAddFiles(fs);
+          },
+          sceneLink: this.state.sceneLink || '',
+          sceneLinkInput: (e) => this.setState({ sceneLink: e && e.target ? e.target.value : '' }),
+          sceneLinkAdd: (e) => { if (e && e.preventDefault) e.preventDefault(); this.sceneAddLink(String(this.state.sceneLink || '').trim()); },
+          sceneHasMsg: !!this.state.sceneMsg, sceneMsg: this.state.sceneMsg || '', sceneMsgColor: this.state.sceneMsgErr ? '#FF3D6E' : '#A9A5C2'
+        };
+      })(),
       ...(() => {
         // session notes (prototype keeps them in memory; the live site saves them per session)
         const notes = this.state.notes || [];
@@ -970,6 +1109,17 @@ class Component extends DCLogic {
         gmNote: L('โน้ต GM (ผู้เล่นไม่เห็น)', 'GM note (hidden from players)'),
         remove: L('เอาออกจาก session', 'Remove from session'),
         cancel: L('ยกเลิก', 'Cancel'),
+        sceneSub: L('ภาพที่ผู้เล่นเห็นพร้อมกัน', 'WHAT EVERY PLAYER SEES'),
+        sceneNow: L('บนจอผู้เล่นตอนนี้', 'ON PLAYERS\' SCREENS NOW'),
+        sceneOff: L('ยังไม่ได้ขึ้นภาพ กดภาพในคลังเพื่อขึ้นจอ', 'Nothing up yet. Pick a picture from the library.'),
+        sceneClear: L('■ เอาภาพลง', '■ Take it down'),
+        sceneUpload: L('⬆ อัปโหลดภาพ', '⬆ Upload pictures'),
+        sceneLinkLabel: L('ลิงก์รูปภาพ', 'Image link'),
+        sceneLinkPh: L('หรือวางลิงก์รูป https://…', 'or paste an image link https://…'),
+        sceneLinkAdd: L('+ เพิ่มลิงก์', '+ Add link'),
+        sceneLib: L('คลังภาพของ session นี้', 'This session\'s picture library'),
+        sceneEmpty: L('คลังภาพยังว่าง อัปโหลดภาพฉาก แผนที่ หรือ NPC เตรียมไว้ก่อนเล่นได้เลย', 'The library is empty. Upload scenes, maps or NPCs before you play.'),
+        sceneHint: L('กดภาพเพื่อขึ้นจอผู้เล่นทันที ภาพจะเด้งที่มุมขวาบนของใบตัวละคร ผู้เล่นลากย้ายและปรับขนาดเองได้ · PNG, JPG, WebP', 'Tap a picture to put it on every player\'s screen right away. It pops up at the top right of their character sheet, where they can move and resize it. PNG, JPG or WebP.'),
         notesSub: L('บันทึกเนื้อเรื่อง · เห็นเฉพาะ GM', 'STORY LOG · GM ONLY'),
         newNote: L('+ บันทึกรอบใหม่', '+ New play log'),
         notesEmpty: L('ยังไม่มีบันทึก กด "+ บันทึกรอบใหม่" เพื่อจดเนื้อเรื่องของรอบนี้', 'No notes yet. Press "+ New play log" to start writing up this play.'),

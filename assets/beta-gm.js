@@ -24,7 +24,8 @@
     constructor(props) {
       super(props);
       Object.assign(this.state, { chars: {}, order: [], feed: [], events: [], removed: [], turn: 0, round: 1, sessions: [], sid: null, members: [], ready: false, online: {},
-        notes: [], noteSel: null, noteSavedAt: null, noteAskDel: false });
+        notes: [], noteSel: null, noteSavedAt: null, noteAskDel: false,
+        scenes: [], sceneShown: null, sceneLink: '', sceneAskDel: null, sceneMsg: '' });
       window.addEventListener('beforeunload', (e) => {
         if (this._notePend && Object.keys(this._notePend).length) { this.flushNotes(); e.preventDefault(); e.returnValue = ''; }
       });
@@ -77,12 +78,14 @@
       if (this._notePend && Object.keys(this._notePend).length) { clearTimeout(this._noteT); await this.flushNotes(); }
       this.unsub();
       var sess = this.state.sessions.find((s) => s.id === sid);
+      this.apply({ sceneShown: sess.scene || null, scenes: [], sceneMsg: '', sceneAskDel: null });
       this.apply({ sid: sid, session: sess, turn: sess.turn || 0, round: sess.round || 1, order: sess.turn_order || [], copied: false, confirm: null });
       if (history.replaceState) history.replaceState(null, '', 'gm.html?s=' + sid);
       await this.loadParty();
       var ev = await sb.from('session_events').select('*').eq('session_id', sid).order('created_at', { ascending: false }).limit(30);
       this.apply({ events: ev.data || [], ready: true });
       await this.loadNotes();
+      await this.loadScenes();
       this.subscribe(sid);
     }
 
@@ -113,6 +116,65 @@
       if (!ok) { clearTimeout(this._noteT); this._noteT = setTimeout(() => this.flushNotes(), 5000); }
     }
 
+    /* Scene screen: the GM's picture library (session_images) and what's on players' screens (sessions.scene). */
+    async loadScenes() {
+      var sid = this.state.sid;
+      var r = await sb.from('session_images').select('*').eq('session_id', sid).order('created_at', { ascending: false });
+      if (sid !== this.state.sid) return;
+      this.apply({ scenes: (r.data || []).map(function (x) { return { id: x.id, url: x.url, title: x.title, path: x.path }; }) });
+    }
+    sceneSay(th, en, err) { this.setState({ sceneMsg: this.state.lang !== 'en' ? th : en, sceneMsgErr: !!err }); }
+    async sceneSet(sc) {
+      var sid = this.state.sid;
+      if (!sid) return;
+      var prev = this.state.sceneShown;
+      this.setState({ sceneShown: sc, sceneAskDel: null });
+      var r = await sb.from('sessions').update({ scene: sc }).eq('id', sid);
+      if (r.error) { this.apply({ sceneShown: prev }); this.sceneSay('ขึ้นภาพไม่สำเร็จ: ' + r.error.message, 'Couldn\'t update the screen: ' + r.error.message, true); }
+    }
+    sceneShow(it) { this.sceneSet({ id: it.id, url: it.url, title: it.title || '', at: Date.now() }); }
+    sceneClear() { this.sceneSet(null); }
+    async sceneAddRow(row) {
+      var r = await sb.from('session_images').insert(Object.assign({ session_id: this.state.sid }, row)).select().single();
+      if (r.error) throw r.error;
+      if (r.data.session_id === this.state.sid) this.apply({ scenes: [{ id: r.data.id, url: r.data.url, title: r.data.title, path: r.data.path }].concat(this.state.scenes) });
+    }
+    async sceneAddFiles(files) {
+      var sid = this.state.sid, th = this.state.lang !== 'en';
+      if (!sid || !files.length) return;
+      var done = 0;
+      for (var f of files) {
+        this.sceneSay('กำลังอัปโหลด ' + (done + 1) + '/' + files.length + '…', 'Uploading ' + (done + 1) + '/' + files.length + '…');
+        try {
+          var blob = await SP.fitImage(f, 1920);
+          var path = this.state.profile.id + '/' + sid + '/' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8) + (blob.type === 'image/webp' ? '.webp' : '.jpg');
+          var up = await sb.storage.from('scenes').upload(path, blob, { contentType: blob.type, cacheControl: '31536000' });
+          if (up.error) throw up.error;
+          var url = sb.storage.from('scenes').getPublicUrl(path).data.publicUrl;
+          try { await this.sceneAddRow({ url: url, path: path, title: f.name.replace(/\.[^.]+$/, '').slice(0, 80) }); }
+          catch (e) { sb.storage.from('scenes').remove([path]); throw e; }
+          done++;
+        } catch (e) { return this.setState({ sceneMsg: f.name + ': ' + SP.imageErr(e, th), sceneMsgErr: true }); }
+      }
+      this.setState({ sceneMsg: '' });
+    }
+    async sceneAddLink(url) {
+      var th = this.state.lang !== 'en';
+      if (!this.state.sid) return;
+      if (!/^https:\/\/\S+$/i.test(url) || url.length > 2000) return this.sceneSay('ใส่ลิงก์รูปที่ขึ้นต้นด้วย https://', 'Use an image link that starts with https://', true);
+      var title = '';
+      try { title = decodeURIComponent(url.split('?')[0].split('/').pop() || ''); } catch (e) {}
+      try { await this.sceneAddRow({ url: url, path: null, title: title.replace(/\.[^.]+$/, '').slice(0, 80) }); this.setState({ sceneLink: '', sceneMsg: '' }); }
+      catch (e) { this.setState({ sceneMsg: SP.err(e, th), sceneMsgErr: true }); }
+    }
+    async sceneDel(it) {
+      if (this.state.sceneShown && this.state.sceneShown.id === it.id) await this.sceneSet(null);
+      var r = await sb.from('session_images').delete().eq('id', it.id);
+      if (r.error) return this.setState({ sceneAskDel: null, sceneMsg: SP.err(r.error, this.state.lang !== 'en'), sceneMsgErr: true });
+      if (it.path) sb.storage.from('scenes').remove([it.path]);
+      this.apply({ scenes: this.state.scenes.filter(function (x) { return x.id !== it.id; }), sceneAskDel: null });
+    }
+
     async loadParty() {
       var sid = this.state.sid;
       var m = await sb.from('session_members').select('character_id, user_id, characters(*), profiles(display_name)').eq('session_id', sid);
@@ -141,6 +203,7 @@
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions', filter: 'id=eq.' + sid }, (p) => {
           var ss = this.state.sessions.map((s) => (s.id === sid ? Object.assign({}, s, p.new) : s));
           this.apply({ sessions: ss, session: Object.assign({}, this.state.session, p.new) });
+          if (p.new && 'scene' in p.new) this.apply({ sceneShown: p.new.scene || null });
         });
       this._ch.subscribe();
       this._pres = sb.channel('presence-' + sid, { config: { presence: { key: this.state.profile.id } } });

@@ -135,6 +135,7 @@
       if (files.data && files.data.length) {
         await sb.storage.from('portraits').remove(files.data.map(function (f) { return uid + '/' + f.name; }));
       }
+      try { await SP.removeFolder('scenes', uid); } catch (e) {}
       var r = await sb.rpc('delete_my_account');
       if (r.error) return this.fail(r.error);
       await sb.auth.signOut();

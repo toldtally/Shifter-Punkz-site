@@ -60,6 +60,39 @@
         img.src = url;
       });
     },
+    /* Shrink an image File so its longest side is at most `max` px, as WebP (JPEG fallback). */
+    fitImage: function (file, max) {
+      return new Promise(function (resolve, reject) {
+        if (!file || !/^image\/(png|jpeg|webp)$/.test(file.type)) return reject(new Error('TYPE'));
+        if (file.size > 15 * 1024 * 1024) return reject(new Error('SIZE15'));
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function () {
+          var k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+          var c = document.createElement('canvas');
+          c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url);
+          c.toBlob(function (b) {
+            if (b && b.type === 'image/webp') return resolve(b);
+            c.toBlob(function (j) { j ? resolve(j) : reject(new Error('ENCODE')); }, 'image/jpeg', 0.85);
+          }, 'image/webp', 0.85);
+        };
+        img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('READ')); };
+        img.src = url;
+      });
+    },
+    /* Remove every file under a folder of a bucket (one level of subfolders deep). */
+    removeFolder: async function (bucket, prefix) {
+      var top = await sb.storage.from(bucket).list(prefix, { limit: 1000 });
+      var paths = [];
+      for (var f of (top.data || [])) {
+        if (f.id) { paths.push(prefix + '/' + f.name); continue; }
+        var sub = await sb.storage.from(bucket).list(prefix + '/' + f.name, { limit: 1000 });
+        (sub.data || []).forEach(function (g) { if (g.id) paths.push(prefix + '/' + f.name + '/' + g.name); });
+      }
+      if (paths.length) await sb.storage.from(bucket).remove(paths);
+    },
     /* Upload to portraits/<uid>/<name>.<ext>, returning the stored path (cache-busted). */
     uploadImage: async function (blob, name) {
       var u = (await sb.auth.getUser()).data.user;
@@ -74,6 +107,7 @@
       var m = e && e.message;
       if (m === 'TYPE') return th ? 'รองรับเฉพาะไฟล์ PNG, JPG หรือ WebP' : 'PNG, JPG or WebP only';
       if (m === 'SIZE') return th ? 'ไฟล์ใหญ่เกิน 5 MB' : 'File is over 5 MB';
+      if (m === 'SIZE15') return th ? 'ไฟล์ใหญ่เกิน 15 MB' : 'File is over 15 MB';
       if (m === 'READ') return th ? 'เปิดรูปนี้ไม่ได้ ลองไฟล์อื่น' : 'Couldn\'t read that image.';
       return SP.err(e, th);
     }

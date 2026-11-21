@@ -72,7 +72,7 @@
         if (mine === 'start') patch.confirm = () => this.act(() => sb.rpc('start_session', { p_session: x.id }), 'เริ่ม session "' + nm + '" แล้ว', 'Session started: ' + nm);
         if (mine === 'reset') patch.confirm = () => this.act(() => sb.rpc('regenerate_invite_code', { p_session: x.id }), 'สร้างรหัสเชิญใหม่แล้ว', 'New invite code ready');
         if (mine === 'end') patch.confirm = () => this.act(() => sb.rpc('end_session', { p_session: x.id }), (x.type === 'campaign' ? 'จบแคมเปญ "' : 'จบ session "') + nm + '" แล้ว · บันทึกยังเปิดดูได้', 'Ended "' + nm + '" · notes stay readable');
-        if (mine === 'del') patch.confirm = () => this.act(() => sb.from('sessions').delete().eq('id', x.id), 'ลบ "' + nm + '" แล้ว', 'Deleted "' + nm + '"');
+        if (mine === 'del') patch.confirm = () => this.act(async () => { try { await SP.removeFolder('scenes', this.state.profile.id + '/' + x.id); } catch (e) {} return sb.from('sessions').delete().eq('id', x.id); }, 'ลบ "' + nm + '" แล้ว', 'Deleted "' + nm + '"');
         return Object.assign({}, c, patch);
       });
       v.create = async (e) => {
