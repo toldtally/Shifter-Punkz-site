@@ -639,7 +639,7 @@ const COSMIC_INFO = {
   'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในพื้นที่ของตัวเอง', passive: 'มักมีของบางอย่างในฉากนั้นติดตัวมาด้วยโดยไม่ตั้งใจ (slot 0) 1 ครั้งต่อ scene' }
 };
 /* change Type/Name; Effect and Passive follow the new pick unless the player has written their own text */
-function cosmicFill(row, patch) {
+function cosmicFill(row, patch, cosmicDice) {
   const before = COSMIC_INFO[row.type + '/' + row.name] || {};
   const next = Object.assign({}, row, patch);
   const info = COSMIC_INFO[next.type + '/' + next.name] || {};
@@ -647,6 +647,10 @@ function cosmicFill(row, patch) {
     const cur = row[k] || '';
     if (!cur || cur === before[k]) next[k] = info[k] || '';
   });
+  // once both Type and Name are picked: a Cosmic Ability starts at 1 Cosmic Die, a Norms gadget at 3
+  const was = row.type && row.name, now = next.type && next.name;
+  // a Shifter re-picking from the lists resets the dice; a gadget's typed name only sets them when it first becomes complete
+  if (cosmicDice && now && (cosmicDice === '1' ? !(was && row.type === next.type && row.name === next.name) : !was)) next.cd = cosmicDice;
   return next;
 }
 /* C.P.D. Divisions and the Basic Ability each one adds +1 to */
@@ -1133,12 +1137,12 @@ class Component extends DCLogic {
             const t = e && e.target ? e.target.value : '';
             const arr = this.state.s.cosmic.slice();
             const keep = pick ? (COSMIC_NAMES[t] || []).indexOf(arr[i].name) >= 0 : true;
-            arr[i] = cosmicFill(arr[i], { type: t, name: keep ? arr[i].name : '' });
+            arr[i] = cosmicFill(arr[i], { type: t, name: keep ? arr[i].name : '' }, pick ? '1' : '3');
             this.upd({ cosmic: arr });
           },
           on_name: (e) => {
             const arr = this.state.s.cosmic.slice();
-            arr[i] = cosmicFill(arr[i], { name: e && e.target ? e.target.value : '' });
+            arr[i] = cosmicFill(arr[i], { name: e && e.target ? e.target.value : '' }, pick ? '1' : '3');
             this.upd({ cosmic: arr });
           }
         };
