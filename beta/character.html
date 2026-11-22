@@ -793,7 +793,7 @@ class Component extends DCLogic {
 
     const traitXAllowed = Math.floor(repCur / 8);
     const skillCap = (fk === 'outlaw' ? 4 : 2) + Math.floor(repCur / 2);
-    const cosCap = fk === 'shifter' ? 1 : 1 + Math.floor(repCur / 4); // a Shifter carries exactly one Cosmic Ability
+    const cosCap = fk === 'shifter' ? 1 : 3; // a Shifter carries exactly one Cosmic Ability; Norms up to 3 Cosmic Gadgets
 
     // basic ability
     const pool = 4 + f.bonus;
@@ -1094,7 +1094,7 @@ class Component extends DCLogic {
       addCos: cpd ? () => {} : add('cosmic', { type: '', name: '', fx: '', cd: '' }, cosCap),
       cosFull: cpd || s.cosmic.length >= cosCap,
       cosTitle: fk === 'outlaw' ? 'Cosmic Gadgets' : 'Cosmic Ability',
-      cosLabel: (fk === 'outlaw' ? L('+ เพิ่ม Cosmic Gadget', '+ Add Cosmic Gadget') : L('+ เพิ่ม Cosmic Ability', '+ Add Cosmic Ability')) + (fk === 'shifter' ? L(' (มีได้ 1 อย่าง)', ' (one per Shifter)') : cosCap > 1 ? L(' (สูงสุด ', ' (max ') + cosCap + L(' — Rep. ทุก 4 ได้เพิ่ม 1)', ' — +1 every 4 Rep.)') : L(' (สูงสุด 1 ตอนสร้าง)', ' (max 1 at creation)')),
+      cosLabel: (fk === 'outlaw' ? L('+ เพิ่ม Cosmic Gadget', '+ Add Cosmic Gadget') : L('+ เพิ่ม Cosmic Ability', '+ Add Cosmic Ability')) + (fk === 'shifter' ? L(' (มีได้ 1 อย่าง)', ' (one per Shifter)') : L(' (' + s.cosmic.length + '/3)', ' (' + s.cosmic.length + '/3)')),
       cosPh: fk === 'outlaw' ? L('ชื่อ Cosmic Gadget', 'Cosmic Gadget name') : L('ชื่อพลัง', 'Power name'),
       cosNote: cpd ? L('C.P.D. ไม่มีพลังคอสมิคติดตัว', 'C.P.D. agents have no cosmic power') : '',
       cosOpacity: cpd ? '0.4' : '1',
