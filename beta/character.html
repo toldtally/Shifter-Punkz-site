@@ -660,17 +660,17 @@ class Component extends DCLogic {
     super(props);
     this.state = { lang: 'th', s: initialSheet(), resetArmed: false, msg: '', dirty: false, savedAt: null, tbl: { joined: '', code: '', err: '', leaving: false, pending: '', other: { name: 'Kaew', code: 'SP-K7QX' } } };
     this.state.scene = [{ id: 'sc1', title: 'ตรอกนีออนลาดพร้าว', url: sceneArt('#3A1030', '#FF2E88', 'LAT PHRAO // 26xx'), at: 1 }];
-    try { this.state.scPos = JSON.parse(localStorage.getItem('sp-scene-pos2') || 'null') || [JSON.parse(localStorage.getItem('sp-scene-pos') || 'null'), null, null]; } catch (e) { this.state.scPos = [null, null, null]; }
+    try { this.state.scPos = JSON.parse(localStorage.getItem('sp-scene-pos2') || 'null') || [JSON.parse(localStorage.getItem('sp-scene-pos') || 'null'), null, null, null]; } catch (e) { this.state.scPos = [null, null, null, null]; }
     this.sceneDragInit();
   }
   /* the picture the GM is showing (canvas: BroadcastChannel; live site: sessions.scene of the seated session) */
   sceneNow() { return this.state.scene || null; }
-  /* sessions.scene holds one picture (older saves) or a list of up to 3 */
-  sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 3); }
+  /* sessions.scene holds one picture (older saves) or a list of up to 4 */
+  sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 4); }
   /* a seated character keeps its Factor until it leaves the session */
   factorLocked() { return !!(this.state.tbl && this.state.tbl.joined); }
   sceneSetPos(i, p) {
-    const all = (this.state.scPos || [null, null, null]).slice();
+    const all = (this.state.scPos || [null, null, null, null]).slice();
     all[i] = p;
     this.setState({ scPos: all, scTop: i });
     try { localStorage.setItem('sp-scene-pos2', JSON.stringify(all)); } catch (e) {}
@@ -927,14 +927,14 @@ class Component extends DCLogic {
       }
     };
 
-    // three window slots: a picture keeps its slot while it stays up; a gone picture lingers for the power-off animation
+    // four window slots: a picture keeps its slot while it stays up; a gone picture lingers for the power-off animation
     const live = this.sceneList();
-    const prevSlots = this._scSlots || [null, null, null];
+    const prevSlots = this._scSlots || [null, null, null, null];
     const slots = prevSlots.map((p) => (p ? live.find((x) => x.id === p.id) || null : null));
     live.forEach((x) => { if (slots.indexOf(x) < 0) { const k = slots.indexOf(null); if (k >= 0) slots[k] = x; } });
-    this._scGhost = this._scGhost || [null, null, null];
-    this._scFlip = this._scFlip || [false, false, false];
-    this._scGhostT = this._scGhostT || [null, null, null];
+    this._scGhost = this._scGhost || [null, null, null, null];
+    this._scFlip = this._scFlip || [false, false, false, false];
+    this._scGhostT = this._scGhostT || [null, null, null, null];
     slots.forEach((cur, i) => {
       const prev = prevSlots[i];
       if (prev && !cur) {
@@ -947,7 +947,7 @@ class Component extends DCLogic {
     this._scSlots = slots;
     const scMin = this.state.scMin || {}, scTuck = this.state.scTuck || {};
     const sceneVals = {
-      sceneWins: [0, 1, 2].map((i) => {
+      sceneWins: [0, 1, 2, 3].map((i) => {
         const cur = slots[i], sc = cur || this._scGhost[i];
         const isMin = !!(cur && scMin[i] === cur.at);
         const geo = this.sceneGeom(i);
