@@ -655,6 +655,7 @@ const COSMIC_INFO = {
   'Space/Room': { fx: 'กางอาณาเขตเพื่อขัง Subject ในเขตที่ตัวเองสร้าง หรือกั้นเขตบังไม่ให้วัตถุผ่านเข้ามาในเขตที่สร้าง / สร้างพื้นที่เก็บของตามขนาด WM tier โดยเสีย Max WM ตามขนาดพื้นที่ที่สร้าง โดยของที่เก็บจะอยู่ในมิติ Room ที่ติดตัวเจ้าของห้องตลอด', passive: 'กลัวที่แคบ' },
   'Heat/Burner': { fx: 'ปรับความร้อนของวัตถุ หรือเรียกไฟออกมาจากตัว', passive: 'ตัวร้อนกว่าปกติ หาก Outburst ร่างจะติดไฟ' },
   'Heat/Glacier': { fx: 'ปรับความเย็นของวัตถุ หรือสร้างน้ำแข็งออกมาจากตัว', passive: 'ตัวเย็นกว่าปกติ หาก Outburst ทุกอย่างที่สัมผัสจะเป็นน้ำแข็ง' },
+  'Heat/Burst': { fx: ['เปลี่ยนวัตถุ 1 อย่างเป็นระเบิดเวลานาน 30 วินาที (1 รอบเทิร์น) ความรุนแรงอยู่ที่ปริมาตรของวัตถุนั้นๆ', 'เปลี่ยนวัตถุ 1 อย่างเป็นระเบิดเวลา 3-30 วินาที (กำหนดให้ระเบิดได้ใน 1 เทิร์น ถึง 1 รอบเทิร์น) ความรุนแรงอยู่ที่ปริมาตรของวัตถุนั้นๆ', 'เปลี่ยนวัตถุ 1 อย่างเป็นระเบิดที่กำหนดเวลาระเบิดได้ทันที ความรุนแรงอยู่ที่ปริมาตรของวัตถุนั้นๆ'], passive: '' },
   'Shape/Vapor': { fx: 'เปลี่ยนร่างตัวเองเป็นไอคอสมิค สามารถแทรกผ่านรูเล็กๆและที่ๆไปได้ยากได้ / ลอยผ่านเป้าหมายเพื่อให้เป้าหมายมีโอกาสติด Cosmic Overwhelm ได้', passive: '' },
   'Shape/Shadow': { fx: 'คุมเงาตัวเองเป็นอีก 1 ร่าง สามารถใช้เงานั้น interact กับวัตถุที่มีเงาทอดถึง', passive: '' },
   'Shape/Chameleon': { fx: 'ปรับสภาพผิวตัวเองให้กลืนไปกับสภาพแวดล้อม', passive: '' },
@@ -665,18 +666,23 @@ const COSMIC_INFO = {
   'Shape/Labyrinth': { fx: 'ควบคุมโครงสร้างของสิ่งปลูกสร้างที่ตัวเองอยู่', passive: '' }
 };
 /* change Type/Name; Effect and Passive follow the new pick unless the player has written their own text */
+/* the preset text for a row; an entry may give one Active per Cosmic Dice level as [level 1, level 2, level 3] */
+function cosmicText(row, k) {
+  const v = (COSMIC_INFO[row.type + '/' + row.name] || {})[k];
+  if (!Array.isArray(v)) return v || '';
+  const lv = Math.min(Math.max(parseInt(row.cd, 10) || 1, 1), v.length);
+  return v[lv - 1] || '';
+}
 function cosmicFill(row, patch, cosmicDice) {
-  const before = COSMIC_INFO[row.type + '/' + row.name] || {};
   const next = Object.assign({}, row, patch);
-  const info = COSMIC_INFO[next.type + '/' + next.name] || {};
-  ['fx', 'passive'].forEach((k) => {
-    const cur = row[k] || '';
-    if (!cur || cur === before[k]) next[k] = info[k] || '';
-  });
   // once both Type and Name are picked: a Cosmic Ability starts at 1 Cosmic Die, a Norms gadget at 3
   const was = row.type && row.name, now = next.type && next.name;
   // a Shifter re-picking from the lists resets the dice; a gadget's typed name only sets them when it first becomes complete
   if (cosmicDice && now && (cosmicDice === '1' ? !(was && row.type === next.type && row.name === next.name) : !was)) next.cd = cosmicDice;
+  ['fx', 'passive'].forEach((k) => {
+    const cur = row[k] || '';
+    if (!cur || cur === cosmicText(row, k)) next[k] = cosmicText(next, k);
+  });
   return next;
 }
 /* C.P.D. Divisions and the Basic Ability each one adds +1 to */
@@ -1176,6 +1182,14 @@ class Component extends DCLogic {
           on_name: (e) => {
             const arr = this.state.s.cosmic.slice();
             arr[i] = cosmicFill(arr[i], { name: e && e.target ? e.target.value : '' }, pick ? '1' : '3');
+            this.upd({ cosmic: arr });
+          },
+          // levelling the dice swaps in that level's Active text (for abilities that have one per level)
+          on_cd: (e) => {
+            const raw = e && e.target ? e.target.value : '';
+            const v = raw === '' ? '' : String(Math.min(3, Math.max(0, parseInt(raw, 10) || 0)));
+            const arr = this.state.s.cosmic.slice();
+            arr[i] = cosmicFill(arr[i], { cd: v });
             this.upd({ cosmic: arr });
           }
         };
