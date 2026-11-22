@@ -722,7 +722,7 @@ class Component extends DCLogic {
     const F = {
       shifter: { label: 'Shifter', color: '#2EE6F0', desc: L('ผู้มีพลังคอสมิค เริ่มต้นด้วย 1 Cosmic Ability พร้อม 1 Cosmic Die (CD) ติดตัวทันที. WM RGN+ เริ่มต้นที่ 1.', 'Has cosmic power. Starts with 1 Cosmic Ability and 1 Cosmic Die (CD). WM RGN+ starts at 1.'), spMax: 10, spCur: 10, spRgn: 1, bonus: 0 },
       outlaw: { label: 'Norms', color: '#FF2E88', desc: L('คนธรรมดาที่ไม่มีพลังคอสมิคใดๆ มีสกิลเริ่มต้น 4 สกิล และ Item Slot เริ่มที่ 8', 'An ordinary person with no cosmic power. Starts with 4 skills and 8 Item Slots.'), spMax: 0, spCur: 0, spRgn: 0, bonus: 0 },
-      cpd: { label: 'C.P.D.', color: '#FFD400', desc: L('หน่วยงานรัฐ ปราบปรามภัยจากพลังคอสมิค ไม่มีพลังคอสมิคใด ๆ ติดตัว (ไม่มี WM). มี +1 Basic Die ตั้งแต่เริ่ม และอาวุธ/เกราะตามยศ (ไม่ต้องซื้อ).', 'Government agents who contain cosmic threats. No cosmic power (no WM). Start with +1 Basic Die and rank-issued weapons and armor (free).'), spMax: 0, spCur: 0, spRgn: 0, bonus: 1 }
+      cpd: { label: 'C.P.D.', color: '#FFD400', desc: L('หน่วยงานรัฐ ปราบปรามภัยจากพลังคอสมิค ไม่มีพลังคอสมิคใด ๆ ติดตัว (ไม่มี WM). ได้ +1 Basic Ability จาก Division ที่สังกัด และอาวุธ/เกราะตามยศ (ไม่ต้องซื้อ).', 'Government agents who contain cosmic threats. No cosmic power (no WM). Their Division adds +1 to one Basic Ability, and they get rank-issued weapons and armor (free).'), spMax: 0, spCur: 0, spRgn: 0, bonus: 0 }
     };
     const fk = s.factor;
     const f = F[fk];
