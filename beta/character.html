@@ -247,18 +247,19 @@ html{scroll-behavior:smooth}
       </sc-if>
     </section>
 
-    <!-- Scene window: the picture the GM is showing; players drag the header to move it and the corner to resize -->
-    <sc-if value="{{sceneOn}}" hint-placeholder-val="{{ true }}">
-      <div id="scene-win" class="{{sceneAnim}}" role="dialog" aria-label="{{sceneLabel}}" style="position: fixed; z-index: 60; left: {{sceneX}}px; top: {{sceneY}}px; width: {{sceneW}}px; max-width: calc(100vw - 16px); display: flex; flex-direction: column; background: #0B0A12; border: 1px solid #FF2E88; box-shadow: 0 18px 48px rgba(0,0,0,0.6)">
-        <div data-scene-drag title="{{sceneDragTip}}" style="display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; background: #1D1930; border-bottom: 1px solid #2A2740; cursor: move; touch-action: none; user-select: none">
+    <!-- Scene windows: up to 2 pictures the GM is showing; players drag a header to move it and its corner to resize -->
+    <sc-for list="{{sceneWins}}" as="sw" hint-placeholder-count="1">
+    <sc-if value="{{sw.on}}" hint-placeholder-val="{{ true }}">
+      <div id="scene-win-{{sw.i}}" data-scene-slot="{{sw.i}}" class="{{sw.anim}}" role="dialog" aria-label="{{sw.label}}" style="position: fixed; z-index: {{sw.z}}; left: {{sw.x}}px; top: {{sw.y}}px; width: {{sw.w}}px; max-width: calc(100vw - 16px); display: flex; flex-direction: column; background: #0B0A12; border: 1px solid #FF2E88; box-shadow: 0 18px 48px rgba(0,0,0,0.6)">
+        <div data-scene-drag title="{{sw.dragTip}}" style="display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; background: #1D1930; border-bottom: 1px solid #2A2740; cursor: move; touch-action: none; user-select: none">
           <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: #FF2E88; white-space: nowrap">● SCENE</span>
-          <span style="flex: 1; min-width: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sceneTitle}}</span>
-          <button type="button" onClick="{{sceneSmaller}}" aria-label="{{sceneSmallerLabel}}" title="{{sceneSmallerLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">−</button>
-          <button type="button" onClick="{{sceneBigger}}" aria-label="{{sceneBiggerLabel}}" title="{{sceneBiggerLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">+</button>
-          <button type="button" onClick="{{sceneMinimize}}" aria-label="{{sceneMinLabel}}" title="{{sceneMinLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">▁</button>
+          <span style="flex: 1; min-width: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sw.title}}</span>
+          <button type="button" onClick="{{sw.smaller}}" aria-label="{{sw.smallerLabel}}" title="{{sw.smallerLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">−</button>
+          <button type="button" onClick="{{sw.bigger}}" aria-label="{{sw.biggerLabel}}" title="{{sw.biggerLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">+</button>
+          <button type="button" onClick="{{sw.minimize}}" aria-label="{{sw.minLabel}}" title="{{sw.minLabel}}" style="width: 32px; min-height: 32px; padding: 0; border: 1px solid #3A3655; background: #151225; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">▁</button>
         </div>
         <div style="position: relative; min-height: 150px; background: #000000">
-          <img class="scimg" src="{{sceneUrl}}" alt="{{sceneTitle}}" draggable="false" style="display: block; width: 100%; height: auto; max-height: 78vh; object-fit: contain">
+          <img class="scimg" src="{{sw.url}}" alt="{{sw.title}}" draggable="false" style="display: block; width: 100%; height: auto; max-height: 78vh; object-fit: contain">
           <div class="scrt" aria-hidden="true">
             <p class="sbl" style="--d: 0.2s">&gt; SCENE.LINK // GM FEED</p>
             <p class="sbl" style="--d: 0.3s">&gt; HANDSHAKE .......... OK</p>
@@ -266,12 +267,13 @@ html{scroll-behavior:smooth}
             <p class="sbl sbl-ok" style="--d: 0.5s">&gt; RENDER ▮ ON SCREEN</p>
           </div>
         </div>
-        <div data-scene-resize aria-hidden="true" title="{{sceneResizeTip}}" style="position: absolute; right: -1px; bottom: -1px; width: 22px; height: 22px; cursor: nwse-resize; touch-action: none; background: linear-gradient(135deg, transparent 0 55%, #FF2E88 55% 62%, transparent 62% 72%, #FF2E88 72% 79%, transparent 79%)"></div>
+        <div data-scene-resize aria-hidden="true" title="{{sw.resizeTip}}" style="position: absolute; right: -1px; bottom: -1px; width: 22px; height: 22px; cursor: nwse-resize; touch-action: none; background: linear-gradient(135deg, transparent 0 55%, #FF2E88 55% 62%, transparent 62% 72%, #FF2E88 72% 79%, transparent 79%)"></div>
       </div>
     </sc-if>
-    <sc-if value="{{sceneMin}}" hint-placeholder-val="{{ false }}">
-      <button type="button" onClick="{{sceneRestore}}" style="position: fixed; z-index: 60; top: {{sceneChipY}}px; right: 16px; display: inline-flex; align-items: center; gap: 8px; max-width: calc(100vw - 32px); min-height: 40px; padding: 0 14px; border: 1px solid #FF2E88; background: #0B0A12; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 28px rgba(0,0,0,0.55); font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px"><span style="color: #FF2E88; font-family: 'JetBrains Mono', monospace; font-size: 11px">▣ SCENE</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sceneTitle}}</span></button>
+    <sc-if value="{{sw.min}}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{sw.restore}}" style="position: fixed; z-index: 60; top: {{sw.chipY}}px; right: 16px; display: inline-flex; align-items: center; gap: 8px; max-width: calc(100vw - 32px); min-height: 40px; padding: 0 14px; border: 1px solid #FF2E88; background: #0B0A12; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 28px rgba(0,0,0,0.55); font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px"><span style="color: #FF2E88; font-family: 'JetBrains Mono', monospace; font-size: 11px">▣ SCENE</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sw.title}}</span></button>
     </sc-if>
+    </sc-for>
 
     <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
 
@@ -657,24 +659,32 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.state = { lang: 'th', s: initialSheet(), resetArmed: false, msg: '', dirty: false, savedAt: null, tbl: { joined: '', code: '', err: '', leaving: false, pending: '', other: { name: 'Kaew', code: 'SP-K7QX' } } };
-    this.state.scene = { id: 'sc1', title: 'ตรอกนีออนลาดพร้าว', url: sceneArt('#3A1030', '#FF2E88', 'LAT PHRAO // 26xx'), at: 1 };
-    try { this.state.scPos = JSON.parse(localStorage.getItem('sp-scene-pos') || 'null'); } catch (e) { this.state.scPos = null; }
+    this.state.scene = [{ id: 'sc1', title: 'ตรอกนีออนลาดพร้าว', url: sceneArt('#3A1030', '#FF2E88', 'LAT PHRAO // 26xx'), at: 1 }];
+    try { this.state.scPos = JSON.parse(localStorage.getItem('sp-scene-pos2') || 'null') || [JSON.parse(localStorage.getItem('sp-scene-pos') || 'null'), null]; } catch (e) { this.state.scPos = [null, null]; }
     this.sceneDragInit();
   }
   /* the picture the GM is showing (canvas: BroadcastChannel; live site: sessions.scene of the seated session) */
   sceneNow() { return this.state.scene || null; }
+  /* sessions.scene holds one picture (older saves) or a list of up to 2 */
+  sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 2); }
   /* a seated character keeps its Factor until it leaves the session */
   factorLocked() { return !!(this.state.tbl && this.state.tbl.joined); }
-  sceneSetPos(p) {
-    this.setState({ scPos: p });
-    try { localStorage.setItem('sp-scene-pos', JSON.stringify(p)); } catch (e) {}
+  sceneSetPos(i, p) {
+    const all = (this.state.scPos || [null, null]).slice();
+    all[i] = p;
+    this.setState({ scPos: all, scTop: i });
+    try { localStorage.setItem('sp-scene-pos2', JSON.stringify(all)); } catch (e) {}
   }
-  sceneGeom() {
+  sceneGeom(i) {
     const W = window.innerWidth || 1280, H = window.innerHeight || 800;
-    const p = this.state.scPos || {};
+    const p = (this.state.scPos || [])[i] || {};
     const w = Math.round(Math.min(Math.max(p.w || Math.min(440, W - 32), 220), Math.max(220, W - 32)));
-    const x = Math.round(Math.min(Math.max(p.x == null ? W - w - 16 : p.x, 0), Math.max(0, W - w - 8)));
-    const y = Math.round(Math.min(Math.max(p.y == null ? 128 : p.y, 0), H - 40));
+    // the second window starts beside the first when there is room, otherwise under it
+    const side = W >= 2 * w + 48;
+    const dx = i === 1 && side ? W - 2 * w - 32 : W - w - 16;
+    const dy = i === 1 && !side ? 128 + Math.round(w * 0.62) + 60 : 128;
+    const x = Math.round(Math.min(Math.max(p.x == null ? dx : p.x, 0), Math.max(0, W - w - 8)));
+    const y = Math.round(Math.min(Math.max(p.y == null ? dy : p.y, 0), H - 40));
     return { x: x, y: y, w: w };
   }
   /* drag the header to move the window, drag the corner to resize it (mouse, pen or touch) */
@@ -687,8 +697,9 @@ class Component extends DCLogic {
     document.addEventListener('pointerdown', (e) => {
       const h = e.target && e.target.closest ? e.target.closest('[data-scene-drag],[data-scene-resize]') : null;
       if (!h || e.target.closest('button') || e.button > 0) return;
-      const win = document.getElementById('scene-win');
+      const win = h.closest('[data-scene-slot]');
       if (!win) return;
+      const slot = parseInt(win.getAttribute('data-scene-slot'), 10) || 0;
       e.preventDefault();
       const resize = h.hasAttribute('data-scene-resize');
       const r = win.getBoundingClientRect(), sx = e.clientX, sy = e.clientY;
@@ -708,7 +719,7 @@ class Component extends DCLogic {
         document.removeEventListener('pointermove', move);
         document.removeEventListener('pointerup', up);
         document.removeEventListener('pointercancel', up);
-        self.sceneSetPos({ x: x, y: y, w: w });
+        self.sceneSetPos(slot, { x: x, y: y, w: w });
       };
       document.addEventListener('pointermove', move);
       document.addEventListener('pointerup', up);
@@ -915,35 +926,50 @@ class Component extends DCLogic {
       }
     };
 
-    // keep the last picture around for the power-off animation, and flip the boot class so each new picture reboots
-    const scRaw = this.sceneNow();
-    if (this._scPrev && !scRaw) {
-      this._scGhost = this._scPrev;
-      clearTimeout(this._scGhostT);
-      this._scGhostT = setTimeout(() => { this._scGhost = null; this.setState({ scTick: Date.now() }); }, 420);
-    }
-    if (scRaw) { this._scGhost = null; if (!this._scPrev || this._scPrev.at !== scRaw.at) this._scFlip = !this._scFlip; }
-    this._scPrev = scRaw;
-    const sc = scRaw || this._scGhost || null;
-    const scMin = !!(scRaw && this.state.scMinAt === scRaw.at);
-    const geo = this.sceneGeom();
-    const resizeBy = (d) => this.sceneSetPos(Object.assign({}, geo, { w: geo.w + d }));
+    // two window slots: a picture keeps its slot while it stays up; a gone picture lingers for the power-off animation
+    const live = this.sceneList();
+    const prevSlots = this._scSlots || [null, null];
+    const slots = prevSlots.map((p) => (p ? live.find((x) => x.id === p.id) || null : null));
+    live.forEach((x) => { if (slots.indexOf(x) < 0) { const k = slots.indexOf(null); if (k >= 0) slots[k] = x; } });
+    this._scGhost = this._scGhost || [null, null];
+    this._scFlip = this._scFlip || [false, false];
+    this._scGhostT = this._scGhostT || [null, null];
+    slots.forEach((cur, i) => {
+      const prev = prevSlots[i];
+      if (prev && !cur) {
+        this._scGhost[i] = prev;
+        clearTimeout(this._scGhostT[i]);
+        this._scGhostT[i] = setTimeout(() => { this._scGhost[i] = null; this.setState({ scTick: Date.now() }); }, 420);
+      }
+      if (cur) { this._scGhost[i] = null; if (!prev || prev.at !== cur.at) this._scFlip[i] = !this._scFlip[i]; }
+    });
+    this._scSlots = slots;
+    const scMin = this.state.scMin || {}, scTuck = this.state.scTuck || {};
     const sceneVals = {
-      sceneOn: !!sc && !scMin, sceneMin: scMin,
-      sceneAnim: !scRaw || this.state.scTucking ? 'scw-off' : this._scFlip ? 'scw-a' : 'scw-b',
-      sceneUrl: sc ? sc.url : '', sceneTitle: sc ? (sc.title || L('ภาพจาก GM', 'From your GM')) : '',
-      sceneLabel: L('ภาพจาก GM: ', 'Picture from your GM: ') + (sc ? sc.title || '' : ''),
-      sceneX: geo.x, sceneY: geo.y, sceneW: geo.w, sceneChipY: geo.y,
-      sceneDragTip: L('ลากเพื่อย้าย', 'Drag to move'), sceneResizeTip: L('ลากเพื่อปรับขนาด', 'Drag to resize'),
-      sceneSmaller: () => resizeBy(-80), sceneBigger: () => resizeBy(80),
-      sceneSmallerLabel: L('ย่อภาพ', 'Smaller'), sceneBiggerLabel: L('ขยายภาพ', 'Bigger'),
-      sceneMinimize: () => {
-        if (!scRaw || this.state.scTucking) return;
-        this.setState({ scTucking: true });
-        setTimeout(() => this.setState({ scTucking: false, scMinAt: scRaw.at }), 380);
-      },
-      sceneMinLabel: L('พับเก็บ (ภาพใหม่จาก GM จะเด้งขึ้นมาเอง)', 'Tuck away (a new picture from the GM pops back up)'),
-      sceneRestore: () => this.setState({ scMinAt: null })
+      sceneWins: [0, 1].map((i) => {
+        const cur = slots[i], sc = cur || this._scGhost[i];
+        const isMin = !!(cur && scMin[i] === cur.at);
+        const geo = this.sceneGeom(i);
+        const resizeBy = (d) => this.sceneSetPos(i, Object.assign({}, geo, { w: geo.w + d }));
+        const title = sc ? (sc.title || L('ภาพจาก GM', 'From your GM')) : '';
+        return {
+          i: i, on: !!sc && !isMin, min: isMin,
+          anim: !cur || scTuck[i] ? 'scw-off' : this._scFlip[i] ? 'scw-a' : 'scw-b',
+          url: sc ? sc.url : '', title: title,
+          label: L('ภาพจาก GM: ', 'Picture from your GM: ') + title,
+          x: geo.x, y: geo.y, w: geo.w, z: this.state.scTop === i ? 61 : 60, chipY: 128 + i * 52,
+          dragTip: L('ลากเพื่อย้าย', 'Drag to move'), resizeTip: L('ลากเพื่อปรับขนาด', 'Drag to resize'),
+          smaller: () => resizeBy(-80), bigger: () => resizeBy(80),
+          smallerLabel: L('ย่อภาพ', 'Smaller'), biggerLabel: L('ขยายภาพ', 'Bigger'),
+          minimize: () => {
+            if (!cur || scTuck[i]) return;
+            this.setState({ scTuck: Object.assign({}, this.state.scTuck, { [i]: true }) });
+            setTimeout(() => this.setState({ scTuck: Object.assign({}, this.state.scTuck, { [i]: false }), scMin: Object.assign({}, this.state.scMin, { [i]: cur.at }) }), 380);
+          },
+          minLabel: L('พับเก็บ (ภาพใหม่จาก GM จะเด้งขึ้นมาเอง)', 'Tuck away (a new picture from the GM pops back up)'),
+          restore: () => this.setState({ scMin: Object.assign({}, this.state.scMin, { [i]: null }), scTop: i })
+        };
+      })
     };
     return {
       tb,

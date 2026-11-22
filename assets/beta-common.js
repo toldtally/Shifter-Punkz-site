@@ -21,6 +21,8 @@
   SP.num = function (v) { var n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
   /* Basic Ability as the sheet shows it: every ability starts at 1, plus the points spent on it. */
   SP.baVal = function (v) { return 1 + SP.num(v); };
+  /* sessions.scene: one picture (older) or a list of up to 2 */
+  SP.sceneList = function (v) { return (Array.isArray(v) ? v : v ? [v] : []).filter(function (x) { return x && x.url; }).slice(0, 2); };
   /* C.P.D. Divisions add +1 to one Basic Ability */
   SP.DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
   SP.baOf = function (sheet, factor, k) {

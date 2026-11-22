@@ -394,16 +394,29 @@ html{scroll-behavior:smooth}
           <div style="padding: 16px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 20px">
             <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.sceneNow}}</span>
-              <div style="aspect-ratio: 16 / 10; max-width: 100%; background: #0B0A12; border: 1px solid {{sceneFrame}}; display: flex; align-items: center; justify-content: center; overflow: hidden">
-                <sc-if value="{{sceneHasShown}}" hint-placeholder-val="{{ true }}">
-                  <img src="{{sceneShownUrl}}" alt="{{sceneShownTitle}}" style="width: 100%; height: 100%; object-fit: contain; display: block">
-                </sc-if>
-                <sc-if value="{{sceneNoShown}}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{sceneNoShown}}" hint-placeholder-val="{{ false }}">
+                <div style="aspect-ratio: 16 / 10; max-width: 100%; background: #0B0A12; border: 1px solid #2A2740; display: flex; align-items: center; justify-content: center">
                   <span style="padding: 16px; text-align: center; font-size: 13px; line-height: 1.6; color: #8C88A6">{{t.sceneOff}}</span>
-                </sc-if>
-              </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{sceneHasShown}}" hint-placeholder-val="{{ true }}">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px">
+                  <sc-for list="{{sceneShownList}}" as="sh" hint-placeholder-count="2">
+                    <div style="min-width: 0; display: flex; flex-direction: column; background: #0B0A12; border: 1px solid #FF2E88">
+                      <div style="position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #000000">
+                        <img src="{{sh.url}}" alt="{{sh.title}}" style="width: 100%; height: 100%; object-fit: contain; display: block">
+                        <span style="position: absolute; top: 6px; left: 6px; padding: 2px 6px; background: #FF2E88; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">{{sh.slot}}</span>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 10px">
+                        <span style="flex: 1; min-width: 0; font-size: 12px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sh.title}}</span>
+                        <button type="button" onClick="{{sh.hide}}" aria-label="{{sh.hideLabel}}" title="{{sh.hideLabel}}" style="min-width: 32px; min-height: 32px; padding: 0 8px; border: 1px solid #FF2E88; background: transparent; color: #FF2E88; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">■</button>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
               <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
-                <span style="min-width: 0; flex: 1 1 140px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sceneShownTitle}}</span>
+                <span style="min-width: 0; flex: 1 1 140px; font-size: 12px; line-height: 1.5; color: #A9A5C2">{{sceneCount}}</span>
                 <button type="button" onClick="{{sceneClear}}" disabled="{{sceneClearOff}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #FF2E88; background: transparent; color: #FF2E88">{{t.sceneClear}}</button>
               </div>
             </div>
@@ -576,7 +589,7 @@ class Component extends DCLogic {
       { id: 'sc3', title: 'ชายขอบ Extincted Zone', url: sceneArt('#3A300A', '#FFD400', 'EXTINCTED ZONE') }
     ];
     this.state = {
-      scenes: demoScenes, sceneShown: Object.assign({ at: now }, demoScenes[0]), sceneLink: '', sceneAskDel: null, sceneMsg: '',
+      scenes: demoScenes, sceneShown: [Object.assign({ at: now }, demoScenes[0])], sceneLink: '', sceneAskDel: null, sceneMsg: '',
       notes: [
         { id: 'n2', no: 2, at: now - 86400000 * 6, title: 'บุกโกดังท่าเรือ', body: '' },
         { id: 'n1', no: 1, at: now - 86400000 * 13, title: 'รับงานแรก', body: '' }
@@ -617,13 +630,17 @@ class Component extends DCLogic {
     this._live = setInterval(() => this.tickLive(), 4500);
   }
   /* scene screen: the picture every seated player sees (BroadcastChannel here, sessions.scene on the live site) */
-  sceneBroadcast(sc) { if (this._bc) { try { this._bc.postMessage({ type: 'scene', scene: sc || null }); } catch (e) {} } }
-  sceneShow(it) {
-    const sc = { id: it.id, url: it.url, title: it.title || '', at: Date.now() };
-    this.setState({ sceneShown: sc, sceneAskDel: null });
-    this.sceneBroadcast(sc);
+  sceneBroadcast(list) { if (this._bc) { try { this._bc.postMessage({ type: 'scene', scene: list && list.length ? list : null }); } catch (e) {} } }
+  /* up to 2 pictures on players' screens; a third replaces whichever went up first */
+  sceneNext(it) {
+    let list = (this.state.sceneShown || []).filter((x) => x.id !== it.id);
+    if (list.length >= 2) list = list.slice().sort((a, b) => a.at - b.at).slice(1);
+    return list.concat([{ id: it.id, url: it.url, title: it.title || '', at: Date.now() }]);
   }
-  sceneClear() { this.setState({ sceneShown: null, sceneAskDel: null }); this.sceneBroadcast(null); }
+  sceneSet(list) { this.setState({ sceneShown: list, sceneAskDel: null }); this.sceneBroadcast(list); }
+  sceneShow(it) { this.sceneSet(this.sceneNext(it)); }
+  sceneHide(id) { this.sceneSet((this.state.sceneShown || []).filter((x) => x.id !== id)); }
+  sceneClear() { this.sceneSet([]); }
   sceneAddFiles(files) {
     files.filter((f) => /^image\/(png|jpeg|webp)$/.test(f.type)).forEach((f) => {
       const r = new FileReader();
@@ -638,7 +655,7 @@ class Component extends DCLogic {
     this.setState({ scenes: [{ id: 's' + Date.now(), url: url, title: title }].concat(this.state.scenes || []), sceneLink: '', sceneMsg: '' });
   }
   sceneDel(it) {
-    if (this.state.sceneShown && this.state.sceneShown.id === it.id) this.sceneClear();
+    if ((this.state.sceneShown || []).some((x) => x.id === it.id)) this.sceneHide(it.id);
     this.setState({ scenes: (this.state.scenes || []).filter((x) => x.id !== it.id), sceneAskDel: null });
   }
   /* Session Lv: campaigns can change it from the header; one-shots keep the one they were made with */
@@ -809,28 +826,29 @@ class Component extends DCLogic {
       ...(() => {
         // scene screen
         const list = this.state.scenes || [];
-        const shown = this.state.sceneShown || null;
+        const shown = (this.state.sceneShown || []).slice().sort((a, b) => a.at - b.at);
         const ask = this.state.sceneAskDel;
         const untitled = L('(ไม่มีชื่อ)', '(untitled)');
         return {
           scenes: list.map((it) => {
-            const on = !!(shown && shown.id === it.id), asking = ask === it.id;
+            const on = shown.some((x) => x.id === it.id), asking = ask === it.id;
             return {
               url: it.url, title: it.title || untitled, on: on, pressed: on ? 'true' : 'false', border: on ? '#FF2E88' : '#2A2740',
-              showLabel: (on ? L('กำลังแสดง: ', 'On screen: ') : L('ขึ้นจอให้ผู้เล่น: ', 'Show players: ')) + (it.title || untitled),
-              show: () => { if (!on) this.sceneShow(it); },
+              showLabel: (on ? L('กำลังแสดง (กดเพื่อเอาลง): ', 'On screen (tap to take down): ') : L('ขึ้นจอให้ผู้เล่น: ', 'Show players: ')) + (it.title || untitled),
+              show: () => (on ? this.sceneHide(it.id) : this.sceneShow(it)),
               del: () => (asking ? this.sceneDel(it) : this.setState({ sceneAskDel: it.id })),
               delText: asking ? L('ลบ?', 'Delete?') : '✕', delColor: asking ? '#FF3D6E' : '#3A3655',
               delLabel: asking ? L('ยืนยันลบภาพนี้', 'Confirm delete') : L('ลบภาพนี้ออกจากคลัง', 'Remove from library')
             };
           }),
           sceneHasLib: list.length > 0, sceneNoLib: list.length === 0,
-          sceneHasShown: !!shown, sceneNoShown: !shown,
-          sceneShownUrl: shown ? shown.url : '', sceneShownTitle: shown ? (shown.title || untitled) : '',
-          sceneFrame: shown ? '#FF2E88' : '#2A2740',
-          sceneStatus: shown ? L('● ผู้เล่นทุกคนเห็นภาพนี้', '● ON EVERY PLAYER\'S SCREEN') : L('ไม่มีภาพบนจอผู้เล่น', 'NOTHING ON SCREEN'),
-          sceneStatusColor: shown ? '#FF2E88' : '#8C88A6',
-          sceneClear: () => this.sceneClear(), sceneClearOff: !shown,
+          sceneHasShown: shown.length > 0, sceneNoShown: !shown.length,
+          sceneShownList: shown.map((x, k) => ({ url: x.url, title: x.title || untitled, slot: (k === 0 && shown.length > 1 ? L('ภาพแรก', 'FIRST') : k === 1 ? L('ภาพล่าสุด', 'LATEST') : 'ON SCREEN'),
+            hide: () => this.sceneHide(x.id), hideLabel: L('เอาภาพนี้ลง: ', 'Take this one down: ') + (x.title || untitled) })),
+          sceneCount: shown.length === 2 ? L('บนจอครบ 2 ภาพแล้ว · ภาพถัดไปจะแทนที่ "ภาพแรก"', '2 of 2 on screen · the next one replaces FIRST') : shown.length === 1 ? L('บนจอ 1 ภาพ · ขึ้นได้อีก 1', '1 of 2 on screen') : '',
+          sceneStatus: shown.length ? L('● ผู้เล่นทุกคนเห็น ' + shown.length + ' ภาพ', '● ' + shown.length + ' ON EVERY PLAYER\'S SCREEN') : L('ไม่มีภาพบนจอผู้เล่น', 'NOTHING ON SCREEN'),
+          sceneStatusColor: shown.length ? '#FF2E88' : '#8C88A6',
+          sceneClear: () => this.sceneClear(), sceneClearOff: !shown.length,
           sceneFiles: (e) => {
             const fs = Array.prototype.slice.call((e && e.target && e.target.files) || []);
             if (e && e.target) e.target.value = '';
@@ -1124,14 +1142,14 @@ class Component extends DCLogic {
         sceneSub: L('ภาพที่ผู้เล่นเห็นพร้อมกัน', 'WHAT EVERY PLAYER SEES'),
         sceneNow: L('บนจอผู้เล่นตอนนี้', 'ON PLAYERS\' SCREENS NOW'),
         sceneOff: L('ยังไม่ได้ขึ้นภาพ กดภาพในคลังเพื่อขึ้นจอ', 'Nothing up yet. Pick a picture from the library.'),
-        sceneClear: L('■ เอาภาพลง', '■ Take it down'),
+        sceneClear: L('■ เอาภาพลงทั้งหมด', '■ Take all down'),
         sceneUpload: L('⬆ อัปโหลดภาพ', '⬆ Upload pictures'),
         sceneLinkLabel: L('ลิงก์รูปภาพ', 'Image link'),
         sceneLinkPh: L('หรือวางลิงก์รูป https://…', 'or paste an image link https://…'),
         sceneLinkAdd: L('+ เพิ่มลิงก์', '+ Add link'),
         sceneLib: L('คลังภาพของ session นี้', 'This session\'s picture library'),
         sceneEmpty: L('คลังภาพยังว่าง อัปโหลดภาพฉาก แผนที่ หรือ NPC เตรียมไว้ก่อนเล่นได้เลย', 'The library is empty. Upload scenes, maps or NPCs before you play.'),
-        sceneHint: L('กดภาพเพื่อขึ้นจอผู้เล่นทันที ภาพจะเด้งที่มุมขวาบนของใบตัวละคร ผู้เล่นลากย้ายและปรับขนาดเองได้ · PNG, JPG, WebP', 'Tap a picture to put it on every player\'s screen right away. It pops up at the top right of their character sheet, where they can move and resize it. PNG, JPG or WebP.'),
+        sceneHint: L('กดภาพเพื่อขึ้นจอผู้เล่น ขึ้นพร้อมกันได้ 2 ภาพ ถ้ากดภาพที่ 3 จะแทนที่ภาพที่ขึ้นก่อน กดภาพที่อยู่บนจอซ้ำเพื่อเอาลง · ผู้เล่นเห็นเป็นหน้าต่างที่มุมขวาบนของใบตัวละคร ลากย้ายและปรับขนาดเองได้ · PNG, JPG, WebP', 'Tap a picture to put it on every player\'s screen. Up to 2 at once; a third replaces the one that went up first. Tap an on-screen picture again to take it down. Players get a window at the top right of their sheet that they can move and resize. PNG, JPG or WebP.'),
         notesSub: L('บันทึกเนื้อเรื่อง · เห็นเฉพาะ GM', 'STORY LOG · GM ONLY'),
         newNote: L('+ บันทึกรอบใหม่', '+ New play log'),
         notesEmpty: L('ยังไม่มีบันทึก กด "+ บันทึกรอบใหม่" เพื่อจดเนื้อเรื่องของรอบนี้', 'No notes yet. Press "+ New play log" to start writing up this play.'),

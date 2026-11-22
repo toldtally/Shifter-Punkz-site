@@ -25,7 +25,7 @@
       super(props);
       Object.assign(this.state, { chars: {}, order: [], feed: [], events: [], removed: [], turn: 0, round: 1, sessions: [], sid: null, members: [], ready: false, online: {},
         notes: [], noteSel: null, noteSavedAt: null, noteAskDel: false,
-        scenes: [], sceneShown: null, sceneLink: '', sceneAskDel: null, sceneMsg: '' });
+        scenes: [], sceneShown: [], sceneLink: '', sceneAskDel: null, sceneMsg: '' });
       window.addEventListener('beforeunload', (e) => {
         if (this._notePend && Object.keys(this._notePend).length) { this.flushNotes(); e.preventDefault(); e.returnValue = ''; }
       });
@@ -78,7 +78,7 @@
       if (this._notePend && Object.keys(this._notePend).length) { clearTimeout(this._noteT); await this.flushNotes(); }
       this.unsub();
       var sess = this.state.sessions.find((s) => s.id === sid);
-      this.apply({ sceneShown: sess.scene || null, scenes: [], sceneMsg: '', sceneAskDel: null });
+      this.apply({ sceneShown: SP.sceneList(sess.scene), scenes: [], sceneMsg: '', sceneAskDel: null });
       this.apply({ sid: sid, session: sess, turn: sess.turn || 0, round: sess.round || 1, order: sess.turn_order || [], copied: false, confirm: null });
       if (history.replaceState) history.replaceState(null, '', 'gm.html?s=' + sid);
       await this.loadParty();
@@ -132,16 +132,14 @@
       this.apply({ scenes: (r.data || []).map(function (x) { return { id: x.id, url: x.url, title: x.title, path: x.path }; }) });
     }
     sceneSay(th, en, err) { this.setState({ sceneMsg: this.state.lang !== 'en' ? th : en, sceneMsgErr: !!err }); }
-    async sceneSet(sc) {
+    async sceneSet(list) {
       var sid = this.state.sid;
       if (!sid) return;
       var prev = this.state.sceneShown;
-      this.setState({ sceneShown: sc, sceneAskDel: null });
-      var r = await sb.from('sessions').update({ scene: sc }).eq('id', sid);
+      this.setState({ sceneShown: list, sceneAskDel: null });
+      var r = await sb.from('sessions').update({ scene: list.length ? list : null }).eq('id', sid);
       if (r.error) { this.apply({ sceneShown: prev }); this.sceneSay('ขึ้นภาพไม่สำเร็จ: ' + r.error.message, 'Couldn\'t update the screen: ' + r.error.message, true); }
     }
-    sceneShow(it) { this.sceneSet({ id: it.id, url: it.url, title: it.title || '', at: Date.now() }); }
-    sceneClear() { this.sceneSet(null); }
     async sceneAddRow(row) {
       var r = await sb.from('session_images').insert(Object.assign({ session_id: this.state.sid }, row)).select().single();
       if (r.error) throw r.error;
@@ -176,7 +174,7 @@
       catch (e) { this.setState({ sceneMsg: SP.err(e, th), sceneMsgErr: true }); }
     }
     async sceneDel(it) {
-      if (this.state.sceneShown && this.state.sceneShown.id === it.id) await this.sceneSet(null);
+      if ((this.state.sceneShown || []).some(function (x) { return x.id === it.id; })) await this.sceneSet(this.state.sceneShown.filter(function (x) { return x.id !== it.id; }));
       var r = await sb.from('session_images').delete().eq('id', it.id);
       if (r.error) return this.setState({ sceneAskDel: null, sceneMsg: SP.err(r.error, this.state.lang !== 'en'), sceneMsgErr: true });
       if (it.path) sb.storage.from('scenes').remove([it.path]);
@@ -211,7 +209,7 @@
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions', filter: 'id=eq.' + sid }, (p) => {
           var ss = this.state.sessions.map((s) => (s.id === sid ? Object.assign({}, s, p.new) : s));
           this.apply({ sessions: ss, session: Object.assign({}, this.state.session, p.new) });
-          if (p.new && 'scene' in p.new) this.apply({ sceneShown: p.new.scene || null });
+          if (p.new && 'scene' in p.new) this.apply({ sceneShown: SP.sceneList(p.new.scene) });
         });
       this._ch.subscribe();
       this._pres = sb.channel('presence-' + sid, { config: { presence: { key: this.state.profile.id } } });
