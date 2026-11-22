@@ -634,6 +634,21 @@ function sceneArt(sky, glow, label) {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 100'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + sky + "'/><stop offset='1' stop-color='#0B0A12'/></linearGradient></defs><rect width='160' height='100' fill='url(#s)'/><circle cx='118' cy='26' r='12' fill='" + glow + "' opacity='.35'/>" + blds + wins + "<text x='8' y='14' font-family='monospace' font-size='6' letter-spacing='1' fill='" + glow + "'>" + label + "</text></svg>";
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
+/* the rulebook text for each Cosmic Ability, filled into Effect / Passive when the player picks it (added a few at a time) */
+const COSMIC_INFO = {
+  'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในพื้นที่ของตัวเอง', passive: 'มักมีของบางอย่าง (slot 0) ติดมือมาด้วยตลอดแบบงงๆ' }
+};
+/* change Type/Name; Effect and Passive follow the new pick unless the player has written their own text */
+function cosmicFill(row, patch) {
+  const before = COSMIC_INFO[row.type + '/' + row.name] || {};
+  const next = Object.assign({}, row, patch);
+  const info = COSMIC_INFO[next.type + '/' + next.name] || {};
+  ['fx', 'passive'].forEach((k) => {
+    const cur = row[k] || '';
+    if (!cur || cur === before[k]) next[k] = info[k] || '';
+  });
+  return next;
+}
 /* C.P.D. Divisions and the Basic Ability each one adds +1 to */
 const DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
 /* the 8 Cosmic Types from the rulebook: [name, the Basic Ability it runs on] */
@@ -1118,7 +1133,12 @@ class Component extends DCLogic {
             const t = e && e.target ? e.target.value : '';
             const arr = this.state.s.cosmic.slice();
             const keep = pick ? (COSMIC_NAMES[t] || []).indexOf(arr[i].name) >= 0 : true;
-            arr[i] = Object.assign({}, arr[i], { type: t, name: keep ? arr[i].name : '' });
+            arr[i] = cosmicFill(arr[i], { type: t, name: keep ? arr[i].name : '' });
+            this.upd({ cosmic: arr });
+          },
+          on_name: (e) => {
+            const arr = this.state.s.cosmic.slice();
+            arr[i] = cosmicFill(arr[i], { name: e && e.target ? e.target.value : '' });
             this.upd({ cosmic: arr });
           }
         };
