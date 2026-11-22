@@ -634,6 +634,11 @@ function sceneArt(sky, glow, label) {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 100'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + sky + "'/><stop offset='1' stop-color='#0B0A12'/></linearGradient></defs><rect width='160' height='100' fill='url(#s)'/><circle cx='118' cy='26' r='12' fill='" + glow + "' opacity='.35'/>" + blds + wins + "<text x='8' y='14' font-family='monospace' font-size='6' letter-spacing='1' fill='" + glow + "'>" + label + "</text></svg>";
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
+/* duration and target shown after each Cosmic Ability's name in the Name list (added a type at a time) */
+const COSMIC_TAGS = {
+  'Shape/Vapor': '1 turn - Self', 'Shape/Shadow': '1 turn - Any', 'Shape/Chameleon': '1 turn - Self', 'Shape/Camouflage': '1 turn - Self',
+  'Shape/Re-shape': 'Instant - Any', 'Shape/Scale': 'Instant - Any', 'Shape/Sharpen': 'Instant - Any', 'Shape/Labyrinth': '1 scene - Any'
+};
 /* the rulebook text for each Cosmic Ability, filled into Effect / Passive when the player picks it (added a few at a time) */
 const COSMIC_INFO = {
   'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในพื้นที่ของตัวเอง', passive: 'มักมีของบางอย่างในฉากนั้นติดตัวมาด้วยโดยไม่ตั้งใจ (slot 0) 1 ครั้งต่อ scene' }
@@ -659,7 +664,7 @@ const DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 1
 const COSMIC_TYPES = [['Shape', 'FORCE'], ['Heat', 'FORCE'], ['Energy', 'TACTICAL'], ['Velocity', 'TACTICAL'], ['Space', 'TRICK'], ['Impulse', 'TRICK'], ['Entropy', 'SENSE'], ['Density', 'SENSE']];
 /* the Cosmic Abilities of each type (8 per type; unnamed slots are still to come) */
 const COSMIC_NAMES = {
-  Shape: ['Vapor', 'Shadow Bringer', 'Chameleon', 'Camouflage', 'Re-shape', 'Scalise', 'Sharpen', 'Labyrinth'],
+  Shape: ['Vapor', 'Shadow', 'Chameleon', 'Camouflage', 'Re-shape', 'Scale', 'Sharpen', 'Labyrinth'],
   Heat: ['Burner', 'Glacier', 'Burst'],
   Energy: ['Magnet', 'Voltage', 'Luminary', 'Breeze', 'Devour'],
   Velocity: ['Haste', 'Quickness', 'Redirect', 'Snitch', 'Acceleration', 'Slow', 'Jump', 'Anchor'],
@@ -1132,7 +1137,7 @@ class Component extends DCLogic {
         return {
           namePick: pick, nameFree: !pick, nameOff: pick && !r.type, hasPassive: pick,
           nameColor: r.name ? '#FFFFFF' : '#6E6A88',
-          nameOpts: [{ v: '', label: r.type ? L('— Name —', '— Name —') : L('เลือก Type ก่อน', 'Pick a Type first'), sel: !r.name }].concat(names.map((n) => ({ v: n, label: n, sel: r.name === n }))),
+          nameOpts: [{ v: '', label: r.type ? L('— Name —', '— Name —') : L('เลือก Type ก่อน', 'Pick a Type first'), sel: !r.name }].concat(names.map((n) => ({ v: n, label: n + (COSMIC_TAGS[r.type + '/' + n] ? ' (' + COSMIC_TAGS[r.type + '/' + n] + ')' : ''), sel: r.name === n }))),
           on_type: (e) => {
             const t = e && e.target ? e.target.value : '';
             const arr = this.state.s.cosmic.slice();
