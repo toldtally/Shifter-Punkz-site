@@ -343,7 +343,7 @@ html{scroll-behavior:smooth}
               </sc-if>
               <sc-if value="{{cpdDiv}}" hint-placeholder-val="{{ false }}">
                 <div class="field" style="flex: 1"><label class="lbl" for="fDivision">Division</label>
-                  <select id="fDivision" class="fld" onChange="{{onDivision}}" aria-describedby="fDivisionHint" style="color: {{divColor}}">
+                  <select id="fDivision" class="fld" onChange="{{onDivision}}" disabled="{{divLocked}}" aria-describedby="fDivisionHint" style="color: {{divColor}}">
                     <sc-for list="{{divOpts}}" as="dv" hint-placeholder-count="5">
                       <option value="{{dv.v}}" selected="{{dv.sel}}">{{dv.label}}</option>
                     </sc-for>
@@ -1003,8 +1003,9 @@ class Component extends DCLogic {
       cpdDiv: cpd,
       divColor: DIVISIONS[s.traitName] ? '#FFFFFF' : '#6E6A88',
       divOpts: [{ v: '', label: L('— เลือก Division —', '— Pick a Division —'), sel: !DIVISIONS[s.traitName] }].concat(Object.keys(DIVISIONS).map((d) => ({ v: d, label: d + ' · +1 ' + DIVISIONS[d].charAt(0).toUpperCase() + DIVISIONS[d].slice(1), sel: s.traitName === d }))),
-      onDivision: (e) => this.upd({ traitName: e && e.target ? e.target.value : '' }),
-      divHint: DIVISIONS[s.traitName] ? L('ได้ +1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' ใน Basic Ability ทันที', '+1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' to Basic Ability right away') : L('แต่ละ Division ให้ +1 กับ Basic Ability หนึ่งค่า', 'Each Division adds +1 to one Basic Ability'),
+      divLocked: this.factorLocked(),
+      onDivision: (e) => { if (!this.factorLocked()) this.upd({ traitName: e && e.target ? e.target.value : '' }); },
+      divHint: this.factorLocked() ? L('ล็อก Division ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Division is locked while this character is in a session. Leave the session to change it.') : DIVISIONS[s.traitName] ? L('ได้ +1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' ใน Basic Ability ทันที', '+1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' to Basic Ability right away') : L('แต่ละ Division ให้ +1 กับ Basic Ability หนึ่งค่า', 'Each Division adds +1 to one Basic Ability'),
       traitPh: cpd ? L('ชื่อหน่วยงานที่สังกัด (Division)', 'Your Division') : L('ชื่อ Trait', 'Trait name'),
       notCpd: !cpd,
       isCpd: cpd,
@@ -1100,7 +1101,7 @@ class Component extends DCLogic {
           return;
         }
         clearTimeout(this._rt);
-        this.setState({ s: Object.assign(initialSheet(), this.factorLocked() ? { factor: this.state.s.factor, slots: this.state.s.slots, spMax: this.state.s.spMax, spCur: this.state.s.spMax, spRgn: this.state.s.spRgn } : {}), resetArmed: false, dirty: false, savedAt: null, msg: L('ล้างใบตัวละครแล้ว', 'Sheet cleared') });
+        this.setState({ s: Object.assign(initialSheet(), this.factorLocked() ? { factor: this.state.s.factor, traitName: this.state.s.factor === 'cpd' ? this.state.s.traitName : '', slots: this.state.s.slots, spMax: this.state.s.spMax, spCur: this.state.s.spMax, spRgn: this.state.s.spRgn } : {}), resetArmed: false, dirty: false, savedAt: null, msg: L('ล้างใบตัวละครแล้ว', 'Sheet cleared') });
       },
       resetLabel: this.state.resetArmed ? L('กดอีกครั้งเพื่อยืนยันการล้างข้อมูล', 'Click again to clear the sheet') : 'Reset',
       resetStyle: this.state.resetArmed ? 'border-color: #FF3D6E; color: #FF3D6E' : '',
@@ -1146,7 +1147,7 @@ class Component extends DCLogic {
         phBondFx: L('ความสามารถ / บัฟเมื่อถูกทำลาย', 'Ability / buff on destroy'),
         rmBond: L('ลบ Bonded Item', 'Remove Bonded Item'),
         addBond: L('+ เพิ่ม Bonded Item', '+ Add Bonded Item'),
-        factorLock: L('ล็อก Factor ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Factor is locked while this character is in a session. Leave the session to change it.'),
+        factorLock: L('ล็อก Factor' + (this.state.s.factor === 'cpd' ? ' และ Division' : '') + ' ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Factor is locked while this character is in a session. Leave the session to change it.'),
         cpdNoWm: L('C.P.D. ไม่มีพลังคอสมิค — ไม่มี WM', 'C.P.D. has no cosmic power — no WM'),
         dcTip: L('DC ที่ต้องทอยให้ผ่าน', 'DC to beat'),
         phNotes: L('บันทึกส่วนตัวของผู้เล่น...', 'Your private notes...'),
