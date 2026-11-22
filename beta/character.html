@@ -858,8 +858,10 @@ class Component extends DCLogic {
       const cur = this.state.s;
       const u = cur.ba.force + cur.ba.tactical + cur.ba.trick + cur.ba.sense;
       const p = 4 + F[cur.factor].bonus;
-      if (d > 0 && (u >= p || cur.ba[k] >= 2)) return;
-      this.upd({ ba: Object.assign({}, cur.ba, { [k]: Math.max(0, Math.min(2, cur.ba[k] + d)) }) });
+      // a stat tops out at 3; a C.P.D.'s Division stat already has +1, so it takes at most 1 point
+      const cap = cur.factor === 'cpd' && DIVISIONS[cur.traitName] === k ? 1 : 2;
+      if (d > 0 && (u >= p || cur.ba[k] >= cap)) return;
+      this.upd({ ba: Object.assign({}, cur.ba, { [k]: Math.max(0, Math.min(cap, cur.ba[k] + d)) }) });
     };
 
     const injDefs = [
@@ -1080,7 +1082,12 @@ class Component extends DCLogic {
       divColor: DIVISIONS[s.traitName] ? '#FFFFFF' : '#6E6A88',
       divOpts: [{ v: '', label: L('— เลือก Division —', '— Pick a Division —'), sel: !DIVISIONS[s.traitName] }].concat(Object.keys(DIVISIONS).map((d) => ({ v: d, label: d + ' · +1 ' + DIVISIONS[d].charAt(0).toUpperCase() + DIVISIONS[d].slice(1), sel: s.traitName === d }))),
       divLocked: this.factorLocked(),
-      onDivision: (e) => { if (!this.factorLocked()) this.upd({ traitName: e && e.target ? e.target.value : '' }); },
+      onDivision: (e) => {
+        if (this.factorLocked()) return;
+        const d = e && e.target ? e.target.value : '', k = DIVISIONS[d], ba = this.state.s.ba;
+        // the Division's +1 can't push a stat past 3: give back the extra point if that stat already had 2
+        this.upd(Object.assign({ traitName: d }, k && ba[k] > 1 ? { ba: Object.assign({}, ba, { [k]: 1 }) } : {}));
+      },
       divHint: this.factorLocked() ? L('ล็อก Division ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Division is locked while this character is in a session. Leave the session to change it.') : DIVISIONS[s.traitName] ? L('ได้ +1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' ใน Basic Ability ทันที', '+1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' to Basic Ability right away') : L('แต่ละ Division ให้ +1 กับ Basic Ability หนึ่งค่า', 'Each Division adds +1 to one Basic Ability'),
       traitPh: cpd ? L('ชื่อหน่วยงานที่สังกัด (Division)', 'Your Division') : L('ชื่อ Trait', 'Trait name'),
       notCpd: !cpd,
@@ -1118,7 +1125,7 @@ class Component extends DCLogic {
         { k: 'trick', name: 'Trick', tip: L('ความรู้, ไหวพริบ, วาจา', 'Knowledge, wit, speech') },
         { k: 'sense', name: 'Sense', tip: L('สัญชาตญาณ, ความรู้สึก, สติสัมปชัญญะ', 'Instinct, feeling, awareness') }
       ].map((a) => Object.assign({}, a, {
-        val: String(1 + s.ba[a.k] + (cpd && DIVISIONS[s.traitName] === a.k ? 1 : 0)),
+        val: String(Math.min(3, 1 + s.ba[a.k] + (cpd && DIVISIONS[s.traitName] === a.k ? 1 : 0))),
         div: cpd && DIVISIONS[s.traitName] === a.k, divTip: L('+1 จาก ' + s.traitName, '+1 from ' + s.traitName),
         inc: () => setBa(a.k, 1), dec: () => setBa(a.k, -1),
         mod: s.baMod[a.k],

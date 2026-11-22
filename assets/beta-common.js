@@ -27,7 +27,7 @@
   SP.DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
   SP.baOf = function (sheet, factor, k) {
     var s = sheet || {}, ba = s.ba || {};
-    return SP.baVal(ba[k]) + (factor === 'cpd' && SP.DIVISIONS[s.traitName] === k ? 1 : 0);
+    return Math.min(3, SP.baVal(ba[k]) + (factor === 'cpd' && SP.DIVISIONS[s.traitName] === k ? 1 : 0));
   };
 
   SP.timeAgo = function (iso, th) {
