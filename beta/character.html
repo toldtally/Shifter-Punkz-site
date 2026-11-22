@@ -338,7 +338,19 @@ html{scroll-behavior:smooth}
           <div class="ph"><h2>{{traitTitle}}</h2></div>
           <div class="pb">
             <div class="row">
-              <div class="field" style="flex: 1"><label class="lbl" for="fTraitName">Name</label><input id="fTraitName" class="fld" type="text" maxlength="40" placeholder="{{traitPh}}" value="{{s.traitName}}" onInput="{{on.traitName}}"></div>
+              <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
+                <div class="field" style="flex: 1"><label class="lbl" for="fTraitName">Name</label><input id="fTraitName" class="fld" type="text" maxlength="40" placeholder="{{traitPh}}" value="{{s.traitName}}" onInput="{{on.traitName}}"></div>
+              </sc-if>
+              <sc-if value="{{cpdDiv}}" hint-placeholder-val="{{ false }}">
+                <div class="field" style="flex: 1"><label class="lbl" for="fDivision">Division</label>
+                  <select id="fDivision" class="fld" onChange="{{onDivision}}" aria-describedby="fDivisionHint" style="color: {{divColor}}">
+                    <sc-for list="{{divOpts}}" as="dv" hint-placeholder-count="5">
+                      <option value="{{dv.v}}" selected="{{dv.sel}}">{{dv.label}}</option>
+                    </sc-for>
+                  </select>
+                  <span id="fDivisionHint" style="display: block; margin-top: 6px; font-size: 12px; color: #A9A5C2">{{divHint}}</span>
+                </div>
+              </sc-if>
               <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
                 <div class="field" style="flex: 2"><label class="lbl" for="fTraitFx">Ability</label><textarea id="fTraitFx" class="fld" rows="1" placeholder="{{t.phTraitFx}}" style="min-height: 36px" value="{{s.traitFx}}" onInput="{{on.traitFx}}"></textarea></div>
               </sc-if>
@@ -456,6 +468,9 @@ html{scroll-behavior:smooth}
                   <span style="min-width: 16px; text-align: center; font-weight: 700; font-family: 'Chakra Petch', sans-serif; font-size: 16px; color: #2EE6F0">{{ab.val}}</span>
                   <button type="button" class="step" aria-label="{{ab.name}} +" onClick="{{ab.inc}}" style="width: 26px; height: 26px">+</button>
                 </span>
+                <sc-if value="{{ab.div}}" hint-placeholder-val="{{ false }}">
+                  <span title="{{ab.divTip}}" style="padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .05em; color: #FFD400; white-space: nowrap">+1 DIV</span>
+                </sc-if>
                 <span style="display: flex; align-items: center; gap: 5px; margin-left: auto; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: #8C88A6">Mod <input class="fld" type="number" step="1" value="{{ab.mod}}" onInput="{{ab.onMod}}" aria-label="{{ab.name}} mod" style="width: 48px; padding: 3px 4px; font-size: 12px; text-align: center"></span>
               </div>
             </sc-for>
@@ -605,6 +620,8 @@ function sceneArt(sky, glow, label) {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 100'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + sky + "'/><stop offset='1' stop-color='#0B0A12'/></linearGradient></defs><rect width='160' height='100' fill='url(#s)'/><circle cx='118' cy='26' r='12' fill='" + glow + "' opacity='.35'/>" + blds + wins + "<text x='8' y='14' font-family='monospace' font-size='6' letter-spacing='1' fill='" + glow + "'>" + label + "</text></svg>";
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
+/* C.P.D. Divisions and the Basic Ability each one adds +1 to */
+const DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
 /* the 8 Cosmic Types from the rulebook: [name, the Basic Ability it runs on] */
 const COSMIC_TYPES = [['Shape', 'FORCE'], ['Heat', 'FORCE'], ['Energy', 'TACTICAL'], ['Velocity', 'TACTICAL'], ['Space', 'TRICK'], ['Impulse', 'TRICK'], ['Entropy', 'SENSE'], ['Density', 'SENSE']];
 /* the Cosmic Abilities of each type (8 per type; unnamed slots are still to come) */
@@ -983,6 +1000,11 @@ class Component extends DCLogic {
       jobPh: cpd ? '1–5' : '—',
       repShow: (s.repGain || 0) + ' / ' + (s.repCur || 0),
       traitTitle: cpd ? 'Division' : 'Trait',
+      cpdDiv: cpd,
+      divColor: DIVISIONS[s.traitName] ? '#FFFFFF' : '#6E6A88',
+      divOpts: [{ v: '', label: L('— เลือก Division —', '— Pick a Division —'), sel: !DIVISIONS[s.traitName] }].concat(Object.keys(DIVISIONS).map((d) => ({ v: d, label: d + ' · +1 ' + DIVISIONS[d].charAt(0).toUpperCase() + DIVISIONS[d].slice(1), sel: s.traitName === d }))),
+      onDivision: (e) => this.upd({ traitName: e && e.target ? e.target.value : '' }),
+      divHint: DIVISIONS[s.traitName] ? L('ได้ +1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' ใน Basic Ability ทันที', '+1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' to Basic Ability right away') : L('แต่ละ Division ให้ +1 กับ Basic Ability หนึ่งค่า', 'Each Division adds +1 to one Basic Ability'),
       traitPh: cpd ? L('ชื่อหน่วยงานที่สังกัด (Division)', 'Your Division') : L('ชื่อ Trait', 'Trait name'),
       notCpd: !cpd,
       isCpd: cpd,
@@ -1018,7 +1040,8 @@ class Component extends DCLogic {
         { k: 'trick', name: 'Trick', tip: L('ความรู้, ไหวพริบ, วาจา', 'Knowledge, wit, speech') },
         { k: 'sense', name: 'Sense', tip: L('สัญชาตญาณ, ความรู้สึก, สติสัมปชัญญะ', 'Instinct, feeling, awareness') }
       ].map((a) => Object.assign({}, a, {
-        val: String(1 + s.ba[a.k]),
+        val: String(1 + s.ba[a.k] + (cpd && DIVISIONS[s.traitName] === a.k ? 1 : 0)),
+        div: cpd && DIVISIONS[s.traitName] === a.k, divTip: L('+1 จาก ' + s.traitName, '+1 from ' + s.traitName),
         inc: () => setBa(a.k, 1), dec: () => setBa(a.k, -1),
         mod: s.baMod[a.k],
         onMod: (e) => this.upd({ baMod: Object.assign({}, this.state.s.baMod, { [a.k]: e && e.target ? e.target.value : '0' }) })

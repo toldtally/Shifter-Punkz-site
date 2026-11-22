@@ -9,7 +9,7 @@
     return {
       name: ch.name, player: player || '—', f: F.key, sub: s.job || '—', online: !!online,
       ip: SP.num(s.hpCur), ipMax: SP.num(s.hpMax) || 1, wm: SP.num(s.spCur), wmMax: ch.factor !== 'shifter' ? 0 : SP.num(s.spMax),
-      ba: [SP.baVal(ba.force), SP.baVal(ba.tactical), SP.baVal(ba.trick), SP.baVal(ba.sense)],
+      ba: ['force', 'tactical', 'trick', 'sense'].map(function (k) { return SP.baOf(s, ch.factor, k); }),
       se: SP.num(s.se), ex: SP.num(s.ex), adv: SP.num(s.adv), coins: SP.num(s.coins),
       inj: Object.keys(inj).filter(function (k) { return inj[k]; }),
       at: new Date(ch.updated_at).getTime(), portrait: ch.portrait_path ? SP.imageUrl(ch.portrait_path) : '', sheet: s, factor: ch.factor

@@ -95,7 +95,7 @@
           d: (0.08 + i * 0.08).toFixed(2) + 's',
           bars: [{ k: 'IP', color: '#FF3D6E', v: SP.num(s.hpCur) + '/' + ipMax, pct: Math.round(SP.num(s.hpCur) / ipMax * 100) + '%' }]
             .concat(wmMax && row.factor === 'shifter' ? [{ k: 'WM', color: '#2EE6F0', v: SP.num(s.spCur) + '/' + wmMax, pct: Math.round(SP.num(s.spCur) / wmMax * 100) + '%' }] : []),
-          stats: [['FOR', ba.force], ['TAC', ba.tactical], ['TRI', ba.trick], ['SEN', ba.sense]].map((x) => ({ k: x[0], v: String(SP.baVal(x[1])) })),
+          stats: [['FOR', 'force'], ['TAC', 'tactical'], ['TRI', 'trick'], ['SEN', 'sense']].map((x) => ({ k: x[0], v: String(SP.baOf(s, row.factor, x[1])) })),
           tLive: mode === 'live', tLeaving: mode === 'leaving', tIdle: mode === 'idle', tForm: mode === 'form', tConflict: mode === 'conflict',
           tblBorder: mode === 'live' ? (isLive ? 'rgba(74,222,128,0.45)' : 'rgba(255,212,0,0.45)') : mode === 'conflict' ? '#FFD400' : '#2A2740',
           stColor: isLive ? '#4ADE80' : '#FFD400',
