@@ -660,17 +660,17 @@ class Component extends DCLogic {
     super(props);
     this.state = { lang: 'th', s: initialSheet(), resetArmed: false, msg: '', dirty: false, savedAt: null, tbl: { joined: '', code: '', err: '', leaving: false, pending: '', other: { name: 'Kaew', code: 'SP-K7QX' } } };
     this.state.scene = [{ id: 'sc1', title: 'ตรอกนีออนลาดพร้าว', url: sceneArt('#3A1030', '#FF2E88', 'LAT PHRAO // 26xx'), at: 1 }];
-    try { this.state.scPos = JSON.parse(localStorage.getItem('sp-scene-pos2') || 'null') || [JSON.parse(localStorage.getItem('sp-scene-pos') || 'null'), null]; } catch (e) { this.state.scPos = [null, null]; }
+    try { this.state.scPos = JSON.parse(localStorage.getItem('sp-scene-pos2') || 'null') || [JSON.parse(localStorage.getItem('sp-scene-pos') || 'null'), null, null]; } catch (e) { this.state.scPos = [null, null, null]; }
     this.sceneDragInit();
   }
   /* the picture the GM is showing (canvas: BroadcastChannel; live site: sessions.scene of the seated session) */
   sceneNow() { return this.state.scene || null; }
-  /* sessions.scene holds one picture (older saves) or a list of up to 2 */
-  sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 2); }
+  /* sessions.scene holds one picture (older saves) or a list of up to 3 */
+  sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 3); }
   /* a seated character keeps its Factor until it leaves the session */
   factorLocked() { return !!(this.state.tbl && this.state.tbl.joined); }
   sceneSetPos(i, p) {
-    const all = (this.state.scPos || [null, null]).slice();
+    const all = (this.state.scPos || [null, null, null]).slice();
     all[i] = p;
     this.setState({ scPos: all, scTop: i });
     try { localStorage.setItem('sp-scene-pos2', JSON.stringify(all)); } catch (e) {}
@@ -679,10 +679,11 @@ class Component extends DCLogic {
     const W = window.innerWidth || 1280, H = window.innerHeight || 800;
     const p = (this.state.scPos || [])[i] || {};
     const w = Math.round(Math.min(Math.max(p.w || Math.min(440, W - 32), 220), Math.max(220, W - 32)));
-    // the second window starts beside the first when there is room, otherwise under it
-    const side = W >= 2 * w + 48;
-    const dx = i === 1 && side ? W - 2 * w - 32 : W - w - 16;
-    const dy = i === 1 && !side ? 128 + Math.round(w * 0.62) + 60 : 128;
+    // windows start side by side from the right edge; when the row is full the next one goes under
+    const cols = Math.max(1, Math.floor((W - 16) / (w + 16)));
+    const col = i % cols, row = Math.floor(i / cols);
+    const dx = W - (col + 1) * (w + 16);
+    const dy = 128 + row * (Math.round(w * 0.62) + 60);
     const x = Math.round(Math.min(Math.max(p.x == null ? dx : p.x, 0), Math.max(0, W - w - 8)));
     const y = Math.round(Math.min(Math.max(p.y == null ? dy : p.y, 0), H - 40));
     return { x: x, y: y, w: w };
@@ -926,14 +927,14 @@ class Component extends DCLogic {
       }
     };
 
-    // two window slots: a picture keeps its slot while it stays up; a gone picture lingers for the power-off animation
+    // three window slots: a picture keeps its slot while it stays up; a gone picture lingers for the power-off animation
     const live = this.sceneList();
-    const prevSlots = this._scSlots || [null, null];
+    const prevSlots = this._scSlots || [null, null, null];
     const slots = prevSlots.map((p) => (p ? live.find((x) => x.id === p.id) || null : null));
     live.forEach((x) => { if (slots.indexOf(x) < 0) { const k = slots.indexOf(null); if (k >= 0) slots[k] = x; } });
-    this._scGhost = this._scGhost || [null, null];
-    this._scFlip = this._scFlip || [false, false];
-    this._scGhostT = this._scGhostT || [null, null];
+    this._scGhost = this._scGhost || [null, null, null];
+    this._scFlip = this._scFlip || [false, false, false];
+    this._scGhostT = this._scGhostT || [null, null, null];
     slots.forEach((cur, i) => {
       const prev = prevSlots[i];
       if (prev && !cur) {
@@ -946,7 +947,7 @@ class Component extends DCLogic {
     this._scSlots = slots;
     const scMin = this.state.scMin || {}, scTuck = this.state.scTuck || {};
     const sceneVals = {
-      sceneWins: [0, 1].map((i) => {
+      sceneWins: [0, 1, 2].map((i) => {
         const cur = slots[i], sc = cur || this._scGhost[i];
         const isMin = !!(cur && scMin[i] === cur.at);
         const geo = this.sceneGeom(i);
@@ -957,7 +958,7 @@ class Component extends DCLogic {
           anim: !cur || scTuck[i] ? 'scw-off' : this._scFlip[i] ? 'scw-a' : 'scw-b',
           url: sc ? sc.url : '', title: title,
           label: L('ภาพจาก GM: ', 'Picture from your GM: ') + title,
-          x: geo.x, y: geo.y, w: geo.w, z: this.state.scTop === i ? 61 : 60, chipY: 128 + i * 52,
+          x: geo.x, y: geo.y, w: geo.w, z: this.state.scTop === i ? 62 : 60, chipY: 128 + i * 52,
           dragTip: L('ลากเพื่อย้าย', 'Drag to move'), resizeTip: L('ลากเพื่อปรับขนาด', 'Drag to resize'),
           smaller: () => resizeBy(-80), bigger: () => resizeBy(80),
           smallerLabel: L('ย่อภาพ', 'Smaller'), biggerLabel: L('ขยายภาพ', 'Bigger'),
