@@ -614,7 +614,7 @@ class Component extends DCLogic {
         som: { name: 'Somying', player: 'Ploy', f: 'cpd', sub: 'Rank 2 · Division 9', online: false, ip: 12, ipMax: 12, wm: 0, wmMax: 0, ba: [3, 2, 1, 3], se: 0, ex: 0, adv: 3, coins: 2, inj: [], at: now - 300000 }
       },
       feed: [
-        { at: now - 12000, id: 'kaew', th: 'ใช้ Blink Rat (WM −2)', en: 'used Blink Rat (WM −2)' },
+        { at: now - 12000, id: 'kaew', th: 'ใช้ Blink (WM −2)', en: 'used Blink (WM −2)' },
         { at: now - 40000, id: 'tum', th: 'ได้รับ +1 EX', en: 'gained +1 EX' },
         { at: now - 300000, id: 'som', th: 'ออฟไลน์', en: 'went offline' }
       ],
@@ -723,7 +723,7 @@ class Component extends DCLogic {
         bonded: [{ name: L('กระเป๋าหมอเถื่อนของแม่', 'Mom\'s street-doc bag'), fx: L('+1 Trick เมื่อรักษา · ถูกทำลาย: ฟื้นฟู +3 IP ทั้งปาร์ตี้', '+1 Trick when healing · On destroy: party recovers +3 IP') }],
         weapons: [{ name: 'Scalpel Blade', range: 1, dmg: '2', fx: L('ทอยได้คู่ = เป้าหมายติด Bleeding', 'A pair inflicts Bleeding') }],
         gears: [{ name: 'Med-Weave Coat', fx: 'AMR +1' }],
-        cosmic: [{ name: 'Space · Blink Rat', fx: L('วาร์ปตัวเองผ่านจุดอับสายตาไม่เกิน 10 ม.', 'Teleport through a blind spot up to 10 m'), cd: 1 }] },
+        cosmic: [{ name: 'Space · Blink', fx: L('วาร์ปตัวเองผ่านจุดอับสายตาไม่เกิน 10 ม.', 'Teleport through a blind spot up to 10 m'), cd: 1 }] },
       tum: { slots: 8,
         bonded: [{ name: L('ประแจของพ่อ', 'Dad\'s wrench'), fx: L('ซ่อม Gadget +1D8 · ถูกทำลาย: +1 SE', 'Repair gadgets +1D8 · On destroy: +1 SE') }],
         weapons: [{ name: 'Rivet Gun', range: 3, dmg: '2', fx: L('ยิงตรึงเป้าหมายไว้กับที่ 1 เทิร์น', 'Pins a target in place for 1 turn') }],
