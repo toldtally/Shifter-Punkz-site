@@ -506,10 +506,10 @@ html{scroll-behavior:smooth}
         <div class="panel" style="border-top-color: #C084FC; opacity: {{cosOpacity}}">
           <div class="ph"><h2>{{cosTitle}}</h2></div>
           <div class="pb">
-            <div class="thead" style="grid-template-columns: 1fr 1fr 52px 28px"><div>Type</div><div>Name</div><div>Cosmic Dice</div><div></div></div>
+            <div class="thead" style="grid-template-columns: .5fr 1fr 52px 28px"><div>Type</div><div>Name</div><div>Cosmic Dice</div><div></div></div>
             <sc-for list="{{cosmic}}" as="r" hint-placeholder-count="0">
               <div style="border-bottom: 1px solid #2A2740; padding: 8px 0; display: flex; flex-direction: column; gap: 6px">
-                <div class="rowline" style="grid-template-columns: 1fr 1fr 52px 28px; align-items: start; margin: 0">
+                <div class="rowline" style="grid-template-columns: .5fr 1fr 52px 28px; align-items: start; margin: 0">
                   <select class="fld" aria-label="Cosmic type" onChange="{{r.on_type}}" style="color: {{r.typeColor}}; min-width: 0">
                     <sc-for list="{{r.typeOpts}}" as="o" hint-placeholder-count="9">
                       <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
