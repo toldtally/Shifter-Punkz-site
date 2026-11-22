@@ -528,8 +528,8 @@ html{scroll-behavior:smooth}
                   <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
                   <button type="button" class="rm" aria-label="{{t.rmCos}}" onClick="{{r.remove}}">×</button>
                 </div>
-                <label style="display: flex; flex-direction: column; gap: 4px"><span class="lbl">Effect</span>
-                  <textarea class="fld" rows="2" aria-label="Cosmic effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
+                <label style="display: flex; flex-direction: column; gap: 4px"><span class="lbl">Active</span>
+                  <textarea class="fld" rows="2" aria-label="Cosmic active" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
                 </label>
                 <sc-if value="{{r.hasPassive}}" hint-placeholder-val="{{ true }}">
                   <label style="display: flex; flex-direction: column; gap: 4px"><span class="lbl">Passive</span>
