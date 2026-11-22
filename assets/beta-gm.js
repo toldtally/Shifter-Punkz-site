@@ -365,7 +365,7 @@
           slots: String(SP.num(s.slots) || 5),
           loadout: [
             grp('BONDED ITEM', '#FF2E88', named(s.bonded).map((b) => ({ name: b.name, meta: '', fx: b.effect || '' }))),
-            ...(c.f === 'cpd' ? [] : [grp(c.f === 'norms' ? 'COSMIC GADGETS' : 'COSMIC ABILITIES', '#C084FC', named(s.cosmic).map((x) => ({ name: (x.type ? x.type + ' · ' : '') + x.name, meta: 'CD ' + (x.cd || 0), fx: x.fx || '' })))]),
+            ...(c.f === 'cpd' ? [] : [grp(c.f === 'norms' ? 'COSMIC GADGETS' : 'COSMIC ABILITIES', '#C084FC', named(s.cosmic).map((x) => ({ name: (x.type ? x.type + ' · ' : '') + x.name, meta: 'CD ' + (x.cd || 0), fx: (x.fx || '') + (x.passive ? (x.fx ? ' · ' : '') + 'Passive: ' + x.passive : '') })))]),
             grp('WEAPONS', '#FF3D6E', named(s.weapons).map((w) => ({ name: w.name, meta: 'R' + (w.range || '-') + ' · DMG ' + (w.dmg || '-'), fx: w.fx || '' }))),
             grp('GEARS', '#2EE6F0', named(s.gears).map((g) => ({ name: g.name, meta: '', fx: g.fx || '' })))
           ],
