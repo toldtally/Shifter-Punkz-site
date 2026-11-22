@@ -417,6 +417,7 @@ html{scroll-behavior:smooth}
           </div>
         </div>
 
+        <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
         <div class="panel" style="border-top-color: #2EE6F0; opacity: {{spOpacity}}">
           <div class="ph"><h2 style="color: #2EE6F0">Whelm</h2></div>
           <div class="pb">
@@ -431,6 +432,7 @@ html{scroll-behavior:smooth}
             <sc-if value="{{noWm}}" hint-placeholder-val="{{ false }}"><p style="margin: 6px 0 0; font-size: 12px; font-style: italic; color: #8C88A6">{{noWmNote}}</p></sc-if>
           </div>
         </div>
+        </sc-if>
 
         <div class="panel" style="border-top-color: #FF3D6E">
           <div class="ph"><h2>Injuries</h2><label class="chk" style="color: #FF3D6E; font-family: 'Chakra Petch', sans-serif; font-weight: 700; letter-spacing: .06em"><input type="checkbox" checked="{{s.coma}}" onChange="{{on.coma}}"> COMA</label></div>
@@ -498,6 +500,7 @@ html{scroll-behavior:smooth}
           </div>
         </div>
 
+        <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
         <div class="panel" style="border-top-color: #C084FC; opacity: {{cosOpacity}}">
           <div class="ph"><h2>{{cosTitle}}</h2></div>
           <div class="pb">
@@ -530,6 +533,7 @@ html{scroll-behavior:smooth}
             <p class="hint">{{cosNote}}</p>
           </div>
         </div>
+        </sc-if>
 
         <div class="panel pk">
           <div class="ph"><h2>General Skills</h2></div>
