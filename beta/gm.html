@@ -178,7 +178,16 @@ html{scroll-behavior:smooth}
             </div>
             <div style="display: flex; flex-direction: column; gap: 2px; padding: 8px 14px; border: 1px solid #3A3655; background: #151225">
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #8C88A6">SESSION LV</span>
-              <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2EE6F0">{{curLv}}</span>
+              <sc-if value="{{lvEdit}}" hint-placeholder-val="{{ true }}">
+                <select aria-label="Session Lv" onChange="{{onLv}}" style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2EE6F0; background: #0B0A12; border: 1px solid #3A3655; padding: 0 2px; cursor: pointer">
+                  <sc-for list="{{lvOpts}}" as="o" hint-placeholder-count="21">
+                    <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
+                  </sc-for>
+                </select>
+              </sc-if>
+              <sc-if value="{{lvFixed}}" hint-placeholder-val="{{ false }}">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #2EE6F0">{{curLv}}</span>
+              </sc-if>
             </div>
             <div style="display: flex; flex-direction: column; gap: 2px; padding: 8px 14px; border: 1px solid #3A3655; background: #151225">
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: #8C88A6">{{t.tableCode}}</span>
@@ -632,6 +641,9 @@ class Component extends DCLogic {
     if (this.state.sceneShown && this.state.sceneShown.id === it.id) this.sceneClear();
     this.setState({ scenes: (this.state.scenes || []).filter((x) => x.id !== it.id), sceneAskDel: null });
   }
+  /* Session Lv: campaigns can change it from the header; one-shots keep the one they were made with */
+  curLevel() { const lv = (this.state.lvs || {})[this.state.cur]; return lv === undefined ? ({ t1: 4, t3: 3 })[this.state.cur] || null : lv; }
+  setLevel(lv) { this.setState({ lvs: Object.assign({}, this.state.lvs, { [this.state.cur]: lv }) }); }
   bgmEngine() {
     if (!this._bgm && window.SPBGM) this._bgm = window.SPBGM.create();
     return this._bgm;
@@ -912,7 +924,11 @@ class Component extends DCLogic {
       curTableName: L(TABLES[this.state.cur].th, TABLES[this.state.cur].en),
       curTableLabel: L('Session: ' + TABLES[this.state.cur].th, 'SESSION: ' + TABLES[this.state.cur].en.toUpperCase()),
       curCode: TABLES[this.state.cur].code,
-      curLv: TABLES[this.state.cur].lv || '-',
+      curLv: (this.curLevel() || '-'),
+      lvEdit: TABLES[this.state.cur].type === 'campaign' && this.state.phase !== 'ended',
+      lvFixed: !(TABLES[this.state.cur].type === 'campaign' && this.state.phase !== 'ended'),
+      lvOpts: [{ v: '', label: '-', sel: !this.curLevel() }].concat(Array.from({ length: 20 }, (_, k) => ({ v: String(k + 1), label: String(k + 1), sel: this.curLevel() === k + 1 }))),
+      onLv: (e) => this.setLevel(parseInt(e && e.target ? e.target.value : '', 10) || null),
       menuOpen: this.state.menu,
       menuExpanded: this.state.menu ? 'true' : 'false',
       toggleMenu: () => this.setState({ menu: !this.state.menu }),

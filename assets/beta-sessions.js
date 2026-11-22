@@ -44,6 +44,11 @@
       }) });
     }
 
+    setLevel(x, lv) {
+      var n = x.th || x.en;
+      this.act(function () { return sb.from('sessions').update({ level: lv }).eq('id', x.id); },
+        'Session Lv ของ "' + n + '" เป็น ' + (lv || '-') + ' แล้ว', 'Set "' + n + '" to Session Lv ' + (lv || '-'));
+    }
     async act(fn, okTh, okEn) {
       var th = this.state.lang !== 'en';
       var r = await fn();

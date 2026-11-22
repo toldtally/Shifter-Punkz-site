@@ -117,6 +117,14 @@
     }
 
     /* Scene screen: the GM's picture library (session_images) and what's on players' screens (sessions.scene). */
+    async setLevel(lv) {
+      var sid = this.state.sid, sess = this.state.session;
+      if (!sid || !sess || sess.format !== 'campaign') return;
+      var prev = sess.level;
+      this.apply({ session: Object.assign({}, sess, { level: lv }) });
+      var r = await sb.from('sessions').update({ level: lv }).eq('id', sid);
+      if (r.error) this.apply({ session: Object.assign({}, this.state.session, { level: prev }) });
+    }
     async loadScenes() {
       var sid = this.state.sid;
       var r = await sb.from('session_images').select('*').eq('session_id', sid).order('created_at', { ascending: false });
@@ -242,6 +250,10 @@
       v.curTableLabel = sess ? L('Session: ', 'SESSION: ') + sess.name + ({ live: '', paused: L(' · พักอยู่', ' · PAUSED'), idle: L(' · รอรอบถัดไป', ' · BETWEEN PLAYS'), ended: L(' · จบแล้ว (ARCHIVE)', ' · ENDED (ARCHIVE)') }[sess.status] || '') : L('สร้าง session ก่อนที่ Session ของฉัน', 'Create one in My Sessions first');
       v.curCode = sess ? sess.invite_code : '—';
       v.curLv = sess && sess.level ? sess.level : '-';
+      var lvCamp = !!(sess && sess.format === 'campaign' && sess.status !== 'ended');
+      v.lvEdit = lvCamp; v.lvFixed = !lvCamp;
+      v.lvOpts = [{ v: '', label: '-', sel: !(sess && sess.level) }].concat(Array.from({ length: 20 }, function (_, k) { return { v: String(k + 1), label: String(k + 1), sel: !!(sess && sess.level === k + 1) }; }));
+      v.onLv = (e) => this.setLevel(parseInt(e && e.target ? e.target.value : '', 10) || null);
       v.tableMenu = ss.map((s) => {
         var isCur = sess && s.id === sess.id;
         return {

@@ -200,7 +200,14 @@ html{scroll-behavior:smooth}
             </div>
             <div style="flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px">
               <span style="padding: 2px 8px; border: 1px solid #3A3655; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #A9A5C2">{{c.type}}</span>
-              <sc-if value="{{c.hasLv}}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{c.lvEdit}}" hint-placeholder-val="{{ true }}">
+                <select aria-label="{{c.lvLabel}}" title="{{c.lvLabel}}" onChange="{{c.onLv}}" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #2EE6F0; background: #0B0A12; border: 1px solid #2EE6F0; padding: 2px 4px; cursor: pointer">
+                  <sc-for list="{{c.lvOpts}}" as="o" hint-placeholder-count="21">
+                    <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
+                  </sc-for>
+                </select>
+              </sc-if>
+              <sc-if value="{{c.lvStatic}}" hint-placeholder-val="{{ false }}">
                 <span title="Session Lv" style="padding: 2px 8px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #2EE6F0">LV {{c.lv}}</span>
               </sc-if>
             </div>
@@ -288,6 +295,11 @@ class Component extends DCLogic {
     try { this._demoCh = new BroadcastChannel('sp-demo-sessions'); this._demoCh.onmessage = (e) => applySt(e.data); } catch (e) {}
   }
   componentWillUnmount() { if (this._demoCh) this._demoCh.close(); }
+  /* campaigns can change Session Lv as the party grows; one-shots keep theirs */
+  setLevel(x, lv) {
+    const L = (a, b) => (this.state.lang === 'en' ? b : a);
+    this.setState({ tables: this.state.tables.map((y) => (y.id === x.id ? Object.assign({}, y, { lv: lv }) : y)), toast: L('Session Lv ของ "' + (x.th || x.en) + '" เป็น ' + (lv || '-') + ' แล้ว', 'Set "' + (x.en || x.th) + '" to Session Lv ' + (lv || '-')) });
+  }
   renderVals() {
     const th = this.state.lang !== 'en';
     const L = (a, b) => (th ? a : b);
@@ -416,6 +428,10 @@ class Component extends DCLogic {
           meta: L(x.lastTh, x.lastEn) + ' · ' + L('เล่นแล้ว ' + x.sessions + ' ครั้ง', 'played ' + x.sessions + (x.sessions === 1 ? ' time' : ' times')),
           type: x.type === 'campaign' ? L('แคมเปญ', 'CAMPAIGN') : 'ONE-SHOT',
           lv: x.lv || '-', hasLv: !!x.lv,
+          lvEdit: x.type === 'campaign' && x.st !== 'ended', lvStatic: !(x.type === 'campaign' && x.st !== 'ended') && !!x.lv,
+          lvLabel: L('Session Lv ของแคมเปญ (ปรับได้)', 'Campaign Session Lv (adjustable)'),
+          lvOpts: [{ v: '', label: 'LV -', sel: !x.lv }].concat(Array.from({ length: 20 }, (_, k) => ({ v: String(k + 1), label: 'LV ' + (k + 1), sel: x.lv === k + 1 }))),
+          onLv: (e) => this.setLevel(x, parseInt(e && e.target ? e.target.value : '', 10) || null),
           stColor: s.color, stLabel: s.label, dotClass: s.dot,
           border: x.st === 'live' ? 'rgba(74,222,128,0.4)' : '#2A2740',
           op: x.st === 'ended' ? '0.7' : '1',
