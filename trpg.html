@@ -97,10 +97,10 @@ a{color:#2EE6F0}a:hover{color:#FF2E88}
 76%{opacity:1;filter:drop-shadow(-1px 0 rgba(255,46,136,.5)) drop-shadow(1px 0 rgba(46,230,240,.5))}
 100%{opacity:1;clip-path:inset(0 0 0 0);transform:none;filter:none}}
 /* TRPG neon sign beside the logo: switches on after the logo lands, then hums with the odd flicker */
-.neon{position:absolute;left:0;bottom:2%;margin:0;font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:8.6cqw;line-height:1;letter-spacing:.06em;color:#F2FEFF;transform:rotate(-6deg);transform-origin:left bottom;
+.neon{position:absolute;right:0;bottom:16%;margin:0;font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:7.6cqw;line-height:1;letter-spacing:.06em;color:#F2FEFF;transform:rotate(-6deg);transform-origin:right bottom;
 text-shadow:0 0 .02em #fff,0 0 .06em #fff,0 0 .12em #2EE6F0,0 0 .24em #2EE6F0,0 0 .45em #2EE6F0,0 0 .8em rgba(46,230,240,.55);
 animation:neonOn 1.3s steps(1,end) 1.4s both,neonHum 7s steps(1,end) 2.7s infinite}
-.neon-box{position:relative;container-type:inline-size;width:600px;max-width:100%}
+.neon-box{position:relative;container-type:inline-size;width:660px;max-width:100%}
 @keyframes neonOn{0%{opacity:0}8%{opacity:.9}12%{opacity:0}26%{opacity:.6}30%{opacity:0}44%{opacity:1}50%{opacity:.25}56%{opacity:1}100%{opacity:1}}
 @keyframes neonHum{0%,100%{opacity:1}61%{opacity:.35}62%{opacity:1}63%{opacity:.5}64%{opacity:1}88%{opacity:.7}89%{opacity:1}}
 @media (prefers-reduced-motion: reduce){.neon{animation:none}}
@@ -199,9 +199,9 @@ html{scroll-behavior:smooth}
     <div style="position: relative; width: 100%; max-width: 1280px; margin: 0 auto; padding: 88px 24px; box-sizing: border-box">
       <div style="max-width: 660px; display: flex; flex-direction: column; gap: 22px">
         <p class="hero-gl" style="--d: 0.15s; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">TABLETOP ROLE-PLAYING GAME</p>
-        <!-- official animated logo (same as Home) with a neon TRPG sign in its empty lower-left corner -->
+        <!-- official animated logo (same as Home) with a neon TRPG sign on its right -->
         <h1 class="neon-box" style="margin: 0; line-height: 0">
-          <span class="logo-in" style="display: block"><img src="assets/logo-animated.webp" alt="Shifter Punkz" width="1200" height="433" style="display: block; width: 100%; height: auto"></span>
+          <span class="logo-in" style="display: block; width: 76%"><img src="assets/logo-animated.webp" alt="Shifter Punkz" width="1200" height="433" style="display: block; width: 100%; height: auto"></span>
           <span class="neon">TRPG</span>
         </h1>
         <p class="hero-gl" style="--d: 0.5s; margin: 0; font-size: 19px; line-height: 1.7; color: #D8D6E8">{{t.heroSub}}</p>
