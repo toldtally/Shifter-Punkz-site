@@ -702,7 +702,15 @@ class Component extends DCLogic {
       feed: [
         { at: now - 12000, id: 'kaew', th: 'ใช้ Blink (WM −2)', en: 'used Blink (WM −2)' },
         { at: now - 40000, id: 'tum', th: 'ได้รับ +1 EX', en: 'gained +1 EX' },
-        { at: now - 300000, id: 'som', th: 'ออฟไลน์', en: 'went offline' }
+        { at: now - 300000, id: 'som', th: 'ออฟไลน์', en: 'went offline' },
+        { at: now - 420000, id: 'kaew', th: 'IP 10→8', en: 'IP 10→8' },
+        { at: now - 480000, id: 'tum', th: 'ใช้ Advance pts 1 แต้ม', en: 'spent 1 Advance pt' },
+        { at: now - 560000, id: 'som', th: 'ทอยได้คู่ [8] ได้ +1 SE', en: 'rolled a pair of [8], +1 SE' },
+        { at: now - 640000, id: 'kaew', th: 'ใช้ Replace สลับวัตถุ (WM −3)', en: 'used Replace (WM −3)' },
+        { at: now - 720000, id: 'tum', th: 'ติดสถานะ Bleeding', en: 'is now Bleeding' },
+        { at: now - 800000, id: 'som', th: 'เข้าร่วม session', en: 'joined the session' },
+        { at: now - 860000, id: 'tum', th: 'เข้าร่วม session', en: 'joined the session' },
+        { at: now - 900000, id: 'kaew', th: 'เข้าร่วม session', en: 'joined the session' }
       ],
       step: 0
     };
@@ -810,7 +818,7 @@ class Component extends DCLogic {
     const at = Date.now();
     const chars = Object.assign({}, this.state.chars);
     chars[ev.id] = Object.assign(ev.fn(chars[ev.id]), { at: at });
-    this.setState({ chars: chars, step: this.state.step + 1, feed: [{ at: at, id: ev.id, th: ev.th, en: ev.en }].concat(this.state.feed).slice(0, 12) });
+    this.setState({ chars: chars, step: this.state.step + 1, feed: [{ at: at, id: ev.id, th: ev.th, en: ev.en }].concat(this.state.feed).slice(0, 100) });
   }
   renderVals() {
     const th = this.state.lang !== 'en';

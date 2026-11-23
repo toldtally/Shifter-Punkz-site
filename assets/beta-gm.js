@@ -84,7 +84,7 @@
       this.apply({ sid: sid, session: sess, turn: sess.turn || 0, round: sess.round || 1, order: sess.turn_order || [], copied: false, confirm: null });
       if (history.replaceState) history.replaceState(null, '', 'gm.html?s=' + sid);
       await this.loadParty();
-      var ev = await sb.from('session_events').select('*').eq('session_id', sid).order('created_at', { ascending: false }).limit(30);
+      var ev = await sb.from('session_events').select('*').eq('session_id', sid).order('created_at', { ascending: false }).limit(100);
       this.apply({ events: ev.data || [], ready: true });
       await this.loadNotes();
       await this.loadScenes();
@@ -213,7 +213,7 @@
       this._ch = sb.channel('gm-' + sid)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'session_members', filter: 'session_id=eq.' + sid }, () => this.loadParty())
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'session_events', filter: 'session_id=eq.' + sid }, (p) => {
-          this.apply({ events: [p.new].concat(this.state.events).slice(0, 30) });
+          this.apply({ events: [p.new].concat(this.state.events).slice(0, 100) });
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'characters' }, (p) => {
           var row = p.new; if (!row || !this.state.chars[row.id]) return;
