@@ -15,10 +15,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "design"
 
-FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E"
-           "%3Crect width='28' height='28' fill='%230B0A12'/%3E"
-           "%3Cpath d='M4 4h12l8 8v12H12L4 16z' fill='none' stroke='%23FF2E88' stroke-width='2.5'/%3E"
-           "%3Cpath d='M10 10h6v6h-6z' fill='%232EE6F0'/%3E%3C/svg%3E")
 
 EXTRA_CSS = """
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
@@ -310,7 +306,12 @@ def build(cfg):
 <meta property="og:description" content="{cfg['desc']}">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0B0A12">
-<link rel="icon" href="{FAVICON}">
+<link rel="icon" href="{up}assets/icons/favicon.ico" sizes="48x48">
+<link rel="icon" href="{up}assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="{up}assets/icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="{up}assets/icons/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="{up}assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="{up}assets/icons/site.webmanifest">
 {helmet}
 </head>
 <body>
