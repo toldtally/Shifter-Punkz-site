@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="assets/icons/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Orbitron:wght@400&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=VT323&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -96,14 +96,14 @@ a{color:#2EE6F0}a:hover{color:#FF2E88}
 70%{opacity:.8}
 76%{opacity:1;filter:drop-shadow(-1px 0 rgba(255,46,136,.5)) drop-shadow(1px 0 rgba(46,230,240,.5))}
 100%{opacity:1;clip-path:inset(0 0 0 0);transform:none;filter:none}}
-/* TRPG neon sign beside the logo: switches on after the logo lands, then hums with the odd flicker */
-.neon{position:absolute;right:0;bottom:16%;margin:0;font-family:'Orbitron','Chakra Petch',sans-serif;font-weight:400;font-size:6.6cqw;line-height:1;letter-spacing:.04em;color:#F2FEFF;transform:scaleX(1.12);transform-origin:right bottom;
-text-shadow:0 0 .02em #fff,0 0 .06em #fff,0 0 .12em #2EE6F0,0 0 .24em #2EE6F0,0 0 .45em #2EE6F0,0 0 .8em rgba(46,230,240,.55);
-animation:neonOn 1.3s steps(1,end) 1.4s both,neonHum 7s steps(1,end) 2.7s infinite}
+/* TRPG as BIOS text beside the logo: typed out after the logo lands, block cursor keeps blinking */
 .neon-box{position:relative;container-type:inline-size;width:660px;max-width:100%}
-@keyframes neonOn{0%{opacity:0}8%{opacity:.9}12%{opacity:0}26%{opacity:.6}30%{opacity:0}44%{opacity:1}50%{opacity:.25}56%{opacity:1}100%{opacity:1}}
-@keyframes neonHum{0%,100%{opacity:1}61%{opacity:.35}62%{opacity:1}63%{opacity:.5}64%{opacity:1}88%{opacity:.7}89%{opacity:1}}
-@media (prefers-reduced-motion: reduce){.neon{animation:none}}
+.bios{position:absolute;right:0;bottom:18%;margin:0;display:flex;align-items:flex-end;font-family:'VT323','JetBrains Mono',monospace;font-weight:400;font-size:9.6cqw;line-height:.8;letter-spacing:.04em;color:#D8FCFF;text-shadow:0 0 .06em rgba(46,230,240,.9),0 0 .2em rgba(46,230,240,.45)}
+.bios-txt{display:inline-block;overflow:hidden;white-space:nowrap;width:4.2ch;animation:biosType .5s steps(4,end) 1.5s both}
+.bios-cur{display:inline-block;width:.5em;height:.72em;margin-left:.06em;margin-bottom:.04em;background:#2EE6F0;box-shadow:0 0 .2em rgba(46,230,240,.7);animation:biosBlink 1.06s steps(1,end) infinite}
+@keyframes biosType{from{width:0}to{width:4.2ch}}
+@keyframes biosBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
+@media (prefers-reduced-motion: reduce){.bios-txt,.bios-cur{animation:none}}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
 [data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
@@ -199,10 +199,10 @@ html{scroll-behavior:smooth}
     <div style="position: relative; width: 100%; max-width: 1280px; margin: 0 auto; padding: 88px 24px; box-sizing: border-box">
       <div style="max-width: 660px; display: flex; flex-direction: column; gap: 22px">
         <p class="hero-gl" style="--d: 0.15s; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">TABLETOP ROLE-PLAYING GAME</p>
-        <!-- official animated logo (same as Home) with a neon TRPG sign on its right -->
+        <!-- official animated logo (same as Home) with TRPG typed like BIOS text on its right -->
         <h1 class="neon-box" style="margin: 0; line-height: 0">
           <span class="logo-in" style="display: block; width: 76%"><img src="assets/logo-animated.webp" alt="Shifter Punkz" width="1200" height="433" style="display: block; width: 100%; height: auto"></span>
-          <span class="neon">TRPG</span>
+          <span class="bios"><span class="bios-txt">TRPG</span><span class="bios-cur" aria-hidden="true"></span></span>
         </h1>
         <p class="hero-gl" style="--d: 0.5s; margin: 0; font-size: 19px; line-height: 1.7; color: #D8D6E8">{{t.heroSub}}</p>
         <div class="hero-gl" style="--d: 0.65s; display: flex; flex-direction: column; gap: 12px; margin-top: 6px">
