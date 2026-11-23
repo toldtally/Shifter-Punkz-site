@@ -81,22 +81,6 @@ a{color:#2EE6F0}a:hover{color:#FF2E88}
 95%{transform:translateX(2px);text-shadow:-1px 0 rgba(255,46,136,.6),1px 0 rgba(46,230,240,.6)}
 96%{transform:none;text-shadow:none}}
 @media (prefers-reduced-motion: reduce){.tv::before,.tv::after,.tv-in,.tv-txt{animation:none}}
-/* hero logo: light glitch on a loop (placeholder until the official logo) */
-.logo-gl{animation:logoJit 4.8s steps(1,end) infinite}
-.logo-gl .logo-txt{animation:logoTxt 4.8s steps(1,end) infinite}
-@keyframes logoJit{0%,100%{transform:none;filter:none}
-88%{transform:translateX(-.02em);filter:drop-shadow(-.02em 0 rgba(255,46,136,.75)) drop-shadow(.02em 0 rgba(46,230,240,.75))}
-89%{transform:translateX(.03em);filter:drop-shadow(.02em 0 rgba(255,46,136,.75)) drop-shadow(-.02em 0 rgba(46,230,240,.75))}
-90%{transform:none;filter:none}
-94%{transform:translateX(.01em);filter:drop-shadow(-.01em 0 rgba(255,46,136,.6)) drop-shadow(.01em 0 rgba(46,230,240,.6))}
-95%{transform:none;filter:none}}
-@keyframes logoTxt{0%,100%{clip-path:none;opacity:1}
-88%{clip-path:inset(0 0 55% 0)}
-89%{clip-path:inset(45% 0 0 0);opacity:.85}
-90%{clip-path:none;opacity:1}
-94%{opacity:.7}
-95%{opacity:1}}
-@media (prefers-reduced-motion: reduce){.logo-gl,.logo-gl .logo-txt{animation:none}}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
 [data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
@@ -202,7 +186,8 @@ html{scroll-behavior:smooth}
     <div style="position: relative; width: 100%; max-width: 1280px; margin: 0 auto; padding: 96px 24px; box-sizing: border-box">
     <div style="max-width: 640px; display: flex; flex-direction: column; gap: 24px">
       <p class="hero-gl" style="--d: 0.15s; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">CYBERPUNK · BIOPUNK · ACTION · BANGKOK 26XX</p>
-      <h1 class="hero-gl" style="--d: 0.3s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(56px, 9vw, 120px); line-height: 0.9; letter-spacing: 0.02em; color: #FFFFFF; text-shadow: 0 0 24px rgba(255,46,136,0.55)"><span class="logo-gl" style="display: inline-block"><span class="logo-txt" style="display: inline-block">SHIFTER<br><span style="color: #FF2E88">PUNKZ</span></span></span></h1>
+      <!-- official animated logo (looping WebP, 48 frames, 3.6 s) -->
+      <h1 style="margin: 0; line-height: 0"><img src="assets/logo-animated.webp" alt="Shifter Punkz" width="1200" height="433" style="display: block; width: 600px; max-width: 100%; height: auto"></h1>
       <p class="hero-gl" style="--d: 0.5s; margin: 0; font-size: 19px; line-height: 1.7; max-width: 600px; color: #D8D6E8; width: 660px; height: 105px">{{t.heroSub}}</p>
     </div>
     </div>
