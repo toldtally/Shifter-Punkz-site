@@ -282,7 +282,7 @@ def build(cfg):
     depth = out.count("/")
     up = "../" * depth
     # the nav logo sits beside the artboards in the design; on the site it lives in assets/
-    for img in ("logo-shifterpunkz.png", "logo-animated.webp"):
+    for img in ("logo-shifterpunkz.png", "logo-animated.webp", "logo-z.png"):
         body = body.replace('src="%s"' % img, 'src="%sassets/%s"' % (up, img))
     scripts = '<script src="%sassets/dc.js"></script>\n' % up
     if cfg.get("beta"):
