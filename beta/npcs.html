@@ -199,6 +199,9 @@ html{scroll-behavior:smooth}
               <sc-for list="{{links}}" as="l" hint-placeholder-count="3">
                 <button type="button" class="mm-tag" onClick="{{l.pick}}" aria-pressed="{{l.pressed}}" aria-label="{{l.aria}}" style="left: {{l.mx}}px; top: {{l.my}}px; border-color: {{l.color}}; color: {{l.color}}; background: {{l.bg}}">{{l.label}}</button>
               </sc-for>
+              <sc-if value="{{boxOn}}" hint-placeholder-val="{{ false }}">
+                <div aria-hidden="true" style="position: absolute; z-index: 3; left: {{box.x}}px; top: {{box.y}}px; width: {{box.w}}px; height: {{box.h}}px; border: 1px dashed #2EE6F0; background: rgba(46,230,240,0.08); pointer-events: none"></div>
+              </sc-if>
               <sc-for list="{{nodes}}" as="n" hint-placeholder-count="4">
                 <button type="button" class="mm-node" data-mm-drag="{{n.key}}" onClick="{{n.pick}}" aria-pressed="{{n.pressed}}" aria-label="{{n.aria}}" title="{{n.tip}}" style="left: {{n.x}}px; top: {{n.y}}px; border-color: {{n.border}}; box-shadow: {{n.ring}}">
                   <span class="mm-pic" style="border-color: {{n.color}}">
@@ -249,6 +252,19 @@ html{scroll-behavior:smooth}
                 </li>
               </sc-for>
             </ul>
+          </div>
+        </sc-if>
+
+        <!-- several cards selected (box or Shift+click) -->
+        <sc-if value="{{selMulti}}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 12px">
+            <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #C9EEF0">{{t.multiTip}}</p>
+            <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 480px; overflow-y: auto">
+              <sc-for list="{{multiItems}}" as="mi" hint-placeholder-count="3">
+                <li><button type="button" onClick="{{mi.pick}}" style="width: 100%; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 10px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid #2EE6F0; cursor: pointer; text-align: left; color: #D8D6E8; font-size: 13px"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: #2EE6F0">{{mi.kind}}</span><span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{mi.name}}</span></button></li>
+              </sc-for>
+            </ul>
+            <button type="button" onClick="{{deselect}}" style="align-self: flex-start; min-height: 38px; padding: 0 14px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.clearSel}}</button>
           </div>
         </sc-if>
 
@@ -494,14 +510,14 @@ class Component extends DCLogic {
     this.state = {
       lang: 'th', toast: '', zoom: 0.7, q: '',
       npcs: d.npcs, gangs: d.gangs, pcs: d.pcs, links: d.links, pool: d.pool,
-      sel: null, linkMode: false, linkFrom: null, askDel: false
+      sel: null, multi: [], box: null, linkMode: false, linkFrom: null, askDel: false
     };
   }
   componentDidMount() {
     this._down = (e) => this.dragStart(e);
     this._move = (e) => this.dragMove(e);
     this._up = () => this.dragEnd();
-    this._key = (e) => { if (e.key === 'Escape' && (this.state.linkMode || this.state.sel)) this.setState({ linkMode: false, linkFrom: null, sel: this.state.linkMode ? this.state.sel : null, askDel: false }); };
+    this._key = (e) => { if (e.key === 'Escape' && (this.state.linkMode || this.state.sel || (this.state.multi || []).length)) this.setState({ linkMode: false, linkFrom: null, sel: this.state.linkMode ? this.state.sel : null, multi: this.state.linkMode ? this.state.multi : [], askDel: false }); };
     document.addEventListener('pointerdown', this._down);
     document.addEventListener('pointermove', this._move);
     document.addEventListener('pointerup', this._up);
@@ -597,16 +613,56 @@ class Component extends DCLogic {
   dragStart(e) {
     if (e.button !== 0 || !e.target || !e.target.closest) return;
     const h = e.target.closest('[data-mm-drag],[data-mm-resize]');
-    if (!h) return;
+    if (!h) return this.boxStart(e);
     const key = h.getAttribute('data-mm-drag') || 'resize:' + h.getAttribute('data-mm-resize');
     if (this.state.linkMode && key.indexOf('gang:') !== 0 && key.indexOf('resize:') !== 0) return;
     const gid = key.indexOf('resize:') === 0 ? key.slice(7) : null;
     const node = gid ? this.state.gangs.find((g) => g.id === gid) : this.nodeOf(key);
     if (!node) return;
+    const multi = this.state.multi || [];
+    const group = multi.length > 1 && multi.indexOf(key) !== -1 ? multi.filter((k) => k !== key).map((k) => { const n = this.nodeOf(k); return n ? { key: k, x: n.x, y: n.y } : null; }).filter(Boolean) : [];
     const members = key.indexOf('gang:') === 0 ? this.state.npcs.filter((n) => n.gang === node.id).map((n) => ({ id: n.id, x: n.x, y: n.y })) : [];
-    this._drag = { key: key, sx: e.clientX, sy: e.clientY, x: node.x, y: node.y, w: node.w, h: node.h, members: members, moved: false };
+    this._drag = { group: group, key: key, sx: e.clientX, sy: e.clientY, x: node.x, y: node.y, w: node.w, h: node.h, members: members, moved: false };
+  }
+  /* drag on empty map space draws a box; the cards inside it become the selection */
+  boxStart(e) {
+    if (this.state.linkMode) return;
+    const sc = document.getElementById('mm-scroll'), board = document.getElementById('mm-board');
+    if (!sc || !board || !sc.contains(e.target)) return;
+    const r = sc.getBoundingClientRect();
+    if (e.clientX - r.left > sc.clientWidth || e.clientY - r.top > sc.clientHeight) return; // the scrollbars
+    const b = board.getBoundingClientRect(), z = this.state.zoom;
+    const x = (e.clientX - b.left) / z, y = (e.clientY - b.top) / z;
+    if (e.cancelable) e.preventDefault();
+    this._box = { x0: x, y0: y, x1: x, y1: y, add: e.shiftKey, base: e.shiftKey ? (this.state.multi || []).slice() : [] };
+  }
+  boxMove(e) {
+    const bx = this._box, board = document.getElementById('mm-board');
+    if (!bx || !board) return;
+    const b = board.getBoundingClientRect(), z = this.state.zoom;
+    bx.x1 = Math.min(Math.max((e.clientX - b.left) / z, 0), NPC_W);
+    bx.y1 = Math.min(Math.max((e.clientY - b.top) / z, 0), NPC_H);
+    if (Math.abs(bx.x1 - bx.x0) + Math.abs(bx.y1 - bx.y0) < 6 / z) return;
+    // keep the edge of the view moving while the box is pulled past it
+    const sc = document.getElementById('mm-scroll'), r = sc.getBoundingClientRect();
+    if (e.clientX > r.right - 30) sc.scrollLeft += 18; else if (e.clientX < r.left + 30) sc.scrollLeft -= 18;
+    if (e.clientY > r.bottom - 30) sc.scrollTop += 18; else if (e.clientY < r.top + 30) sc.scrollTop -= 18;
+    const x0 = Math.min(bx.x0, bx.x1), x1 = Math.max(bx.x0, bx.x1), y0 = Math.min(bx.y0, bx.y1), y1 = Math.max(bx.y0, bx.y1);
+    const inside = this.state.npcs.map((n) => ['npc:' + n.id, n]).concat(this.state.pcs.map((p) => ['pc:' + p.id, p]))
+      .filter((q) => q[1].x >= x0 && q[1].x <= x1 && q[1].y >= y0 && q[1].y <= y1).map((q) => q[0]);
+    bx.moved = true;
+    this.setState({ box: { x: Math.round(x0), y: Math.round(y0), w: Math.round(x1 - x0), h: Math.round(y1 - y0) }, multi: bx.base.concat(inside.filter((k) => bx.base.indexOf(k) === -1)), sel: null, askDel: false });
+  }
+  boxEnd() {
+    const bx = this._box;
+    this._box = null;
+    if (!bx) return;
+    if (!bx.moved) { if (!bx.add && ((this.state.multi || []).length || this.state.sel)) this.setState({ multi: [], sel: null, askDel: false }); return; }
+    const m = this.state.multi || [];
+    this.setState({ box: null, multi: m.length > 1 ? m : [], sel: m.length === 1 ? { kind: m[0].slice(0, m[0].indexOf(':')), id: m[0].slice(m[0].indexOf(':') + 1) } : null });
   }
   dragMove(e) {
+    if (this._box) return this.boxMove(e);
     const d = this._drag;
     if (!d) return;
     const z = this.state.zoom, dx = (e.clientX - d.sx) / z, dy = (e.clientY - d.sy) / z;
@@ -627,10 +683,17 @@ class Component extends DCLogic {
       });
     }
     const p = this.clamp(d.x + dx, d.y + dy);
-    if (k === 'npc') this.setState({ npcs: this.state.npcs.map((n) => (n.id === id ? Object.assign({}, n, p) : n)) });
-    if (k === 'pc') this.setState({ pcs: this.state.pcs.map((n) => (n.id === id ? Object.assign({}, n, p) : n)) });
+    const mx = p.x - d.x, my = p.y - d.y;
+    const at = {};
+    at[d.key] = p;
+    d.group.forEach((g) => { at[g.key] = this.clamp(g.x + mx, g.y + my); });
+    this.setState({
+      npcs: this.state.npcs.map((n) => (at['npc:' + n.id] ? Object.assign({}, n, at['npc:' + n.id]) : n)),
+      pcs: this.state.pcs.map((n) => (at['pc:' + n.id] ? Object.assign({}, n, at['pc:' + n.id]) : n))
+    });
   }
   dragEnd() {
+    if (this._box) return this.boxEnd();
     const d = this._drag;
     this._drag = null;
     if (!d || !d.moved) return;
@@ -638,13 +701,17 @@ class Component extends DCLogic {
     this._dragAt = Date.now();
     setTimeout(() => { this._dragAt = 0; }, 60);
     const [k, id] = [d.key.slice(0, d.key.indexOf(':')), d.key.slice(d.key.indexOf(':') + 1)];
-    if (k === 'npc') {
-      const n = this.state.npcs.find((x) => x.id === id);
-      const gang = this.gangAt(n.x, n.y);
-      if (gang !== n.gang) this.toastGang(n, gang);
-      this.editNpc(id, { gang: gang });
-    } else if (k === 'pc') {
-      this.commit('pc', this.state.pcs.find((x) => x.id === id));
+    if (k === 'npc' || k === 'pc') {
+      // every card that moved: NPCs join or leave the gang frame they landed in
+      [d.key].concat(d.group.map((g) => g.key)).forEach((key) => {
+        const kk = key.slice(0, key.indexOf(':')), kid = key.slice(key.indexOf(':') + 1);
+        if (kk === 'pc') return this.commit('pc', this.state.pcs.find((x) => x.id === kid));
+        const n = this.state.npcs.find((x) => x.id === kid);
+        if (!n) return;
+        const gang = this.gangAt(n.x, n.y);
+        if (gang !== n.gang && !d.group.length) this.toastGang(n, gang);
+        this.editNpc(kid, { gang: gang });
+      });
     } else {
       const gid = k === 'resize' ? id : id;
       this.commit('gang', this.state.gangs.find((g) => g.id === gid));
@@ -662,9 +729,15 @@ class Component extends DCLogic {
   justDragged() { return this._dragAt && Date.now() - this._dragAt < 350; }
 
   /* ---- clicks on the map ---- */
-  pickNode(key) {
+  pickNode(key, e) {
     if (this.justDragged()) return;
-    if (!this.state.linkMode) return this.setState({ sel: { kind: key.slice(0, key.indexOf(':')), id: key.slice(key.indexOf(':') + 1) }, askDel: false });
+    if (!this.state.linkMode && e && (e.shiftKey || e.metaKey || e.ctrlKey)) {
+      const cur = (this.state.multi || []).slice();
+      if (!cur.length && this.state.sel && (this.state.sel.kind === 'npc' || this.state.sel.kind === 'pc')) cur.push(this.state.sel.kind + ':' + this.state.sel.id);
+      const m = cur.indexOf(key) === -1 ? cur.concat([key]) : cur.filter((k) => k !== key);
+      return this.setState({ multi: m.length > 1 ? m : [], sel: m.length === 1 ? { kind: m[0].slice(0, m[0].indexOf(':')), id: m[0].slice(m[0].indexOf(':') + 1) } : null, askDel: false });
+    }
+    if (!this.state.linkMode) return this.setState({ sel: { kind: key.slice(0, key.indexOf(':')), id: key.slice(key.indexOf(':') + 1) }, multi: [], askDel: false });
     if (!this.state.linkFrom) return this.setState({ linkFrom: key });
     if (this.state.linkFrom === key) return this.setState({ linkFrom: null });
     const a = this.state.linkFrom, b = key;
@@ -695,21 +768,21 @@ class Component extends DCLogic {
     const initial = (n) => (((n || '').match(/[ก-ฮA-Za-z0-9]/) || ['?'])[0]).toUpperCase();
     // nodes: NPCs first, then PCs on the map
     const nodes = s.npcs.map((n) => {
-      const f = F(n.factor), key = 'npc:' + n.id, src = s.linkFrom === key, pressed = isSel('npc', n.id);
+      const f = F(n.factor), key = 'npc:' + n.id, src = s.linkFrom === key, pressed = isSel('npc', n.id) || (s.multi || []).indexOf(key) !== -1;
       return {
         key: key, x: n.x, y: n.y, name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), pic: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: initial(n.name),
         color: f.color, border: pressed || src ? '#FFFFFF' : '#3A3655', ring: src ? '0 0 0 3px #2EE6F0, 0 0 24px rgba(46,230,240,0.5)' : pressed ? '0 0 0 2px ' + f.color + ', 0 10px 26px rgba(0,0,0,0.6)' : '0 6px 16px rgba(0,0,0,0.45)',
         chip: n.gang ? gangName(n.gang) : 'NPC', chipColor: n.gang ? (s.gangs.find((g) => g.id === n.gang) || {}).color || '#A9A5C2' : '#8C88A6',
         pressed: pressed ? 'true' : 'false', aria: 'NPC ' + (n.name || ''), tip: L('ลากเพื่อย้าย · คลิกเพื่อแก้ไข', 'Drag to move · click to edit'),
-        pick: () => this.pickNode(key)
+        pick: (e) => this.pickNode(key, e)
       };
     }).concat(s.pcs.map((p) => {
-      const key = 'pc:' + p.id, src = s.linkFrom === key, pressed = isSel('pc', p.id), c = PCC[p.factor] || '#2EE6F0';
+      const key = 'pc:' + p.id, src = s.linkFrom === key, pressed = isSel('pc', p.id) || (s.multi || []).indexOf(key) !== -1, c = PCC[p.factor] || '#2EE6F0';
       return {
         key: key, x: p.x, y: p.y, name: p.name, pic: p.pic || '', hasPic: !!p.pic, noPic: !p.pic, initial: initial(p.name), color: c,
         border: pressed || src ? '#FFFFFF' : '#2EE6F0', ring: src ? '0 0 0 3px #2EE6F0, 0 0 24px rgba(46,230,240,0.5)' : pressed ? '0 0 0 2px #2EE6F0, 0 10px 26px rgba(0,0,0,0.6)' : '0 6px 16px rgba(0,0,0,0.45)',
         chip: 'PC · ' + (PCF[p.factor] || 'PC'), chipColor: '#2EE6F0', pressed: pressed ? 'true' : 'false', aria: 'PC ' + p.name, tip: L('ลากเพื่อย้าย · คลิกเพื่อดู', 'Drag to move · click to view'),
-        pick: () => this.pickNode(key)
+        pick: (e) => this.pickNode(key, e)
       };
     }));
     const pos = {};
@@ -744,9 +817,14 @@ class Component extends DCLogic {
     const curLink = sel && sel.kind === 'link' ? s.links.find((l) => l.id === sel.id) : null;
     const curPc = sel && sel.kind === 'pc' ? s.pcs.find((p) => p.id === sel.id) : null;
     v.selNpc = !!curNpc; v.selGang = !!curGang; v.selLink = !!curLink; v.selPc = !!curPc;
-    v.selNone = !curNpc && !curGang && !curLink && !curPc; v.hasSel = !v.selNone;
-    v.insTitle = curNpc ? 'NPC' : curGang ? L('แก๊ง / กลุ่ม', 'GANG') : curLink ? L('ความสัมพันธ์', 'RELATIONSHIP') : curPc ? 'PC' : L('NPC ทั้งหมด', 'ALL NPCS');
-    v.insColor = curNpc ? F(curNpc.factor).color : curGang ? curGang.color : curLink ? this.kindOf(curLink.kind).color : curPc ? '#2EE6F0' : '#FFD400';
+    const multi = (s.multi || []).filter((k) => this.nodeOf(k));
+    v.selMulti = multi.length > 1 && !curNpc && !curGang && !curLink && !curPc;
+    v.selNone = !curNpc && !curGang && !curLink && !curPc && !v.selMulti; v.hasSel = !v.selNone;
+    v.multiItems = multi.map((k) => ({ name: this.nameOf(k), kind: k.indexOf('pc:') === 0 ? 'PC' : 'NPC', pick: () => this.setState({ sel: { kind: k.slice(0, k.indexOf(':')), id: k.slice(k.indexOf(':') + 1) }, multi: [] }) }));
+    v.multiCount = multi.length;
+    v.boxOn = !!s.box; v.box = s.box || { x: 0, y: 0, w: 0, h: 0 };
+    v.insTitle = v.selMulti ? L('เลือก ' + multi.length + ' การ์ด', multi.length + ' CARDS SELECTED') : curNpc ? 'NPC' : curGang ? L('แก๊ง / กลุ่ม', 'GANG') : curLink ? L('ความสัมพันธ์', 'RELATIONSHIP') : curPc ? 'PC' : L('NPC ทั้งหมด', 'ALL NPCS');
+    v.insColor = v.selMulti ? '#2EE6F0' : curNpc ? F(curNpc.factor).color : curGang ? curGang.color : curLink ? this.kindOf(curLink.kind).color : curPc ? '#2EE6F0' : '#FFD400';
     const q = String(s.q || '').trim().toLowerCase();
     const listed = s.npcs.filter((n) => !q || (n.name + ' ' + (n.role || '') + ' ' + gangName(n.gang)).toLowerCase().indexOf(q) !== -1);
     v.npcList = listed.map((n) => ({
@@ -827,7 +905,7 @@ class Component extends DCLogic {
       if (curGang) this.drop('gang', curGang.id);
     };
     v.doDelLink = () => { this.setState({ links: s.links.filter((l) => l.id !== curLink.id), sel: null, toast: L('ลบเส้นความสัมพันธ์แล้ว', 'Relationship deleted') }); this.drop('link', curLink.id); };
-    v.deselect = () => this.setState({ sel: null, askDel: false });
+    v.deselect = () => this.setState({ sel: null, multi: [], askDel: false });
 
     // toolbar
     v.addNpc = () => {
@@ -925,7 +1003,9 @@ class Component extends DCLogic {
         addGang: L('+ แก๊ง / กลุ่ม', '+ Gang'),
         addPc: L('เพิ่ม PC ลงแผนผัง', 'Add a PC to the map'),
         mapLabel: L('แผนผังความสัมพันธ์ NPC', 'NPC relationship map'),
-        mapTip: L('ลากการ์ดเพื่อย้าย · ลาก NPC เข้ากรอบแก๊งเพื่อให้สังกัด', 'Drag cards to move · drop an NPC in a gang frame to join it'),
+        mapTip: L('ลากการ์ดเพื่อย้าย · ลากที่ว่างเพื่อคลุมหลายการ์ด · Shift+คลิกเพื่อเลือกเพิ่ม · ลาก NPC เข้ากรอบแก๊งเพื่อให้สังกัด', 'Drag cards to move · drag empty space to box-select · Shift+click to add · drop an NPC in a gang frame to join it'),
+        multiTip: L('ลากการ์ดใบไหนก็ได้ที่เลือกไว้ เพื่อย้ายทั้งหมดพร้อมกัน กด Esc หรือคลิกที่ว่างเพื่อยกเลิกการเลือก', 'Drag any selected card to move them all together. Esc or a click on empty space clears the selection.'),
+        clearSel: L('ยกเลิกการเลือก', 'Clear selection'),
         zoomIn: L('ขยาย', 'Zoom in'), zoomOut: L('ย่อ', 'Zoom out'), fit: L('พอดีจอ', 'FIT'),
         dragTip: L('ลากเพื่อย้ายทั้งแก๊ง · คลิกเพื่อแก้ไข', 'Drag to move the whole gang · click to edit'),
         resizeTip: L('ลากเพื่อปรับขนาดกรอบ', 'Drag to resize'),
