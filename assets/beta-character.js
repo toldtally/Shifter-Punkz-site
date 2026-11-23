@@ -37,6 +37,10 @@
       var seat = this.state.seat;
       return seat && seat.character_id === this.state.charId && this.state.charId && seat.sessions ? seat.sessions.scene || null : null;
     }
+    encounterNow() {
+      var seat = this.state.seat;
+      return seat && seat.character_id === this.state.charId && this.state.charId && seat.sessions ? SP.encounterList(seat.sessions.encounter) : [];
+    }
     say(th, en) { this.setState({ msg: this.th() ? th : en }); }
 
     async loadChar() {
@@ -51,7 +55,7 @@
 
     async loadSeat() {
       // a player may sit in one campaign and one one-shot at a time; this sheet cares about its own seat
-      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level), characters(name)').eq('user_id', this.state.profile.id);
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter), characters(name)').eq('user_id', this.state.profile.id);
       var seats = (m.data || []).filter(function (x) { return x.sessions; });
       var seat = seats.find((x) => x.character_id === this.state.charId) || null;
       this.setState({ seats: seats, seat: seat, conflict: null, tbl: Object.assign({}, this.state.tbl, {

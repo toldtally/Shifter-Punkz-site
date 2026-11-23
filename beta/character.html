@@ -91,6 +91,13 @@ textarea.fld{resize:vertical;line-height:1.45}
 @keyframes scimgB{from{opacity:0;filter:brightness(2.5) contrast(1.4)}to{opacity:1;filter:none}}
 @media (prefers-reduced-motion: reduce){.scw-a,.scw-b,.scw-off,.scw-a .scimg,.scw-b .scimg{animation:none}.scrt{display:none}}
 @media (prefers-reduced-motion: reduce){.eq i{animation:none;height:8px}}
+.enc-in{animation:encIn .35s cubic-bezier(.2,.8,.2,1) both}
+.enc-card{animation:encCard .3s ease-out both}
+.enc-dot{width:9px;height:9px;border-radius:50%;background:#FF3D6E;animation:encPulse 1.2s ease-in-out infinite}
+@keyframes encIn{from{opacity:0;transform:translateY(-8px);clip-path:inset(0 0 100% 0)}to{opacity:1;transform:none;clip-path:inset(0 0 0 0)}}
+@keyframes encCard{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes encPulse{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion: reduce){.enc-in,.enc-card,.enc-dot{animation:none}}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
 [data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
@@ -274,6 +281,36 @@ html{scroll-behavior:smooth}
       <button type="button" onClick="{{sw.restore}}" style="position: fixed; z-index: 60; top: {{sw.chipY}}px; right: 16px; display: inline-flex; align-items: center; gap: 8px; max-width: calc(100vw - 32px); min-height: 40px; padding: 0 14px; border: 1px solid #FF2E88; background: #0B0A12; color: #FFFFFF; cursor: pointer; box-shadow: 0 10px 28px rgba(0,0,0,0.55); font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px"><span style="color: #FF2E88; font-family: 'JetBrains Mono', monospace; font-size: 11px">▣ SCENE</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{sw.title}}</span></button>
     </sc-if>
     </sc-for>
+
+    <!-- Encounter: NPCs the GM brought in; players see only picture, name and abnormal statuses -->
+    <sc-if value="{{encOn}}" hint-placeholder-val="{{ false }}">
+      <section aria-labelledby="enc-h" class="enc-in" style="margin-bottom: 16px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
+        <div style="padding: 8px 14px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; align-items: center; gap: 10px">
+          <span class="enc-dot" aria-hidden="true"></span>
+          <h2 id="enc-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.1em; color: #FFFFFF">ENCOUNTER</h2>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #FF3D6E">{{encCount}}</span>
+        </div>
+        <ul style="margin: 0; padding: 12px 14px; list-style: none; display: flex; gap: 12px; overflow-x: auto">
+          <sc-for list="{{encCards}}" as="ec" hint-placeholder-count="2">
+            <li class="enc-card" style="flex: 0 0 auto; width: 168px; display: flex; flex-direction: column; background: #0B0A12; border: 1px solid #FF3D6E">
+              <div style="aspect-ratio: 1 / 1; overflow: hidden; background: #1D1930; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #3A3655">
+                <sc-if value="{{ec.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{ec.url}}" alt="{{ec.name}}" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if>
+                <sc-if value="{{ec.noPic}}" hint-placeholder-val="{{ false }}">{{ec.initial}}</sc-if>
+              </div>
+              <div style="padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 6px">
+                <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{ec.name}}</span>
+                <sc-if value="{{ec.noStatus}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #8C88A6">{{t.encFine}}</span></sc-if>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px">
+                  <sc-for list="{{ec.status}}" as="st" hint-placeholder-count="1">
+                    <span title="{{st.tip}}" style="padding: 1px 6px; background: #FF3D6E; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 10.5px">{{st.n}}</span>
+                  </sc-for>
+                </div>
+              </div>
+            </li>
+          </sc-for>
+        </ul>
+      </section>
+    </sc-if>
 
     <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
 
@@ -739,7 +776,7 @@ class Component extends DCLogic {
   componentDidMount() {
     try {
       this._bc = new BroadcastChannel('sp-bgm');
-      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'state') this.onBgm(ev.data); if (ev.data && ev.data.type === 'scene') this.setState({ scene: ev.data.scene || null }); };
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'state') this.onBgm(ev.data); if (ev.data && ev.data.type === 'scene') this.setState({ scene: ev.data.scene || null }); if (ev.data && ev.data.type === 'encounter') this.setState({ encounter: ev.data.encounter || null }); };
       this._bc.postMessage({ type: 'hello' });
     } catch (e) { this._bc = null; }
   }
@@ -758,6 +795,8 @@ class Component extends DCLogic {
   }
   /* the picture the GM is showing (canvas: BroadcastChannel; live site: sessions.scene of the seated session) */
   sceneNow() { return this.state.scene || null; }
+  /* NPCs in the GM's encounter (canvas: BroadcastChannel; live site: sessions.encounter of the seated session) */
+  encounterNow() { const v = this.state.encounter; return (Array.isArray(v) ? v : []).filter((x) => x && x.id).slice(0, 8); }
   /* sessions.scene holds one picture (older saves) or a list of up to 4 */
   sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 4); }
   /* a seated character keeps its Factor until it leaves the session */
@@ -1041,7 +1080,17 @@ class Component extends DCLogic {
     });
     this._scSlots = slots;
     const scMin = this.state.scMin || {}, scTuck = this.state.scTuck || {};
+    const encList = this.encounterNow();
+    const tipOf = {};
+    injDefs.forEach((g) => g.items.forEach((it) => { tipOf[it.n] = it.tip; }));
     const sceneVals = {
+      encOn: encList.length > 0,
+      encCount: encList.length + ' NPC',
+      encCards: encList.map((x) => ({
+        name: x.name || '?', url: x.url || '', hasPic: !!x.url, noPic: !x.url, initial: (((x.name || '').match(/[ก-ฮA-Za-z0-9]/) || ['?'])[0]).toUpperCase(),
+        noStatus: !(x.status || []).length,
+        status: (x.status || []).map((n) => ({ n: n, tip: tipOf[n] || '' }))
+      })),
       sceneWins: [0, 1, 2, 3].map((i) => {
         const cur = slots[i], sc = cur || this._scGhost[i];
         const isMin = !!(cur && scMin[i] === cur.at);
@@ -1296,6 +1345,7 @@ class Component extends DCLogic {
         factorLock: L('ล็อก Factor' + (this.state.s.factor === 'cpd' ? ' และ Division' : '') + ' ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Factor is locked while this character is in a session. Leave the session to change it.'),
         cpdNoWm: L('C.P.D. ไม่มีพลังคอสมิค — ไม่มี WM', 'C.P.D. has no cosmic power — no WM'),
         dcTip: L('DC ที่ต้องทอยให้ผ่าน', 'DC to beat'),
+        encFine: L('ไม่มีสถานะผิดปกติ', 'NO ABNORMAL STATUS'),
         phNotes: L('บันทึกส่วนตัวของผู้เล่น...', 'Your private notes...'),
         pointsLeft: L('แต้มคงเหลือ:', 'Points left:'),
         phSkill: L('ชื่อสกิล', 'Skill name'),

@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NPC Network · Shifter Punkz</title>
+<meta name="description" content="NPC ของ GM Shifter Punkz (beta)">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="NPC Network · Shifter Punkz">
+<meta property="og:description" content="NPC ของ GM Shifter Punkz (beta)">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0A12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%230B0A12'/%3E%3Cpath d='M4 4h12l8 8v12H12L4 16z' fill='none' stroke='%23FF2E88' stroke-width='2.5'/%3E%3Cpath d='M10 10h6v6h-6z' fill='%232EE6F0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;background:#0B0A12}
+a{color:#2EE6F0}a:hover{color:#FF2E88}
+.cpd-play .cpd-body{animation:cpdFade .3s ease-out .6s both}
+.crt{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:32px;pointer-events:none;background:#050508;background-image:repeating-linear-gradient(0deg,rgba(255,212,0,.07) 0 1px,transparent 1px 3px)}
+.cpd-play .crt{animation:crtOn .3s cubic-bezier(.2,.8,.2,1) both,crtOff .2s ease-in .55s forwards}
+.bl{margin:0;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.06em;color:#FFD400;white-space:nowrap;clip-path:inset(0 100% 0 0)}
+.bl-ok{color:#2EE6F0}
+.cpd-play .bl{animation:blType .12s steps(16) var(--d,0s) forwards}
+@keyframes crtOn{0%{transform:scale(0,.004);filter:brightness(4)}45%{transform:scale(1,.004);filter:brightness(3)}100%{transform:scale(1,1);filter:brightness(1)}}
+@keyframes crtOff{to{opacity:0;visibility:hidden}}
+@keyframes blType{to{clip-path:inset(0 0 0 0)}}
+@keyframes cpdFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.live-dot{animation:livePulse 1.4s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.25}}
+.flash{animation:flashIn 1.2s ease-out}
+@keyframes flashIn{0%{box-shadow:0 0 0 2px #FFD400,0 0 28px rgba(255,212,0,.45)}100%{box-shadow:0 0 0 0 rgba(255,212,0,0)}}
+.fld{width:100%;box-sizing:border-box;padding:8px 10px;background:#0B0A12;border:1px solid #2A2740;color:#FFFFFF;font-family:'IBM Plex Sans Thai',sans-serif;font-size:13px}
+.fld:focus{outline:2px solid #2EE6F0;outline-offset:-1px}
+.fld::placeholder{color:#6E6A88}
+summary{cursor:pointer;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:#D8D6E8;min-height:32px;display:flex;align-items:center}
+@media (prefers-reduced-motion: reduce){.cpd-play .cpd-body,.flash,.live-dot{animation:none}.crt{display:none}}
+.gl{animation:glIn .84s linear var(--d,0s) both}
+@keyframes glIn{0%{opacity:0;clip-path:inset(40% 0 45% 0);transform:translate3d(-16px,0,0)}7%{opacity:1;clip-path:inset(8% 0 72% 0);transform:translate3d(12px,0,0)}14%{clip-path:inset(58% 0 18% 0);transform:translate3d(-10px,0,0)}21%{clip-path:inset(0 0 0 0);transform:translate3d(6px,0,0);opacity:.45}54%{transform:translate3d(-3px,0,0);opacity:.75}100%{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+@media (prefers-reduced-motion: reduce){.gl{animation:none}}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:#A9A5C2;text-transform:uppercase}
+.mm-gang{position:absolute;box-sizing:border-box;border:2px solid;pointer-events:none}
+.mm-gang>button{pointer-events:auto;position:absolute;left:-2px;top:-2px;height:32px;max-width:calc(100% + 4px);box-sizing:border-box;display:flex;align-items:center;gap:8px;padding:0 12px;border:0;cursor:grab;color:#0B0A12;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:15px;touch-action:none;user-select:none;-webkit-user-select:none}
+.mm-gang>button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+.mm-resize{position:absolute;right:-2px;bottom:-2px;width:24px;height:24px;cursor:nwse-resize;pointer-events:auto;touch-action:none}
+.mm-node{position:absolute;z-index:2;transform:translate(-50%,-50%);width:122px;box-sizing:border-box;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;background:#151225;border:1px solid #3A3655;cursor:grab;color:#FFFFFF;touch-action:none;user-select:none;-webkit-user-select:none;transition:box-shadow .15s}
+.mm-node:active{cursor:grabbing}
+.mm-node:focus-visible{outline:2px solid #2EE6F0;outline-offset:3px}
+.mm-pic{width:64px;height:64px;box-sizing:border-box;border:2px solid;overflow:hidden;background:#0B0A12;display:flex;align-items:center;justify-content:center}
+.mm-pic img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.mm-name{max-width:100%;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:13px;line-height:1.25;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm-chip{max-width:100%;box-sizing:border-box;padding:1px 6px;border:1px solid;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.08em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm-tag{position:absolute;z-index:1;transform:translate(-50%,-50%);max-width:170px;padding:2px 8px;border:1px solid;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:12px;line-height:1.5;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm-tag:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.mm-node{transition:none}}
+
+[data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
+[data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+@media (max-width: 720px){
+  p.hero-gl{width:auto!important;height:auto!important;max-width:100%!important}
+  .hero-bg{justify-content:center!important;align-items:flex-end!important;padding:0 16px 20px!important;font-size:10px}
+  .hero-bg > *{opacity:.45}
+}
+[aria-busy="true"]{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<template id="dc-tpl">
+<div style="background: #0B0A12; color: #D8D6E8; font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; min-height: 100vh; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px)">
+
+  <div style="display: flex; align-items: stretch; background: #FFD400; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em">
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+    <p style="margin: 0; padding: 9px 16px; flex: 1; min-width: 0">{{t.advisory}}</p>
+    <div style="width: 56px; flex-shrink: 0; background: repeating-linear-gradient(45deg, #0B0A12 0 8px, #FFD400 8px 16px)" aria-hidden="true"></div>
+  </div>
+
+  <header style="border-bottom: 1px solid #2A2740">
+    <nav style="max-width: 1400px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
+      <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+        <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M4 4h12l8 8v12H12L4 16z" fill="none" stroke="#FF2E88" stroke-width="2.5"></path><path d="M10 10h6v6h-6z" fill="#2EE6F0"></path></svg>
+        <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.12em">SHIFTER<span style="color: #FF2E88">PUNKZ</span></span>
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
+        <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
+        <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+        <a href="sessions.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navTables}}</a>
+        <a href="npcs.html" aria-current="page" style="color: #FFD400; text-decoration: none; padding: 12px 0; border-bottom: 2px solid #FFD400">{{t.navNpc}}</a>
+      </div>
+      <div style="position: relative" onKeyDown="{{userMenuKey}}">
+        <button type="button" onClick="{{toggleUserMenu}}" aria-haspopup="true" aria-expanded="{{userMenuExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid {{roleColor}}; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; background: transparent; cursor: pointer">
+        <span style="width: 30px; height: 30px; background: #1D1930; border: 1px solid #3A3655; display: flex; align-items: center; justify-content: center; font-size: 13px; color: {{roleColor}}" aria-hidden="true">{{meInitial}}</span><span>{{meName}}</span>
+<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" style="margin-left: 2px"><path d="M1.5 3.5L5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+        </button>
+        <sc-if value="{{userMenuOpen}}" hint-placeholder-val="{{ false }}">
+          <div role="menu" style="position: absolute; z-index: 30; top: calc(100% + 6px); right: 0; min-width: 210px; display: flex; flex-direction: column; background: #151225; border: 1px solid #3A3655; box-shadow: 0 14px 34px rgba(0,0,0,0.55)">
+            <sc-if value="{{menuNotGm}}" hint-placeholder-val="{{ true }}">
+              <a role="menuitem" href="characters.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}</a>
+              <sc-if value="{{charJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitchedPlayer}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
+              <button type="button" role="menuitem" onClick="{{askChars}}" aria-expanded="{{charWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #2EE6F0; border-bottom: 1px solid #2A2740; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.5" r="2.8" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M2.5 14c.8-3 3-4.5 5.5-4.5s4.7 1.5 5.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuChars}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">PLAYER</span></button>
+              <sc-if value="{{charWarn}}" hint-placeholder-val="{{ false }}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #06181A; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #C9EEF0">{{charWarnText}}</p>
+                  <button type="button" onClick="{{switchToPlayer}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchPlayer}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuIsGm}}" hint-placeholder-val="{{ false }}">
+              <a role="menuitem" href="sessions.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFD400; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}</a>
+              <sc-if value="{{roleJustSwitched}}" hint-placeholder-val="{{ false }}">
+                <p role="status" style="margin: 0; padding: 8px 16px 10px; font-size: 12.5px; color: #4ADE80; border-bottom: 1px solid #2A2740">{{t.menuSwitched}}</p>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
+                <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
+                  <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
+                  <button type="button" onClick="{{switchToGm}}" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; cursor: pointer">{{t.menuSwitchRole}}</button>
+                </div>
+              </sc-if>
+            </sc-if>
+            <a role="menuitem" href="account.html" onClick="{{closeUserMenu}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #D8D6E8; border-bottom: 1px solid #2A2740"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.4" fill="none" stroke="#2EE6F0" stroke-width="1.5"></circle><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="#2EE6F0" stroke-width="1.5"></path></svg>{{t.menuSettings}}</a>
+            <a role="menuitem" href="auth.html" onClick="{{navLogout}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FF3D6E"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2.5H3v11h3M10.5 5l3 3-3 3M13.5 8H6" fill="none" stroke="#FF3D6E" stroke-width="1.5"></path></svg>{{t.menuLogout}}</a>
+          </div>
+        </sc-if>
+      </div>
+      <div role="group" aria-label="Language" style="display: flex; border: 1px solid #2EE6F0">
+        <button type="button" onClick="{{setTh}}" aria-pressed="{{thPressed}}" style="{{thStyle}}">TH</button>
+        <button type="button" onClick="{{setEn}}" aria-pressed="{{enPressed}}" style="{{enStyle}}">EN</button>
+      </div>
+    </nav>
+  </header>
+
+  <main style="max-width: 1440px; margin: 0 auto; padding: 36px 24px 96px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FFD400">ROLE // GM · {{countLabel}}</p>
+        <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">NPC Network</h1>
+        <p style="margin: 0; max-width: 720px; font-size: 14px; line-height: 1.65; color: #A9A5C2">{{t.sub}}</p>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+        <button type="button" onClick="{{addNpc}}" style="min-height: 44px; padding: 0 18px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.addNpc}}</button>
+        <button type="button" onClick="{{addGang}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.addGang}}</button>
+        <button type="button" onClick="{{toggleLink}}" aria-pressed="{{linkPressed}}" style="min-height: 44px; padding: 0 16px; border: 1px solid #2EE6F0; background: {{linkBg}}; color: {{linkFg}}; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{linkBtn}}</button>
+        <label for="mm-addpc" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.addPc}}</label>
+        <select id="mm-addpc" class="fld" onChange="{{addPc}}" disabled="{{pcPoolOff}}" style="width: auto; min-height: 44px; padding: 0 10px; border-color: #2EE6F0; color: #2EE6F0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer">
+          <option value="" selected>{{pcPoolLabel}}</option>
+          <sc-for list="{{pcPool}}" as="pp" hint-placeholder-count="2">
+            <option value="{{pp.id}}">{{pp.label}}</option>
+          </sc-for>
+        </select>
+      </div>
+    </div>
+
+    <sc-if value="{{linkMode}}" hint-placeholder-val="{{ false }}">
+      <p role="status" style="margin: 0; padding: 10px 14px; background: #06181A; border-left: 3px solid #2EE6F0; font-size: 13.5px; line-height: 1.55; color: #C9EEF0">{{linkHint}}</p>
+    </sc-if>
+    <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+      <p role="status" style="margin: 0; align-self: flex-start; padding: 10px 14px; background: #151225; border-left: 3px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #D8D6E8">{{toast}}</p>
+    </sc-if>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+      <!-- Mind map: gangs are frames, NPCs and PCs are nodes, relationships are lines -->
+      <section aria-label="{{t.mapLabel}}" style="flex: 999 1 620px; min-width: 0; display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FFD400">
+        <div style="padding: 8px 12px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px">
+          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">MIND MAP</h2>
+          <span style="flex: 1; min-width: 160px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #8C88A6">{{t.mapTip}}</span>
+          <div role="group" aria-label="Zoom" style="display: flex; align-items: center; border: 1px solid #3A3655">
+            <button type="button" onClick="{{zoomOut}}" aria-label="{{t.zoomOut}}" title="{{t.zoomOut}}" style="width: 34px; min-height: 32px; border: 0; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">−</button>
+            <span style="min-width: 46px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #A9A5C2">{{zoomPct}}</span>
+            <button type="button" onClick="{{zoomIn}}" aria-label="{{t.zoomIn}}" title="{{t.zoomIn}}" style="width: 34px; min-height: 32px; border: 0; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">+</button>
+            <button type="button" onClick="{{zoomFit}}" style="min-height: 32px; padding: 0 10px; border: 0; border-left: 1px solid #3A3655; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px">{{t.fit}}</button>
+          </div>
+        </div>
+        <div id="mm-scroll" style="position: relative; height: 700px; overflow: auto; background-color: #0B0A12; background-image: radial-gradient(rgba(46,230,240,0.13) 1px, transparent 1.4px); background-size: 24px 24px">
+          <div style="position: relative; width: {{boardW}}px; height: {{boardH}}px">
+            <div id="mm-board" style="position: absolute; left: 0; top: 0; width: 2400px; height: 1600px; transform: scale({{zoom}}); transform-origin: 0 0">
+              <sc-for list="{{gangs}}" as="g" hint-placeholder-count="2">
+                <div class="mm-gang" style="left: {{g.x}}px; top: {{g.y}}px; width: {{g.w}}px; height: {{g.h}}px; border-color: {{g.color}}; background: {{g.fill}}; box-shadow: {{g.ring}}">
+                  <button type="button" data-mm-drag="gang:{{g.id}}" onClick="{{g.pick}}" aria-pressed="{{g.pressed}}" title="{{t.dragTip}}" style="background: {{g.color}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; opacity: 0.75">GANG</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{g.name}}</span><span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px">{{g.count}}</span></button>
+                  <span class="mm-resize" data-mm-resize="{{g.id}}" aria-hidden="true" title="{{t.resizeTip}}" style="background: linear-gradient(135deg, transparent 0 55%, {{g.color}} 55% 64%, transparent 64% 74%, {{g.color}} 74% 83%, transparent 83%)"></span>
+                </div>
+              </sc-for>
+              <svg width="2400" height="1600" viewBox="0 0 2400 1600" style="position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none" aria-hidden="true">
+                <defs>
+                  <marker id="mm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#C084FC"></path></marker>
+                </defs>
+                <sc-for list="{{links}}" as="l" hint-placeholder-count="3">
+                  <line x1="{{l.x1}}" y1="{{l.y1}}" x2="{{l.x2}}" y2="{{l.y2}}" stroke="{{l.color}}" stroke-width="{{l.w}}" stroke-dasharray="{{l.dash}}" stroke-linecap="round" marker-end="{{l.marker}}" opacity="{{l.op}}"></line>
+                </sc-for>
+              </svg>
+              <sc-for list="{{links}}" as="l" hint-placeholder-count="3">
+                <button type="button" class="mm-tag" onClick="{{l.pick}}" aria-pressed="{{l.pressed}}" aria-label="{{l.aria}}" style="left: {{l.mx}}px; top: {{l.my}}px; border-color: {{l.color}}; color: {{l.color}}; background: {{l.bg}}">{{l.label}}</button>
+              </sc-for>
+              <sc-for list="{{nodes}}" as="n" hint-placeholder-count="4">
+                <button type="button" class="mm-node" data-mm-drag="{{n.key}}" onClick="{{n.pick}}" aria-pressed="{{n.pressed}}" aria-label="{{n.aria}}" title="{{n.tip}}" style="left: {{n.x}}px; top: {{n.y}}px; border-color: {{n.border}}; box-shadow: {{n.ring}}">
+                  <span class="mm-pic" style="border-color: {{n.color}}">
+                    <sc-if value="{{n.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{n.pic}}" alt="" draggable="false"></sc-if>
+                    <sc-if value="{{n.noPic}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: {{n.color}}">{{n.initial}}</span></sc-if>
+                  </span>
+                  <span class="mm-name">{{n.name}}</span>
+                  <span class="mm-chip" style="color: {{n.chipColor}}; border-color: {{n.chipColor}}">{{n.chip}}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <ul aria-label="{{t.legend}}" style="margin: 0; padding: 10px 12px; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; border-top: 1px solid #2A2740">
+          <sc-for list="{{legend}}" as="lg" hint-placeholder-count="8">
+            <li style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #A9A5C2"><svg width="26" height="8" aria-hidden="true"><line x1="1" y1="4" x2="25" y2="4" stroke="{{lg.color}}" stroke-width="2.5" stroke-dasharray="{{lg.dash}}"></line></svg>{{lg.label}}</li>
+          </sc-for>
+        </ul>
+      </section>
+
+      <!-- Inspector: edit whatever is selected on the map -->
+      <aside aria-label="{{t.inspector}}" style="flex: 1 1 340px; max-width: 460px; min-width: 0; display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{insColor}}">
+        <div style="padding: 10px 14px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; align-items: center; gap: 10px">
+          <h2 style="flex: 1; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">{{insTitle}}</h2>
+          <sc-if value="{{hasSel}}" hint-placeholder-val="{{ true }}">
+            <button type="button" onClick="{{deselect}}" aria-label="{{t.close}}" title="{{t.close}}" style="width: 32px; min-height: 32px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">✕</button>
+          </sc-if>
+        </div>
+
+        <!-- nothing selected: the NPC list -->
+        <sc-if value="{{selNone}}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <label for="npc-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.search}}</label>
+            <input id="npc-q" class="fld" type="search" value="{{q}}" onInput="{{onQ}}" placeholder="{{t.searchPh}}">
+            <sc-if value="{{listEmpty}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; padding: 22px 12px; border: 1px dashed #3A3655; text-align: center; font-size: 13px; line-height: 1.7; color: #A9A5C2">{{listEmptyText}}</p>
+            </sc-if>
+            <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 640px; overflow-y: auto">
+              <sc-for list="{{npcList}}" as="nl" hint-placeholder-count="4">
+                <li>
+                  <button type="button" onClick="{{nl.pick}}" style="width: 100%; display: flex; align-items: center; gap: 10px; padding: 6px 8px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid {{nl.color}}; cursor: pointer; text-align: left; color: #FFFFFF">
+                    <span style="width: 40px; height: 40px; flex-shrink: 0; overflow: hidden; background: #1D1930; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: {{nl.color}}"><sc-if value="{{nl.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{nl.pic}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{nl.noPic}}" hint-placeholder-val="{{ false }}">{{nl.initial}}</sc-if></span>
+                    <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                      <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{nl.name}}</span>
+                      <span style="font-size: 12px; color: #A9A5C2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{nl.meta}}</span>
+                    </span>
+                  </button>
+                </li>
+              </sc-for>
+            </ul>
+          </div>
+        </sc-if>
+
+        <!-- NPC editor -->
+        <sc-if value="{{selNpc}}" hint-placeholder-val="{{ true }}">
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 14px">
+            <div style="display: flex; gap: 14px; align-items: flex-start">
+              <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; align-items: center">
+                <label for="npc-pic" title="{{t.picPick}}" style="width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; background: #0B0A12; border: 1px dashed {{ed.color}}">
+                  <sc-if value="{{ed.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{ed.pic}}" alt="{{ed.name}}" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if>
+                  <sc-if value="{{ed.noPic}}" hint-placeholder-val="{{ false }}"><span style="padding: 6px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; line-height: 1.4; color: #8C88A6">{{t.picAdd}}</span></sc-if>
+                </label>
+                <input id="npc-pic" type="file" accept="image/png,image/jpeg,image/webp" onChange="{{ed.onPic}}" style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden">
+                <sc-if value="{{ed.hasPic}}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{ed.clearPic}}" style="min-height: 28px; padding: 0 8px; border: 1px solid #3A3655; background: transparent; color: #A9A5C2; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em">{{t.picRemove}}</button>
+                </sc-if>
+              </div>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+                <div style="display: flex; flex-direction: column; gap: 4px">
+                  <label for="npc-name" class="lbl">{{t.name}}</label>
+                  <input id="npc-name" class="fld" type="text" maxlength="60" value="{{ed.name}}" onInput="{{ed.onName}}" placeholder="{{t.namePh}}" style="font-size: 15px">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 4px">
+                  <label for="npc-role" class="lbl">{{t.role}}</label>
+                  <input id="npc-role" class="fld" type="text" maxlength="80" value="{{ed.role}}" onInput="{{ed.onRole}}" placeholder="{{t.rolePh}}">
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="lbl" id="npc-f-l">Factor</span>
+              <div role="group" aria-labelledby="npc-f-l" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+                <sc-for list="{{ed.factors}}" as="fc" hint-placeholder-count="4">
+                  <button type="button" aria-pressed="{{fc.pressed}}" onClick="{{fc.pick}}" style="{{fc.style}}">{{fc.label}}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <label for="npc-gang" class="lbl">{{t.gang}}</label>
+              <select id="npc-gang" class="fld" onChange="{{ed.onGang}}">
+                <sc-for list="{{ed.gangOpts}}" as="go" hint-placeholder-count="3">
+                  <option value="{{go.v}}" selected="{{go.sel}}">{{go.label}}</option>
+                </sc-for>
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; padding: 12px; background: #0B0A12; border: 1px dashed #3A3655">
+              <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; color: #D8D6E8">STATUS</span>
+              <span style="font-size: 12.5px; line-height: 1.6; color: #8C88A6">{{t.statusSoon}}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <label for="npc-notes" class="lbl">{{t.notes}}</label>
+              <textarea id="npc-notes" class="fld" rows="4" value="{{ed.notes}}" onInput="{{ed.onNotes}}" placeholder="{{t.notesPh}}" style="resize: vertical; line-height: 1.6"></textarea>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="lbl">{{t.rels}}</span>
+              <sc-if value="{{ed.noRels}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; color: #8C88A6">{{t.noRels}}</span></sc-if>
+              <sc-for list="{{ed.rels}}" as="rl" hint-placeholder-count="2">
+                <button type="button" onClick="{{rl.pick}}" style="display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 10px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid {{rl.color}}; cursor: pointer; text-align: left; color: #D8D6E8; font-size: 13px"><span style="color: {{rl.color}}; font-family: 'Chakra Petch', sans-serif; font-weight: 700; white-space: nowrap">{{rl.kind}}</span><span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{rl.other}}</span></button>
+              </sc-for>
+              <button type="button" onClick="{{ed.startLink}}" style="align-self: flex-start; min-height: 36px; padding: 0 12px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.linkFromHere}}</button>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #2A2740">
+              <sc-if value="{{noAskDel}}" hint-placeholder-val="{{ true }}">
+                <button type="button" onClick="{{askDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.delNpc}}</button>
+              </sc-if>
+              <sc-if value="{{askingDel}}" hint-placeholder-val="{{ false }}">
+                <p style="flex-basis: 100%; margin: 0; font-size: 13px; line-height: 1.55; color: #F2C7D1">{{delText}}</p>
+                <button type="button" onClick="{{doDel}}" style="min-height: 38px; padding: 0 14px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.confirmDel}}</button>
+                <button type="button" onClick="{{cancelDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.cancel}}</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- Gang editor -->
+        <sc-if value="{{selGang}}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 14px">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <label for="gang-name" class="lbl">{{t.gangName}}</label>
+              <input id="gang-name" class="fld" type="text" maxlength="60" value="{{ge.name}}" onInput="{{ge.onName}}" placeholder="{{t.gangPh}}" style="font-size: 15px">
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="lbl" id="gang-c-l">{{t.color}}</span>
+              <div role="group" aria-labelledby="gang-c-l" style="display: flex; flex-wrap: wrap; gap: 6px">
+                <sc-for list="{{ge.colors}}" as="gc" hint-placeholder-count="8">
+                  <button type="button" onClick="{{gc.pick}}" aria-pressed="{{gc.pressed}}" aria-label="{{gc.label}}" title="{{gc.label}}" style="width: 34px; height: 34px; padding: 0; cursor: pointer; background: {{gc.c}}; border: 2px solid {{gc.ring}}; outline: 1px solid #0B0A12; outline-offset: -4px"></button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="lbl">{{t.members}} · {{ge.count}}</span>
+              <sc-if value="{{ge.noMembers}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; line-height: 1.6; color: #8C88A6">{{t.noMembers}}</span></sc-if>
+              <sc-for list="{{ge.members}}" as="gm" hint-placeholder-count="2">
+                <button type="button" onClick="{{gm.pick}}" style="display: flex; align-items: center; min-height: 34px; padding: 4px 10px; background: #0B0A12; border: 1px solid #2A2740; cursor: pointer; text-align: left; color: #D8D6E8; font-size: 13px">{{gm.name}}</button>
+              </sc-for>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #2A2740">
+              <sc-if value="{{noAskDel}}" hint-placeholder-val="{{ true }}">
+                <button type="button" onClick="{{askDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.delGang}}</button>
+              </sc-if>
+              <sc-if value="{{askingDel}}" hint-placeholder-val="{{ false }}">
+                <p style="flex-basis: 100%; margin: 0; font-size: 13px; line-height: 1.55; color: #F2C7D1">{{delText}}</p>
+                <button type="button" onClick="{{doDel}}" style="min-height: 38px; padding: 0 14px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.confirmDel}}</button>
+                <button type="button" onClick="{{cancelDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.cancel}}</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- Relationship editor -->
+        <sc-if value="{{selLink}}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 14px">
+            <div style="display: flex; align-items: center; gap: 8px; padding: 10px; background: #0B0A12; border: 1px solid #2A2740">
+              <button type="button" onClick="{{le.pickA}}" style="flex: 1; min-width: 0; min-height: 36px; padding: 0 8px; border: 1px solid #3A3655; background: transparent; color: #FFFFFF; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{le.a}}</button>
+              <button type="button" onClick="{{le.swap}}" aria-label="{{t.swap}}" title="{{t.swap}}" style="width: 36px; min-height: 36px; flex-shrink: 0; border: 1px solid {{le.color}}; background: transparent; color: {{le.color}}; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{le.arrow}}</button>
+              <button type="button" onClick="{{le.pickB}}" style="flex: 1; min-width: 0; min-height: 36px; padding: 0 8px; border: 1px solid #3A3655; background: transparent; color: #FFFFFF; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{le.b}}</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="lbl" id="link-k-l">{{t.kind}}</span>
+              <div role="group" aria-labelledby="link-k-l" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px">
+                <sc-for list="{{le.kinds}}" as="lk" hint-placeholder-count="8">
+                  <button type="button" onClick="{{lk.pick}}" aria-pressed="{{lk.pressed}}" style="{{lk.style}}">{{lk.label}}</button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <label for="link-note" class="lbl">{{t.linkNote}}</label>
+              <textarea id="link-note" class="fld" rows="3" maxlength="300" value="{{le.note}}" onInput="{{le.onNote}}" placeholder="{{t.linkNotePh}}" style="resize: vertical; line-height: 1.6"></textarea>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #2A2740">
+              <button type="button" onClick="{{doDelLink}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.delLink}}</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- PC on the map -->
+        <sc-if value="{{selPc}}" hint-placeholder-val="{{ false }}">
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 14px">
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span style="width: 64px; height: 64px; flex-shrink: 0; overflow: hidden; background: #1D1930; border: 1px solid {{pe.color}}; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: {{pe.color}}"><sc-if value="{{pe.hasPic}}" hint-placeholder-val="{{ false }}"><img src="{{pe.pic}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{pe.noPic}}" hint-placeholder-val="{{ true }}">{{pe.initial}}</sc-if></span>
+              <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+                <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; color: #FFFFFF">{{pe.name}}</span>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: {{pe.color}}">PC · {{pe.factor}}</span>
+              </span>
+            </div>
+            <p style="margin: 0; font-size: 12.5px; line-height: 1.6; color: #8C88A6">{{t.pcNote}}</p>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="lbl">{{t.rels}}</span>
+              <sc-if value="{{pe.noRels}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; color: #8C88A6">{{t.noRels}}</span></sc-if>
+              <sc-for list="{{pe.rels}}" as="rl" hint-placeholder-count="2">
+                <button type="button" onClick="{{rl.pick}}" style="display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 10px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid {{rl.color}}; cursor: pointer; text-align: left; color: #D8D6E8; font-size: 13px"><span style="color: {{rl.color}}; font-family: 'Chakra Petch', sans-serif; font-weight: 700; white-space: nowrap">{{rl.kind}}</span><span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{rl.other}}</span></button>
+              </sc-for>
+              <button type="button" onClick="{{pe.startLink}}" style="align-self: flex-start; min-height: 36px; padding: 0 12px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.linkFromHere}}</button>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #2A2740">
+              <sc-if value="{{noAskDel}}" hint-placeholder-val="{{ true }}">
+                <button type="button" onClick="{{askDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.delPc}}</button>
+              </sc-if>
+              <sc-if value="{{askingDel}}" hint-placeholder-val="{{ false }}">
+                <p style="flex-basis: 100%; margin: 0; font-size: 13px; line-height: 1.55; color: #F2C7D1">{{delText}}</p>
+                <button type="button" onClick="{{doDel}}" style="min-height: 38px; padding: 0 14px; border: 0; background: #FF3D6E; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.confirmDel}}</button>
+                <button type="button" onClick="{{cancelDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.cancel}}</button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+      </aside>
+    </div>
+
+    <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8C88A6">{{t.protoNote}}</p>
+  </main>
+</div>
+</template>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../assets/dc.js"></script>
+<script src="../assets/sp.js"></script>
+<script src="../assets/beta-common.js"></script>
+<script>
+/* demo portraits for the prototype (the live site uses the GM's uploads) */
+function npcArt(bg, accent, mark) {
+  const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='" + bg + "'/><circle cx='32' cy='26' r='11' fill='#0B0A12'/><path d='M12 64c2-14 10-20 20-20s18 6 20 20z' fill='#0B0A12'/>" + mark.replace(/ACC/g, accent) + "</svg>";
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+const NPC_W = 2400, NPC_H = 1600;
+const uid = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, () => Math.floor(Math.random() * 16).toString(16)));
+/* relationship kinds: colour and line style on the map */
+const LINK_KINDS = [
+  { k: 'ally', th: 'พันธมิตร', en: 'Ally', color: '#4ADE80', dash: '' },
+  { k: 'enemy', th: 'ศัตรู', en: 'Enemy', color: '#FF3D6E', dash: '' },
+  { k: 'family', th: 'ครอบครัว', en: 'Family', color: '#FFD400', dash: '' },
+  { k: 'love', th: 'คนรัก', en: 'Lover', color: '#FF2E88', dash: '' },
+  { k: 'boss', th: 'หัวหน้า → ลูกน้อง', en: 'Boss → Crew', color: '#C084FC', dash: '', arrow: true },
+  { k: 'deal', th: 'คู่ค้า / ผลประโยชน์', en: 'Business', color: '#2EE6F0', dash: '8 6' },
+  { k: 'rival', th: 'คู่แข่ง', en: 'Rival', color: '#FB923C', dash: '8 6' },
+  { k: 'wary', th: 'ไม่ไว้ใจ', en: 'Distrust', color: '#8C88A6', dash: '3 6' }
+];
+const GANG_COLORS = ['#FFD400', '#FF3D6E', '#2EE6F0', '#C084FC', '#4ADE80', '#FF2E88', '#FB923C', '#A9A5C2'];
+const NPC_FACTORS = [
+  { k: 'shifter', label: 'SHIFTER', color: '#2EE6F0' },
+  { k: 'norms', label: 'NORMS', color: '#FF2E88' },
+  { k: 'cpd', label: 'C.P.D.', color: '#FFD400' },
+  { k: '', label: '?', color: '#A9A5C2' }
+];
+function npcDemo() {
+  const face = (bg, acc) => npcArt(bg, acc, "<path d='M22 24h20' stroke='ACC' stroke-width='2.5'/>");
+  return {
+    gangs: [
+      { id: 'g-crown', name: 'Golden Crown', color: '#FFD400', x: 90, y: 90, w: 600, h: 400 },
+      { id: 'g-iron', name: 'Ironhide', color: '#FF3D6E', x: 1260, y: 120, w: 460, h: 340 }
+    ],
+    npcs: [
+      { id: 'n-krit', name: 'เสี่ยกฤษ', role: 'ผู้มีอิทธิพล · เจ้าของบ่อนลาดพร้าว', factor: 'norms', gang: 'g-crown', x: 270, y: 260, pic: face('#3A300A', '#FFD400'), notes: '' },
+      { id: 'n-thug', name: 'Golden Crown Thug', role: 'ลูกน้องคุมหน้าร้าน', factor: 'norms', gang: 'g-crown', x: 520, y: 380, pic: '', notes: '' },
+      { id: 'n-snipe', name: 'Ironhide Sniper', role: 'มือปืนรับจ้าง', factor: 'norms', gang: 'g-iron', x: 1490, y: 300, pic: face('#3A1020', '#FF3D6E'), notes: '' },
+      { id: 'n-jum', name: 'ป้าจุ๋ม', role: 'แม่ค้าข้าวมันไก่ปากซอย · สายข่าว', factor: '', gang: null, x: 880, y: 720, pic: '', notes: '' },
+      { id: 'n-vee', name: 'Doc Vee', role: 'หมอเถื่อนใต้สะพาน', factor: 'shifter', gang: null, x: 1240, y: 820, pic: face('#0E2A3A', '#2EE6F0'), notes: '' }
+    ],
+    pcs: [
+      { id: 'kaew', name: 'Kaew', factor: 'shifter', pic: face('#14243A', '#2EE6F0'), x: 760, y: 1060 },
+      { id: 'tum', name: 'Tum', factor: 'norms', pic: '', x: 1080, y: 1120 }
+    ],
+    links: [
+      { id: 'l1', a: 'npc:n-krit', b: 'npc:n-thug', kind: 'boss', note: '' },
+      { id: 'l2', a: 'npc:n-krit', b: 'npc:n-snipe', kind: 'enemy', note: 'แย่งเขตตลาดน้ำ' },
+      { id: 'l3', a: 'npc:n-jum', b: 'pc:kaew', kind: 'deal', note: 'ขายข่าวแลกข้าวฟรี' },
+      { id: 'l4', a: 'npc:n-vee', b: 'pc:kaew', kind: 'ally', note: '' },
+      { id: 'l5', a: 'npc:n-thug', b: 'pc:tum', kind: 'rival', note: 'เคยมีเรื่องกันที่ตลาด' }
+    ],
+    pool: [
+      { id: 'kaew', name: 'Kaew', factor: 'shifter', pic: face('#14243A', '#2EE6F0'), session: 'ตรอกนีออนลาดพร้าว' },
+      { id: 'tum', name: 'Tum', factor: 'norms', pic: '', session: 'ตรอกนีออนลาดพร้าว' },
+      { id: 'som', name: 'Somying', factor: 'cpd', pic: '', session: 'ตรอกนีออนลาดพร้าว' },
+      { id: 'nok', name: 'Nok', factor: 'shifter', pic: '', session: 'ปฏิบัติการชายขอบ Extincted Zone' },
+      { id: 'fah', name: 'Fah', factor: 'norms', pic: '', session: 'ปฏิบัติการชายขอบ Extincted Zone' }
+    ]
+  };
+}
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem('sp-demo-npcnet') || 'null'); } catch (e) {}
+    const d = Object.assign(npcDemo(), saved || {});
+    this.state = {
+      lang: 'th', toast: '', zoom: 0.7, q: '',
+      npcs: d.npcs, gangs: d.gangs, pcs: d.pcs, links: d.links, pool: d.pool,
+      sel: null, linkMode: false, linkFrom: null, askDel: false
+    };
+  }
+  componentDidMount() {
+    this._down = (e) => this.dragStart(e);
+    this._move = (e) => this.dragMove(e);
+    this._up = () => this.dragEnd();
+    this._key = (e) => { if (e.key === 'Escape' && (this.state.linkMode || this.state.sel)) this.setState({ linkMode: false, linkFrom: null, sel: this.state.linkMode ? this.state.sel : null, askDel: false }); };
+    document.addEventListener('pointerdown', this._down);
+    document.addEventListener('pointermove', this._move);
+    document.addEventListener('pointerup', this._up);
+    document.addEventListener('pointercancel', this._up);
+    document.addEventListener('keydown', this._key);
+    setTimeout(() => this.fit(), 0);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('pointerdown', this._down);
+    document.removeEventListener('pointermove', this._move);
+    document.removeEventListener('pointerup', this._up);
+    document.removeEventListener('pointercancel', this._up);
+    document.removeEventListener('keydown', this._key);
+  }
+
+  /* ---- persistence: the prototype keeps the map in this browser; the live site writes Supabase rows ---- */
+  commit(kind, row) { this.saveDemo(); }
+  drop(kind, id) { this.saveDemo(); }
+  saveDemo() {
+    clearTimeout(this._saveT);
+    this._saveT = setTimeout(() => {
+      const s = this.state;
+      try { localStorage.setItem('sp-demo-npcnet', JSON.stringify({ npcs: s.npcs, gangs: s.gangs, pcs: s.pcs, links: s.links })); } catch (e) {}
+      try { const bc = new BroadcastChannel('sp-demo-npcnet'); bc.postMessage({ npcs: s.npcs }); bc.close(); } catch (e) {}
+    }, 300);
+  }
+  pickPic(id, file) {
+    if (!file || !/^image\/(png|jpeg|webp)$/.test(file.type)) return;
+    const r = new FileReader();
+    r.onload = () => this.editNpc(id, { pic: r.result });
+    r.readAsDataURL(file);
+  }
+
+  /* ---- model helpers ---- */
+  th() { return this.state.lang !== 'en'; }
+  L(a, b) { return this.th() ? a : b; }
+  nodeOf(key) {
+    const [k, id] = [key.slice(0, key.indexOf(':')), key.slice(key.indexOf(':') + 1)];
+    if (k === 'npc') return this.state.npcs.find((n) => n.id === id) || null;
+    if (k === 'pc') return this.state.pcs.find((p) => p.id === id) || null;
+    if (k === 'gang') return this.state.gangs.find((g) => g.id === id) || null;
+    return null;
+  }
+  nameOf(key) { const n = this.nodeOf(key); return n ? (n.name || this.L('(ไม่มีชื่อ)', '(unnamed)')) : '?'; }
+  kindOf(k) { return LINK_KINDS.find((x) => x.k === k) || LINK_KINDS[0]; }
+  editNpc(id, patch) {
+    const npcs = this.state.npcs.map((n) => (n.id === id ? Object.assign({}, n, patch) : n));
+    this.setState({ npcs: npcs });
+    this.commit('npc', npcs.find((n) => n.id === id));
+  }
+  editGang(id, patch) {
+    const gangs = this.state.gangs.map((g) => (g.id === id ? Object.assign({}, g, patch) : g));
+    this.setState({ gangs: gangs });
+    this.commit('gang', gangs.find((g) => g.id === id));
+  }
+  editLink(id, patch) {
+    const links = this.state.links.map((l) => (l.id === id ? Object.assign({}, l, patch) : l));
+    this.setState({ links: links });
+    this.commit('link', links.find((l) => l.id === id));
+  }
+  /* the smallest gang frame that holds a point */
+  gangAt(x, y) {
+    const hit = this.state.gangs.filter((g) => x >= g.x && x <= g.x + g.w && y >= g.y + 30 && y <= g.y + g.h).sort((a, b) => a.w * a.h - b.w * b.h);
+    return hit[0] ? hit[0].id : null;
+  }
+  /* where new things land: the middle of what the map shows right now */
+  viewCenter() {
+    const el = document.getElementById('mm-scroll'), z = this.state.zoom;
+    if (!el) return { x: 600, y: 400 };
+    return { x: Math.round((el.scrollLeft + el.clientWidth / 2) / z), y: Math.round((el.scrollTop + el.clientHeight / 2) / z) };
+  }
+  clamp(x, y) { return { x: Math.round(Math.min(Math.max(x, 70), NPC_W - 70)), y: Math.round(Math.min(Math.max(y, 70), NPC_H - 70)) }; }
+  /* zoom and scroll so everything on the map fits the view */
+  fit() {
+    const el = document.getElementById('mm-scroll'), s = this.state;
+    if (!el) return;
+    const xs = [], ys = [];
+    s.npcs.concat(s.pcs).forEach((n) => { xs.push(n.x - 70, n.x + 70); ys.push(n.y - 70, n.y + 70); });
+    s.gangs.forEach((g) => { xs.push(g.x, g.x + g.w); ys.push(g.y, g.y + g.h); });
+    if (!xs.length) return this.setState({ zoom: 0.7 });
+    const x0 = Math.max(0, Math.min(...xs) - 40), y0 = Math.max(0, Math.min(...ys) - 40), x1 = Math.max(...xs) + 40, y1 = Math.max(...ys) + 40;
+    const want = Math.min(el.clientWidth / (x1 - x0), el.clientHeight * 1.25 / (y1 - y0));
+    const z = [0.4, 0.5, 0.6, 0.7, 0.85, 1].filter((q) => q <= want).pop() || 0.4;
+    this.setState({ zoom: z });
+    setTimeout(() => el.scrollTo({ left: x0 * z, top: y0 * z }), 30);
+  }
+  scrollTo(x, y) {
+    const el = document.getElementById('mm-scroll'), z = this.state.zoom;
+    if (el) el.scrollTo({ left: Math.max(0, x * z - el.clientWidth / 2), top: Math.max(0, y * z - el.clientHeight / 2), behavior: 'smooth' });
+  }
+
+  /* ---- dragging nodes, gang frames and frame corners ---- */
+  dragStart(e) {
+    if (e.button !== 0 || !e.target || !e.target.closest) return;
+    const h = e.target.closest('[data-mm-drag],[data-mm-resize]');
+    if (!h) return;
+    const key = h.getAttribute('data-mm-drag') || 'resize:' + h.getAttribute('data-mm-resize');
+    if (this.state.linkMode && key.indexOf('gang:') !== 0 && key.indexOf('resize:') !== 0) return;
+    const gid = key.indexOf('resize:') === 0 ? key.slice(7) : null;
+    const node = gid ? this.state.gangs.find((g) => g.id === gid) : this.nodeOf(key);
+    if (!node) return;
+    const members = key.indexOf('gang:') === 0 ? this.state.npcs.filter((n) => n.gang === node.id).map((n) => ({ id: n.id, x: n.x, y: n.y })) : [];
+    this._drag = { key: key, sx: e.clientX, sy: e.clientY, x: node.x, y: node.y, w: node.w, h: node.h, members: members, moved: false };
+  }
+  dragMove(e) {
+    const d = this._drag;
+    if (!d) return;
+    const z = this.state.zoom, dx = (e.clientX - d.sx) / z, dy = (e.clientY - d.sy) / z;
+    if (!d.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+    d.moved = true;
+    if (e.cancelable) e.preventDefault();
+    const [k, id] = [d.key.slice(0, d.key.indexOf(':')), d.key.slice(d.key.indexOf(':') + 1)];
+    if (k === 'resize') {
+      return this.setState({ gangs: this.state.gangs.map((g) => (g.id === id ? Object.assign({}, g, { w: Math.round(Math.min(Math.max(d.w + dx, 220), NPC_W - g.x)), h: Math.round(Math.min(Math.max(d.h + dy, 160), NPC_H - g.y)) }) : g)) });
+    }
+    if (k === 'gang') {
+      const g0 = this.state.gangs.find((g) => g.id === id);
+      const nx = Math.round(Math.min(Math.max(d.x + dx, 0), NPC_W - g0.w)), ny = Math.round(Math.min(Math.max(d.y + dy, 0), NPC_H - g0.h));
+      const mx = nx - d.x, my = ny - d.y;
+      return this.setState({
+        gangs: this.state.gangs.map((g) => (g.id === id ? Object.assign({}, g, { x: nx, y: ny }) : g)),
+        npcs: this.state.npcs.map((n) => { const m = d.members.find((q) => q.id === n.id); return m ? Object.assign({}, n, { x: m.x + mx, y: m.y + my }) : n; })
+      });
+    }
+    const p = this.clamp(d.x + dx, d.y + dy);
+    if (k === 'npc') this.setState({ npcs: this.state.npcs.map((n) => (n.id === id ? Object.assign({}, n, p) : n)) });
+    if (k === 'pc') this.setState({ pcs: this.state.pcs.map((n) => (n.id === id ? Object.assign({}, n, p) : n)) });
+  }
+  dragEnd() {
+    const d = this._drag;
+    this._drag = null;
+    if (!d || !d.moved) return;
+    // the click that follows a drag must not count as a pick
+    this._dragAt = Date.now();
+    setTimeout(() => { this._dragAt = 0; }, 60);
+    const [k, id] = [d.key.slice(0, d.key.indexOf(':')), d.key.slice(d.key.indexOf(':') + 1)];
+    if (k === 'npc') {
+      const n = this.state.npcs.find((x) => x.id === id);
+      const gang = this.gangAt(n.x, n.y);
+      if (gang !== n.gang) this.toastGang(n, gang);
+      this.editNpc(id, { gang: gang });
+    } else if (k === 'pc') {
+      this.commit('pc', this.state.pcs.find((x) => x.id === id));
+    } else {
+      const gid = k === 'resize' ? id : id;
+      this.commit('gang', this.state.gangs.find((g) => g.id === gid));
+      if (k === 'gang') d.members.forEach((m) => this.commit('npc', this.state.npcs.find((n) => n.id === m.id)));
+      if (k === 'resize') {
+        // a frame that grows or shrinks takes in or lets go of the NPCs under it
+        this.state.npcs.forEach((n) => { const g = this.gangAt(n.x, n.y); if (g !== n.gang) this.editNpc(n.id, { gang: g }); });
+      }
+    }
+  }
+  toastGang(n, gang) {
+    const g = this.state.gangs.find((x) => x.id === gang);
+    this.setState({ toast: g ? this.L(n.name + ' เข้าสังกัด ' + g.name, n.name + ' joined ' + g.name) : this.L(n.name + ' ออกจากแก๊งแล้ว', n.name + ' left their gang') });
+  }
+  justDragged() { return this._dragAt && Date.now() - this._dragAt < 350; }
+
+  /* ---- clicks on the map ---- */
+  pickNode(key) {
+    if (this.justDragged()) return;
+    if (!this.state.linkMode) return this.setState({ sel: { kind: key.slice(0, key.indexOf(':')), id: key.slice(key.indexOf(':') + 1) }, askDel: false });
+    if (!this.state.linkFrom) return this.setState({ linkFrom: key });
+    if (this.state.linkFrom === key) return this.setState({ linkFrom: null });
+    const a = this.state.linkFrom, b = key;
+    const dup = this.state.links.find((l) => (l.a === a && l.b === b) || (l.a === b && l.b === a));
+    if (dup) return this.setState({ linkMode: false, linkFrom: null, sel: { kind: 'link', id: dup.id }, toast: this.L('สองคนนี้มีเส้นความสัมพันธ์อยู่แล้ว', 'These two are already linked') });
+    const l = { id: uid(), a: a, b: b, kind: 'ally', note: '' };
+    this.setState({ links: this.state.links.concat([l]), linkMode: false, linkFrom: null, sel: { kind: 'link', id: l.id }, askDel: false, toast: this.L('เชื่อม ' + this.nameOf(a) + ' กับ ' + this.nameOf(b) + ' แล้ว เลือกประเภทความสัมพันธ์ได้ทางขวา', 'Linked ' + this.nameOf(a) + ' and ' + this.nameOf(b) + '. Pick the kind on the right.') });
+    this.commit('link', l);
+  }
+
+  renderVals() {
+    const th = this.th();
+    const L = (a, b) => (th ? a : b);
+    const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
+    const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
+    const s = this.state, sel = s.sel;
+    const F = (k) => NPC_FACTORS.find((f) => f.k === (k || '')) || NPC_FACTORS[3];
+    const PCF = { shifter: 'SHIFTER', norms: 'NORMS', outlaw: 'NORMS', cpd: 'C.P.D.' };
+    const PCC = { shifter: '#2EE6F0', norms: '#FF2E88', outlaw: '#FF2E88', cpd: '#FFD400' };
+    const gangName = (id) => { const g = s.gangs.find((x) => x.id === id); return g ? g.name || L('แก๊งไม่มีชื่อ', 'Unnamed gang') : ''; };
+    const selKey = sel ? sel.kind + ':' + sel.id : '';
+    const isSel = (kind, id) => !!(sel && sel.kind === kind && sel.id === id);
+    const relsOf = (key) => s.links.filter((l) => l.a === key || l.b === key).map((l) => {
+      const K = this.kindOf(l.kind), other = l.a === key ? l.b : l.a;
+      const dir = K.arrow ? (l.a === key ? ' →' : ' ←') : '';
+      return { color: K.color, kind: L(K.th, K.en) + dir, other: this.nameOf(other) + (l.note ? ' · ' + l.note : ''), pick: () => this.setState({ sel: { kind: 'link', id: l.id }, askDel: false }) };
+    });
+    const initial = (n) => (((n || '').match(/[ก-ฮA-Za-z0-9]/) || ['?'])[0]).toUpperCase();
+    // nodes: NPCs first, then PCs on the map
+    const nodes = s.npcs.map((n) => {
+      const f = F(n.factor), key = 'npc:' + n.id, src = s.linkFrom === key, pressed = isSel('npc', n.id);
+      return {
+        key: key, x: n.x, y: n.y, name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), pic: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: initial(n.name),
+        color: f.color, border: pressed || src ? '#FFFFFF' : '#3A3655', ring: src ? '0 0 0 3px #2EE6F0, 0 0 24px rgba(46,230,240,0.5)' : pressed ? '0 0 0 2px ' + f.color + ', 0 10px 26px rgba(0,0,0,0.6)' : '0 6px 16px rgba(0,0,0,0.45)',
+        chip: n.gang ? gangName(n.gang) : 'NPC', chipColor: n.gang ? (s.gangs.find((g) => g.id === n.gang) || {}).color || '#A9A5C2' : '#8C88A6',
+        pressed: pressed ? 'true' : 'false', aria: 'NPC ' + (n.name || ''), tip: L('ลากเพื่อย้าย · คลิกเพื่อแก้ไข', 'Drag to move · click to edit'),
+        pick: () => this.pickNode(key)
+      };
+    }).concat(s.pcs.map((p) => {
+      const key = 'pc:' + p.id, src = s.linkFrom === key, pressed = isSel('pc', p.id), c = PCC[p.factor] || '#2EE6F0';
+      return {
+        key: key, x: p.x, y: p.y, name: p.name, pic: p.pic || '', hasPic: !!p.pic, noPic: !p.pic, initial: initial(p.name), color: c,
+        border: pressed || src ? '#FFFFFF' : '#2EE6F0', ring: src ? '0 0 0 3px #2EE6F0, 0 0 24px rgba(46,230,240,0.5)' : pressed ? '0 0 0 2px #2EE6F0, 0 10px 26px rgba(0,0,0,0.6)' : '0 6px 16px rgba(0,0,0,0.45)',
+        chip: 'PC · ' + (PCF[p.factor] || 'PC'), chipColor: '#2EE6F0', pressed: pressed ? 'true' : 'false', aria: 'PC ' + p.name, tip: L('ลากเพื่อย้าย · คลิกเพื่อดู', 'Drag to move · click to view'),
+        pick: () => this.pickNode(key)
+      };
+    }));
+    const pos = {};
+    nodes.forEach((n) => { pos[n.key] = n; });
+    const links = s.links.filter((l) => pos[l.a] && pos[l.b]).map((l) => {
+      const K = this.kindOf(l.kind), A = pos[l.a], B = pos[l.b], pressed = isSel('link', l.id);
+      // stop arrows at the edge of the target card
+      const dx = B.x - A.x, dy = B.y - A.y, len = Math.max(1, Math.hypot(dx, dy));
+      const cut = Math.min(len / 2 - 4, Math.min(64 / Math.max(Math.abs(dx) / len, 0.01), 70 / Math.max(Math.abs(dy) / len, 0.01)));
+      const x2 = K.arrow ? B.x - dx / len * cut : B.x, y2 = K.arrow ? B.y - dy / len * cut : B.y;
+      return {
+        x1: A.x, y1: A.y, x2: Math.round(x2), y2: Math.round(y2), mx: Math.round((A.x + B.x) / 2), my: Math.round((A.y + B.y) / 2),
+        color: K.color, dash: K.dash || 'none', w: pressed ? 4 : 2.5, op: sel && !pressed && sel.kind === 'link' ? 0.45 : 0.95, marker: K.arrow ? 'url(#mm-arrow)' : 'none',
+        label: L(K.th, K.en).replace(' → ', '→') + (l.note ? ' · ' + l.note : ''), bg: pressed ? '#1D1930' : '#0B0A12', pressed: pressed ? 'true' : 'false',
+        aria: L('ความสัมพันธ์ ', 'Relationship ') + this.nameOf(l.a) + ' — ' + this.nameOf(l.b) + ': ' + L(K.th, K.en),
+        pick: () => { if (!this.justDragged()) this.setState({ sel: { kind: 'link', id: l.id }, askDel: false, linkMode: false, linkFrom: null }); }
+      };
+    });
+    const gangs = s.gangs.map((g) => {
+      const pressed = isSel('gang', g.id), n = s.npcs.filter((x) => x.gang === g.id).length;
+      return {
+        id: g.id, x: g.x, y: g.y, w: g.w, h: g.h, color: g.color, name: g.name || L('แก๊งไม่มีชื่อ', 'Unnamed gang'), count: n + ' NPC',
+        fill: g.color + '12', ring: pressed ? '0 0 0 2px ' + g.color + ', 0 0 30px ' + g.color + '40' : 'none', pressed: pressed ? 'true' : 'false',
+        pick: () => { if (!this.justDragged()) this.setState({ sel: { kind: 'gang', id: g.id }, askDel: false }); }
+      };
+    });
+
+    // inspector
+    const v = {};
+    const curNpc = sel && sel.kind === 'npc' ? s.npcs.find((n) => n.id === sel.id) : null;
+    const curGang = sel && sel.kind === 'gang' ? s.gangs.find((g) => g.id === sel.id) : null;
+    const curLink = sel && sel.kind === 'link' ? s.links.find((l) => l.id === sel.id) : null;
+    const curPc = sel && sel.kind === 'pc' ? s.pcs.find((p) => p.id === sel.id) : null;
+    v.selNpc = !!curNpc; v.selGang = !!curGang; v.selLink = !!curLink; v.selPc = !!curPc;
+    v.selNone = !curNpc && !curGang && !curLink && !curPc; v.hasSel = !v.selNone;
+    v.insTitle = curNpc ? 'NPC' : curGang ? L('แก๊ง / กลุ่ม', 'GANG') : curLink ? L('ความสัมพันธ์', 'RELATIONSHIP') : curPc ? 'PC' : L('NPC ทั้งหมด', 'ALL NPCS');
+    v.insColor = curNpc ? F(curNpc.factor).color : curGang ? curGang.color : curLink ? this.kindOf(curLink.kind).color : curPc ? '#2EE6F0' : '#FFD400';
+    const q = String(s.q || '').trim().toLowerCase();
+    const listed = s.npcs.filter((n) => !q || (n.name + ' ' + (n.role || '') + ' ' + gangName(n.gang)).toLowerCase().indexOf(q) !== -1);
+    v.npcList = listed.map((n) => ({
+      name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), meta: [n.role, gangName(n.gang)].filter(Boolean).join(' · ') || '—', color: F(n.factor).color,
+      pic: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: initial(n.name),
+      pick: () => { this.setState({ sel: { kind: 'npc', id: n.id }, askDel: false }); this.scrollTo(n.x, n.y); }
+    }));
+    v.listEmpty = listed.length === 0;
+    v.listEmptyText = s.npcs.length ? L('ไม่พบ NPC ที่ตรงกับคำค้น', 'No NPC matches that search') : L('ยังไม่มี NPC กด "+ สร้าง NPC" เพื่อเริ่ม', 'No NPCs yet. Press "+ New NPC" to start.');
+    v.q = s.q;
+    v.onQ = (e) => this.setState({ q: e && e.target ? e.target.value : '' });
+    v.ed = curNpc ? {
+      name: curNpc.name, role: curNpc.role || '', notes: curNpc.notes || '', color: F(curNpc.factor).color,
+      pic: curNpc.pic || '', hasPic: !!curNpc.pic, noPic: !curNpc.pic,
+      onName: (e) => this.editNpc(curNpc.id, { name: String(e && e.target ? e.target.value : '').slice(0, 60) }),
+      onRole: (e) => this.editNpc(curNpc.id, { role: String(e && e.target ? e.target.value : '').slice(0, 80) }),
+      onNotes: (e) => this.editNpc(curNpc.id, { notes: String(e && e.target ? e.target.value : '').slice(0, 5000) }),
+      onPic: (e) => { const f = e && e.target && e.target.files ? e.target.files[0] : null; if (f) this.pickPic(curNpc.id, f); if (e && e.target) e.target.value = ''; },
+      clearPic: () => this.editNpc(curNpc.id, { pic: '' }),
+      factors: NPC_FACTORS.map((f) => {
+        const pr = (curNpc.factor || '') === f.k;
+        return { label: f.label, pressed: pr ? 'true' : 'false', pick: () => this.editNpc(curNpc.id, { factor: f.k }),
+          style: 'min-height: 36px; padding: 0 4px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 12px; border: 1px solid ' + f.color + '; background: ' + (pr ? f.color : 'transparent') + '; color: ' + (pr ? '#0B0A12' : f.color) };
+      }),
+      gangOpts: [{ v: '', label: L('— ไม่สังกัดแก๊ง —', '— No gang —'), sel: !curNpc.gang }].concat(s.gangs.map((g) => ({ v: g.id, label: g.name || L('แก๊งไม่มีชื่อ', 'Unnamed gang'), sel: curNpc.gang === g.id }))),
+      onGang: (e) => {
+        const gid = e && e.target ? e.target.value || null : null, g = s.gangs.find((x) => x.id === gid);
+        // moving into a gang puts the card inside its frame
+        const p = g ? this.clamp(g.x + 70 + Math.round(Math.random() * Math.max(0, g.w - 140)), g.y + 100 + Math.round(Math.random() * Math.max(0, g.h - 170))) : this.gangAt(curNpc.x, curNpc.y) ? this.clamp(curNpc.x, Math.max(...s.gangs.filter((x) => x.id === curNpc.gang).map((x) => x.y + x.h + 90), curNpc.y)) : {};
+        this.editNpc(curNpc.id, Object.assign({ gang: gid }, p));
+      },
+      rels: relsOf('npc:' + curNpc.id), noRels: !relsOf('npc:' + curNpc.id).length,
+      startLink: () => this.setState({ linkMode: true, linkFrom: 'npc:' + curNpc.id })
+    } : {};
+    v.ge = curGang ? {
+      name: curGang.name,
+      onName: (e) => this.editGang(curGang.id, { name: String(e && e.target ? e.target.value : '').slice(0, 60) }),
+      colors: GANG_COLORS.map((c) => ({ c: c, label: c, pressed: curGang.color === c ? 'true' : 'false', ring: curGang.color === c ? '#FFFFFF' : 'transparent', pick: () => this.editGang(curGang.id, { color: c }) })),
+      members: s.npcs.filter((n) => n.gang === curGang.id).map((n) => ({ name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), pick: () => this.setState({ sel: { kind: 'npc', id: n.id }, askDel: false }) })),
+      count: s.npcs.filter((n) => n.gang === curGang.id).length,
+      noMembers: !s.npcs.some((n) => n.gang === curGang.id)
+    } : {};
+    v.le = curLink ? {
+      a: this.nameOf(curLink.a), b: this.nameOf(curLink.b), color: this.kindOf(curLink.kind).color, arrow: this.kindOf(curLink.kind).arrow ? '→' : '⇄', note: curLink.note || '',
+      pickA: () => this.setState({ sel: { kind: curLink.a.split(':')[0], id: curLink.a.slice(curLink.a.indexOf(':') + 1) } }),
+      pickB: () => this.setState({ sel: { kind: curLink.b.split(':')[0], id: curLink.b.slice(curLink.b.indexOf(':') + 1) } }),
+      swap: () => this.editLink(curLink.id, { a: curLink.b, b: curLink.a }),
+      onNote: (e) => this.editLink(curLink.id, { note: String(e && e.target ? e.target.value : '').slice(0, 300) }),
+      kinds: LINK_KINDS.map((K) => {
+        const pr = curLink.kind === K.k;
+        return { label: L(K.th, K.en), pressed: pr ? 'true' : 'false', pick: () => this.editLink(curLink.id, { kind: K.k }),
+          style: 'min-height: 38px; padding: 0 8px; cursor: pointer; text-align: left; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 12.5px; border: 1px ' + (K.dash ? 'dashed' : 'solid') + ' ' + K.color + '; background: ' + (pr ? K.color : 'transparent') + '; color: ' + (pr ? '#0B0A12' : K.color) };
+      })
+    } : {};
+    v.pe = curPc ? {
+      name: curPc.name, factor: PCF[curPc.factor] || '—', color: PCC[curPc.factor] || '#2EE6F0', pic: curPc.pic || '', hasPic: !!curPc.pic, noPic: !curPc.pic, initial: initial(curPc.name),
+      rels: relsOf('pc:' + curPc.id), noRels: !relsOf('pc:' + curPc.id).length,
+      startLink: () => this.setState({ linkMode: true, linkFrom: 'pc:' + curPc.id })
+    } : {};
+    const delKey = selKey;
+    v.noAskDel = !s.askDel; v.askingDel = !!s.askDel;
+    v.askDel = () => this.setState({ askDel: true });
+    v.cancelDel = () => this.setState({ askDel: false });
+    const relCount = s.links.filter((l) => l.a === delKey || l.b === delKey).length;
+    v.delText = curNpc ? L('ลบ ' + (curNpc.name || 'NPC นี้') + (relCount ? ' และเส้นความสัมพันธ์ ' + relCount + ' เส้น' : '') + '? กู้คืนไม่ได้', 'Delete ' + (curNpc.name || 'this NPC') + (relCount ? ' and ' + relCount + ' relationship(s)' : '') + '? This can\'t be undone.')
+      : curGang ? L('ลบแก๊ง ' + (curGang.name || '') + '? สมาชิกยังอยู่บนแผนผัง แต่จะไม่สังกัดแก๊ง', 'Delete ' + (curGang.name || 'this gang') + '? Its members stay on the map without a gang.')
+      : curPc ? L('เอา ' + curPc.name + ' ออกจากแผนผัง' + (relCount ? ' พร้อมเส้นความสัมพันธ์ ' + relCount + ' เส้น' : '') + '? (ตัวละครของผู้เล่นไม่ถูกลบ)', 'Take ' + curPc.name + ' off the map' + (relCount ? ' with ' + relCount + ' relationship(s)' : '') + '? (The player\'s character is untouched.)') : '';
+    v.doDel = () => {
+      const gone = s.links.filter((l) => l.a === delKey || l.b === delKey);
+      const patch = { links: s.links.filter((l) => l.a !== delKey && l.b !== delKey), sel: null, askDel: false };
+      if (curNpc) patch.npcs = s.npcs.filter((n) => n.id !== curNpc.id);
+      if (curPc) patch.pcs = s.pcs.filter((p) => p.id !== curPc.id);
+      if (curGang) patch.gangs = s.gangs.filter((g) => g.id !== curGang.id), patch.npcs = s.npcs.map((n) => (n.gang === curGang.id ? Object.assign({}, n, { gang: null }) : n));
+      this.setState(Object.assign(patch, { toast: curNpc ? L('ลบ ' + (curNpc.name || 'NPC') + ' แล้ว', 'Deleted ' + (curNpc.name || 'NPC')) : curGang ? L('ลบแก๊งแล้ว', 'Gang deleted') : L('เอา ' + curPc.name + ' ออกจากแผนผังแล้ว', curPc.name + ' is off the map') }));
+      gone.forEach((l) => this.drop('link', l.id));
+      if (curNpc) this.drop('npc', curNpc.id);
+      if (curPc) this.drop('pc', curPc.id);
+      if (curGang) this.drop('gang', curGang.id);
+    };
+    v.doDelLink = () => { this.setState({ links: s.links.filter((l) => l.id !== curLink.id), sel: null, toast: L('ลบเส้นความสัมพันธ์แล้ว', 'Relationship deleted') }); this.drop('link', curLink.id); };
+    v.deselect = () => this.setState({ sel: null, askDel: false });
+
+    // toolbar
+    v.addNpc = () => {
+      const c = this.clamp(this.viewCenter().x + Math.round(Math.random() * 80 - 40), this.viewCenter().y + Math.round(Math.random() * 60 - 30));
+      const n = { id: uid(), name: L('NPC ใหม่', 'New NPC'), role: '', factor: '', gang: this.gangAt(c.x, c.y), x: c.x, y: c.y, pic: '', notes: '' };
+      this.setState({ npcs: s.npcs.concat([n]), sel: { kind: 'npc', id: n.id }, askDel: false, linkMode: false, linkFrom: null, toast: '' });
+      this.commit('npc', n);
+      setTimeout(() => { const el = document.getElementById('npc-name'); if (el) { el.focus(); el.select(); } }, 60);
+    };
+    v.addGang = () => {
+      const c = this.viewCenter();
+      const g = { id: uid(), name: L('แก๊งใหม่', 'New gang'), color: GANG_COLORS[s.gangs.length % GANG_COLORS.length], x: Math.max(0, Math.min(c.x - 210, NPC_W - 420)), y: Math.max(0, Math.min(c.y - 150, NPC_H - 300)), w: 420, h: 300 };
+      this.setState({ gangs: s.gangs.concat([g]), sel: { kind: 'gang', id: g.id }, askDel: false, linkMode: false, linkFrom: null, toast: L('ลากหัวกรอบเพื่อย้าย ลากมุมขวาล่างเพื่อขยาย แล้วลาก NPC เข้าไปในกรอบ', 'Drag the header to move, the corner to resize, then drag NPCs inside.') });
+      this.commit('gang', g);
+      setTimeout(() => { const el = document.getElementById('gang-name'); if (el) { el.focus(); el.select(); } }, 60);
+    };
+    v.linkMode = s.linkMode;
+    v.linkPressed = s.linkMode ? 'true' : 'false';
+    v.linkBg = s.linkMode ? '#2EE6F0' : 'transparent';
+    v.linkFg = s.linkMode ? '#0B0A12' : '#2EE6F0';
+    v.linkBtn = s.linkMode ? L('✕ ยกเลิกการเชื่อม', '✕ Cancel linking') : L('⟷ เชื่อมความสัมพันธ์', '⟷ Link two');
+    v.toggleLink = () => this.setState({ linkMode: !s.linkMode, linkFrom: null, toast: '' });
+    v.linkHint = s.linkFrom ? L('เลือกคนที่สอง ที่จะเชื่อมกับ ' + this.nameOf(s.linkFrom) + ' (กด Esc เพื่อยกเลิก)', 'Now pick who ' + this.nameOf(s.linkFrom) + ' is linked to (Esc cancels)') : L('คลิก NPC หรือ PC คนแรกบนแผนผัง แล้วคลิกคนที่สอง', 'Click the first NPC or PC on the map, then the second.');
+    const onMap = s.pcs.map((p) => p.id);
+    const avail = (s.pool || []).filter((p) => onMap.indexOf(p.id) === -1);
+    v.pcPool = avail.map((p) => ({ id: p.id, label: p.name + (p.session ? ' · ' + p.session : '') }));
+    v.pcPoolOff = !avail.length;
+    v.pcPoolLabel = (s.pool || []).length ? (avail.length ? L('+ เพิ่ม PC ลงแผนผัง', '+ Add a PC') : L('PC อยู่บนแผนผังครบแล้ว', 'All PCs are on the map')) : L('ยังไม่มี PC ใน session ของคุณ', 'No PCs in your sessions yet');
+    v.addPc = (e) => {
+      const id = e && e.target ? e.target.value : '';
+      const p = (s.pool || []).find((x) => x.id === id);
+      if (e && e.target) e.target.value = '';
+      if (!p) return;
+      const c = this.clamp(this.viewCenter().x, this.viewCenter().y + 120);
+      const row = { id: p.id, name: p.name, factor: p.factor, pic: p.pic || '', x: c.x, y: c.y };
+      this.setState({ pcs: s.pcs.concat([row]), sel: { kind: 'pc', id: p.id }, askDel: false });
+      this.commit('pc', row);
+    };
+    const Z = [0.4, 0.5, 0.6, 0.7, 0.85, 1, 1.2];
+    const zi = Z.reduce((best, z, i) => (Math.abs(z - s.zoom) < Math.abs(Z[best] - s.zoom) ? i : best), 0);
+    v.zoom = s.zoom; v.zoomPct = Math.round(s.zoom * 100) + '%';
+    v.boardW = Math.round(NPC_W * s.zoom); v.boardH = Math.round(NPC_H * s.zoom);
+    v.zoomIn = () => this.setState({ zoom: Z[Math.min(Z.length - 1, zi + 1)] });
+    v.zoomOut = () => this.setState({ zoom: Z[Math.max(0, zi - 1)] });
+    v.zoomFit = () => this.fit();
+    v.legend = LINK_KINDS.map((K) => ({ label: L(K.th, K.en), color: K.color, dash: K.dash || 'none' }));
+
+    return Object.assign(v, {
+      nodes: nodes, links: links, gangs: gangs,
+      countLabel: s.npcs.length + ' NPC · ' + s.gangs.length + L(' แก๊ง · ', ' GANGS · ') + s.links.length + L(' ความสัมพันธ์', ' LINKS'),
+      hasToast: !!s.toast, toast: s.toast,
+      userMenuOpen: !!s.userMenu,
+      userMenuExpanded: s.userMenu ? 'true' : 'false',
+      toggleUserMenu: () => this.setState({ userMenu: !s.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
+      closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
+      menuIsGm: (s.menuRole || 'gm') === 'gm',
+      menuNotGm: (s.menuRole || 'gm') !== 'gm',
+      roleJustSwitched: s.menuSwitched === 'gm',
+      charJustSwitched: s.menuSwitched === 'player',
+      charWarn: !!s.charWarn,
+      charWarnExpanded: s.charWarn ? 'true' : 'false',
+      askChars: () => this.setState({ charWarn: !s.charWarn, roleWarn: false }),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      roleWarn: !!s.roleWarn,
+      roleWarnExpanded: s.roleWarn ? 'true' : 'false',
+      askSessions: () => this.setState({ roleWarn: !s.roleWarn, charWarn: false }),
+      switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm' }),
+      switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player' }),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
+      navLogout: () => this.setState({ userMenu: false }),
+      setTh: () => this.setState({ lang: 'th' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      thPressed: th ? 'true' : 'false',
+      enPressed: th ? 'false' : 'true',
+      thStyle: th ? on : off,
+      enStyle: th ? off : on,
+      roleName: 'GM',
+      roleColor: '#FFD400',
+      t: {
+        menuChars: L('ตัวละครของฉัน', 'My Characters'),
+        menuSessions: L('Session ของฉัน', 'My Sessions'),
+        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
+        menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
+        menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
+        menuLogout: L('ออกจากระบบ', 'Log out'),
+        advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
+        navHome: L('หน้าแรก', 'HOME'),
+        navTables: L('Session ของฉัน', 'MY SESSIONS'),
+        navNpc: 'NPC',
+        sub: L('คลัง NPC ของคุณ ใช้ได้ทุก session ลากจัดวางบนแผนผัง จับกลุ่มเป็นแก๊ง แล้วโยงความสัมพันธ์ระหว่าง NPC กับ PC ใน session ของคุณ', 'Your NPC library for every session. Arrange them on the map, group them into gangs and link them to each other and to the PCs in your sessions.'),
+        addNpc: L('+ สร้าง NPC', '+ New NPC'),
+        addGang: L('+ แก๊ง / กลุ่ม', '+ Gang'),
+        addPc: L('เพิ่ม PC ลงแผนผัง', 'Add a PC to the map'),
+        mapLabel: L('แผนผังความสัมพันธ์ NPC', 'NPC relationship map'),
+        mapTip: L('ลากการ์ดเพื่อย้าย · ลาก NPC เข้ากรอบแก๊งเพื่อให้สังกัด', 'Drag cards to move · drop an NPC in a gang frame to join it'),
+        zoomIn: L('ขยาย', 'Zoom in'), zoomOut: L('ย่อ', 'Zoom out'), fit: L('พอดีจอ', 'FIT'),
+        dragTip: L('ลากเพื่อย้ายทั้งแก๊ง · คลิกเพื่อแก้ไข', 'Drag to move the whole gang · click to edit'),
+        resizeTip: L('ลากเพื่อปรับขนาดกรอบ', 'Drag to resize'),
+        legend: L('ประเภทความสัมพันธ์', 'Relationship kinds'),
+        inspector: L('รายละเอียด', 'Details'),
+        close: L('ปิด', 'Close'),
+        search: L('ค้นหา NPC', 'Search NPCs'),
+        searchPh: L('ค้นหาชื่อ บทบาท หรือแก๊ง…', 'Search name, role or gang…'),
+        picPick: L('เลือกรูป NPC', 'Pick an NPC picture'),
+        picAdd: L('+ เพิ่มรูป', '+ ADD PICTURE'),
+        picRemove: L('เอารูปออก', 'REMOVE'),
+        name: L('ชื่อ', 'NAME'), namePh: L('ชื่อ NPC', 'NPC name'),
+        role: L('บทบาท / อาชีพ', 'ROLE'), rolePh: L('เช่น เจ้าของร้านซ่อมไซเบอร์แวร์', 'e.g. cyberware repair shop owner'),
+        gang: L('สังกัดแก๊ง', 'GANG'),
+        statusSoon: L('ค่าสถานะของ NPC จะเพิ่มตามรายละเอียดที่กำหนดภายหลัง', 'NPC stats arrive once their details are set.'),
+        notes: L('โน้ตของ GM', 'GM NOTES'), notesPh: L('เบื้องหลัง เป้าหมาย ความลับ… (ผู้เล่นไม่เห็น)', 'Backstory, goals, secrets… (players never see this)'),
+        rels: L('ความสัมพันธ์', 'RELATIONSHIPS'), noRels: L('ยังไม่มีเส้นความสัมพันธ์', 'No relationships yet'),
+        linkFromHere: L('⟷ เชื่อมกับคนอื่น', '⟷ Link to someone'),
+        delNpc: L('ลบ NPC', 'Delete NPC'), delGang: L('ลบแก๊ง', 'Delete gang'), delPc: L('เอาออกจากแผนผัง', 'Remove from map'), delLink: L('ลบเส้นความสัมพันธ์', 'Delete relationship'),
+        confirmDel: L('ยืนยัน', 'Confirm'), cancel: L('ยกเลิก', 'Cancel'),
+        gangName: L('ชื่อแก๊ง / กลุ่ม', 'GANG NAME'), gangPh: L('เช่น Golden Crown', 'e.g. Golden Crown'),
+        color: L('สีกรอบ', 'COLOUR'), members: L('สมาชิก', 'MEMBERS'), noMembers: L('ยังไม่มีสมาชิก ลาก NPC เข้ามาในกรอบ หรือเลือกแก๊งที่หน้า NPC', 'No members yet. Drag NPCs into the frame or pick the gang on an NPC.'),
+        swap: L('สลับทิศทาง', 'Swap direction'), kind: L('ประเภท', 'KIND'),
+        linkNote: L('รายละเอียด (แสดงบนเส้น)', 'DETAIL (shown on the line)'), linkNotePh: L('เช่น เป็นหนี้ 50,000 เครดิต', 'e.g. owes 50,000 credits'),
+        pcNote: L('ข้อมูล PC มาจากตัวละครที่นั่งอยู่ใน session ของคุณ แผนผังนี้เห็นเฉพาะ GM', 'PC details come from characters seated in your sessions. Only you see this map.'),
+        protoNote: L('PROTOTYPE // ข้อมูลตัวอย่าง เก็บในเบราว์เซอร์นี้ ตอนเชื่อม Supabase จะเป็นตาราง npcs + npc_gangs + npc_links ของบัญชี GM', 'PROTOTYPE // Sample data kept in this browser. With Supabase these are the GM\'s npcs, npc_gangs and npc_links rows.')
+      }
+    });
+  }
+}
+</script>
+<script src="../assets/beta-npcs.js"></script>
+</body>
+</html>

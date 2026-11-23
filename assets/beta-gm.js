@@ -25,7 +25,8 @@
       super(props);
       Object.assign(this.state, { chars: {}, order: [], feed: [], events: [], removed: [], turn: 0, round: 1, sessions: [], sid: null, members: [], ready: false, online: {},
         notes: [], noteSel: null, noteSavedAt: null, noteAskDel: false,
-        scenes: [], sceneShown: [], sceneLink: '', sceneAskDel: null, sceneMsg: '' });
+        scenes: [], sceneShown: [], sceneLink: '', sceneAskDel: null, sceneMsg: '',
+        npcLib: [], encounter: [] });
       window.addEventListener('beforeunload', (e) => {
         if (this._notePend && Object.keys(this._notePend).length) { this.flushNotes(); e.preventDefault(); e.returnValue = ''; }
       });
@@ -38,6 +39,7 @@
       this.setState({ user: me.user, profile: me.profile, role: me.profile.role });
       if (!me.profile.gm_allowed) { location.replace('characters.html'); return; }
       if (me.profile.role !== 'gm') return;
+      this.loadNpcs();
       await this.loadSessions();
       var want = new URLSearchParams(location.search).get('s');
       var ss = this.state.sessions;
@@ -78,7 +80,7 @@
       if (this._notePend && Object.keys(this._notePend).length) { clearTimeout(this._noteT); await this.flushNotes(); }
       this.unsub();
       var sess = this.state.sessions.find((s) => s.id === sid);
-      this.apply({ sceneShown: SP.sceneList(sess.scene), scenes: [], sceneMsg: '', sceneAskDel: null });
+      this.apply({ sceneShown: SP.sceneList(sess.scene), scenes: [], sceneMsg: '', sceneAskDel: null, encounter: SP.encounterList(sess.encounter) });
       this.apply({ sid: sid, session: sess, turn: sess.turn || 0, round: sess.round || 1, order: sess.turn_order || [], copied: false, confirm: null });
       if (history.replaceState) history.replaceState(null, '', 'gm.html?s=' + sid);
       await this.loadParty();
@@ -181,6 +183,20 @@
       this.apply({ scenes: this.state.scenes.filter(function (x) { return x.id !== it.id; }), sceneAskDel: null });
     }
 
+    /* NPCs: the GM's library (NPC page) and the Encounter strip players see (sessions.encounter) */
+    async loadNpcs() {
+      var r = await sb.from('npcs').select('id, name, portrait_url, data').eq('gm_id', this.state.profile.id).order('name');
+      this.apply({ npcLib: (r.data || []).map(function (n) { return { id: n.id, name: n.name, role: (n.data && n.data.role) || '', pic: n.portrait_url || '' }; }) });
+    }
+    async encSet(list) {
+      var sid = this.state.sid;
+      if (!sid) return;
+      var prev = this.state.encounter;
+      this.setState({ encounter: list });
+      var r = await sb.from('sessions').update({ encounter: list.length ? list : null }).eq('id', sid);
+      if (r.error) this.apply({ encounter: prev, toast: SP.err(r.error, this.state.lang !== 'en') });
+    }
+
     async loadParty() {
       var sid = this.state.sid;
       var m = await sb.from('session_members').select('character_id, user_id, characters(*), profiles(display_name)').eq('session_id', sid);
@@ -210,6 +226,7 @@
           var ss = this.state.sessions.map((s) => (s.id === sid ? Object.assign({}, s, p.new) : s));
           this.apply({ sessions: ss, session: Object.assign({}, this.state.session, p.new) });
           if (p.new && 'scene' in p.new) this.apply({ sceneShown: SP.sceneList(p.new.scene) });
+          if (p.new && 'encounter' in p.new) this.apply({ encounter: SP.encounterList(p.new.encounter) });
         });
       this._ch.subscribe();
       this._pres = sb.channel('presence-' + sid, { config: { presence: { key: this.state.profile.id } } });

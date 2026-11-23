@@ -72,6 +72,7 @@ html{scroll-behavior:smooth}
         <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
         <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
         <a href="sessions.html" aria-current="page" style="color: #FFD400; text-decoration: none; padding: 12px 0; border-bottom: 2px solid #FFD400">{{t.navTables}}</a>
+        <a href="npcs.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navNpc}}</a>
       </div>
       <div style="position: relative" onKeyDown="{{userMenuKey}}">
         <button type="button" onClick="{{toggleUserMenu}}" aria-haspopup="true" aria-expanded="{{userMenuExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid {{roleColor}}; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; background: transparent; cursor: pointer">
@@ -470,6 +471,7 @@ class Component extends DCLogic {
         advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
         navHome: L('หน้าแรก', 'HOME'),
         navTables: L('Session ของฉัน', 'MY SESSIONS'),
+        navNpc: 'NPC',
         title: L('Session ของฉัน', 'My sessions'),
         rule: L('1 บัญชีรันได้ทีละ 1 session — เมื่อเริ่ม session ใหม่ session ที่ LIVE อยู่จะถูกพักอัตโนมัติ ฝั่งผู้เล่นก็เช่นกัน 1 บัญชีนั่งได้ทีละ 1 session', 'One live session per account. Starting a session pauses whichever session is live. Players follow the same rule: one seat per account.'),
         newTitle: L('สร้าง session ใหม่', 'New session'),

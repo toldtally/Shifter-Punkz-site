@@ -76,6 +76,7 @@ html{scroll-behavior:smooth}
         <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
         <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
         <a href="sessions.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navTables}}</a>
+        <a href="npcs.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navNpc}}</a>
       </div>
       <div style="position: relative" onKeyDown="{{userMenuKey}}">
         <button type="button" onClick="{{toggleUserMenu}}" aria-haspopup="true" aria-expanded="{{userMenuExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid {{roleColor}}; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; background: transparent; cursor: pointer">
@@ -459,6 +460,76 @@ html{scroll-behavior:smooth}
           </div>
         </section>
 
+        <!-- NPC: put an NPC's picture on screen, or bring them into the Encounter strip on players' sheets -->
+        <section aria-labelledby="npc-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
+          <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
+            <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
+              <h2 id="npc-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">NPC // ENCOUNTER</h2>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #8C88A6">{{t.npcSub}}</span>
+            </div>
+            <a href="npcs.html" style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: #FFD400; text-decoration: none">{{t.npcManage}}</a>
+          </div>
+          <div style="padding: 16px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 20px">
+            <div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.encNow}}</span>
+                <span role="status" aria-live="polite" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: {{encStatusColor}}">{{encStatus}}</span>
+              </div>
+              <sc-if value="{{encNone}}" hint-placeholder-val="{{ false }}">
+                <p style="margin: 0; padding: 22px 12px; border: 1px dashed #3A3655; text-align: center; font-size: 13px; line-height: 1.7; color: #8C88A6">{{t.encEmpty}}</p>
+              </sc-if>
+              <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+                <sc-for list="{{encList}}" as="en" hint-placeholder-count="2">
+                  <li style="display: flex; gap: 10px; padding: 8px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid #FF3D6E">
+                    <span style="width: 64px; height: 64px; flex-shrink: 0; overflow: hidden; background: #1D1930; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: #FF3D6E"><sc-if value="{{en.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{en.url}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{en.noPic}}" hint-placeholder-val="{{ false }}">{{en.initial}}</sc-if></span>
+                    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                      <div style="display: flex; align-items: center; gap: 8px">
+                        <span style="flex: 1; min-width: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{en.name}}</span>
+                        <button type="button" onClick="{{en.remove}}" aria-label="{{en.removeLabel}}" title="{{en.removeLabel}}" style="width: 32px; min-height: 32px; flex-shrink: 0; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">✕</button>
+                      </div>
+                      <div role="group" aria-label="{{en.statusLabel}}" style="display: flex; flex-wrap: wrap; gap: 4px">
+                        <sc-for list="{{en.statuses}}" as="es" hint-placeholder-count="6">
+                          <button type="button" onClick="{{es.toggle}}" aria-pressed="{{es.pressed}}" style="{{es.style}}">{{es.n}}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </li>
+                </sc-for>
+              </ul>
+              <div style="display: flex; justify-content: flex-end">
+                <button type="button" onClick="{{encClear}}" disabled="{{encClearOff}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E">{{t.encClear}}</button>
+              </div>
+            </div>
+            <div style="flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+              <label for="npc-lib-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.npcSearch}}</label>
+              <input id="npc-lib-q" class="fld" type="search" value="{{npcQ}}" onInput="{{onNpcQ}}" placeholder="{{t.npcSearchPh}}">
+              <sc-if value="{{npcLibNone}}" hint-placeholder-val="{{ false }}">
+                <p style="margin: 0; padding: 24px 12px; border: 1px dashed #3A3655; text-align: center; font-size: 13px; line-height: 1.7; color: #A9A5C2">{{npcLibNoneText}}</p>
+              </sc-if>
+              <ul aria-label="{{t.npcLib}}" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; max-height: 460px; overflow-y: auto">
+                <sc-for list="{{npcLib}}" as="nc" hint-placeholder-count="4">
+                  <li style="display: flex; flex-direction: column; background: #0B0A12; border: 1px solid {{nc.border}}">
+                    <div style="position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: #1D1930; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px; color: #3A3655">
+                      <sc-if value="{{nc.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{nc.url}}" alt="" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if>
+                      <sc-if value="{{nc.noPic}}" hint-placeholder-val="{{ false }}">{{nc.initial}}</sc-if>
+                      <sc-if value="{{nc.badge}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; top: 6px; left: 6px; padding: 2px 6px; background: {{nc.badgeColor}}; color: #0B0A12; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">{{nc.badgeText}}</span></sc-if>
+                    </div>
+                    <div style="padding: 8px 10px 4px; display: flex; flex-direction: column; gap: 2px; min-width: 0">
+                      <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{nc.name}}</span>
+                      <span style="font-size: 11.5px; color: #8C88A6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{nc.meta}}</span>
+                    </div>
+                    <div style="padding: 6px 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px">
+                      <button type="button" onClick="{{nc.scene}}" aria-pressed="{{nc.scenePressed}}" disabled="{{nc.sceneOff}}" title="{{nc.sceneTip}}" style="min-height: 34px; padding: 0 4px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; border: 1px solid #FF2E88; background: {{nc.sceneBg}}; color: {{nc.sceneFg}}">{{nc.sceneText}}</button>
+                      <button type="button" onClick="{{nc.enc}}" aria-pressed="{{nc.encPressed}}" title="{{nc.encTip}}" style="min-height: 34px; padding: 0 4px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; border: 1px solid #FF3D6E; background: {{nc.encBg}}; color: {{nc.encFg}}">{{nc.encText}}</button>
+                    </div>
+                  </li>
+                </sc-for>
+              </ul>
+              <p style="margin: 0; font-size: 12px; line-height: 1.6; color: #8C88A6">{{t.npcHint}}</p>
+            </div>
+          </div>
+        </section>
+
         <!-- Session notes: the GM's private story log, one entry per play -->
         <section aria-labelledby="notes-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #C084FC">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
@@ -579,6 +650,20 @@ function sceneArt(sky, glow, label) {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 100'><defs><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" + sky + "'/><stop offset='1' stop-color='#0B0A12'/></linearGradient></defs><rect width='160' height='100' fill='url(#s)'/><circle cx='118' cy='26' r='12' fill='" + glow + "' opacity='.35'/>" + blds + wins + "<text x='8' y='14' font-family='monospace' font-size='6' letter-spacing='1' fill='" + glow + "'>" + label + "</text></svg>";
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
+/* demo NPC library for the prototype (the NPC Network artboard shares its own list through this browser) */
+function npcFace(bg, acc) {
+  const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='" + bg + "'/><circle cx='32' cy='26' r='11' fill='#0B0A12'/><path d='M12 64c2-14 10-20 20-20s18 6 20 20z' fill='#0B0A12'/><path d='M22 24h20' stroke='" + acc + "' stroke-width='2.5'/></svg>";
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
+const NPC_DEMO = [
+  { id: 'n-krit', name: 'เสี่ยกฤษ', role: 'ผู้มีอิทธิพล · เจ้าของบ่อนลาดพร้าว', pic: npcFace('#3A300A', '#FFD400') },
+  { id: 'n-thug', name: 'Golden Crown Thug', role: 'ลูกน้องคุมหน้าร้าน', pic: '' },
+  { id: 'n-snipe', name: 'Ironhide Sniper', role: 'มือปืนรับจ้าง', pic: npcFace('#3A1020', '#FF3D6E') },
+  { id: 'n-jum', name: 'ป้าจุ๋ม', role: 'แม่ค้าข้าวมันไก่ปากซอย · สายข่าว', pic: '' },
+  { id: 'n-vee', name: 'Doc Vee', role: 'หมอเถื่อนใต้สะพาน', pic: npcFace('#0E2A3A', '#2EE6F0') }
+];
+/* abnormal statuses an encounter can show players (same names as the Injuries panel on the sheet) */
+const ENC_STATUS = ['Poisoned', 'Bleeding', 'Enervated', 'Insane', 'Fainted', 'Hallucinated', 'Cosmic Infected', 'Cosmic Stigma', 'Cosmic Outburst', 'Coma'];
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -590,6 +675,7 @@ class Component extends DCLogic {
     ];
     this.state = {
       scenes: demoScenes, sceneShown: [Object.assign({ at: now }, demoScenes[0])], sceneLink: '', sceneAskDel: null, sceneMsg: '',
+      npcLib: NPC_DEMO, encounter: [], npcQ: '',
       notes: [
         { id: 'n2', no: 2, at: now - 86400000 * 6, title: 'บุกโกดังท่าเรือ', body: '' },
         { id: 'n1', no: 1, at: now - 86400000 * 13, title: 'รับงานแรก', body: '' }
@@ -624,10 +710,14 @@ class Component extends DCLogic {
   componentDidMount() {
     try {
       this._bc = new BroadcastChannel('sp-bgm');
-      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'hello') { this.bgmBroadcast(); this.sceneBroadcast(this.state.sceneShown); } };
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'hello') { this.bgmBroadcast(); this.sceneBroadcast(this.state.sceneShown); this.encBroadcast(this.state.encounter); } };
     } catch (e) { this._bc = null; }
     this._clock = setInterval(() => this.setState({ now: Date.now() }), 1000);
     this._live = setInterval(() => this.tickLive(), 4500);
+    // prototype: the NPC Network artboard keeps its NPCs in this browser
+    const lib = (d) => { if (d && Array.isArray(d.npcs)) this.setState({ npcLib: d.npcs.map((n) => ({ id: n.id, name: n.name, role: n.role || '', pic: n.pic || '' })) }); };
+    try { lib(JSON.parse(localStorage.getItem('sp-demo-npcnet') || 'null')); } catch (e) {}
+    try { this._npcCh = new BroadcastChannel('sp-demo-npcnet'); this._npcCh.onmessage = (ev) => lib(ev.data); } catch (e) {}
   }
   /* scene screen: the picture every seated player sees (BroadcastChannel here, sessions.scene on the live site) */
   sceneBroadcast(list) { if (this._bc) { try { this._bc.postMessage({ type: 'scene', scene: list && list.length ? list : null }); } catch (e) {} } }
@@ -653,6 +743,17 @@ class Component extends DCLogic {
     if (!/^https:\/\/\S+$/i.test(url)) return this.setState({ sceneMsg: th ? 'ใส่ลิงก์รูปที่ขึ้นต้นด้วย https://' : 'Use an image link that starts with https://', sceneMsgErr: true });
     const title = decodeURIComponent(url.split('?')[0].split('/').pop() || '').replace(/\.[^.]+$/, '').slice(0, 80);
     this.setState({ scenes: [{ id: 's' + Date.now(), url: url, title: title }].concat(this.state.scenes || []), sceneLink: '', sceneMsg: '' });
+  }
+  /* Encounter strip on players' sheets: picture, name and abnormal statuses (BroadcastChannel here, sessions.encounter on the live site) */
+  encBroadcast(list) { if (this._bc) { try { this._bc.postMessage({ type: 'encounter', encounter: list && list.length ? list : null }); } catch (e) {} } }
+  encSet(list) { this.setState({ encounter: list }); this.encBroadcast(list); }
+  encAdd(n) {
+    const list = (this.state.encounter || []).filter((x) => x.id !== n.id);
+    this.encSet(list.concat([{ id: n.id, name: n.name || '', url: n.pic || '', status: [], at: Date.now() }]).slice(-8));
+  }
+  encDrop(id) { this.encSet((this.state.encounter || []).filter((x) => x.id !== id)); }
+  encToggle(id, st) {
+    this.encSet((this.state.encounter || []).map((x) => (x.id !== id ? x : Object.assign({}, x, { status: x.status.indexOf(st) === -1 ? x.status.concat([st]) : x.status.filter((y) => y !== st) }))));
   }
   sceneDel(it) {
     if ((this.state.sceneShown || []).some((x) => x.id === it.id)) this.sceneHide(it.id);
@@ -686,6 +787,7 @@ class Component extends DCLogic {
   componentWillUnmount() {
     if (this._bgm) this._bgm.close();
     if (this._bc) this._bc.close();
+    if (this._npcCh) this._npcCh.close();
     clearInterval(this._clock);
     clearInterval(this._live);
   }
@@ -858,6 +960,51 @@ class Component extends DCLogic {
           sceneLinkInput: (e) => this.setState({ sceneLink: e && e.target ? e.target.value : '' }),
           sceneLinkAdd: (e) => { if (e && e.preventDefault) e.preventDefault(); this.sceneAddLink(String(this.state.sceneLink || '').trim()); },
           sceneHasMsg: !!this.state.sceneMsg, sceneMsg: this.state.sceneMsg || '', sceneMsgColor: this.state.sceneMsgErr ? '#FF3D6E' : '#A9A5C2'
+        };
+      })(),
+      ...(() => {
+        // NPCs: the GM's library, shown as a picture (Scene) or brought into the Encounter strip
+        const enc = this.state.encounter || [];
+        const shownIds = (this.state.sceneShown || []).map((x) => x.id);
+        const q = String(this.state.npcQ || '').trim().toLowerCase();
+        const all = this.state.npcLib || [];
+        const lib = all.filter((n) => !q || ((n.name || '') + ' ' + (n.role || '')).toLowerCase().indexOf(q) !== -1);
+        const ini = (n) => (((n || '').match(/[ก-ฮA-Za-z0-9]/) || ['?'])[0]).toUpperCase();
+        return {
+          encList: enc.map((x) => ({
+            name: x.name || L('(ไม่มีชื่อ)', '(unnamed)'), url: x.url, hasPic: !!x.url, noPic: !x.url, initial: ini(x.name),
+            remove: () => this.encDrop(x.id), removeLabel: L('เอาออกจาก Encounter: ', 'Take out of the encounter: ') + (x.name || ''),
+            statusLabel: L('สถานะผิดปกติของ ', 'Abnormal statuses of ') + (x.name || ''),
+            statuses: ENC_STATUS.map((st) => {
+              const onS = x.status.indexOf(st) !== -1;
+              return { n: st, pressed: onS ? 'true' : 'false', toggle: () => this.encToggle(x.id, st),
+                style: 'min-height: 28px; padding: 0 7px; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 10.5px; letter-spacing: 0.02em; border: 1px solid ' + (onS ? '#FF3D6E' : '#3A3655') + '; background: ' + (onS ? '#FF3D6E' : 'transparent') + '; color: ' + (onS ? '#0B0A12' : '#A9A5C2') };
+            })
+          })),
+          encNone: enc.length === 0,
+          encStatus: enc.length ? L('● ผู้เล่นเห็น ' + enc.length + ' NPC', '● ' + enc.length + ' NPC ON PLAYERS\' SHEETS') : L('ยังไม่มี Encounter', 'NO ENCOUNTER'),
+          encStatusColor: enc.length ? '#FF3D6E' : '#8C88A6',
+          encClear: () => this.encSet([]), encClearOff: !enc.length,
+          npcQ: this.state.npcQ || '',
+          onNpcQ: (e) => this.setState({ npcQ: e && e.target ? e.target.value : '' }),
+          npcLibNone: lib.length === 0,
+          npcLibNoneText: all.length ? L('ไม่พบ NPC ที่ตรงกับคำค้น', 'No NPC matches that search') : L('ยังไม่มี NPC สร้างได้ที่หน้า NPC', 'No NPCs yet. Make some on the NPC page.'),
+          npcLib: lib.map((n) => {
+            const onScene = shownIds.indexOf('npc-' + n.id) !== -1, inEnc = enc.some((x) => x.id === n.id);
+            return {
+              name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), meta: n.role || '—', url: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: ini(n.name),
+              border: inEnc ? '#FF3D6E' : onScene ? '#FF2E88' : '#2A2740',
+              badge: onScene || inEnc, badgeText: inEnc ? 'ENCOUNTER' : 'ON SCREEN', badgeColor: inEnc ? '#FF3D6E' : '#FF2E88',
+              sceneText: onScene ? L('■ เอาภาพลง', '■ Take down') : L('ขึ้นภาพ', 'Show picture'), scenePressed: onScene ? 'true' : 'false', sceneOff: !n.pic,
+              sceneBg: onScene ? '#FF2E88' : 'transparent', sceneFg: onScene ? '#0B0A12' : '#FF2E88',
+              sceneTip: n.pic ? L('ขึ้นแค่ภาพ NPC บนจอผู้เล่น (ไม่มีรายละเอียดอื่น)', 'Put just the picture on players\' screens') : L('NPC นี้ยังไม่มีรูป', 'This NPC has no picture yet'),
+              scene: () => (onScene ? this.sceneHide('npc-' + n.id) : this.sceneShow({ id: 'npc-' + n.id, url: n.pic, title: n.name || '' })),
+              encText: inEnc ? L('✕ ออกจาก Enc.', '✕ Leave enc.') : '+ Encounter', encPressed: inEnc ? 'true' : 'false',
+              encBg: inEnc ? '#FF3D6E' : 'transparent', encFg: inEnc ? '#0B0A12' : '#FF3D6E',
+              encTip: L('ดึงเข้าแถบ Encounter บนชีทผู้เล่น พร้อมสถานะผิดปกติ', 'Bring into the Encounter strip on players\' sheets, with abnormal statuses'),
+              enc: () => (inEnc ? this.encDrop(n.id) : this.encAdd(n))
+            };
+          })
         };
       })(),
       ...(() => {
@@ -1124,6 +1271,7 @@ class Component extends DCLogic {
         backMine: L('กลับไปตัวละครของฉัน', 'Back to my characters'),
         tableName: L('Session: ตรอกนีออนลาดพร้าว', 'SESSION: LAT PHRAO NEON ALLEY'),
         navTables: L('Session ของฉัน', 'MY SESSIONS'),
+        navNpc: 'NPC',
         switchTable: L('SESSION', 'SESSION'),
         manageTables: L('จัดการ session ทั้งหมด / สร้าง session ใหม่', 'Manage sessions / new session'),
         oneRun: L('1 บัญชีรันได้ทีละ 1 session', 'One live session per account'),
@@ -1140,6 +1288,15 @@ class Component extends DCLogic {
         remove: L('เอาออกจาก session', 'Remove from session'),
         cancel: L('ยกเลิก', 'Cancel'),
         sceneSub: L('ภาพที่ผู้เล่นเห็นพร้อมกัน', 'WHAT EVERY PLAYER SEES'),
+        npcSub: L('ขึ้นภาพ NPC หรือดึงเข้า Encounter', 'SHOW A PICTURE OR START AN ENCOUNTER'),
+        npcManage: L('จัดการ NPC →', 'Manage NPCs →'),
+        encNow: L('ENCOUNTER ตอนนี้', 'ENCOUNTER NOW'),
+        encEmpty: L('ยังไม่มี NPC ใน Encounter กด "+ Encounter" ที่การ์ด NPC ทางขวา', 'No NPC in the encounter. Press "+ Encounter" on an NPC card.'),
+        encClear: L('จบ Encounter', 'End encounter'),
+        npcSearch: L('ค้นหา NPC', 'Search NPCs'),
+        npcSearchPh: L('ค้นหา NPC…', 'Search NPCs…'),
+        npcLib: L('คลัง NPC', 'NPC library'),
+        npcHint: L('"ขึ้นภาพ" ส่งแค่รูป NPC ขึ้นจอผู้เล่นแบบ Scene · "+ Encounter" ใส่ NPC ลงแถบ Encounter บนใบตัวละครผู้เล่น ผู้เล่นเห็นรูป ชื่อ และสถานะผิดปกติที่ GM กดไว้เท่านั้น', '"Show picture" puts only the NPC\'s picture on players\' screens, like a scene. "+ Encounter" adds them to the Encounter strip on players\' sheets: players see the picture, the name and the abnormal statuses you switch on, nothing else.'),
         sceneNow: L('บนจอผู้เล่นตอนนี้', 'ON PLAYERS\' SCREENS NOW'),
         sceneOff: L('ยังไม่ได้ขึ้นภาพ กดภาพในคลังเพื่อขึ้นจอ', 'Nothing up yet. Pick a picture from the library.'),
         sceneClear: L('■ เอาภาพลงทั้งหมด', '■ Take all down'),

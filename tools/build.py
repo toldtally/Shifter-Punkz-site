@@ -34,7 +34,7 @@ html{scroll-behavior:smooth}
 """
 
 SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
-ALL = ["Main", "TRPG", "Auth", "Account", "Character", "MyCharacters", "GMSheet", "GMTables"]
+ALL = ["Main", "TRPG", "Auth", "Account", "Character", "MyCharacters", "GMSheet", "GMTables", "NPC"]
 
 MSG = ('<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><p role="status" aria-live="polite" '
        'style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid {{msgColor}}; '
@@ -64,7 +64,7 @@ SETPW = '''<sc-if value="{{isSetPw}}" hint-placeholder-val="{{ false }}">
 '''
 
 BETA_LINKS = {"Main": "../index.html", "TRPG": "../trpg.html", "Account": "account.html", "Auth": "auth.html",
-              "Character": "character.html", "MyCharacters": "characters.html", "GMTables": "sessions.html", "GMSheet": "gm.html"}
+              "Character": "character.html", "MyCharacters": "characters.html", "GMTables": "sessions.html", "GMSheet": "gm.html", "NPC": "npcs.html"}
 ASK_GM = ('re:<sc-if value="\\{\\{menuNotGm\\}\\}"( hint-placeholder-val="\\{\\{ true \\}\\}">\\s*<button type="button" role="menuitem" onClick="\\{\\{askSessions\\}\\}")', '<sc-if value="{{menuCanAskGm}}"\\1', 1)
 ME = ('re:aria-hidden="true">N</span><span>Nox', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1)
 
@@ -140,6 +140,10 @@ PAGES = [
          markup=[ASK_GM, ME]),
     dict(src="GMTables.dc.html", out="beta/sessions.html", title="Session ของฉัน · Shifter Punkz",
          desc="Session ของ GM Shifter Punkz (beta)", beta="beta-sessions.js", common=True, links=BETA_LINKS,
+         markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
+         ]),
+    dict(src="NPC.dc.html", out="beta/npcs.html", title="NPC Network · Shifter Punkz",
+         desc="NPC ของ GM Shifter Punkz (beta)", beta="beta-npcs.js", common=True, links=BETA_LINKS,
          markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
          ]),
     dict(src="GMSheet.dc.html", out="beta/gm.html", title="GM Monitor · Shifter Punkz",
