@@ -8,6 +8,7 @@ Beta pages (beta/): sign-in and account, wired to Supabase by assets/beta-*.js.
 Links to pages that aren't published yet become "SOON" chips. Spoiler data
 that a page no longer shows is stripped from the source (this repo is public).
 """
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -328,6 +329,13 @@ def build(cfg):
 </body>
 </html>
 """
+    # cache-busting: every local asset URL carries a short hash of the file, so a changed logo or script shows up at once
+    def bust(m):
+        f = ROOT / m.group(2).lstrip("./")
+        if not f.is_file():
+            return m.group(0)
+        return '%s="%s?v=%s"' % (m.group(1), m.group(2), hashlib.sha1(f.read_bytes()).hexdigest()[:8])
+    html = re.sub(r'(src|href)="((?:\.\./)*assets/[^"?#]+)"', bust, html)
     path = ROOT / out
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(html, encoding="utf-8")
