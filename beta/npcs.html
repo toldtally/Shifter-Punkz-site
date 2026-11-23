@@ -523,6 +523,9 @@ class Component extends DCLogic {
     document.addEventListener('pointerup', this._up);
     document.addEventListener('pointercancel', this._up);
     document.addEventListener('keydown', this._key);
+    this._mid = (e) => { const sc = document.getElementById('mm-scroll'); if (e.button === 1 && sc && sc.contains(e.target)) e.preventDefault(); };
+    document.addEventListener('mousedown', this._mid);
+    document.addEventListener('auxclick', this._mid);
     setTimeout(() => this.fit(), 0);
   }
   componentWillUnmount() {
@@ -531,6 +534,8 @@ class Component extends DCLogic {
     document.removeEventListener('pointerup', this._up);
     document.removeEventListener('pointercancel', this._up);
     document.removeEventListener('keydown', this._key);
+    document.removeEventListener('mousedown', this._mid);
+    document.removeEventListener('auxclick', this._mid);
   }
 
   /* ---- persistence: the prototype keeps the map in this browser; the live site writes Supabase rows ---- */
@@ -610,7 +615,16 @@ class Component extends DCLogic {
   }
 
   /* ---- dragging nodes, gang frames and frame corners ---- */
+  /* middle mouse button held: grab the map and pan it */
+  panStart(e) {
+    const sc = document.getElementById('mm-scroll');
+    if (!sc || !e.target || !sc.contains(e.target)) return;
+    if (e.cancelable) e.preventDefault();
+    this._pan = { sx: e.clientX, sy: e.clientY, sl: sc.scrollLeft, st: sc.scrollTop, el: sc };
+    sc.style.cursor = 'grabbing';
+  }
   dragStart(e) {
+    if (e.button === 1) return this.panStart(e);
     if (e.button !== 0 || !e.target || !e.target.closest) return;
     const h = e.target.closest('[data-mm-drag],[data-mm-resize]');
     if (!h) return this.boxStart(e);
@@ -662,6 +676,13 @@ class Component extends DCLogic {
     this.setState({ box: null, multi: m.length > 1 ? m : [], sel: m.length === 1 ? { kind: m[0].slice(0, m[0].indexOf(':')), id: m[0].slice(m[0].indexOf(':') + 1) } : null });
   }
   dragMove(e) {
+    if (this._pan) {
+      const pn = this._pan;
+      pn.el.scrollLeft = pn.sl - (e.clientX - pn.sx);
+      pn.el.scrollTop = pn.st - (e.clientY - pn.sy);
+      if (e.cancelable) e.preventDefault();
+      return;
+    }
     if (this._box) return this.boxMove(e);
     const d = this._drag;
     if (!d) return;
@@ -693,6 +714,7 @@ class Component extends DCLogic {
     });
   }
   dragEnd() {
+    if (this._pan) { this._pan.el.style.cursor = ''; this._pan = null; return; }
     if (this._box) return this.boxEnd();
     const d = this._drag;
     this._drag = null;
@@ -1003,7 +1025,7 @@ class Component extends DCLogic {
         addGang: L('+ แก๊ง / กลุ่ม', '+ Gang'),
         addPc: L('เพิ่ม PC ลงแผนผัง', 'Add a PC to the map'),
         mapLabel: L('แผนผังความสัมพันธ์ NPC', 'NPC relationship map'),
-        mapTip: L('ลากการ์ดเพื่อย้าย · ลากที่ว่างเพื่อคลุมหลายการ์ด · Shift+คลิกเพื่อเลือกเพิ่ม · ลาก NPC เข้ากรอบแก๊งเพื่อให้สังกัด', 'Drag cards to move · drag empty space to box-select · Shift+click to add · drop an NPC in a gang frame to join it'),
+        mapTip: L('ลากการ์ดเพื่อย้าย · ลากที่ว่างเพื่อคลุมหลายการ์ด · Shift+คลิกเพื่อเลือกเพิ่ม · กดเมาส์กลางค้างเพื่อเลื่อนแผนผัง · ลาก NPC เข้ากรอบแก๊งเพื่อให้สังกัด', 'Drag cards to move · drag empty space to box-select · Shift+click to add · hold the middle button to pan · drop an NPC in a gang frame to join it'),
         multiTip: L('ลากการ์ดใบไหนก็ได้ที่เลือกไว้ เพื่อย้ายทั้งหมดพร้อมกัน กด Esc หรือคลิกที่ว่างเพื่อยกเลิกการเลือก', 'Drag any selected card to move them all together. Esc or a click on empty space clears the selection.'),
         clearSel: L('ยกเลิกการเลือก', 'Clear selection'),
         zoomIn: L('ขยาย', 'Zoom in'), zoomOut: L('ย่อ', 'Zoom out'), fit: L('พอดีจอ', 'FIT'),
