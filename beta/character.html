@@ -103,6 +103,9 @@ textarea.fld{resize:vertical;line-height:1.45}
 @keyframes encCard{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
 @keyframes encPulse{0%,100%{opacity:1}50%{opacity:.25}}
 @media (prefers-reduced-motion: reduce){.enc-in,.enc-card,.enc-dot{animation:none}}
+.trd-in{animation:trdIn .22s cubic-bezier(.2,.8,.2,1) both}
+@keyframes trdIn{from{opacity:0;transform:translate(-50%,-48%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%)}}
+@media (prefers-reduced-motion: reduce){.trd-in{animation:none}}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
 [data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
@@ -286,6 +289,36 @@ html{scroll-behavior:smooth}
     </sc-if>
     </sc-for>
 
+    <!-- Traits list: every Trait in the game, opened from the Trait panel; picking one fills the Trait fields -->
+    <sc-if value="{{traitsOpen}}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{closeTraits}}" aria-hidden="true" style="position: fixed; inset: 0; z-index: 90; background: rgba(11,10,18,0.86)"></div>
+      <div id="traits-dlg" role="dialog" aria-modal="true" aria-labelledby="traits-h" tabindex="-1" onKeyDown="{{traitsKey}}" class="trd-in" style="position: fixed; z-index: 91; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100vw - 24px)); max-height: min(86vh, 900px); display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; box-shadow: 0 24px 64px rgba(0,0,0,0.7); outline: none">
+        <div style="padding: 12px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+          <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px">
+            <h2 id="traits-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.08em; color: #FFFFFF">TRAITS</h2>
+            <span style="font-size: 12.5px; color: #A9A5C2">{{t.traitsSub}}</span>
+          </div>
+          <button type="button" class="btn sm" onClick="{{rollTrait}}" style="border-color: #2EE6F0; color: #2EE6F0">{{t.traitsRoll}}</button>
+          <button type="button" onClick="{{closeTraits}}" aria-label="{{t.close}}" title="{{t.close}}" style="width: 34px; min-height: 34px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">✕</button>
+        </div>
+        <sc-if value="{{traitRolled}}" hint-placeholder-val="{{ false }}">
+          <p role="status" style="margin: 0; padding: 8px 16px; background: #06181A; border-bottom: 1px solid #2A2740; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #2EE6F0">{{traitRollText}}</p>
+        </sc-if>
+        <ul style="margin: 0; padding: 10px 12px 14px; list-style: none; overflow-y: auto; display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{traitList}}" as="tr" hint-placeholder-count="4">
+            <li id="trait-{{tr.no}}" style="display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; background: {{tr.bg}}; border: 1px solid {{tr.border}}">
+              <span style="flex: 0 0 auto; min-width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; background: #0B0A12; border: 1px solid #FF2E88; font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 14px; color: #FF2E88" title="2D8">{{tr.no}}</span>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+                <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF">{{tr.en}} <span style="font-weight: 500; color: #A9A5C2">· {{tr.th}}</span></span>
+                <span style="font-size: 13.5px; line-height: 1.65; color: #D8D6E8">{{tr.fx}}</span>
+              </div>
+              <button type="button" class="btn sm" onClick="{{tr.pick}}" aria-pressed="{{tr.pressed}}" style="flex: 0 0 auto; border-color: {{tr.pickBorder}}; background: {{tr.pickBg}}; color: {{tr.pickFg}}">{{tr.pickText}}</button>
+            </li>
+          </sc-for>
+        </ul>
+      </div>
+    </sc-if>
+
     <!-- Encounter: NPCs the GM brought in; players see only picture, name and abnormal statuses -->
     <sc-if value="{{encOn}}" hint-placeholder-val="{{ false }}">
       <section aria-labelledby="enc-h" class="enc-in" style="margin-bottom: 16px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
@@ -377,7 +410,9 @@ html{scroll-behavior:smooth}
         </div>
 
         <div class="panel pk">
-          <div class="ph"><h2>{{traitTitle}}</h2></div>
+          <div class="ph"><h2>{{traitTitle}}</h2>
+            <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{openTraits}}" aria-haspopup="dialog" style="border-color: #FF2E88; color: #FF2E88">Traits</button></sc-if>
+          </div>
           <div class="pb">
             <div class="row">
               <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
@@ -760,6 +795,24 @@ function cosmicFill(row, patch, cosmicDice) {
   return next;
 }
 /* C.P.D. Divisions and the Basic Ability each one adds +1 to */
+/* every Trait in the game (roll 2D8 or pick one); source: the Skills and Traits sheet, Traits tab */
+const TRAITS = [
+  [2, 'Musician', 'นักดนตรี', 'การรับรู้ทางการได้ยินทำได้ง่ายกว่าคนทั่วไป (TcD)'],
+  [3, 'Magician', 'นักมายากล', 'สลับหรือปลดสิ่งของชิ้นเล็ก(slot 1)ในมือเป้าหมายในระยะประชิดมาเป็นของตัวเองได้ทันที'],
+  [4, 'Programmer', 'โปรแกรมเมอร์', 'การเจาะหรือเข้ารหัสผ่านไซเบอร์เร็วและง่ายกว่าคนอื่น (TrD)'],
+  [5, 'Mechanic', 'ช่างกล', 'ใช้อุปกรณ์ช่างของตัวเองพังเครื่องกล หรือยานพาหนะ 1 อย่างให้ใช้งานไม่ได้ต่อ 1 scene'],
+  [6, 'Technician', 'ช่างเทคนิค', 'สามารถแจมสัญญาณระยะไกลได้ (WM tier 4)'],
+  [7, 'Medic', 'แพทย์สนาม', 'การรักษาง่ายกว่าคนทั่วไป รวมถึงสามารถรักษาอาการ Cosmic Overwhelm ได้ โดยทอย TrD>8 เพื่อลบล้าง จากนั้นทอย FD>7 เพื่อไม่ให้ได้รับ Overwhelm นั้นแทน'],
+  [8, 'Transporter', 'คนขับรถ/ส่งของ', 'การควบคุมยานพาหนะที่ตัวละครถนัดได้ง่ายกว่าคนทั่วไป (TcD)'],
+  [9, 'Spy', 'สายลับ', 'การลอบเร้นหรือแทรกซึมจะทำได้ง่ายกว่าคนทั่วไป (TcD)'],
+  [10, 'Pharmacist', 'เภสัช', 'สามารถคิดค้นสูตรยาใหม่ๆได้ โดยอธิบายสรรพคุณและทอยดูคุณภาพ(TrD) และสามารถนำยาเหล่านั้นมาใช้ได้ 3 อย่าง อย่างละครั้งต่อ session'],
+  [11, 'Dealer', 'นักธุรกิจ', 'การต่อรองซื้อขายของมีโอกาสได้ผลประโยชน์ที่ดีได้ง่ายกว่าคนอื่น เช่น ได้ราคาซื้อที่ลดลง, ขายของได้ราคาสูงจากการโน้มน้าว (TrD)'],
+  [12, 'Arena Fighter', 'นักสู้สังเวียน', 'ใช้ร่างกายล็อคเป้าหมายจะเหนียวแน่นกว่าคนอื่นๆ และมีโอกาสทำให้เป้าหมายสลบได้ (FD)'],
+  [13, 'Detective', 'นักสืบ', 'การสืบหาเบาะแสและเก็บหลักฐานง่ายกว่าคนทั่วไป(SeD)'],
+  [14, 'Idol', 'ไอดอล', 'ได้รับความน่าเชื่อถือมากกว่าคนทั่วไป รวมถึงอาจได้รับความช่วยเหลือจากแฟนคลับ หรืออาจได้รับการขัดขวางจากกลุ่มคนที่ไม่ชอบคุณ'],
+  [15, 'Pakourist', 'นักกีฬาวิบาก', 'เดินเหินบนพื้นที่แคบหรือที่ๆต้องใช้การทรงตัวสูงได้โดยไม่ต้องทอย(นั่งร้าน, ดาดฟ้า, ปั้นจั่น ฯลฯ) รวมถึงการปีนป่าย หรือเคลื่อนที่บนพื้นที่แคบจะทำได้ง่ายกว่าคนทั่วไป (TcD)'],
+  [16, 'Troublemaker', 'ตัวป่วน', 'หากเป็นตัวเลือกมักเป็นเป้าหมายแรกก่อนเสมอ โดยผู้กระทำจะได้รับ +1DC เสมอหากเลือกตัวละครที่มี Trait นี้เป็นเป้าหมาย หากผู้กระทำถูกเบี่ยงเบนไปยังเป้าหมายอื่น ตัวละครนี้ก็จะหลุดการเป็นเป้าหมายตามปกติ']
+];
 const DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
 /* the 8 Cosmic Types from the rulebook: [name, the Basic Ability it runs on] */
 const COSMIC_TYPES = [['Shape', 'FORCE'], ['Heat', 'FORCE'], ['Energy', 'TACTICAL'], ['Velocity', 'TACTICAL'], ['Space', 'TRICK'], ['Impulse', 'TRICK'], ['Entropy', 'SENSE'], ['Density', 'SENSE']];
@@ -1177,6 +1230,29 @@ class Component extends DCLogic {
       jobType: cpd ? 'number' : 'text',
       jobPh: cpd ? '1–5' : '—',
       repShow: (s.repGain || 0) + ' / ' + (s.repCur || 0),
+      // Traits pop-up
+      traitsOpen: !!this.state.traitsOpen,
+      openTraits: () => { this.setState({ traitsOpen: true, traitRoll: null }); setTimeout(() => { const d = document.getElementById('traits-dlg'); if (d) d.focus(); }, 30); },
+      closeTraits: () => this.setState({ traitsOpen: false }),
+      traitsKey: (e) => { if (e && e.key === 'Escape') this.setState({ traitsOpen: false }); },
+      rollTrait: () => {
+        const a = 1 + Math.floor(Math.random() * 8), b = 1 + Math.floor(Math.random() * 8), n = Math.max(2, a + b);
+        this.setState({ traitRoll: { a: a, b: b, n: n } });
+        setTimeout(() => { const el = document.getElementById('trait-' + n); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 40);
+      },
+      traitRolled: !!this.state.traitRoll,
+      traitRollText: this.state.traitRoll ? '2D8 → ' + this.state.traitRoll.a + ' + ' + this.state.traitRoll.b + ' = ' + this.state.traitRoll.n + ' · ' + (TRAITS.find((x) => x[0] === this.state.traitRoll.n) || [0, '?'])[1] : '',
+      traitList: TRAITS.map((x) => {
+        const name = x[1] + ' - ' + x[2], mine = s.traitName === name || s.traitName === x[1];
+        const hit = this.state.traitRoll && this.state.traitRoll.n === x[0];
+        return {
+          no: x[0], en: x[1], th: x[2], fx: x[3],
+          bg: hit ? '#06181A' : '#0B0A12', border: hit ? '#2EE6F0' : mine ? '#FF2E88' : '#2A2740',
+          pressed: mine ? 'true' : 'false', pickText: mine ? L('✓ ใช้อยู่', '✓ In use') : L('ใช้ Trait นี้', 'Use this'),
+          pickBorder: mine ? '#FF2E88' : '#3A3655', pickBg: mine ? '#FF2E88' : '#1D1930', pickFg: mine ? '#0B0A12' : '#D8D6E8',
+          pick: () => { this.upd({ traitName: name.slice(0, 40), traitFx: x[3] }); this.setState({ traitsOpen: false }); }
+        };
+      }),
       // hover hint on Coins: starting money depends on the Faction
       coinTip: fk === 'cpd' ? L('เงินเริ่มต้น = 3', 'Starting money = 3') : L('เงินเริ่มต้น = 1D8', 'Starting money = 1D8'),
       traitTitle: cpd ? 'Division' : 'Trait',
@@ -1341,6 +1417,9 @@ class Component extends DCLogic {
         phTraitName: L('ชื่อ Trait', 'Trait name'),
         rmTrait: L('ลบ Trait', 'Remove Trait'),
         newSess: L('เริ่ม session ใหม่', 'New session'),
+        traitsSub: L('เลือก หรือ สุ่ม (2D8) Trait ของตัวละคร', 'Pick or roll (2D8) your character\'s Trait'),
+        traitsRoll: L('🎲 สุ่ม 2D8', '🎲 Roll 2D8'),
+        close: L('ปิด', 'Close'),
         newSessTip: L('เริ่ม session ใหม่ — Slots เป็นค่าเริ่มต้น', 'Start a new session: Slots back to default'),
         newSessTipPool: L('เริ่ม session ใหม่ — รีเซ็ต Advance pts เป็น 5', 'Start a new session: resets Advance pts to 5'),
         phBondName: L('ชื่อ Bonded Item', 'Bonded Item name'),
