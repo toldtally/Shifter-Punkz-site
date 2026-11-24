@@ -171,13 +171,21 @@
       v.bgmShow = mine;
       v.saveChar = () => this.save();
       v.savePdf = () => window.print();
+      // renamed injuries: files written before the rename still say Poisoned
+      var INJ_RENAMED = { Poisoned: 'Fever' };
+      var fixInj = (inj) => {
+        var out = Object.assign({}, inj || {});
+        Object.keys(INJ_RENAMED).forEach(function (old) { if (old in out) { if (!(INJ_RENAMED[old] in out) || out[old]) out[INJ_RENAMED[old]] = out[old]; delete out[old]; } });
+        return out;
+      };
       v.exportJson = () => {
-        var s = Object.assign({}, this.state.s); delete s.portrait;
+        var s = Object.assign({}, this.state.s, { inj: fixInj(this.state.s.inj) }); delete s.portrait;
         SP.download(((s.name || 'character').trim() || 'character') + '.json', s);
       };
       v.importJson = () => SP.pickJson().then((data) => {
         if (!data || typeof data !== 'object') throw new Error('bad');
         var s = Object.assign(initialSheet(), data, { portrait: this.state.s.portrait });
+        s.inj = fixInj(s.inj);
         if (['shifter', 'outlaw', 'cpd'].indexOf(s.factor) === -1) s.factor = 'shifter';
         if (this.factorLocked()) { s.factor = this.state.s.factor; if (s.factor === 'cpd') s.traitName = this.state.s.traitName; }
         this.setState({ s: s, dirty: true, msg: L('นำเข้าแล้ว กด "บันทึกตัวละคร" เพื่อเก็บลงบัญชี', 'Imported. Press "Save character" to keep it.') });
