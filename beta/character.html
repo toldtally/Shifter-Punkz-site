@@ -553,6 +553,7 @@ html{scroll-behavior:smooth}
                   <span title="{{ab.divTip}}" style="padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .05em; color: #FFD400; white-space: nowrap">+1 DIV</span>
                 </sc-if>
                 <span style="display: flex; align-items: center; gap: 5px; margin-left: auto; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: #8C88A6">Mod <input class="fld" type="number" step="1" value="{{ab.mod}}" onInput="{{ab.onMod}}" aria-label="{{ab.name}} mod" style="width: 48px; padding: 3px 4px; font-size: 12px; text-align: center"></span>
+                <button type="button" onClick="{{ab.roll}}" aria-label="{{ab.rollLabel}}" title="{{ab.rollLabel}}" style="width: 34px; height: 30px; flex-shrink: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer"><svg width="18" height="18" viewBox="0 0 100 100" aria-hidden="true" style="display: block"><polygon points="50,4 95,50 50,96 5,50" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><polygon points="50,22 78,62 22,62" fill="currentColor" fill-opacity=".35"/></svg></button>
               </div>
             </sc-for>
             <p style="margin: 8px 0 0; font-size: 12.5px; color: #A9A5C2">{{t.pointsLeft}} <b style="color: {{poolColor}}">{{remain}}</b> / {{pool}}</p>
@@ -689,6 +690,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
+<script src="../assets/dice.js?v=27d8057a"></script>
 <script>
 function initialSheet() {
   return {
@@ -844,11 +846,37 @@ class Component extends DCLogic {
   componentDidMount() {
     try {
       this._bc = new BroadcastChannel('sp-bgm');
-      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'state') this.onBgm(ev.data); if (ev.data && ev.data.type === 'scene') this.setState({ scene: ev.data.scene || null }); if (ev.data && ev.data.type === 'encounter') this.setState({ encounter: ev.data.encounter || null }); };
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'state') this.onBgm(ev.data); if (ev.data && ev.data.type === 'scene') this.setState({ scene: ev.data.scene || null }); if (ev.data && ev.data.type === 'encounter') this.setState({ encounter: ev.data.encounter || null }); if (ev.data && ev.data.type === 'dice' && window.SPDice) window.SPDice.show(ev.data.roll, this.state.lang !== 'en'); };
       this._bc.postMessage({ type: 'hello' });
     } catch (e) { this._bc = null; }
   }
   componentWillUnmount() { if (this._bc) this._bc.close(); if (this._bgm) this._bgm.close(); }
+  /* a roll goes to everyone at the table (canvas: BroadcastChannel; live site: session_events) */
+  dicePost(roll) { if (this._bc) { try { this._bc.postMessage({ type: 'dice', roll: roll }); } catch (e) {} } }
+  openRoll(name, val, mod) {
+    if (!window.SPDice) return;
+    const s = this.state.s, th = this.state.lang !== 'en';
+    const m = parseInt(mod, 10) || 0;
+    const col = { shifter: '#2EE6F0', outlaw: '#FF2E88', cpd: '#FFD400' }[s.factor] || '#2EE6F0';
+    window.SPDice.tray({
+      th: th, who: (s.name || '').trim() || (th ? 'ตัวละคร' : 'Character'), color: col, label: name,
+      base: Math.max(0, val + m), baseNote: '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + ')',
+      enervated: !!(s.inj && s.inj.Enervated),
+      cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
+      ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0),
+      onRoll: (p, sp) => {
+        const cur = this.state.s, patch = {};
+        if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
+        if (sp.se) patch.se = Math.min(3, cur.se + sp.se);
+        if (Object.keys(patch).length) this.upd(patch);
+        this.dicePost(p);
+      },
+      onDone: (p, sp) => {
+        if (sp.adv) this.upd({ adv: String(Math.max(0, (parseInt(this.state.s.adv, 10) || 0) - sp.adv)) });
+        this.dicePost(p);
+      }
+    });
+  }
   /* GM's BGM state arrives here (BroadcastChannel on the canvas, Supabase realtime on the live site) */
   onBgm(msg) {
     this.setState({ bgmRemote: msg });
@@ -1322,6 +1350,8 @@ class Component extends DCLogic {
         val: String(Math.min(3, 1 + s.ba[a.k] + (cpd && DIVISIONS[s.traitName] === a.k ? 1 : 0))),
         div: cpd && DIVISIONS[s.traitName] === a.k, divTip: L('+1 จาก ' + s.traitName, '+1 from ' + s.traitName),
         inc: () => setBa(a.k, 1), dec: () => setBa(a.k, -1),
+        roll: () => this.openRoll(a.name, Math.min(3, 1 + s.ba[a.k] + (cpd && DIVISIONS[s.traitName] === a.k ? 1 : 0)), s.baMod[a.k]),
+        rollLabel: L('ทอย ' + a.name, 'Roll ' + a.name),
         mod: s.baMod[a.k],
         onMod: (e) => this.upd({ baMod: Object.assign({}, this.state.s.baMod, { [a.k]: e && e.target ? e.target.value : '0' }) })
       })),
@@ -1467,6 +1497,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=2941c4fa"></script>
+<script src="../assets/beta-character.js?v=b05ce1da"></script>
 </body>
 </html>

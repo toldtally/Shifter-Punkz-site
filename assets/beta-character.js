@@ -73,7 +73,12 @@
           this.setState({ seat: Object.assign({}, this.state.seat, { sessions: Object.assign({}, this.state.seat.sessions, row) }) });
           if (row.bgm) this.onBgm(Object.assign({ type: 'state' }, row.bgm));
         })
-        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'session_members' }, () => this.loadSeat());
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'session_members' }, () => this.loadSeat())
+        // other people's rolls at this table tumble on this sheet too
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'session_events', filter: 'session_id=eq.' + sess.id }, (p) => {
+          var ev = p.new;
+          if (ev && ev.kind === 'roll' && ev.actor_id !== this.state.profile.id && window.SPDice) window.SPDice.show(ev.payload, this.th());
+        });
       this._ch.subscribe();
       this._presence = sb.channel('presence-' + sess.id, { config: { presence: { key: this.state.profile.id } } });
       this._presence.subscribe((st) => { if (st === 'SUBSCRIBED') this._presence.track({ character_id: this.state.charId }); });
@@ -81,6 +86,14 @@
     unsub() {
       if (this._ch) { sb.removeChannel(this._ch); this._ch = null; }
       if (this._presence) { sb.removeChannel(this._presence); this._presence = null; }
+    }
+
+    /* a roll goes to the session this sheet sits in; off the table it stays on this screen */
+    dicePost(roll) {
+      var seat = this.state.seat;
+      if (!roll || !seat || seat.character_id !== this.state.charId || !this.state.charId) return;
+      sb.from('session_events').insert({ session_id: seat.session_id, character_id: this.state.charId, actor_id: this.state.profile.id, kind: 'roll', payload: roll })
+        .then((r) => { if (r.error) this.setState({ msg: SP.err(r.error, this.th()) }); });
     }
 
     async save() {

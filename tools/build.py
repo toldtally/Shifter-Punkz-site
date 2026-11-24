@@ -279,6 +279,7 @@ def build(cfg):
     js = strip_spoilers(name, js)
     helmet = helmet.replace("</style>", EXTRA_CSS + "</style>")
     helmet = re.sub(r'\s*<script src="\./bgm\.js"></script>', '', helmet)
+    helmet = re.sub(r'\s*<script src="\./dice\.js"></script>', '', helmet)
 
     depth = out.count("/")
     up = "../" * depth
@@ -293,6 +294,7 @@ def build(cfg):
             scripts += '<script src="%sassets/beta-common.js"></script>\n' % up
         if cfg.get("bgm"):
             scripts += '<script src="%sassets/bgm.js"></script>\n' % up
+            scripts += '<script src="%sassets/dice.js"></script>\n' % up
         mount = '</script>\n<script src="%sassets/%s"></script>' % (up, cfg["beta"])
         robots = '<meta name="robots" content="noindex">\n' if out.startswith("beta/") else ""
     else:

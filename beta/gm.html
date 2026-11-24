@@ -374,7 +374,7 @@ html{scroll-behavior:smooth}
           <!-- Side: live feed (runs down to the Scene screen, as tall as the party cards) -->
           <aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
             <section style="flex: 1; min-height: 0; display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
-              <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">LIVE FEED</h2><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{feedStateColor}}">{{feedState}}</span></div>
+              <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">LIVE FEED</h2><span style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{gmRoll}}" title="{{t.gmRollTip}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .05em"><svg width="14" height="14" viewBox="0 0 100 100" aria-hidden="true" style="display: block"><polygon points="50,4 95,50 50,96 5,50" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="round"/><polygon points="50,22 78,62 22,62" fill="currentColor" fill-opacity=".35"/></svg>{{t.gmRoll}}</button><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{feedStateColor}}">{{feedState}}</span></span></div>
               <ol role="log" aria-live="polite" style="flex: 1 1 0; min-height: 260px; margin: 0; padding: 8px 0; list-style: none; display: flex; flex-direction: column; overflow-y: auto">
                 <sc-for list="{{feed}}" as="fd" hint-placeholder-count="5">
                   <li style="display: flex; gap: 10px; padding: 8px 16px; border-bottom: 1px solid #1D1930; font-size: 13px; line-height: 1.5">
@@ -645,6 +645,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
+<script src="../assets/dice.js?v=27d8057a"></script>
 <script>
 /* demo scene pictures for the prototype (the live site uses the GM's uploads or links) */
 function sceneArt(sky, glow, label) {
@@ -719,10 +720,23 @@ class Component extends DCLogic {
       step: 0
     };
   }
+  /* rolls: players' arrive here (canvas: BroadcastChannel; live site: session_events); the GM's go out the same way */
+  dicePost(roll) { if (this._bc) { try { this._bc.postMessage({ type: 'dice', roll: roll }); } catch (e) {} } }
+  diceFeed(roll) {
+    if (!window.SPDice || !roll) return;
+    this.setState({ feed: [{ at: Date.now(), id: '_dice', who: roll.who || '?', col: roll.col || '#FFD400', th: window.SPDice.line(roll, true), en: window.SPDice.line(roll, false) }].concat(this.state.feed).slice(0, 100) });
+  }
+  diceIn(roll) { if (window.SPDice) window.SPDice.show(roll, this.state.lang !== 'en'); this.diceFeed(roll); }
+  gmRoll() {
+    if (!window.SPDice) return;
+    const th = this.state.lang !== 'en';
+    window.SPDice.tray({ th: th, free: true, secretOk: true, who: 'GM', color: '#FFD400', label: '',
+      onRoll: (p, sp) => { this.diceFeed(Object.assign({}, p, { lab: sp.secret ? (th ? '(ลับ)' : '(secret)') : '' })); if (!sp.secret) this.dicePost(p); } });
+  }
   componentDidMount() {
     try {
       this._bc = new BroadcastChannel('sp-bgm');
-      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'hello') { this.bgmBroadcast(); this.sceneBroadcast(this.state.sceneShown); this.encBroadcast(this.state.encounter); } };
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'hello') { this.bgmBroadcast(); this.sceneBroadcast(this.state.sceneShown); this.encBroadcast(this.state.encounter); } if (ev.data && ev.data.type === 'dice') this.diceIn(ev.data.roll); };
     } catch (e) { this._bc = null; }
     this._clock = setInterval(() => this.setState({ now: Date.now() }), 1000);
     this._live = setInterval(() => this.tickLive(), 4500);
@@ -1251,11 +1265,14 @@ class Component extends DCLogic {
         cancelDel: () => this.setState({ confirm: null }),
         doDel: () => this.setState({ removed: this.state.removed.concat([c.id]), confirm: null })
       })),
+      gmRoll: () => this.gmRoll(),
       feed: this.state.feed.filter((f) => this.state.removed.indexOf(f.id) === -1).map((f) => ({
-        time: hhmmss(f.at), who: this.state.chars[f.id].name, color: C[this.state.chars[f.id].f], what: th ? f.th : f.en
+        time: hhmmss(f.at), who: f.who || this.state.chars[f.id].name, color: f.col || C[this.state.chars[f.id].f], what: th ? f.th : f.en
       })),
       t: {
         bgmStop: L('หยุดทั้งหมด', 'Stop all'),
+        gmRoll: L('ทอยเต๋า', 'Roll'),
+        gmRollTip: L('ทอยเต๋าของ GM (เลือกทอยลับได้)', 'GM roll (can be secret)'),
         bgmMood: L('อารมณ์เพลง', 'Mood'),
         bgmMusic: L('เพลง', 'Music'),
         bgmSync: L('ส่งเสียงให้ผู้เล่น', 'Play for players'),
@@ -1339,6 +1356,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=4db306c6"></script>
+<script src="../assets/beta-gm.js?v=104459b4"></script>
 </body>
 </html>

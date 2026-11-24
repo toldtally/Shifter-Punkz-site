@@ -209,11 +209,20 @@
       this.apply({ chars: chars, members: members, order: order, turn: Math.min(this.state.turn, Math.max(0, order.length - 1)) });
     }
 
+    /* the GM's own rolls (not the secret ones) go to everyone at the table */
+    dicePost(roll) {
+      if (!this.state.sid || !roll) return;
+      sb.from('session_events').insert({ session_id: this.state.sid, character_id: null, actor_id: this.state.profile.id, kind: 'roll', payload: roll })
+        .then((r) => { if (r.error) this.apply({ toast: SP.err(r.error, this.state.lang !== 'en') }); });
+    }
+
     subscribe(sid) {
       this._ch = sb.channel('gm-' + sid)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'session_members', filter: 'session_id=eq.' + sid }, () => this.loadParty())
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'session_events', filter: 'session_id=eq.' + sid }, (p) => {
           this.apply({ events: [p.new].concat(this.state.events).slice(0, 100) });
+          // someone else's roll tumbles on screen too
+          if (p.new && p.new.kind === 'roll' && p.new.actor_id !== this.state.profile.id && window.SPDice) window.SPDice.show(p.new.payload, this.state.lang !== 'en');
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'characters' }, (p) => {
           var row = p.new; if (!row || !this.state.chars[row.id]) return;
@@ -418,7 +427,9 @@
           if (k === 'inj') return L('สถานะบาดเจ็บเปลี่ยน', 'injuries changed');
           return (KEYS[k] || k) + ' ' + JSON.stringify(x.from).replace(/"/g, '') + '→' + JSON.stringify(x.to).replace(/"/g, '');
         }).join(' · ');
+        else if (e.kind === 'roll') what = window.SPDice ? window.SPDice.line(e.payload, th) : 'roll';
         else what = e.kind;
+        if (e.kind === 'roll' && !c) return { time: hhmmss(e.created_at), who: String((e.payload || {}).who || 'GM').slice(0, 40), color: '#FFD400', what: what };
         return { time: hhmmss(e.created_at), who: c ? c.name : (e.kind === 'status' ? 'GM' : L('ผู้เล่น', 'Player')), color: c ? C[c.f] : '#FFD400', what: what };
       });
       v.onlineCount = Object.keys(chars).filter((k) => chars[k].online).length + ' / ' + Object.keys(chars).length;
