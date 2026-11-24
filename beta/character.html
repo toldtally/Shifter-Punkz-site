@@ -572,7 +572,7 @@ html{scroll-behavior:smooth}
               </sc-for>
             </div>
             <div class="row" style="margin-top: 10px; align-items: flex-end">
-              <div class="field narrow"><label class="lbl" for="advPts">Advance pts</label><input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}"></div>
+              <div class="field narrow" title="{{t.advTip}}"><label class="lbl" for="advPts">Advance pts</label><input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}"></div>
               <button type="button" class="btn sm ico-reset" onClick="{{newSession}}" title="{{t.newSessTipPool}}" aria-label="{{t.newSess}}"><span class="ico-reset-i" aria-hidden="true"></span></button>
             </div>
           </div>
@@ -1433,6 +1433,7 @@ class Component extends DCLogic {
         phTraitName: L('ชื่อ Trait', 'Trait name'),
         rmTrait: L('ลบ Trait', 'Remove Trait'),
         newSess: L('เริ่ม session ใหม่', 'New session'),
+        advTip: L('เพิ่ม-ลดหน้าเต๋า', 'Raise or lower a die face'),
         traitsSub: L('เลือก หรือ สุ่ม (2D8) Trait ของตัวละคร', 'Pick or roll (2D8) your character\'s Trait'),
         traitsRoll: L('🎲 สุ่ม 2D8', '🎲 Roll 2D8'),
         close: L('ปิด', 'Close'),
