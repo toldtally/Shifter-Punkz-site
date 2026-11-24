@@ -106,6 +106,8 @@ textarea.fld{resize:vertical;line-height:1.45}
 .trd-in{animation:trdIn .22s cubic-bezier(.2,.8,.2,1) both}
 @keyframes trdIn{from{opacity:0;transform:translate(-50%,-48%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%)}}
 @media (prefers-reduced-motion: reduce){.trd-in{animation:none}}
+/* text boxes that grow with what is written in them (Trait ability) */
+.grow{field-sizing:content;resize:none;overflow:hidden;min-height:36px}
 
 [data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
 [data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
@@ -429,7 +431,7 @@ html{scroll-behavior:smooth}
                 </div>
               </sc-if>
               <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
-                <div class="field" style="flex: 2"><label class="lbl" for="fTraitFx">Ability</label><textarea id="fTraitFx" class="fld" rows="1" placeholder="{{t.phTraitFx}}" style="min-height: 36px" value="{{s.traitFx}}" onInput="{{on.traitFx}}"></textarea></div>
+                <div class="field" style="flex: 2"><label class="lbl" for="fTraitFx">Ability</label><textarea id="fTraitFx" class="fld grow" rows="1" placeholder="{{t.phTraitFx}}" style="min-height: 36px" value="{{s.traitFx}}" onInput="{{on.traitFx}}"></textarea></div>
               </sc-if>
             </div>
             <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
@@ -437,7 +439,7 @@ html{scroll-behavior:smooth}
                 <sc-for list="{{traitX}}" as="r" hint-placeholder-count="0">
                   <div class="rowline" style="grid-template-columns: 1fr 2fr 28px; align-items: start">
                     <input class="fld" type="text" aria-label="Trait name" placeholder="{{t.phTraitName}}" value="{{r.name}}" onInput="{{r.on_name}}">
-                    <textarea class="fld" rows="1" aria-label="Trait ability" placeholder="Ability" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
+                    <textarea class="fld grow" rows="1" aria-label="Trait ability" placeholder="Ability" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
                     <button type="button" class="rm" aria-label="{{t.rmTrait}}" onClick="{{r.remove}}">×</button>
                   </div>
                 </sc-for>
@@ -795,6 +797,17 @@ function cosmicFill(row, patch, cosmicDice) {
   return next;
 }
 /* C.P.D. Divisions and the Basic Ability each one adds +1 to */
+/* browsers without CSS field-sizing: size .grow text boxes to their content after typing and after each render */
+(function () {
+  if (window.CSS && CSS.supports && CSS.supports('field-sizing', 'content')) return;
+  const fit = (el) => { el.style.height = 'auto'; el.style.height = el.scrollHeight + 2 + 'px'; };
+  let queued = false;
+  const fitAll = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; document.querySelectorAll('textarea.grow').forEach(fit); }); };
+  document.addEventListener('input', (e) => { if (e.target && e.target.classList && e.target.classList.contains('grow')) fit(e.target); });
+  window.addEventListener('resize', fitAll);
+  const start = () => { new MutationObserver(fitAll).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['value'] }); fitAll(); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
 /* every Trait in the game (roll 2D8 or pick one); source: the Skills and Traits sheet, Traits tab */
 const TRAITS = [
   [2, 'Musician', 'นักดนตรี', 'การรับรู้ทางการได้ยินทำได้ง่ายกว่าคนทั่วไป (TcD)'],
