@@ -388,7 +388,8 @@
           ],
           detail: [
             { k: 'Trait', v: s.traitName ? s.traitName + (s.traitFx ? ' — ' + s.traitFx : '') : '—' },
-            { k: 'Flaw', v: s.flaw || '—' },
+            // Flaw has no box on the sheet any more (it lives in Background); older sheets that still carry one keep showing it
+            ...(s.flaw ? [{ k: 'Flaw', v: s.flaw }] : []),
             { k: 'Skills', v: named(s.skills).map((x) => x.name).join(', ') || '—' },
             { k: 'Background', v: s.bio || '—' }
           ],

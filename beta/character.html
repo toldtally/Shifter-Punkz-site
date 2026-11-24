@@ -362,8 +362,8 @@ html{scroll-behavior:smooth}
               <p style="margin: 8px 0 0; padding: 8px 10px; background: #0B0A12; border-left: 2px solid {{factorColor}}; font-size: 12.5px; line-height: 1.6; color: #A9A5C2">{{factorDesc}}</p>
             </div>
             <div class="row" style="margin-top: 12px">
-              <div class="field narrow"><label class="lbl" for="repGain">Rep. Gained</label><input id="repGain" class="fld" type="number" min="0" value="{{s.repGain}}" onInput="{{on.repGain}}"></div>
-              <div class="field narrow"><label class="lbl" for="repCur">Rep. Current</label><input id="repCur" class="fld" type="number" min="0" value="{{s.repCur}}" onInput="{{on.repCur}}"></div>
+              <div class="field narrow" style="flex-basis: 112px"><label class="lbl" for="repGain" style="white-space: nowrap">Rep. Gained</label><input id="repGain" class="fld" type="number" min="0" value="{{s.repGain}}" onInput="{{on.repGain}}"></div>
+              <div class="field narrow" style="flex-basis: 112px"><label class="lbl" for="repCur" style="white-space: nowrap">Rep. Current</label><input id="repCur" class="fld" type="number" min="0" value="{{s.repCur}}" onInput="{{on.repCur}}"></div>
               <div class="field" style="align-self: flex-end; flex: 0 0 auto; padding-bottom: 8px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; color: #8C88A6">{{repShow}}</div>
             </div>
           </div>
@@ -373,8 +373,6 @@ html{scroll-behavior:smooth}
           <div class="ph"><h2>Background</h2></div>
           <div class="pb">
             <textarea id="fBio" class="fld" aria-label="Background" placeholder="{{t.phBio}}" style="min-height: 110px" value="{{s.bio}}" onInput="{{on.bio}}"></textarea>
-            <label class="lbl" for="fFlaw" style="display: block; margin: 14px 0 6px">Flaw(s)</label>
-            <textarea id="fFlaw" class="fld" placeholder="{{t.phFlaw}}" style="min-height: 70px" value="{{s.flaw}}" onInput="{{on.flaw}}"></textarea>
           </div>
         </div>
 
@@ -1335,7 +1333,7 @@ class Component extends DCLogic {
         title: L('สร้างตัวละคร', 'Create a character'),
         save: L('บันทึกตัวละคร', 'Save character'),
         phName: L('ชื่อตัวละคร', 'Character name'),
-        phBio: L('ประวัติ ที่มา และแรงจูงใจของตัวละคร...', 'History, origins and what drives your character...'),
+        phBio: L('ประวัติ ที่มา แรงจูงใจ และข้อเสียของตัวละคร', 'History, origins, motives and flaws of your character'),
         phFlaw: L('ข้อเสีย/ปมของตัวละคร ที่สามารถ trigger บัฟทดแทนอุปสรรคได้...', 'Your character\'s flaws, which can trigger a buff to offset a setback...'),
         phTraitFx: L('เอฟเฟกต์ของ Trait...', 'Trait effect...'),
         phTraitName: L('ชื่อ Trait', 'Trait name'),
