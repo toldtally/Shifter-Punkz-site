@@ -1329,7 +1329,7 @@ class Component extends DCLogic {
       remain: String(pool - used),
       poolColor: pool - used < 0 ? '#FF3D6E' : '#2EE6F0',
       pools: [
-        { name: 'Surge Energy', color: '#C084FC', tip: '', val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
+        { name: 'Surge Energy', color: '#C084FC', tip: L('เลือกเพิ่มค่า 1 อย่าง: เพิ่มเต๋า • เพิ่ม PWR+ • อัพสกิล', 'Pick one upgrade: add a die • PWR+ up • skill up'), val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
         { name: 'Exhaustion', color: '#A9A5C2', tip: L('+DC • ใช้แต้มเปลี่ยนเต๋า D8 เป็น D4', '+DC • Spend a point to turn a D8 into a D4'), val: String(s.ex), inc: () => this.upd({ ex: Math.min(3, this.state.s.ex + 1) }), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
       ],
       skills: rows('skills', ['name', 'fx']),
