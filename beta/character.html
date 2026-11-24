@@ -626,8 +626,8 @@ html{scroll-behavior:smooth}
             <div class="thead" style="grid-template-columns: .6fr 1.4fr 28px"><div>Name</div><div>Effect</div><div></div></div>
             <sc-for list="{{skills}}" as="r" hint-placeholder-count="0">
               <div class="rowline" style="grid-template-columns: .6fr 1.4fr 28px; align-items: start">
-                <input class="fld" type="text" aria-label="Skill name" placeholder="{{t.phSkill}}" value="{{r.name}}" onInput="{{r.on_name}}">
-                <textarea class="fld" rows="1" aria-label="Skill effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
+                <textarea class="fld grow" rows="1" aria-label="Skill name" placeholder="{{t.phSkill}}" value="{{r.name}}" onInput="{{r.on_name}}" onKeyDown="{{oneLine}}"></textarea>
+                <textarea class="fld grow" rows="1" aria-label="Skill effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
                 <button type="button" class="rm" aria-label="{{t.rmSkill}}" onClick="{{r.remove}}">×</button>
               </div>
             </sc-for>
@@ -1243,7 +1243,7 @@ class Component extends DCLogic {
       jobType: cpd ? 'number' : 'text',
       jobPh: cpd ? '1–5' : '—',
       repShow: (s.repGain || 0) + ' / ' + (s.repCur || 0),
-      // name boxes (Trait, Bonded Item) grow downward but stay one entry: Enter does not add a line
+      // name boxes (Trait, Bonded Item, General Skills) grow downward but stay one entry: Enter does not add a line
       oneLine: (e) => { if (e && e.key === 'Enter') e.preventDefault(); },
       // Traits pop-up
       traitsOpen: !!this.state.traitsOpen,
