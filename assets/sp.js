@@ -12,7 +12,7 @@
 
   var ERR = {
     DIVISION_LOCKED: ['ตัวละครนี้อยู่ใน session เปลี่ยน Division ไม่ได้ ออกจาก session ก่อน', 'This character is in a session, so its Division can\'t change. Leave the session first.'],
-    FACTOR_LOCKED: ['ตัวละครนี้อยู่ใน session เปลี่ยน Factor ไม่ได้ ออกจาก session ก่อน', 'This character is in a session, so its Factor can\'t change. Leave the session first.'],
+    FACTOR_LOCKED: ['ตัวละครนี้อยู่ใน session เปลี่ยน Faction ไม่ได้ ออกจาก session ก่อน', 'This character is in a session, so its Faction can\'t change. Leave the session first.'],
     'Invalid login credentials': ['อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'Wrong email or password.'],
     'Email not confirmed': ['ยังไม่ได้ยืนยันอีเมล ลองเช็กกล่องจดหมาย', 'Email not confirmed yet. Check your inbox.'],
     'Signups not allowed for this instance': ['ช่วงทดสอบเปิดเฉพาะคนที่ได้รับเชิญทางอีเมล', 'During the beta, accounts are invite-only.'],

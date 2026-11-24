@@ -138,7 +138,7 @@
         };
       });
       if (this.state.loading) v.countLabel = L('กำลังโหลด…', 'LOADING…');
-      v.t = Object.assign({}, v.t, { newHint: L('เลือก Factor แล้วเริ่มกรอกใบตัวละคร · บันทึกเก็บในบัญชีของคุณ', 'Pick a Factor and start your sheet. It saves to your account.') });
+      v.t = Object.assign({}, v.t, { newHint: L('เลือก Faction แล้วเริ่มกรอกใบตัวละคร · บันทึกเก็บในบัญชีของคุณ', 'Pick a Faction and start your sheet. It saves to your account.') });
       return v;
     }
   }

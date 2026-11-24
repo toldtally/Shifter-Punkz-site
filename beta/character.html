@@ -355,7 +355,7 @@ html{scroll-behavior:smooth}
               </div>
             </div>
             <div class="field" style="margin-top: 12px">
-              <span class="lbl" id="factor-l">Factor</span>
+              <span class="lbl" id="factor-l">Faction</span>
               <div role="group" aria-labelledby="factor-l" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
                 <sc-for list="{{factors}}" as="fc" hint-placeholder-count="3">
                   <button type="button" aria-pressed="{{fc.pressed}}" onClick="{{fc.pick}}" disabled="{{fc.off}}" style="{{fc.style}}">{{fc.name}}</button>
@@ -418,7 +418,7 @@ html{scroll-behavior:smooth}
             <div class="row" style="align-items: flex-end">
               <div class="field narrow"><label class="lbl" for="itemSlots">Slots</label><input id="itemSlots" class="fld" type="number" min="0" max="99" value="{{s.slots}}" onInput="{{on.slots}}" style="width: 70px"></div>
               <button type="button" class="btn sm ico-reset" onClick="{{newSession}}" title="{{t.newSessTip}}" aria-label="{{t.newSess}}"><span class="ico-reset-i" aria-hidden="true"></span></button>
-              <div class="field narrow" style="margin-left: auto"><label class="lbl" for="coinManual">Coins</label><input id="coinManual" class="fld" type="number" min="0" max="10" value="{{s.coins}}" onInput="{{on.coins}}" style="width: 70px"></div>
+              <div class="field narrow" style="margin-left: auto" title="{{coinTip}}"><label class="lbl" for="coinManual">Coins</label><input id="coinManual" class="fld" type="number" min="0" max="10" value="{{s.coins}}" onInput="{{on.coins}}" style="width: 70px"></div>
             </div>
           </div>
         </div>
@@ -649,7 +649,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=6cfcb537"></script>
-<script src="../assets/sp.js?v=5febc26e"></script>
+<script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
 <script>
@@ -801,7 +801,7 @@ class Component extends DCLogic {
   encounterNow() { const v = this.state.encounter; return (Array.isArray(v) ? v : []).filter((x) => x && x.id).slice(0, 8); }
   /* sessions.scene holds one picture (older saves) or a list of up to 4 */
   sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 4); }
-  /* a seated character keeps its Factor until it leaves the session */
+  /* a seated character keeps its Faction until it leaves the session */
   factorLocked() { return !!(this.state.tbl && this.state.tbl.joined); }
   sceneSetPos(i, p) {
     const all = (this.state.scPos || [null, null, null, null]).slice();
@@ -1177,6 +1177,8 @@ class Component extends DCLogic {
       jobType: cpd ? 'number' : 'text',
       jobPh: cpd ? '1–5' : '—',
       repShow: (s.repGain || 0) + ' / ' + (s.repCur || 0),
+      // hover hint on Coins: starting money depends on the Faction
+      coinTip: fk === 'cpd' ? L('เงินเริ่มต้น = 3', 'Starting money = 3') : L('เงินเริ่มต้น = 1D8', 'Starting money = 1D8'),
       traitTitle: cpd ? 'Division' : 'Trait',
       cpdDiv: cpd,
       divColor: DIVISIONS[s.traitName] ? '#FFFFFF' : '#6E6A88',
@@ -1344,7 +1346,7 @@ class Component extends DCLogic {
         phBondFx: L('ความสามารถ / บัฟเมื่อถูกทำลาย', 'Ability / buff on destroy'),
         rmBond: L('ลบ Bonded Item', 'Remove Bonded Item'),
         addBond: L('+ เพิ่ม Bonded Item', '+ Add Bonded Item'),
-        factorLock: L('ล็อก Factor' + (this.state.s.factor === 'cpd' ? ' และ Division' : '') + ' ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Factor is locked while this character is in a session. Leave the session to change it.'),
+        factorLock: L('ล็อก Faction' + (this.state.s.factor === 'cpd' ? ' และ Division' : '') + ' ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Faction is locked while this character is in a session. Leave the session to change it.'),
         cpdNoWm: L('C.P.D. ไม่มีพลังคอสมิค — ไม่มี WM', 'C.P.D. has no cosmic power — no WM'),
         dcTip: L('DC ที่ต้องทอยให้ผ่าน', 'DC to beat'),
         encFine: L('ไม่มีสถานะผิดปกติ', 'NO ABNORMAL STATUS'),
