@@ -418,7 +418,7 @@ html{scroll-behavior:smooth}
           <div class="pb">
             <div class="row">
               <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
-                <div class="field" style="flex: 1"><label class="lbl" for="fTraitName">Name</label><input id="fTraitName" class="fld" type="text" maxlength="40" placeholder="{{traitPh}}" value="{{s.traitName}}" onInput="{{on.traitName}}"></div>
+                <div class="field" style="flex: 1"><label class="lbl" for="fTraitName">Name</label><textarea id="fTraitName" class="fld grow" rows="1" maxlength="40" placeholder="{{traitPh}}" value="{{s.traitName}}" onInput="{{on.traitName}}" onKeyDown="{{oneLine}}"></textarea></div>
               </sc-if>
               <sc-if value="{{cpdDiv}}" hint-placeholder-val="{{ false }}">
                 <div class="field" style="flex: 1"><label class="lbl" for="fDivision">Division</label>
@@ -438,7 +438,7 @@ html{scroll-behavior:smooth}
               <div style="margin-top: 8px">
                 <sc-for list="{{traitX}}" as="r" hint-placeholder-count="0">
                   <div class="rowline" style="grid-template-columns: 1fr 2fr 28px; align-items: start">
-                    <input class="fld" type="text" aria-label="Trait name" placeholder="{{t.phTraitName}}" value="{{r.name}}" onInput="{{r.on_name}}">
+                    <textarea class="fld grow" rows="1" aria-label="Trait name" placeholder="{{t.phTraitName}}" value="{{r.name}}" onInput="{{r.on_name}}" onKeyDown="{{oneLine}}"></textarea>
                     <textarea class="fld grow" rows="1" aria-label="Trait ability" placeholder="Ability" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
                     <button type="button" class="rm" aria-label="{{t.rmTrait}}" onClick="{{r.remove}}">×</button>
                   </div>
@@ -1243,6 +1243,8 @@ class Component extends DCLogic {
       jobType: cpd ? 'number' : 'text',
       jobPh: cpd ? '1–5' : '—',
       repShow: (s.repGain || 0) + ' / ' + (s.repCur || 0),
+      // a Trait name box grows downward but stays one entry: Enter does not add a line
+      oneLine: (e) => { if (e && e.key === 'Enter') e.preventDefault(); },
       // Traits pop-up
       traitsOpen: !!this.state.traitsOpen,
       openTraits: () => { this.setState({ traitsOpen: true, traitRoll: null }); setTimeout(() => { const d = document.getElementById('traits-dlg'); if (d) d.focus(); }, 30); },
