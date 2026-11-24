@@ -1022,7 +1022,7 @@ class Component extends DCLogic {
 
     const injDefs = [
       { group: 'Physical', items: [
-        { n: 'Poisoned', tip: L('ได้รับ +1 Exhaustion (EX) เมื่อจบเทิร์น', 'Gain +1 Exhaustion (EX) at end of turn') },
+        { n: 'Fever', old: 'Poisoned', tip: L('ได้รับ +1 Exhaustion (EX) เมื่อจบเทิร์น', 'Gain +1 Exhaustion (EX) at end of turn') },
         { n: 'Bleeding', tip: L('เสีย -1 IP (Integrity Point) เมื่อจบเทิร์น', 'Lose 1 IP (Integrity Point) at end of turn') },
         { n: 'Enervated', tip: L('ทุกแอคชั่นจะทอยได้เพียง 1D8 เท่านั้น', 'Every action rolls only 1D8') }] },
       { group: 'Mental', items: [
@@ -1308,8 +1308,9 @@ class Component extends DCLogic {
       injuries: injDefs.map((g) => ({
         group: g.group,
         items: g.items.map((it) => ({
-          n: it.n, tip: it.tip, hasDc: !!it.dc, checked: !!s.inj[it.n],
-          toggle: () => this.upd({ inj: Object.assign({}, this.state.s.inj, { [it.n]: !this.state.s.inj[it.n] }) })
+          // a renamed injury (Poisoned → Fever) still reads the old key from older sheets and JSON imports
+          n: it.n, tip: it.tip, hasDc: !!it.dc, checked: !!(s.inj[it.n] || (it.old && s.inj[it.old])),
+          toggle: () => { const inj = Object.assign({}, this.state.s.inj), was = !!(inj[it.n] || (it.old && inj[it.old])); if (it.old) delete inj[it.old]; inj[it.n] = !was; this.upd({ inj: inj }); }
         }))
       })),
       abilities: [
