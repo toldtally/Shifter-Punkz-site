@@ -415,21 +415,26 @@
     var foot = el('div', { class: 'spd-sub' });
     var pop = el('div', { class: 'spd-pop', role: 'status', style: '--acc:' + (p.col || C.cyan) }, [head, tr, foot]);
     if (anchor) {
-      // sits on top of the roller's card (GM Monitor); a newer roll on the same card replaces it
+      // sits on the lower part of the roller's card (GM Monitor); a newer roll on the same card replaces it
       if (anchor._spdPop) anchor._spdPop.remove();
       anchor._spdPop = pop;
       var rc = anchor.getBoundingClientRect(), w = Math.min(340, rc.width - 16);
       pop.classList.add('spd-on');
       pop.style.width = w + 'px';
       pop.style.left = (rc.left + window.scrollX + (rc.width - w) / 2) + 'px';
-      pop.style.top = (rc.top + window.scrollY + 64) + 'px';
+      pop.style.top = '0px'; pop.style.transformOrigin = 'center bottom';
       document.body.appendChild(pop);
+      var place = function () { pop.style.top = (rc.bottom + window.scrollY - pop.offsetHeight - 8) + 'px'; }; // over the lower part of the card
+      anchor._spdPlace = place;
     } else feedBox.insertBefore(pop, feedBox.firstChild);
     var dice = p.dice.map(function (d) { return { s: d.s === 4 ? 4 : 8, v: Math.max(1, Math.min(d.s === 4 ? 4 : 8, d.v | 0)), c: d.c, m: d.m }; });
-    drawDice(tr, dice, { rolling: !adj }).then(function () {
+    var drawn = drawDice(tr, dice, { rolling: !adj });
+    if (anchor && anchor._spdPop === pop) anchor._spdPlace();
+    drawn.then(function () {
       var sc = score(dice);
       head.lastChild.textContent = String(sc.r);
       foot.textContent = why(dice, sc, th) + (p.p8 && !adj ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.lab && p.p1 ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : p.lab && adj && p.p1was ? (th ? ' · คู่ [1] ไม่นับแล้ว' : ' · pair of [1] lost') : '') + (p.cos ? ' · ' + p.cos : '');
+      if (anchor && anchor._spdPop === pop) anchor._spdPlace();
     });
     var t; var go = function () { pop.classList.add('out'); setTimeout(function () { pop.remove(); }, 320); };
     var arm = function () { clearTimeout(t); t = setTimeout(go, 9000); };
