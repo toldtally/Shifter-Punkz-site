@@ -645,7 +645,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=27d8057a"></script>
+<script src="../assets/dice.js?v=3f7814d5"></script>
 <script>
 /* demo scene pictures for the prototype (the live site uses the GM's uploads or links) */
 function sceneArt(sky, glow, label) {
@@ -721,6 +721,8 @@ class Component extends DCLogic {
     };
   }
   /* rolls: players' arrive here (canvas: BroadcastChannel; live site: session_events); the GM's go out the same way */
+  /* live site: the server rolls the faces (null here: the canvas rolls in the browser) */
+  diceRoller() { return null; }
   dicePost(roll) { if (this._bc) { try { this._bc.postMessage({ type: 'dice', roll: roll }); } catch (e) {} } }
   diceFeed(roll) {
     if (!window.SPDice || !roll) return;
@@ -730,7 +732,7 @@ class Component extends DCLogic {
   gmRoll() {
     if (!window.SPDice) return;
     const th = this.state.lang !== 'en';
-    window.SPDice.tray({ th: th, free: true, secretOk: true, who: 'GM', color: '#FFD400', label: '',
+    window.SPDice.tray({ th: th, free: true, secretOk: true, who: 'GM', color: '#FFD400', label: '', source: this.diceRoller(),
       onRoll: (p, sp) => { this.diceFeed(Object.assign({}, p, { lab: sp.secret ? (th ? '(ลับ)' : '(secret)') : '' })); if (!sp.secret) this.dicePost(p); } });
   }
   componentDidMount() {
@@ -1356,6 +1358,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=104459b4"></script>
+<script src="../assets/beta-gm.js?v=94b3ae6a"></script>
 </body>
 </html>

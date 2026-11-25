@@ -105,10 +105,20 @@
     }
 
     /* a roll goes to the session this sheet sits in; off the table it stays on this screen */
+    /* the server rolls the faces and, when this sheet sits at a table, writes the roll to that session */
+    diceRoller() {
+      return async (sizes, cosmic, meta) => {
+        var seat = this.state.seat, id = this.state.charId || null;
+        var sid = seat && id && seat.character_id === id ? seat.session_id : null;
+        var r = await sb.rpc('roll_dice', { p_session: sid, p_character: id, p_sizes: sizes, p_cosmic: cosmic, p_meta: meta });
+        if (r.error) throw new Error(SP.err(r.error, this.th()));
+        return r.data;
+      };
+    }
+    /* Advance pts after a server roll: the server checks the moves against its own faces */
     dicePost(roll) {
-      var seat = this.state.seat;
-      if (!roll || !seat || seat.character_id !== this.state.charId || !this.state.charId) return;
-      sb.from('session_events').insert({ session_id: seat.session_id, character_id: this.state.charId, actor_id: this.state.profile.id, kind: 'roll', payload: roll })
+      if (!roll || roll.ph !== 'adj' || !roll.rid) return;
+      sb.rpc('roll_adjust', { p_roll: roll.rid, p_moves: roll.mv || [] })
         .then((r) => { if (r.error) this.setState({ msg: SP.err(r.error, this.th()) }); });
     }
 

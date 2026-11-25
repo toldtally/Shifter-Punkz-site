@@ -213,7 +213,8 @@
     var payload = function (ph) {
       var dice = st.dice || [], sc = score(dice);
       return { ph: ph, who: o.who || '', col: acc, lab: o.label || '', dice: dice.map(function (d) { var x = { s: d.s, v: d.v }; if (d.c) x.c = 1; if (d.m) x.m = d.m; return x; }),
-        r: sc.r, k: sc.k, p8: pair8(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '' };
+        r: sc.r, k: sc.k, p8: pair8(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '',
+        id: st.rid || null, rid: ph === 'adj' ? st.rid || null : null, srv: !!st.rid || !!st.srv, mv: dice.map(function (d) { return d.m || 0; }) };
     };
 
     var render = function () {
@@ -262,7 +263,9 @@
         b.appendChild(el('p', { class: 'spd-note', text: pre.length ? poolText(pre) : L('ยังไม่มีเต๋า', 'No dice yet') }));
         var f = el('div', { class: 'spd-f' }); card.appendChild(f);
         f.appendChild(el('button', { type: 'button', class: 'spd-btn', onclick: close }, [L('ยกเลิก', 'Cancel')]));
-        f.appendChild(el('button', { type: 'button', class: 'spd-btn go', disabled: !pre.length, onclick: roll }, ['🎲 ' + L('ทอย', 'Roll')]));
+        if (st.err) b.appendChild(el('p', { class: 'spd-warn', role: 'alert', text: L('ทอยไม่สำเร็จ ลองอีกครั้ง', 'Roll failed, try again') + ' (' + st.err + ')' }));
+        f.appendChild(el('button', { type: 'button', class: 'spd-btn go', disabled: !pre.length || st.waiting, onclick: roll }, [st.waiting ? L('กำลังทอย…', 'Rolling…') : '🎲 ' + L('ทอย', 'Roll')]));
+        if (st.waiting) Array.prototype.forEach.call(tr.children, function (n) { n.classList.add('is-rolling'); n.style.setProperty('--t', '900ms'); n.style.setProperty('--fx', '0px'); n.style.setProperty('--fy', '-20px'); n.style.setProperty('--r0', '180deg'); n.style.setProperty('--r1', '-90deg'); n.style.setProperty('--r2', '10deg'); });
         return;
       }
 
@@ -277,7 +280,7 @@
       });
       var res = el('div', { class: 'spd-res', 'aria-live': 'polite' }); b.appendChild(res);
       var f2 = el('div', { class: 'spd-f' }); card.appendChild(f2);
-      var again = el('button', { type: 'button', class: 'spd-btn', onclick: function () { if (st.used && o.onDone) o.onDone(payload('adj'), { adv: st.used }); o.adv = (o.adv || 0) - st.used; o.ex = (o.ex || 0) - (st.exUsed || 0); st.dice = null; st.used = 0; st.ex = Math.min(st.ex, o.ex || 0); render(); } }, [L('ทอยใหม่', 'New roll')]);
+      var again = el('button', { type: 'button', class: 'spd-btn', onclick: function () { if (st.used && o.onDone) o.onDone(payload('adj'), { adv: st.used }); o.adv = (o.adv || 0) - st.used; o.ex = (o.ex || 0) - (st.exUsed || 0); st.dice = null; st.used = 0; st.rid = null; st.ex = Math.min(st.ex, o.ex || 0); render(); } }, [L('ทอยใหม่', 'New roll')]);
       var done = el('button', { type: 'button', class: 'spd-btn go', onclick: close }, [L('เสร็จ', 'Done')]);
       f2.appendChild(again); f2.appendChild(done);
       var fill = function () {
@@ -310,12 +313,27 @@
       st.used += back ? -1 : 1;
       render();
     }
+    /* the faces come from o.source (the server) when there is one, otherwise from this browser */
     function roll() {
+      if (st.waiting) return;
       var dice = build();
-      dice.forEach(function (d) { d.v = rnd(d.s); });
-      st.dice = dice; st.base = dice.map(function (d) { return { s: d.s, v: d.v, c: d.c }; });
       st.exUsed = dice.filter(function (d) { return d.s === 4 && !o.free; }).length;
       st.cosName = cosN() ? o.cosmic[st.cos].name : '';
+      if (!o.source) { dice.forEach(function (d) { d.v = rnd(d.s); }); return landed(dice, null, false); }
+      st.waiting = true; st.err = ''; render();
+      var meta = { who: o.who || '', col: acc, lab: o.label || '', cos: st.cosName, ex: st.exUsed };
+      Promise.resolve(o.source(dice.map(function (d) { return d.s; }), dice.map(function (d) { return d.c ? 1 : 0; }), meta, { secret: st.secret }))
+        .then(function (res) {
+          st.waiting = false;
+          var got = (res && res.dice) || [];
+          if (got.length !== dice.length) throw new Error('bad roll');
+          landed(got.map(function (d) { return { s: d.s === 4 ? 4 : 8, v: d.v | 0, c: d.c ? 1 : undefined }; }), res.id || null, true);
+        })
+        .catch(function (e) { st.waiting = false; st.err = (e && e.message) || 'error'; render(); });
+    }
+    function landed(dice, rid, srv) {
+      st.dice = dice; st.base = dice.map(function (d) { return { s: d.s, v: d.v, c: d.c }; });
+      st.rid = rid; st.srv = srv;
       st.rolling = true;
       var pl = payload('roll');
       if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, secret: st.secret });

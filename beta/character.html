@@ -690,7 +690,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=27d8057a"></script>
+<script src="../assets/dice.js?v=3f7814d5"></script>
 <script>
 function initialSheet() {
   return {
@@ -854,6 +854,8 @@ class Component extends DCLogic {
   /* a roll goes to everyone at the table (canvas: BroadcastChannel; live site: session_events) */
   /* live site: points a roll spends or earns are saved straight away so the GM sees them */
   rollSaved() {}
+  /* live site: the server rolls the faces (null here: the canvas rolls in the browser) */
+  diceRoller() { return null; }
   dicePost(roll) { if (this._bc) { try { this._bc.postMessage({ type: 'dice', roll: roll }); } catch (e) {} } }
   openRoll(name, val, mod) {
     if (!window.SPDice) return;
@@ -865,7 +867,7 @@ class Component extends DCLogic {
       base: Math.max(0, val + m), baseNote: '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + ')',
       enervated: !!(s.inj && s.inj.Enervated),
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
-      ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0),
+      ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
       onRoll: (p, sp) => {
         const cur = this.state.s, patch = {};
         if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
@@ -1499,6 +1501,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=c39b93cc"></script>
+<script src="../assets/beta-character.js?v=8588387c"></script>
 </body>
 </html>

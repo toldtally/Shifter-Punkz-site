@@ -210,11 +210,14 @@
     }
 
     /* the GM's own rolls (not the secret ones) go to everyone at the table */
-    dicePost(roll) {
-      if (!this.state.sid || !roll) return;
-      sb.from('session_events').insert({ session_id: this.state.sid, character_id: null, actor_id: this.state.profile.id, kind: 'roll', payload: roll })
-        .then((r) => { if (r.error) this.apply({ toast: SP.err(r.error, this.state.lang !== 'en') }); });
+    diceRoller() {
+      return async (sizes, cosmic, meta, opt) => {
+        var r = await sb.rpc('roll_dice', { p_session: opt && opt.secret ? null : this.state.sid || null, p_character: null, p_sizes: sizes, p_cosmic: cosmic, p_meta: meta });
+        if (r.error) throw new Error(SP.err(r.error, this.state.lang !== 'en'));
+        return r.data;
+      };
     }
+    dicePost() {} // the server already wrote the roll to the session
 
     subscribe(sid) {
       this._ch = sb.channel('gm-' + sid)
