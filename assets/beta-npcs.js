@@ -116,6 +116,17 @@
       if (this._again) { this._again = false; this.flush(); }
     }
 
+    /* a duplicated NPC gets its own copy of the picture, so deleting one never breaks the other */
+    async dupPic(fromId, toId) {
+      var src = this._paths[fromId];
+      if (!src) return;
+      var dst = this.state.profile.id + '/npc/' + toId + '-' + Date.now().toString(36) + (src.slice(src.lastIndexOf('.')) || '.jpg');
+      var r = await sb.storage.from('scenes').copy(src, dst);
+      if (r.error) { this.editNpc(toId, { pic: '' }); return; }
+      this._paths[toId] = dst;
+      this.editNpc(toId, { pic: sb.storage.from('scenes').getPublicUrl(dst).data.publicUrl });
+    }
+
     async pickPic(id, file) {
       var th = this.state.lang !== 'en';
       this.setState({ toast: th ? 'กำลังอัปโหลดรูป…' : 'Uploading…' });

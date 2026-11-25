@@ -330,6 +330,7 @@ html{scroll-behavior:smooth}
               <button type="button" onClick="{{ed.startLink}}" style="align-self: flex-start; min-height: 36px; padding: 0 12px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.linkFromHere}}</button>
             </div>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #2A2740">
+              <button type="button" onClick="{{dupNpc}}" title="{{t.dupTip}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.dup}}</button>
               <sc-if value="{{noAskDel}}" hint-placeholder-val="{{ true }}">
                 <button type="button" onClick="{{askDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.delNpc}}</button>
               </sc-if>
@@ -572,6 +573,8 @@ class Component extends DCLogic {
   }
   nameOf(key) { const n = this.nodeOf(key); return n ? (n.name || this.L('(ไม่มีชื่อ)', '(unnamed)')) : '?'; }
   kindOf(k) { return LINK_KINDS.find((x) => x.k === k) || LINK_KINDS[0]; }
+  /* live site: give a duplicate its own copy of the picture file */
+  dupPic() {}
   editNpc(id, patch) {
     const npcs = this.state.npcs.map((n) => (n.id === id ? Object.assign({}, n, patch) : n));
     this.setState({ npcs: npcs });
@@ -932,6 +935,16 @@ class Component extends DCLogic {
     };
     v.doDelLink = () => { this.setState({ links: s.links.filter((l) => l.id !== curLink.id), sel: null, toast: L('ลบเส้นความสัมพันธ์แล้ว', 'Relationship deleted') }); this.drop('link', curLink.id); };
     v.deselect = () => this.setState({ sel: null, multi: [], askDel: false });
+    // duplicate the selected NPC: same details and picture, a little offset, selected for editing
+    v.dupNpc = () => {
+      if (!curNpc) return;
+      const c = this.clamp(curNpc.x + 48, curNpc.y + 48);
+      const n = Object.assign({}, curNpc, { id: uid(), name: ((curNpc.name || '') + L(' (สำเนา)', ' (copy)')).slice(0, 60), x: c.x, y: c.y, gang: this.gangAt(c.x, c.y) });
+      this.setState({ npcs: this.state.npcs.concat([n]), sel: { kind: 'npc', id: n.id }, multi: [], askDel: false, linkMode: false, linkFrom: null, toast: L('ทำสำเนา ' + (curNpc.name || 'NPC') + ' แล้ว', 'Duplicated ' + (curNpc.name || 'NPC')) });
+      this.commit('npc', n);
+      this.dupPic(curNpc.id, n.id);
+      setTimeout(() => { const el = document.getElementById('npc-name'); if (el) { el.focus(); el.select(); } }, 60);
+    };
 
     // toolbar
     v.addNpc = () => {
@@ -1026,6 +1039,8 @@ class Component extends DCLogic {
         navNpc: 'NPC',
         sub: L('คลัง NPC ของคุณ ใช้ได้ทุก session ลากจัดวางบนแผนผัง จับกลุ่มเป็นแก๊ง แล้วโยงความสัมพันธ์ระหว่าง NPC กับ PC ใน session ของคุณ', 'Your NPC library for every session. Arrange them on the map, group them into gangs and link them to each other and to the PCs in your sessions.'),
         addNpc: L('+ สร้าง NPC', '+ New NPC'),
+        dup: L('ทำสำเนา', 'Duplicate'),
+        dupTip: L('สร้าง NPC ใหม่ที่มีรายละเอียดและรูปเหมือนตัวนี้', 'Make a new NPC with the same details and picture'),
         addGang: L('+ แก๊ง / กลุ่ม', '+ Gang'),
         addPc: L('เพิ่ม PC ลงแผนผัง', 'Add a PC to the map'),
         mapLabel: L('แผนผังความสัมพันธ์ NPC', 'NPC relationship map'),
@@ -1063,6 +1078,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-npcs.js?v=d576ffea"></script>
+<script src="../assets/beta-npcs.js?v=3d5fa19f"></script>
 </body>
 </html>
