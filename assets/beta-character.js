@@ -88,6 +88,22 @@
       if (this._presence) { sb.removeChannel(this._presence); this._presence = null; }
     }
 
+    /* Exhaustion / Surge Energy / Advance pts changed by a roll: write just those into the saved sheet so the GM Monitor updates now */
+    rollSaved(patch, wasDirty) {
+      // one at a time, so a later write never starts from a sheet missing the earlier one
+      this._rollQ = (this._rollQ || Promise.resolve()).then(() => this.rollWrite(patch, wasDirty));
+    }
+    async rollWrite(patch, wasDirty) {
+      var row = this.state.row;
+      if (!this.state.charId || !row || !patch) return;
+      var sheet = Object.assign({}, row.sheet || {}, patch);
+      var r = await sb.from('characters').update({ sheet: sheet }).eq('id', this.state.charId).select().single();
+      if (r.error) return this.setState({ msg: SP.err(r.error, this.th()) });
+      var st = { row: Object.assign({}, row, r.data) };
+      if (!wasDirty) st.dirty = false;
+      this.setState(st);
+    }
+
     /* a roll goes to the session this sheet sits in; off the table it stays on this screen */
     dicePost(roll) {
       var seat = this.state.seat;

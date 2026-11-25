@@ -852,6 +852,8 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this._bc) this._bc.close(); if (this._bgm) this._bgm.close(); }
   /* a roll goes to everyone at the table (canvas: BroadcastChannel; live site: session_events) */
+  /* live site: points a roll spends or earns are saved straight away so the GM sees them */
+  rollSaved() {}
   dicePost(roll) { if (this._bc) { try { this._bc.postMessage({ type: 'dice', roll: roll }); } catch (e) {} } }
   openRoll(name, val, mod) {
     if (!window.SPDice) return;
@@ -868,11 +870,11 @@ class Component extends DCLogic {
         const cur = this.state.s, patch = {};
         if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
         if (sp.se) patch.se = Math.min(3, cur.se + sp.se);
-        if (Object.keys(patch).length) this.upd(patch);
+        if (Object.keys(patch).length) { const was = this.state.dirty; this.upd(patch); this.rollSaved(patch, was); }
         this.dicePost(p);
       },
       onDone: (p, sp) => {
-        if (sp.adv) this.upd({ adv: String(Math.max(0, (parseInt(this.state.s.adv, 10) || 0) - sp.adv)) });
+        if (sp.adv) { const was = this.state.dirty, patch = { adv: String(Math.max(0, (parseInt(this.state.s.adv, 10) || 0) - sp.adv)) }; this.upd(patch); this.rollSaved(patch, was); }
         this.dicePost(p);
       }
     });
@@ -1497,6 +1499,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=b05ce1da"></script>
+<script src="../assets/beta-character.js?v=c39b93cc"></script>
 </body>
 </html>
