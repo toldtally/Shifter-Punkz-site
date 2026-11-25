@@ -330,6 +330,19 @@ html{scroll-behavior:smooth}
       </div>
     </sc-if>
 
+    <!-- Failed crisis roll: confirm before the character is marked KIA -->
+    <sc-if value="{{deathAsk}}" hint-placeholder-val="{{ false }}">
+      <div aria-hidden="true" style="position: fixed; inset: 0; z-index: 2147480000; background: rgba(40,4,14,0.86)"></div>
+      <div role="alertdialog" aria-modal="true" aria-labelledby="death-h" aria-describedby="death-b" class="trd-in" style="position: fixed; z-index: 2147480001; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 24px)); padding: 22px 22px 20px; background: #151225; border: 1px solid #4A1630; border-top: 3px solid #FF3D6E; box-shadow: 0 24px 64px rgba(0,0,0,0.7); display: flex; flex-direction: column; gap: 12px; text-align: center">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FF3D6E">KIA // {{t.deathTag}}</p>
+        <h2 id="death-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em; color: #FFFFFF">{{t.deathTitle}}</h2>
+        <p id="death-b" style="margin: 0; font-size: 13.5px; line-height: 1.7; color: #D8D6E8">{{t.deathBody}}</p>
+        <div style="display: flex; justify-content: center; margin-top: 4px">
+          <button type="button" class="btn" onClick="{{deathConfirm}}" style="background: #FF3D6E; border-color: #FF3D6E; color: #0B0A12">{{t.deathOk}}</button>
+        </div>
+      </div>
+    </sc-if>
+
     <sc-if value="{{traitsOpen}}" hint-placeholder-val="{{ false }}">
       <div onClick="{{closeTraits}}" aria-hidden="true" style="position: fixed; inset: 0; z-index: 90; background: rgba(11,10,18,0.86)"></div>
       <div id="traits-dlg" role="dialog" aria-modal="true" aria-labelledby="traits-h" tabindex="-1" onKeyDown="{{traitsKey}}" class="trd-in" style="position: fixed; z-index: 91; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100vw - 24px)); max-height: min(86vh, 900px); display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; box-shadow: 0 24px 64px rgba(0,0,0,0.7); outline: none">
@@ -1019,7 +1032,7 @@ class Component extends DCLogic {
       note: th ? 'ทอยให้ได้ 8 เพื่อรอดแบบ COMA (EX เต็ม 3) · ไม่ถึง 8 ตัวละครจะเสียชีวิต · ใช้ Advance pts ปรับหน้าเต๋าได้' : 'Roll an 8 to survive in a COMA (EX fills to 3) · anything less and the character dies · Advance pts work as usual',
       onFinal: (p) => {
         const was = this.state.dirty;
-        const patch = p.r >= 8 ? { ex: 3, coma: true, comaAt: this.sessionMark() } : { dead: true };
+        const patch = p.r >= 8 ? { ex: 3, coma: true, comaAt: this.sessionMark() } : { deathPending: true }; // a failed roll asks for confirmation before KIA
         this.upd(patch); this.rollSaved(patch, was);
       }
     });
@@ -1182,7 +1195,7 @@ class Component extends DCLogic {
     const turn = this.turnState(th);
     const injN = Object.keys(s.inj || {}).filter((k) => s.inj[k]).length;
     const ipZero = s.hpCur !== '' && s.hpCur != null && (parseInt(s.hpCur, 10) || 0) <= 0;
-    const crisis = !s.dead && !s.coma && !s.crisisSafe && (ipZero || injN >= 5);
+    const crisis = !s.dead && !s.coma && !s.deathPending && !s.crisisSafe && (ipZero || injN >= 5);
     const mark = this.sessionMark();
     const seSk = Math.min(this.state.seSk || 0, Math.max(0, s.skills.length - 1));
     const clampStr = (v, lo, hi) => (v === '' ? '' : String(Math.max(lo, Math.min(hi, num(v)))));
@@ -1635,6 +1648,8 @@ class Component extends DCLogic {
       comaWakeReady: !!s.coma && !s.dead && !!s.comaAt && mark !== 'offline' && mark !== s.comaAt,
       comaWake: () => this.comaWake(),
       deadOn: !!s.dead,
+      deathAsk: !!s.deathPending && !s.dead,
+      deathConfirm: () => { const was = this.state.dirty, patch = { dead: true, deathPending: false }; this.upd(patch); this.rollSaved(patch, was); },
       endTurn: () => this.endTurn(),
       turnOff: turn.off,
       turnInfo: turn.info,
@@ -1731,6 +1746,10 @@ class Component extends DCLogic {
         comaBody: L('ตัวละครนี้ติด COMA และเล่นต่อไม่ได้ใน session นี้ · เมื่อนำมาเล่นใน session ถัดไป ให้ทอย EX ทั้งหมด เก็บไว้เฉพาะลูกที่ออก [1]', 'This character is in a COMA and can\'t act for the rest of this session · in the next session, roll all EX and keep only the [1]s'),
         comaWake: L('ฟื้นจาก COMA · ทอย EX', 'Wake up · roll EX'),
         deadTag: L('ตัวละครเสียชีวิต', 'character lost'),
+        deathTag: L('ทอยไม่ถึง 8', 'the roll fell short'),
+        deathTitle: L('ตัวละครนี้กำลังจะเสียชีวิต', 'This character is about to die'),
+        deathBody: L('เมื่อยืนยันแล้ว ตัวละครนี้จะนำกลับมาเล่นอีกไม่ได้ แต่ใบตัวละครยังอยู่ในประวัติและในระบบให้ดูย้อนหลังได้', 'Once confirmed, this character can never be played again. The sheet stays in your history and in the system for the record.'),
+        deathOk: L('ยืนยัน ตัวละครเสียชีวิต', 'Confirm death'),
         deadBody: L('ตัวละครนี้เสียชีวิตแล้ว และใช้เล่นต่อไม่ได้อีก ใบตัวละครยังเก็บไว้ให้ดูได้', 'This character is dead and can\'t be played again. The sheet stays for the record.'),
         endTurnTip: L('จบเทิร์นของตัวละครนี้ · บัฟจาก SE หายไป', 'End this character\'s turn · Surge Energy boosts end'),
         seUse: L('ใช้ SE', 'Use SE'),
