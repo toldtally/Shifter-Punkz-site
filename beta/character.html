@@ -1006,12 +1006,21 @@ class Component extends DCLogic {
     if (this.state.s.boost && this.state.s.boost.kind) { const was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); }
     this.turnEnd();
   }
-  /* injuries that bite when this character's turn ends: Fever +1 EX (past 3 comes off IP), Bleeding −1 IP */
+  /* when this character's turn ends: Fever +1 EX (past 3 comes off IP), Bleeding −1 IP, then RGN+ restores IP / WM */
   turnEndEffects() {
     const s = this.state.s, inj = s.inj || {};
     let patch = {};
     if (inj.Fever) patch = Object.assign(patch, this.exGain(1, s));
     if (inj.Bleeding) patch.hpCur = String(Math.max(0, (parseInt(patch.hpCur != null ? patch.hpCur : s.hpCur, 10) || 0) - 1));
+    // RGN+: current IP / WM come back by their RGN+ (after Fever / Bleeding), never past MAX
+    if (!s.dead && !s.coma) {
+      const n = (v) => parseInt(v, 10) || 0;
+      const ipR = n(s.hpRgn), wmR = s.factor === 'shifter' ? n(s.spRgn) : 0;
+      if (ipR > 0 && s.hpCur !== '') patch.hpCur = String(Math.min(n(s.hpMax), n(patch.hpCur != null ? patch.hpCur : s.hpCur) + ipR));
+      if (wmR > 0 && s.spCur !== '') patch.spCur = String(Math.min(n(s.spMax), n(s.spCur) + wmR));
+      if (patch.hpCur === s.hpCur) delete patch.hpCur;
+      if (patch.spCur === s.spCur) delete patch.spCur;
+    }
     if (!Object.keys(patch).length) return;
     const was = this.state.dirty;
     this.upd(patch); this.rollSaved(patch, was);
