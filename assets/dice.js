@@ -105,22 +105,34 @@
   }
 
   /* highest die; matching dice add +1 each, capped at the group's top face */
+  /* every [1] takes 1 off the highest die (never below 1); then matching dice add +1 each, capped at the group's top face */
   function score(dice) {
+    var ones = [], rest = [];
+    dice.forEach(function (d, i) { (d.v === 1 ? ones : rest).push(i); });
+    if (!rest.length) return { r: dice.length ? 1 : 0, from: ones.slice(0, 1), k: 1, v: 1, n1: ones.length, cut: null };
+    var top = rest[0];
+    rest.forEach(function (i) { if (dice[i].v > dice[top].v) top = i; });
+    var val = {}; rest.forEach(function (i) { val[i] = dice[i].v; });
+    var cut = null;
+    if (ones.length) { val[top] = Math.max(1, dice[top].v - ones.length); cut = { i: top, from: dice[top].v, to: val[top] }; }
     var by = {};
-    dice.forEach(function (d, i) { (by[d.v] = by[d.v] || []).push(i); });
+    rest.forEach(function (i) { (by[val[i]] = by[val[i]] || []).push(i); });
     var best = { r: 0, from: [], k: 0, v: 0 };
     Object.keys(by).forEach(function (v) {
-      var idx = by[v], top = Math.max.apply(null, idx.map(function (i) { return dice[i].s; }));
-      var r = Math.min(+v + idx.length - 1, top);
+      var idx = by[v], cap = Math.max.apply(null, idx.map(function (i) { return dice[i].s; }));
+      var r = Math.min(+v + idx.length - 1, cap);
       if (r > best.r || (r === best.r && idx.length > best.k)) best = { r: r, from: idx, k: idx.length, v: +v };
     });
+    best.n1 = ones.length; best.cut = cut;
     return best;
   }
   function pair8(dice) { return dice.filter(function (d) { return d.s === 8 && d.v === 8; }).length >= 2; }
   function why(dice, sc, th) {
     if (!dice.length) return '';
-    if (sc.k > 1) return (th ? 'เลข ' : 'Matching ') + sc.v + ' ×' + sc.k + ' → ' + sc.r + (sc.r < sc.v + sc.k - 1 ? (th ? ' (เต็มหน้าเต๋าแล้ว)' : ' (top face)') : '');
-    return (th ? 'ลูกสูงสุด ' : 'Highest die ') + sc.r;
+    if (sc.n1 && !sc.cut) return th ? 'ออก [1] ทุกลูก → 1' : 'All [1]s → 1';
+    var pre = sc.cut ? (th ? '[1] ×' + sc.n1 + ': ' : '[1] ×' + sc.n1 + ': ') + sc.cut.from + '→' + sc.cut.to + ' · ' : '';
+    if (sc.k > 1) return pre + (th ? 'เลข ' : 'Matching ') + sc.v + ' ×' + sc.k + ' → ' + sc.r + (sc.r < sc.v + sc.k - 1 ? (th ? ' (เต็มหน้าเต๋าแล้ว)' : ' (top face)') : '');
+    return pre + (th ? 'ลูกสูงสุด ' : 'Highest die ') + sc.r;
   }
   function poolText(dice) {
     var n8 = 0, n4 = 0, nc = 0;
@@ -148,6 +160,7 @@
       nodes.push({ die: die, num: num, d: d });
     });
     var mark = function () {
+      if (sc.cut && nodes[sc.cut.i]) { var cp = nodes[sc.cut.i].die.querySelector('.spd-cap'); cp.textContent += ' →' + sc.cut.to; cp.style.color = '#FF3D6E'; }
       nodes.forEach(function (n, i) {
         n.die.classList.toggle('is-best', sc.from.indexOf(i) !== -1 && sc.r > 0);
         n.die.classList.toggle('is-dim', sc.from.indexOf(i) === -1);
