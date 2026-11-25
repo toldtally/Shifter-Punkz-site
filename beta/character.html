@@ -690,7 +690,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=96a52591"></script>
+<script src="../assets/dice.js?v=b99d1d60"></script>
 <script>
 function initialSheet() {
   return {
@@ -852,6 +852,13 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this._bc) this._bc.close(); if (this._bgm) this._bgm.close(); }
   /* a roll goes to everyone at the table (canvas: BroadcastChannel; live site: session_events) */
+  /* EX tops out at 3; whatever would go past it comes off current IP straight away */
+  exGain(n, s) {
+    s = s || this.state.s;
+    const ex = s.ex + n, over = Math.max(0, ex - 3), out = { ex: Math.min(3, ex) };
+    if (over) out.hpCur = String(Math.max(0, (parseInt(s.hpCur, 10) || 0) - over));
+    return out;
+  }
   /* live site: points a roll spends or earns are saved straight away so the GM sees them */
   rollSaved() {}
   /* live site: the server rolls the faces (null here: the canvas rolls in the browser) */
@@ -869,9 +876,15 @@ class Component extends DCLogic {
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
       ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
       onRoll: (p, sp) => {
-        const cur = this.state.s, patch = {};
+        const cur = this.state.s;
+        let patch = {};
         if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
         if (sp.se) patch.se = Math.min(3, cur.se + sp.se);
+        // pair of [1]: +1 EX and +1 Advance pts
+        if (sp.p1) {
+          patch = Object.assign(patch, this.exGain(sp.p1, Object.assign({}, cur, patch)));
+          patch.adv = String((parseInt(cur.adv, 10) || 0) + sp.p1);
+        }
         if (Object.keys(patch).length) { const was = this.state.dirty; this.upd(patch); this.rollSaved(patch, was); }
         this.dicePost(p);
       },
@@ -1364,7 +1377,7 @@ class Component extends DCLogic {
       poolColor: pool - used < 0 ? '#FF3D6E' : '#2EE6F0',
       pools: [
         { name: 'Surge Energy', color: '#C084FC', tip: L('เลือกเพิ่มค่า 1 อย่าง: เพิ่มเต๋า • เพิ่ม PWR+ • อัพสกิล จากนั้นแต้มที่ใช้จะถูกแปลงเป็น EX', 'Pick one upgrade: add a die • PWR+ up • skill up, then the points spent turn into EX'), val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
-        { name: 'Exhaustion', color: '#A9A5C2', tip: L('+DC • ใช้แต้มเปลี่ยนเต๋า D8 เป็น D4', '+DC • Spend a point to turn a D8 into a D4'), val: String(s.ex), inc: () => this.upd({ ex: Math.min(3, this.state.s.ex + 1) }), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
+        { name: 'Exhaustion', color: '#A9A5C2', tip: L('+DC • ใช้แต้มเปลี่ยนเต๋า D8 เป็น D4', '+DC • Spend a point to turn a D8 into a D4'), val: String(s.ex), inc: () => this.upd(this.exGain(1)), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
       ],
       skills: rows('skills', ['name', 'fx']),
       addSkill: add('skills', { name: '', fx: '' }, skillCap),

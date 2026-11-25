@@ -127,6 +127,7 @@
     return best;
   }
   function pair8(dice) { return dice.filter(function (d) { return d.s === 8 && d.v === 8; }).length >= 2; }
+  function pair1(dice) { return dice.filter(function (d) { return d.v === 1; }).length >= 2; }
   function why(dice, sc, th) {
     if (!dice.length) return '';
     if (sc.n1 && !sc.cut) return th ? 'ออก [1] ทุกลูก → 1' : 'All [1]s → 1';
@@ -226,7 +227,7 @@
     var payload = function (ph) {
       var dice = st.dice || [], sc = score(dice);
       return { ph: ph, who: o.who || '', col: acc, lab: o.label || '', dice: dice.map(function (d) { var x = { s: d.s, v: d.v }; if (d.c) x.c = 1; if (d.m) x.m = d.m; return x; }),
-        r: sc.r, k: sc.k, p8: pair8(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '',
+        r: sc.r, k: sc.k, p8: pair8(st.base || dice), p1: pair1(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '',
         id: st.rid || null, rid: ph === 'adj' ? st.rid || null : null, srv: !!st.rid || !!st.srv, mv: dice.map(function (d) { return d.m || 0; }) };
     };
 
@@ -302,6 +303,7 @@
         res.appendChild(el('div', {}, [el('div', { class: 'spd-sub', text: L('ผลทอย', 'RESULT') }), el('div', { class: 'spd-big', text: String(sc.r) })]));
         var side = el('div', { style: 'display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right' }, [el('div', { class: 'spd-why', text: why(st.dice, sc, th) })]);
         if (pair8(st.base)) side.appendChild(el('div', { class: 'spd-se', text: L('คู่ [8]! +1 Surge Energy', 'Pair of [8]! +1 Surge Energy') }));
+        if (pair1(st.base) && !o.free) side.appendChild(el('div', { class: 'spd-se', style: 'color:#FF3D6E', text: L('คู่ [1]! +1 EX · +1 Advance pts', 'Pair of [1]! +1 EX · +1 Advance pts') }));
         if (!o.free && (o.adv || 0) > 0) side.appendChild(el('div', { class: 'spd-note', text: L('▲▼ ใช้ Advance pts ปรับหน้าเต๋า (เหลือ ' + advLeft + ')', '▲▼ spend Advance pts to move faces (' + advLeft + ' left)') }));
         if (st.secret) side.appendChild(el('div', { class: 'spd-note', text: L('ทอยลับ ผู้เล่นไม่เห็น', 'Secret roll: players don\'t see it') }));
         res.appendChild(side);
@@ -349,7 +351,8 @@
       st.rid = rid; st.srv = srv;
       st.rolling = true;
       var pl = payload('roll');
-      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, secret: st.secret });
+      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, p1: pl.p1 && !o.free ? 1 : 0, secret: st.secret });
+      if (pl.p1 && !o.free) o.adv = (o.adv || 0) + 1; // the Advance pt from a pair of [1] can be spent on this roll
       render();
     }
     render();
@@ -377,7 +380,7 @@
     drawDice(tr, dice, { rolling: !adj }).then(function () {
       var sc = score(dice);
       head.lastChild.textContent = String(sc.r);
-      foot.textContent = why(dice, sc, th) + (p.p8 && !adj ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.cos ? ' · ' + p.cos : '');
+      foot.textContent = why(dice, sc, th) + (p.p8 && !adj ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.p1 && !adj && p.lab ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : '') + (p.cos ? ' · ' + p.cos : '');
     });
     var t; var go = function () { pop.classList.add('out'); setTimeout(function () { pop.remove(); }, 320); };
     var arm = function () { clearTimeout(t); t = setTimeout(go, 9000); };
@@ -393,8 +396,8 @@
     if (p.ph === 'adj') return (th ? 'ใช้ Advance ' + p.adv + ' แต้ม → ผล ' : 'used ' + p.adv + ' Advance → ') + p.r;
     var dice = p.dice.map(function (d) { return { s: d.s, v: d.v, c: d.c }; });
     var faces = p.dice.map(function (d) { return (d.s === 4 ? 'd4:' : '') + d.v; }).join(',');
-    return (th ? 'ทอย ' : 'rolled ') + (p.lab ? p.lab + ' ' : '') + poolText(dice) + ' [' + faces + '] → ' + p.r + (p.p8 ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '');
+    return (th ? 'ทอย ' : 'rolled ') + (p.lab ? p.lab + ' ' : '') + poolText(dice) + ' [' + faces + '] → ' + p.r + (p.p8 ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.p1 && p.lab ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : '');
   }
 
-  window.SPDice = { tray: tray, show: show, score: score, line: line, pair8: pair8 };
+  window.SPDice = { tray: tray, show: show, score: score, line: line, pair8: pair8, pair1: pair1 };
 })();
