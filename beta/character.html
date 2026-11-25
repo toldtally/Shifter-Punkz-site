@@ -563,7 +563,7 @@ html{scroll-behavior:smooth}
           <div class="ph"><h2 style="color: #FF3D6E">Integrity Point</h2></div>
           <div class="pb">
             <div class="row">
-              <div class="field narrow"><label class="lbl" for="hpCur">Current</label><input id="hpCur" class="fld" type="number" min="0" max="20" value="{{s.hpCur}}" onInput="{{on.hpCur}}"></div>
+              <div class="field narrow"><label class="lbl" for="hpCur">Current</label><input id="hpCur" class="fld" type="number" min="0" max="{{s.hpMax}}" value="{{s.hpCur}}" onInput="{{on.hpCur}}"></div>
               <div class="field narrow"><label class="lbl" for="hpMax">Max IP</label><input id="hpMax" class="fld" type="number" min="10" max="20" value="{{s.hpMax}}" onInput="{{on.hpMax}}"></div>
               <div class="field narrow"><label class="lbl" for="hpAmr">AMR+</label><input id="hpAmr" class="fld" type="number" min="0" max="2" value="{{s.hpAmr}}" onInput="{{on.hpAmr}}"></div>
               <div class="field narrow"><label class="lbl" for="hpRgn">RGN+</label><input id="hpRgn" class="fld" type="number" min="0" max="2" value="{{s.hpRgn}}" onInput="{{on.hpRgn}}"></div>
@@ -1222,7 +1222,13 @@ class Component extends DCLogic {
       slots: set('slots', (v) => clampStr(v, 0, 99)),
       coins: set('coins', (v) => clampStr(v, 0, 10)),
       hpAmr: set('hpAmr', (v) => clampStr(v, 0, 2)), hpRgn: set('hpRgn', (v) => clampStr(v, 0, 2)),
-      hpMax: set('hpMax'), hpCur: set('hpCur'),
+      // current IP never goes above MAX IP (or below 0); lowering MAX IP pulls current down with it
+      hpMax: (e) => {
+        const v = e && e.target ? e.target.value : '', patch = { hpMax: v };
+        if (v !== '' && this.state.s.hpCur !== '' && num(this.state.s.hpCur) > num(v)) patch.hpCur = String(Math.max(0, num(v)));
+        this.upd(patch);
+      },
+      hpCur: set('hpCur', (v) => (v === '' || this.state.s.hpMax === '' ? v : clampStr(v, 0, num(this.state.s.hpMax)))),
       spPwr: set('spPwr', (v) => clampStr(v, 0, 2)), spRgn: set('spRgn', (v) => clampStr(v, 0, 2)),
       spMax: set('spMax'), spCur: set('spCur'),
       adv: set('adv', (v) => clampStr(v, 0, 5)),
