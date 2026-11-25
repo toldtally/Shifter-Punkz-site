@@ -252,14 +252,14 @@ html{scroll-behavior:smooth}
           </div>
           <section aria-labelledby="turn-h" style="flex: 999 1 560px; min-width: 0; padding: 14px 16px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid #FFD400; display: flex; flex-direction: column; gap: 12px">
             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
-              <div style="display: flex; align-items: baseline; gap: 12px">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px">
+                <!-- Roleplay (story, no turns) or Encounter (turn-based) -->
+                <div role="group" aria-label="{{t.modeLabel}}" style="display: inline-flex; border: 1px solid #3A3655; align-self: center">
+                  <button type="button" onClick="{{setRoleplay}}" aria-pressed="{{rpPressed}}" title="{{t.rpTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{rpBg}}; color: {{rpFg}}">ROLEPLAY</button>
+                  <button type="button" onClick="{{setEncounter}}" aria-pressed="{{encPressed}}" title="{{t.encModeTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{encBg}}; color: {{encFg}}">ENCOUNTER</button>
+                </div>
                 <h2 id="turn-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.06em; color: #FFFFFF">{{t.modeTitle}}</h2>
                 <sc-if value="{{encMode}}" hint-placeholder-val="{{ true }}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFD400">ROUND {{round}}</span></sc-if>
-              </div>
-              <!-- Roleplay (story, no turns) or Encounter (turn-based) -->
-              <div role="group" aria-label="{{t.modeLabel}}" style="display: inline-flex; border: 1px solid #3A3655">
-                <button type="button" onClick="{{setRoleplay}}" aria-pressed="{{rpPressed}}" title="{{t.rpTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{rpBg}}; color: {{rpFg}}">ROLEPLAY</button>
-                <button type="button" onClick="{{setEncounter}}" aria-pressed="{{encPressed}}" title="{{t.encModeTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{encBg}}; color: {{encFg}}">ENCOUNTER</button>
               </div>
               <sc-if value="{{encMode}}" hint-placeholder-val="{{ true }}">
               <div style="display: flex; flex-wrap: wrap; gap: 8px">
