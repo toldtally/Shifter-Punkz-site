@@ -55,7 +55,7 @@
 
     async loadSeat() {
       // a player may sit in one campaign and one one-shot at a time; this sheet cares about its own seat
-      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter, turn, round, turn_order, play_count), characters(name)').eq('user_id', this.state.profile.id);
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter, turn, round, turn_order, play_count, turn_based), characters(name)').eq('user_id', this.state.profile.id);
       var seats = (m.data || []).filter(function (x) { return x.sessions; });
       var seat = seats.find((x) => x.character_id === this.state.charId) || null;
       this.setState({ seats: seats, seat: seat, conflict: null, tbl: Object.assign({}, this.state.tbl, {
@@ -80,7 +80,7 @@
             if (tk !== this._turnKey) {
               // the GM moved on from this character's turn: Fever / Bleeding bite now (unless this sheet already ended it)
               var ss = Object.assign({}, this.state.seat.sessions, row);
-              if (this._turnWho && this._turnWho === this.state.charId && !this._selfEnded) this.turnEndEffects();
+              if (this._turnWho && this._turnWho === this.state.charId && !this._selfEnded && ss.turn_based !== false) this.turnEndEffects();
               this._selfEnded = false;
               this._turnWho = ((ss.turn_order || [])[row.turn || 0] || {}).id || null;
             }
@@ -102,6 +102,10 @@
       if (this._presence) { sb.removeChannel(this._presence); this._presence = null; }
     }
 
+    isRoleplay() {
+      var seat = this.state.seat, id = this.state.charId;
+      return !!(seat && id && seat.character_id === id && seat.sessions && seat.sessions.turn_based === false);
+    }
     /* which play of which session this sheet is in: a COMA from an earlier play can be woken from */
     sessionMark() {
       var seat = this.state.seat, id = this.state.charId;
@@ -232,7 +236,7 @@
         join: (e) => { if (e && e.preventDefault) e.preventDefault(); this.join(String(tbl.code || '').trim().toUpperCase(), false); },
         conflictBody: other && tbl.pending ? L((other.characters ? other.characters.name : '?') + ' อยู่ที่ session ' + other.sessions.name + ' ถ้าย้าย จะออกจาก session เดิม แล้วตัวละครนี้เข้า ' + tbl.pending + ' แทน', (other.characters ? other.characters.name : '?') + ' is at ' + other.sessions.name + '. Moving takes them out and seats this character at ' + tbl.pending + '.') : tbl.pending ? L('บัญชีนี้อยู่ใน session ประเภทเดียวกันอยู่แล้ว ถ้าย้าย ตัวละครเดิมจะออกจาก session นั้น แล้วตัวละครนี้เข้า ' + tbl.pending + ' แทน', 'Your account already sits in a session of this kind. Moving takes that character out and seats this one at ' + tbl.pending + '.') : '',
         doMove: () => this.join(tbl.pending, true),
-        turnShow: !!(mine && live),
+        turnShow: !!(mine && live) && !this.isRoleplay(),
         stColor: live ? '#4ADE80' : '#FFD400',
         stLabel: live ? 'LIVE' : sess && sess.status === 'ended' ? 'ENDED' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
         joinedCode: sess ? sess.invite_code : '',

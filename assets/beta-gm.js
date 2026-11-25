@@ -60,6 +60,9 @@
     setState(u) {
       super.setState(u);
       var p = typeof u === 'function' ? null : u;
+      if (p && !this._applying && this.state.sid && 'rpMode' in p) {
+        sb.from('sessions').update({ turn_based: !p.rpMode }).eq('id', this.state.sid).then((r) => { if (r.error) this.apply({ toast: SP.err(r.error, this.state.lang !== 'en') }); });
+      }
       if (p && !this._applying && this.state.sid && ('order' in p || 'turn' in p || 'round' in p)) {
         clearTimeout(this._saveT);
         this._saveT = setTimeout(() => {
@@ -83,7 +86,7 @@
       this.unsub();
       var sess = this.state.sessions.find((s) => s.id === sid);
       this.apply({ sceneShown: SP.sceneList(sess.scene), scenes: [], sceneMsg: '', sceneAskDel: null, encounter: SP.encounterList(sess.encounter) });
-      this.apply({ sid: sid, session: sess, turn: sess.turn || 0, round: sess.round || 1, order: sess.turn_order || [], copied: false, confirm: null });
+      this.apply({ sid: sid, session: sess, turn: sess.turn || 0, round: sess.round || 1, order: sess.turn_order || [], rpMode: sess.turn_based === false, copied: false, confirm: null });
       if (history.replaceState) history.replaceState(null, '', 'gm.html?s=' + sid);
       await this.loadParty();
       var ev = await sb.from('session_events').select('*').eq('session_id', sid).order('created_at', { ascending: false }).limit(100);
@@ -241,6 +244,7 @@
           this.apply({ sessions: ss, session: Object.assign({}, this.state.session, p.new) });
           if (p.new && 'scene' in p.new) this.apply({ sceneShown: SP.sceneList(p.new.scene) });
           if (p.new && 'encounter' in p.new) this.apply({ encounter: SP.encounterList(p.new.encounter) });
+          if (p.new && 'turn_based' in p.new) this.apply({ rpMode: p.new.turn_based === false });
           // a player ended their own turn
           if (p.new && 'turn' in p.new && !this._saveT && (p.new.turn !== this.state.turn || p.new.round !== this.state.round)) this.apply({ turn: p.new.turn || 0, round: p.new.round || 1 });
         });

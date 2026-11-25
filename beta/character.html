@@ -1000,6 +1000,9 @@ class Component extends DCLogic {
   /* a roll goes to everyone at the table (canvas: BroadcastChannel; live site: session_events) */
   /* End turn: Surge Energy boosts end; on the live site the turn order also moves on (when it is this character's turn) */
   turnState() { return { off: false, mine: false, info: '' }; }
+  /* roleplay (story) mode: no turns; the live site reads it from the session */
+  isRoleplay() { return false; }
+  clearBoost() { if (this.state.s.boost && this.state.s.boost.kind) { const was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); } }
   turnEnd() {}
   endTurn() {
     if (!this.turnState(this.state.lang !== 'en').off) this.turnEndEffects();
@@ -1109,7 +1112,12 @@ class Component extends DCLogic {
         this.upd(patch); this.rollSaved(patch, was);
         if (sp.adv) this.dicePost(p);
       }
-    }, extra || {}));
+    }, extra || {}, {
+      onFinal: (p, dice) => {
+        if (extra && extra.onFinal) extra.onFinal(p, dice);
+        if (this.isRoleplay()) this.clearBoost(); // roleplay: an SE boost lasts for one roll
+      }
+    }));
   }
   /* GM's BGM state arrives here (BroadcastChannel on the canvas, Supabase realtime on the live site) */
   onBgm(msg) {
@@ -1352,7 +1360,7 @@ class Component extends DCLogic {
       moveLabel: L('ย้ายมา session นี้', 'Move here'),
       cancelMove: () => setTbl({ pending: '' }),
       doMove: () => setTbl({ joined: tbl.pending, pending: '', other: null, code: '' }),
-      turnShow: !!(joinedT && joinedT.st === 'live'),
+      turnShow: !!(joinedT && joinedT.st === 'live') && !this.isRoleplay(),
       stColor: joinedT && joinedT.st === 'live' ? '#4ADE80' : '#FFD400',
       stLabel: joinedT && joinedT.st === 'live' ? 'LIVE' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
       joinedCode: tbl.joined,
@@ -1838,6 +1846,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=f4fe485f"></script>
+<script src="../assets/beta-character.js?v=795661f6"></script>
 </body>
 </html>

@@ -253,15 +253,26 @@ html{scroll-behavior:smooth}
           <section aria-labelledby="turn-h" style="flex: 999 1 560px; min-width: 0; padding: 14px 16px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid #FFD400; display: flex; flex-direction: column; gap: 12px">
             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px">
               <div style="display: flex; align-items: baseline; gap: 12px">
-                <h2 id="turn-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.06em; color: #FFFFFF">TURN ORDER</h2>
-                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFD400">ROUND {{round}}</span>
+                <h2 id="turn-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.06em; color: #FFFFFF">{{t.modeTitle}}</h2>
+                <sc-if value="{{encMode}}" hint-placeholder-val="{{ true }}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFD400">ROUND {{round}}</span></sc-if>
               </div>
+              <!-- Roleplay (story, no turns) or Encounter (turn-based) -->
+              <div role="group" aria-label="{{t.modeLabel}}" style="display: inline-flex; border: 1px solid #3A3655">
+                <button type="button" onClick="{{setRoleplay}}" aria-pressed="{{rpPressed}}" title="{{t.rpTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{rpBg}}; color: {{rpFg}}">ROLEPLAY</button>
+                <button type="button" onClick="{{setEncounter}}" aria-pressed="{{encPressed}}" title="{{t.encModeTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{encBg}}; color: {{encFg}}">ENCOUNTER</button>
+              </div>
+              <sc-if value="{{encMode}}" hint-placeholder-val="{{ true }}">
               <div style="display: flex; flex-wrap: wrap; gap: 8px">
                 <button type="button" onClick="{{prevTurn}}" style="min-height: 38px; padding: 0 12px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.prev}}</button>
                 <button type="button" onClick="{{nextTurn}}" style="min-height: 38px; padding: 0 16px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.next}}</button>
                 <button type="button" onClick="{{resetRound}}" style="min-height: 38px; padding: 0 12px; border: 1px solid #3A3655; background: transparent; color: #8C88A6; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.resetRound}}</button>
               </div>
+              </sc-if>
             </div>
+            <sc-if value="{{rpMode}}" hint-placeholder-val="{{ false }}">
+              <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #A9A5C2">{{t.rpNote}}</p>
+            </sc-if>
+            <sc-if value="{{encMode}}" hint-placeholder-val="{{ true }}">
             <ol aria-label="Turn order" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px">
               <sc-for list="{{turns}}" as="tn" hint-placeholder-count="5">
                 <li style="{{tn.style}}">
@@ -285,6 +296,7 @@ html{scroll-behavior:smooth}
               <input id="npc-name" class="fld" type="text" maxlength="30" placeholder="{{t.npcPh}}" value="{{npcName}}" onInput="{{setNpcName}}" style="flex: 1 1 200px; width: auto; min-height: 38px">
               <button type="button" onClick="{{addNpc}}" style="min-height: 38px; padding: 0 16px; border: 1px solid #FF2E88; background: transparent; color: #FF2E88; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">+ NPC</button>
             </div>
+            </sc-if>
           </section>
         </div>
 
@@ -921,7 +933,8 @@ class Component extends DCLogic {
       t2: { type: 'oneshot', code: 'SP-R4MZ', th: 'ปฏิบัติการชายขอบ Extincted Zone', en: 'Extincted Zone Edge Run', st: 'active', n: (this.state.cur === 't2' ? Object.keys(this.state.chars).length - this.state.removed.length : 2) },
       t3: { type: 'oneshot', lv: 3, code: 'SP-H2WD', th: 'งานใหญ่ที่ Golden Crown', en: 'The Golden Crown Job', st: 'ended', n: 4 }
     };
-    const order = this.state.order.filter((o) => o.kind === 'npc' || this.state.removed.indexOf(o.id) === -1);
+    // a PC whose card hasn't loaded yet is left out until it has
+    const order = this.state.order.filter((o) => o.kind === 'npc' || (this.state.removed.indexOf(o.id) === -1 && this.state.chars[o.id]));
     const low = list.filter((c) => c.ip / c.ipMax <= 0.5);
     const injCount = list.reduce((a, c) => a + c.inj.length, 0);
     return {
@@ -1278,12 +1291,23 @@ class Component extends DCLogic {
         doDel: () => this.setState({ removed: this.state.removed.concat([c.id]), confirm: null })
       })),
       gmRoll: () => this.gmRoll(),
+      rpMode: !!this.state.rpMode, encMode: !this.state.rpMode,
+      setRoleplay: () => this.setState({ rpMode: true }),
+      setEncounter: () => this.setState({ rpMode: false }),
+      rpPressed: this.state.rpMode ? 'true' : 'false', encPressed: this.state.rpMode ? 'false' : 'true',
+      rpBg: this.state.rpMode ? '#C084FC' : 'transparent', rpFg: this.state.rpMode ? '#0B0A12' : '#A9A5C2',
+      encBg: this.state.rpMode ? 'transparent' : '#FFD400', encFg: this.state.rpMode ? '#A9A5C2' : '#0B0A12',
       feed: this.state.feed.filter((f) => this.state.removed.indexOf(f.id) === -1).map((f) => ({
         time: hhmmss(f.at), who: f.who || this.state.chars[f.id].name, color: f.col || C[this.state.chars[f.id].f], what: th ? f.th : f.en
       })),
       t: {
         bgmStop: L('หยุดทั้งหมด', 'Stop all'),
         gmRoll: L('ทอยเต๋า', 'Roll'),
+        modeTitle: this.state.rpMode ? 'ROLEPLAY' : 'TURN ORDER',
+        modeLabel: L('โหมดการเล่น', 'Play mode'),
+        rpTip: L('ช่วงเนื้อเรื่อง ไม่มีลำดับเทิร์น', 'Story time, no turn order'),
+        encModeTip: L('เข้าสู่ encounter แบบผลัดกันเล่นทีละเทิร์น', 'Turn-based encounter'),
+        rpNote: L('ช่วงเนื้อเรื่อง ยังไม่มีลำดับเทิร์น · ผู้เล่นทอยได้ตามปกติ · SE ที่ใช้จะหมดหลังทอยเต๋า · Fever / Bleeding / RGN+ ไม่ทำงานจนกว่าจะกลับเข้า ENCOUNTER', 'Story time, no turn order · players roll as usual · SE boosts end after each roll · Fever / Bleeding / RGN+ wait until ENCOUNTER'),
         gmRollTip: L('ทอยเต๋าของ GM (เลือกทอยลับได้)', 'GM roll (can be secret)'),
         bgmMood: L('อารมณ์เพลง', 'Mood'),
         bgmMusic: L('เพลง', 'Music'),
@@ -1368,6 +1392,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=5af28af5"></script>
+<script src="../assets/beta-gm.js?v=ef9d537c"></script>
 </body>
 </html>
