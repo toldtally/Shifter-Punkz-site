@@ -238,9 +238,14 @@ html{scroll-behavior:smooth}
             <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: {{tb.stColor}}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{tb.stColor}}" aria-hidden="true"></span>{{tb.stLabel}} · {{tb.joinedCode}}</p>
             <p style="margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; color: #FFFFFF">{{tb.tableName}}<sc-if value="{{tb.hasLv}}" hint-placeholder-val="{{ true }}"><span title="Session Lv" style="padding: 1px 8px; border: 1px solid #2EE6F0; font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 11px; letter-spacing: 0.06em; color: #2EE6F0">LV {{tb.lv}}</span></sc-if></p>
             <p style="margin: 0; font-size: 13px; color: #A9A5C2">{{tb.liveText}}</p>
+            <sc-if value="{{tb.turnShow}}" hint-placeholder-val="{{ true }}"><p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{turnColor}}">{{turnInfo}}</p></sc-if>
           </div>
           <sc-if value="{{tb.notLeaving}}" hint-placeholder-val="{{ true }}">
             <button type="button" onClick="{{tb.askLeave}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #4A1630; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{tb.leaveLabel}}</button>
+          </sc-if>
+          <!-- End turn: only once the GM has started the session -->
+          <sc-if value="{{tb.turnShow}}" hint-placeholder-val="{{ true }}">
+            <button type="button" onClick="{{endTurn}}" disabled="{{turnOff}}" title="{{t.endTurnTip}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.endTurn}}</button>
           </sc-if>
         </div>
         <sc-if value="{{tb.leaving}}" hint-placeholder-val="{{ false }}">
@@ -624,10 +629,6 @@ html{scroll-behavior:smooth}
                 <input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}" style="width: 64px; height: 40px; padding: 2px 6px; text-align: center; font-family: 'Chakra Petch', sans-serif; font-size: 22px; font-weight: 700">
                 <button type="button" class="btn sm ico-reset" onClick="{{newSession}}" title="{{t.newSessTipPool}}" aria-label="{{t.newSess}}" style="width: 30px; min-height: 30px; height: 30px; padding: 0"><span class="ico-reset-i" aria-hidden="true"></span></button>
               </div>
-            </div>
-            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
-              <span class="cap" style="margin: 0; color: {{turnColor}}">{{turnInfo}}</span>
-              <button type="button" class="btn sm" onClick="{{endTurn}}" disabled="{{turnOff}}" title="{{t.endTurnTip}}" style="border-color: #FFD400; color: #FFD400">{{t.endTurn}}</button>
             </div>
           </div>
         </div>
@@ -1229,6 +1230,7 @@ class Component extends DCLogic {
       moveLabel: L('ย้ายมา session นี้', 'Move here'),
       cancelMove: () => setTbl({ pending: '' }),
       doMove: () => setTbl({ joined: tbl.pending, pending: '', other: null, code: '' }),
+      turnShow: !!(joinedT && joinedT.st === 'live'),
       stColor: joinedT && joinedT.st === 'live' ? '#4ADE80' : '#FFD400',
       stLabel: joinedT && joinedT.st === 'live' ? 'LIVE' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
       joinedCode: tbl.joined,
@@ -1691,6 +1693,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=a93f21cc"></script>
+<script src="../assets/beta-character.js?v=8034e74a"></script>
 </body>
 </html>

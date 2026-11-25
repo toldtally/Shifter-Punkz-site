@@ -216,6 +216,7 @@
         join: (e) => { if (e && e.preventDefault) e.preventDefault(); this.join(String(tbl.code || '').trim().toUpperCase(), false); },
         conflictBody: other && tbl.pending ? L((other.characters ? other.characters.name : '?') + ' อยู่ที่ session ' + other.sessions.name + ' ถ้าย้าย จะออกจาก session เดิม แล้วตัวละครนี้เข้า ' + tbl.pending + ' แทน', (other.characters ? other.characters.name : '?') + ' is at ' + other.sessions.name + '. Moving takes them out and seats this character at ' + tbl.pending + '.') : tbl.pending ? L('บัญชีนี้อยู่ใน session ประเภทเดียวกันอยู่แล้ว ถ้าย้าย ตัวละครเดิมจะออกจาก session นั้น แล้วตัวละครนี้เข้า ' + tbl.pending + ' แทน', 'Your account already sits in a session of this kind. Moving takes that character out and seats this one at ' + tbl.pending + '.') : '',
         doMove: () => this.join(tbl.pending, true),
+        turnShow: !!(mine && live),
         stColor: live ? '#4ADE80' : '#FFD400',
         stLabel: live ? 'LIVE' : sess && sess.status === 'ended' ? 'ENDED' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
         joinedCode: sess ? sess.invite_code : '',
