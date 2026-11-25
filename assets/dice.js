@@ -132,10 +132,14 @@
     var top2 = ents.reduce(function (a, e) { return !a || e.v > a.v || (e.v === a.v && e.idx.length > a.idx.length) ? e : a; }, null);
     var used = steps.filter(function (st) { return top2.idx.length > 1; });
     var best = { r: top2.v, from: top2.idx, k: top2.idx.length, v: top2.idx.length > 1 && used.length ? used[0].v : top2.v, steps: top2.idx.length > 1 ? steps : [] };
-    best.n1 = ones.length; best.cut = cut;
+    best.n1 = ones.length; best.cut = cut; best.all = steps;
     return best;
   }
-  function pair8(dice) { return dice.filter(function (d) { return d.s === 8 && d.v === 8; }).length >= 2; }
+  /* pair of [8]: two D8s showing 8, or matching dice that merge up into a pair of 8s (7,7,8) */
+  function pair8(dice) {
+    if (dice.filter(function (d) { return d.s === 8 && d.v === 8; }).length >= 2) return true;
+    return (score(dice).all || []).some(function (x) { return x.v === 8; });
+  }
   /* pair of [1] counts only when no die shows anything higher (every die is a 1) */
   function pair1(dice) { return dice.length >= 2 && dice.every(function (d) { return d.v === 1; }); }
   function why(dice, sc, th) {
