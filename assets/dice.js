@@ -138,7 +138,7 @@
   function poolText(dice) {
     var n8 = 0, n4 = 0, nc = 0;
     dice.forEach(function (d) { if (d.c) nc++; else if (d.s === 4) n4++; else n8++; });
-    return [n8 ? n8 + 'D8' : '', n4 ? n4 + 'D4' : '', nc ? nc + 'D8✦' : ''].filter(Boolean).join(' + ');
+    return [n8 ? n8 + 'D8' : '', n4 ? n4 + 'D4' : '', nc ? nc + 'D4✦' : ''].filter(Boolean).join(' + ');
   }
 
   /* draws dice into a tray box; `rolling` makes them tumble and flicker before landing on their faces */
@@ -149,7 +149,7 @@
     dice.forEach(function (d, i) {
       var num = el('span', { class: 'spd-num', text: String(d.v) });
       var shape = el('span', { class: 'spd-shape' }); shape.innerHTML = shapeSvg(d); shape.appendChild(num);
-      var cap = el('span', { class: 'spd-cap' + (d.m ? ' spd-moved' : ''), text: (d.c ? 'D8✦' : 'D' + d.s) + (d.m ? (d.m > 0 ? ' +' : ' ') + d.m : '') });
+      var cap = el('span', { class: 'spd-cap' + (d.m ? ' spd-moved' : ''), text: (d.c ? 'D4✦' : 'D' + d.s) + (d.m ? (d.m > 0 ? ' +' : ' ') + d.m : '') });
       var die = el('div', { class: 'spd-die' + (d.s === 4 ? ' spd-d4' : ''), style: '--dc:' + dieColor(d) }, [shape, cap]);
       if (opts.adjust) {
         die.appendChild(el('div', { class: 'spd-adj' }, [
@@ -221,7 +221,7 @@
       var ex = Math.min(st.ex, exMax());
       for (var i = 0; i < n8; i++) dice.push({ s: i < ex ? 4 : 8 });
       for (var j = 0; j < (o.free ? st.d4 : 0); j++) dice.push({ s: 4 });
-      for (var k = 0; k < cosN(); k++) dice.push({ s: 8, c: 1 });
+      for (var k = 0; k < cosN(); k++) dice.push({ s: 4, c: 1 });
       return dice;
     };
     var payload = function (ph) {
@@ -258,7 +258,7 @@
               var row = el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'Cosmic' })]);
               (o.cosmic || []).forEach(function (c, i) {
                 if (!(c.n > 0)) return;
-                row.appendChild(el('button', { type: 'button', class: 'spd-chip', 'aria-pressed': st.cos === i ? 'true' : 'false', onclick: function () { st.cos = st.cos === i ? -1 : i; render(); } }, [(c.name || 'Cosmic') + ' +' + c.n + 'D8']));
+                row.appendChild(el('button', { type: 'button', class: 'spd-chip', 'aria-pressed': st.cos === i ? 'true' : 'false', onclick: function () { st.cos = st.cos === i ? -1 : i; render(); } }, [(c.name || 'Cosmic') + ' +' + c.n + 'D4']));
               });
               b.appendChild(row);
             }
