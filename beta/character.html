@@ -573,8 +573,6 @@ html{scroll-behavior:smooth}
               </sc-for>
             </div>
             <div class="row" style="margin-top: 10px; align-items: flex-end; flex-wrap: wrap; gap: 8px">
-              <div class="field narrow" title="{{t.advTip}}"><label class="lbl" for="advPts">Advance pts</label><input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}"></div>
-              <button type="button" class="btn sm ico-reset" onClick="{{newSession}}" title="{{t.newSessTipPool}}" aria-label="{{t.newSess}}"><span class="ico-reset-i" aria-hidden="true"></span></button>
               <!-- Surge Energy: spend points for a boost that lasts until the turn ends; points spent become EX -->
               <div title="{{t.seNote}}" style="flex: 1 1 230px; min-width: 0; border: 1px solid #2A2740; border-left: 3px solid #C084FC; padding: 6px 8px; background: #0B0A12; display: flex; flex-direction: column; gap: 6px">
                 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
@@ -592,6 +590,8 @@ html{scroll-behavior:smooth}
                   </div>
                 </sc-if>
               </div>
+              <div class="field narrow" title="{{t.advTip}}"><label class="lbl" for="advPts">Advance pts</label><input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}"></div>
+              <button type="button" class="btn sm ico-reset" onClick="{{newSession}}" title="{{t.newSessTipPool}}" aria-label="{{t.newSess}}"><span class="ico-reset-i" aria-hidden="true"></span></button>
             </div>
             <div style="margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
               <span class="cap" style="margin: 0; color: {{turnColor}}">{{turnInfo}}</span>
