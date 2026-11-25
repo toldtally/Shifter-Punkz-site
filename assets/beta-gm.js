@@ -12,7 +12,7 @@
       ba: ['force', 'tactical', 'trick', 'sense'].map(function (k) { return SP.baOf(s, ch.factor, k); }),
       se: SP.num(s.se), ex: SP.num(s.ex), adv: SP.num(s.adv), coins: SP.num(s.coins),
       boost: s.boost && s.boost.kind ? (s.boost.kind === 'dice' ? 'D8' : s.boost.kind === 'pwr' ? 'PWR+' : String(((s.skills || [])[s.boost.sk] || {}).name || 'SKILL').slice(0, 24)) + ' +' + SP.num(s.boost.n) : '',
-      inj: Object.keys(inj).filter(function (k) { return inj[k]; }),
+      inj: (s.dead ? ['KIA'] : s.coma ? ['COMA'] : []).concat(Object.keys(inj).filter(function (k) { return inj[k]; })),
       at: new Date(ch.updated_at).getTime(), portrait: ch.portrait_path ? SP.imageUrl(ch.portrait_path) : '', sheet: s, factor: ch.factor
     };
   };

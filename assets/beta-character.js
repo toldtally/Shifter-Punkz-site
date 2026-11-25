@@ -55,7 +55,7 @@
 
     async loadSeat() {
       // a player may sit in one campaign and one one-shot at a time; this sheet cares about its own seat
-      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter, turn, round, turn_order), characters(name)').eq('user_id', this.state.profile.id);
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter, turn, round, turn_order, play_count), characters(name)').eq('user_id', this.state.profile.id);
       var seats = (m.data || []).filter(function (x) { return x.sessions; });
       var seat = seats.find((x) => x.character_id === this.state.charId) || null;
       this.setState({ seats: seats, seat: seat, conflict: null, tbl: Object.assign({}, this.state.tbl, {
@@ -102,6 +102,12 @@
       if (this._presence) { sb.removeChannel(this._presence); this._presence = null; }
     }
 
+    /* which play of which session this sheet is in: a COMA from an earlier play can be woken from */
+    sessionMark() {
+      var seat = this.state.seat, id = this.state.charId;
+      if (!seat || !id || seat.character_id !== id || !seat.sessions || seat.sessions.status !== 'live') return 'offline';
+      return seat.session_id + ':' + (seat.sessions.play_count || 0);
+    }
     /* whose turn it is at this sheet's table */
     turnState(th) {
       var seat = this.state.seat, id = this.state.charId;

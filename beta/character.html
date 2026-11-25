@@ -204,6 +204,25 @@ html{scroll-behavior:smooth}
       </div>
     </header>
 
+    <!-- the character's fate: COMA (out for this session) or KIA -->
+    <sc-if value="{{deadOn}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="margin-bottom: 14px; padding: 14px 16px; background: #1A0710; border: 1px solid #4A1630; border-left: 3px solid #FF3D6E; display: flex; flex-direction: column; gap: 4px">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FF3D6E">KIA // {{t.deadTag}}</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.6; color: #D8D6E8">{{t.deadBody}}</p>
+      </div>
+    </sc-if>
+    <sc-if value="{{comaOn}}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="margin-bottom: 14px; padding: 14px 16px; background: #120F1E; border: 1px solid #3A3655; border-left: 3px solid #A9A5C2; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
+        <div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #A9A5C2">COMA // {{t.comaTag}}</p>
+          <p style="margin: 0; font-size: 13.5px; line-height: 1.6; color: #D8D6E8">{{t.comaBody}}</p>
+        </div>
+        <sc-if value="{{comaWakeReady}}" hint-placeholder-val="{{ false }}">
+          <button type="button" class="btn" onClick="{{comaWake}}" style="border-color: #A9A5C2; color: #FFFFFF">{{t.comaWake}}</button>
+        </sc-if>
+      </div>
+    </sc-if>
+
     <section aria-label="Table" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; padding: 14px 16px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid {{tb.accent}}">
       <sc-if value="{{tb.out}}" hint-placeholder-val="{{ true }}">
         <form onSubmit="{{tb.join}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px">
@@ -297,6 +316,20 @@ html{scroll-behavior:smooth}
     </sc-for>
 
     <!-- Traits list: every Trait in the game, opened from the Trait panel; picking one fills the Trait fields -->
+    <!-- Crisis: IP 0 or 5 Injuries — the player must roll Force or Sense -->
+    <sc-if value="{{crisisOn}}" hint-placeholder-val="{{ false }}">
+      <div aria-hidden="true" style="position: fixed; inset: 0; z-index: 2147480000; background: rgba(40,4,14,0.82)"></div>
+      <div role="alertdialog" aria-modal="true" aria-labelledby="crisis-h" class="trd-in" style="position: fixed; z-index: 2147480001; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 24px)); padding: 22px 22px 20px; background: #151225; border: 1px solid #4A1630; border-top: 3px solid #FF3D6E; box-shadow: 0 24px 64px rgba(0,0,0,0.7); display: flex; flex-direction: column; gap: 12px; text-align: center">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FF3D6E">CRITICAL // {{crisisWhy}}</p>
+        <h2 id="crisis-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em; color: #FFFFFF">{{t.crisisTitle}}</h2>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.7; color: #D8D6E8">{{t.crisisBody}}</p>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 4px">
+          <button type="button" class="btn" onClick="{{crisisForce}}" style="border-color: #FF3D6E; color: #FF3D6E">{{t.crisisForce}}</button>
+          <button type="button" class="btn" onClick="{{crisisSense}}" style="border-color: #FF3D6E; color: #FF3D6E">{{t.crisisSense}}</button>
+        </div>
+      </div>
+    </sc-if>
+
     <sc-if value="{{traitsOpen}}" hint-placeholder-val="{{ false }}">
       <div onClick="{{closeTraits}}" aria-hidden="true" style="position: fixed; inset: 0; z-index: 90; background: rgba(11,10,18,0.86)"></div>
       <div id="traits-dlg" role="dialog" aria-modal="true" aria-labelledby="traits-h" tabindex="-1" onKeyDown="{{traitsKey}}" class="trd-in" style="position: fixed; z-index: 91; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100vw - 24px)); max-height: min(86vh, 900px); display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; box-shadow: 0 24px 64px rgba(0,0,0,0.7); outline: none">
@@ -745,7 +778,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=9a129dad"></script>
+<script src="../assets/dice.js?v=02914620"></script>
 <script>
 function initialSheet() {
   return {
@@ -906,6 +939,11 @@ const SKILLS = [
   ["Multilingual", 4, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 4],
   ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
 ];
+/* IP down to 0, or 5 Injuries ticked */
+const crisisCond = (s) => {
+  const ip = s.hpCur !== '' && s.hpCur != null && (parseInt(s.hpCur, 10) || 0) <= 0;
+  return ip || Object.keys(s.inj || {}).filter((k) => s.inj[k]).length >= 5;
+};
 const TRAITS = [
   [2, 'Musician', 'นักดนตรี', 'การรับรู้ทางการได้ยินทำได้ง่ายกว่าคนทั่วไป (Tactical)'],
   [3, 'Magician', 'นักมายากล', 'สลับหรือปลดสิ่งของชิ้นเล็ก(slot 1)ในมือเป้าหมายในระยะประชิดมาเป็นของตัวเองได้ทันที'],
@@ -973,6 +1011,35 @@ class Component extends DCLogic {
     const patch = Object.assign({ se: cur.se - 1 }, this.exGain(1, cur), { boost: { kind: kind, n: (b ? b.n : 0) + 1, sk: kind === 'skill' ? sk : -1 } });
     this.upd(patch); this.rollSaved(patch, was);
   }
+  /* Crisis: IP 0 or 5 Injuries. Roll Force or Sense; a result of 8 means COMA (EX filled to 3), anything less means the character dies */
+  crisisRoll(name, val, mod) {
+    const th = this.state.lang !== 'en';
+    this.openRoll(name, val, mod, {
+      label: name + (th ? ' · วิกฤต' : ' · crisis'), once: true,
+      note: th ? 'ทอยให้ได้ 8 เพื่อรอดแบบ COMA (EX เต็ม 3) · ไม่ถึง 8 ตัวละครจะเสียชีวิต · ใช้ Advance pts ปรับหน้าเต๋าได้' : 'Roll an 8 to survive in a COMA (EX fills to 3) · anything less and the character dies · Advance pts work as usual',
+      onFinal: (p) => {
+        const was = this.state.dirty;
+        const patch = p.r >= 8 ? { ex: 3, coma: true, comaAt: this.sessionMark() } : { dead: true };
+        this.upd(patch); this.rollSaved(patch, was);
+      }
+    });
+  }
+  /* waking from COMA in a later session: roll every EX point as a D8, only the [1]s stay as EX */
+  comaWake() {
+    const s = this.state.s, th = this.state.lang !== 'en';
+    const n = Math.max(0, parseInt(s.ex, 10) || 0), was = this.state.dirty;
+    if (!n || !window.SPDice) { const patch = { coma: false, comaAt: null, crisisSafe: crisisCond(s), ex: 0 }; this.upd(patch); this.rollSaved(patch, was); return; }
+    window.SPDice.tray({ th: th, free: true, once: true, fixed: Array(n).fill(8), who: (s.name || '').trim() || (th ? 'ตัวละคร' : 'Character'), color: '#A9A5C2',
+      label: th ? 'ฟื้นจาก COMA · ทอย EX' : 'Wake from COMA · roll EX', source: this.diceRoller(),
+      note: th ? 'ทอย EX ทั้งหมด ' + n + ' ลูก เก็บไว้เฉพาะลูกที่ออก [1] เป็น EX ติดตัวใน session นี้' : 'Roll all ' + n + ' EX; only the [1]s stay as EX this session',
+      onFinal: (p, dice) => {
+        const patch = { coma: false, comaAt: null, crisisSafe: crisisCond(this.state.s), ex: Math.min(3, dice.filter((d) => d.v === 1).length) };
+        this.upd(patch); this.rollSaved(patch, this.state.dirty && was);
+      }
+    });
+  }
+  /* which play of which table the character is in (a new value = a later session) */
+  sessionMark() { const t = this.state.tbl || {}; return t.joined ? 'canvas:' + t.joined : 'offline'; }
   /* EX tops out at 3; whatever would go past it comes off current IP straight away */
   exGain(n, s) {
     s = s || this.state.s;
@@ -985,12 +1052,13 @@ class Component extends DCLogic {
   /* live site: the server rolls the faces (null here: the canvas rolls in the browser) */
   diceRoller() { return null; }
   dicePost(roll) { if (this._bc) { try { this._bc.postMessage({ type: 'dice', roll: roll }); } catch (e) {} } }
-  openRoll(name, val, mod) {
+  openRoll(name, val, mod, extra) {
     if (!window.SPDice) return;
     const s = this.state.s, th = this.state.lang !== 'en';
+    if (!extra && (s.coma || s.dead)) return;
     const m = parseInt(mod, 10) || 0;
     const col = { shifter: '#2EE6F0', outlaw: '#FF2E88', cpd: '#FFD400' }[s.factor] || '#2EE6F0';
-    window.SPDice.tray({
+    window.SPDice.tray(Object.assign({
       th: th, who: (s.name || '').trim() || (th ? 'ตัวละคร' : 'Character'), color: col, label: name,
       base: Math.max(0, val + m), baseNote: '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + ')',
       enervated: !!(s.inj && s.inj.Enervated),
@@ -1019,7 +1087,7 @@ class Component extends DCLogic {
         this.upd(patch); this.rollSaved(patch, was);
         if (sp.adv) this.dicePost(p);
       }
-    });
+    }, extra || {}));
   }
   /* GM's BGM state arrives here (BroadcastChannel on the canvas, Supabase realtime on the live site) */
   onBgm(msg) {
@@ -1099,7 +1167,12 @@ class Component extends DCLogic {
       document.addEventListener('pointercancel', up);
     });
   }
-  upd(patch) { this.setState({ s: Object.assign({}, this.state.s, patch), dirty: true }); }
+  upd(patch) {
+    const n = Object.assign({}, this.state.s, patch);
+    // a character who woke from COMA still at IP 0 / 5 Injuries isn't sent back into crisis until that clears
+    if (n.crisisSafe && !crisisCond(n)) n.crisisSafe = false;
+    this.setState({ s: n, dirty: true });
+  }
   renderVals() {
     const th = this.state.lang !== 'en';
     const L = (a, b) => (th ? a : b);
@@ -1107,6 +1180,10 @@ class Component extends DCLogic {
     const num = (v) => parseInt(v, 10) || 0;
     const boost = s.boost && s.boost.kind ? s.boost : {};
     const turn = this.turnState(th);
+    const injN = Object.keys(s.inj || {}).filter((k) => s.inj[k]).length;
+    const ipZero = s.hpCur !== '' && s.hpCur != null && (parseInt(s.hpCur, 10) || 0) <= 0;
+    const crisis = !s.dead && !s.coma && !s.crisisSafe && (ipZero || injN >= 5);
+    const mark = this.sessionMark();
     const seSk = Math.min(this.state.seSk || 0, Math.max(0, s.skills.length - 1));
     const clampStr = (v, lo, hi) => (v === '' ? '' : String(Math.max(lo, Math.min(hi, num(v)))));
     const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
@@ -1137,7 +1214,7 @@ class Component extends DCLogic {
       spMax: set('spMax'), spCur: set('spCur'),
       adv: set('adv', (v) => clampStr(v, 0, 5)),
       faintDc: set('faintDc', (v) => clampStr(v, 1, 8)),
-      coma: () => this.upd({ coma: !this.state.s.coma }),
+      coma: () => this.upd({ coma: !this.state.s.coma, comaAt: !this.state.s.coma ? this.sessionMark() : null }),
       repGain: (e) => {
         const cur = this.state.s;
         const v = e && e.target ? e.target.value : '';
@@ -1550,6 +1627,14 @@ class Component extends DCLogic {
       boostOn: !!boost.kind,
       boostShort: boost.kind === 'dice' ? 'D8 +' + boost.n : boost.kind === 'pwr' ? 'PWR+ +' + boost.n : boost.kind === 'skill' ? ((s.skills[boost.sk] || {}).name || 'Skill') + ' +' + boost.n : '',
       boostTxt: boost.kind === 'dice' ? L('SE BOOST: เต๋า +', 'SE BOOST: dice +') + boost.n : boost.kind === 'pwr' ? 'SE BOOST: PWR+ +' + boost.n : boost.kind === 'skill' ? L('SE BOOST: สกิล ', 'SE BOOST: skill ') + ((s.skills[boost.sk] || {}).name || '#' + (boost.sk + 1)) + ' +' + boost.n : '',
+      crisisOn: crisis,
+      crisisWhy: ipZero ? L('IP เหลือ 0', 'IP is down to 0') : L('ติด Injuries ครบ 5 ข้อ', '5 Injuries'),
+      crisisForce: () => this.crisisRoll('Force', Math.min(3, 1 + s.ba.force + (s.factor === 'cpd' && DIVISIONS[s.traitName] === 'force' ? 1 : 0)), s.baMod.force),
+      crisisSense: () => this.crisisRoll('Sense', Math.min(3, 1 + s.ba.sense + (s.factor === 'cpd' && DIVISIONS[s.traitName] === 'sense' ? 1 : 0)), s.baMod.sense),
+      comaOn: !!s.coma && !s.dead,
+      comaWakeReady: !!s.coma && !s.dead && !!s.comaAt && mark !== 'offline' && mark !== s.comaAt,
+      comaWake: () => this.comaWake(),
+      deadOn: !!s.dead,
       endTurn: () => this.endTurn(),
       turnOff: turn.off,
       turnInfo: turn.info,
@@ -1638,6 +1723,15 @@ class Component extends DCLogic {
       actionMsg: this.state.msg,
       t: {
         endTurn: L('จบเทิร์น', 'End turn'),
+        crisisTitle: L('ตัวละครอยู่ในขั้นวิกฤต', 'Your character is going down'),
+        crisisBody: L('เลือกทอย Force หรือ Sense (ใช้ Mod และ Advance pts ได้ตามปกติ) · ได้ 8 = รอดแต่ติด COMA และได้ EX เต็ม 3 · ไม่ถึง 8 = ตัวละครเสียชีวิต', 'Roll Force or Sense (Mod and Advance pts work as usual) · an 8 = you survive in a COMA with EX filled to 3 · less = your character dies'),
+        crisisForce: L('ทอย Force', 'Roll Force'),
+        crisisSense: L('ทอย Sense', 'Roll Sense'),
+        comaTag: L('ใช้ไม่ได้ใน session นี้', 'out for this session'),
+        comaBody: L('ตัวละครนี้ติด COMA และเล่นต่อไม่ได้ใน session นี้ · เมื่อนำมาเล่นใน session ถัดไป ให้ทอย EX ทั้งหมด เก็บไว้เฉพาะลูกที่ออก [1]', 'This character is in a COMA and can\'t act for the rest of this session · in the next session, roll all EX and keep only the [1]s'),
+        comaWake: L('ฟื้นจาก COMA · ทอย EX', 'Wake up · roll EX'),
+        deadTag: L('ตัวละครเสียชีวิต', 'character lost'),
+        deadBody: L('ตัวละครนี้เสียชีวิตแล้ว และใช้เล่นต่อไม่ได้อีก ใบตัวละครยังเก็บไว้ให้ดูได้', 'This character is dead and can\'t be played again. The sheet stays for the record.'),
         endTurnTip: L('จบเทิร์นของตัวละครนี้ · บัฟจาก SE หายไป', 'End this character\'s turn · Surge Energy boosts end'),
         seUse: L('ใช้ SE', 'Use SE'),
         sePwrTip: L('ใช้ SE 1 แต้ม เพิ่ม PWR+ 1 (รวมไม่เกิน 2)', 'Spend 1 SE: PWR+ +1 (max 2 total)'),
@@ -1704,6 +1798,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=a62c7ee6"></script>
+<script src="../assets/beta-character.js?v=f4fe485f"></script>
 </body>
 </html>

@@ -238,6 +238,7 @@
     var cosN = function () { return !o.free && !o.enervated && st.cos >= 0 ? (o.cosmic[st.cos].n || 0) : 0; };
     var exMax = function () { return Math.min(o.ex || 0, count8()); };
     var build = function () {
+      if (o.fixed) return o.fixed.map(function (z) { return { s: z === 4 ? 4 : 8 }; });
       var n8 = count8(), dice = [];
       var ex = Math.min(st.ex, exMax());
       for (var i = 0; i < n8; i++) dice.push({ s: i < ex ? 4 : 8 });
@@ -263,7 +264,10 @@
 
       if (!st.dice) {
         // ---- setup ----
-        if (o.free) {
+        if (o.note) b.appendChild(el('p', { class: 'spd-warn', text: o.note }));
+        if (o.fixed) {
+          // nothing to set up: the pool is given
+        } else if (o.free) {
           b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'D8' }), stepper(st.d8, 0, 12, function (v) { st.d8 = v; render(); })]));
           b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'D4' }), stepper(st.d4, 0, 12, function (v) { st.d4 = v; render(); })]));
           if (o.secretOk) b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: L('ทอยลับ', 'Secret') }),
@@ -322,7 +326,8 @@
       var f2 = el('div', { class: 'spd-f' }); card.appendChild(f2);
       var again = el('button', { type: 'button', class: 'spd-btn', onclick: function () { finish(); o.adv = (o.adv || 0) - st.used; o.ex = (o.ex || 0) - (st.exUsed || 0); st.dice = null; st.used = 0; st.rid = null; st.ex = Math.min(st.ex, o.ex || 0); render(); } }, [L('ทอยใหม่', 'New roll')]);
       var done = el('button', { type: 'button', class: 'spd-btn go', onclick: close }, [L('เสร็จ', 'Done')]);
-      f2.appendChild(again); f2.appendChild(done);
+      if (!o.once) f2.appendChild(again);
+      f2.appendChild(done);
       var fill = function () {
         var sc = score(st.dice);
         res.innerHTML = '';
@@ -345,6 +350,7 @@
       st.finished = true;
       var p1 = !o.free && pair1(st.dice) ? 1 : 0;
       if ((st.used || p1) && o.onDone) o.onDone(payload('adj'), { adv: st.used, p1: p1 });
+      if (o.onFinal) o.onFinal(payload('adj'), st.dice.map(function (d) { return { s: d.s, v: d.v }; }));
     }
     function stepper(v, min, max, set) {
       return el('span', { class: 'spd-step' }, [
