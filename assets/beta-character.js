@@ -55,7 +55,7 @@
 
     async loadSeat() {
       // a player may sit in one campaign and one one-shot at a time; this sheet cares about its own seat
-      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter, turn, round), characters(name)').eq('user_id', this.state.profile.id);
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter, turn, round, turn_order), characters(name)').eq('user_id', this.state.profile.id);
       var seats = (m.data || []).filter(function (x) { return x.sessions; });
       var seat = seats.find((x) => x.character_id === this.state.charId) || null;
       this.setState({ seats: seats, seat: seat, conflict: null, tbl: Object.assign({}, this.state.tbl, {
@@ -92,6 +92,23 @@
     unsub() {
       if (this._ch) { sb.removeChannel(this._ch); this._ch = null; }
       if (this._presence) { sb.removeChannel(this._presence); this._presence = null; }
+    }
+
+    /* whose turn it is at this sheet's table */
+    turnState(th) {
+      var seat = this.state.seat, id = this.state.charId;
+      if (!seat || !id || seat.character_id !== id || !seat.sessions) return { off: false, mine: false, info: th ? 'ยังไม่ได้อยู่ใน session · กดเพื่อล้างบัฟ SE' : 'Not at a table · clears SE boosts' };
+      var ss = seat.sessions, order = ss.turn_order || [], cur = order[ss.turn || 0];
+      if (!order.length) return { off: false, mine: false, info: th ? 'GM ยังไม่ได้จัดลำดับเทิร์น' : 'No turn order yet' };
+      var mine = !!cur && cur.id === id;
+      return { off: !mine, mine: mine, info: mine ? (th ? '▶ ถึงเทิร์นคุณแล้ว (รอบ ' + (ss.round || 1) + ')' : '▶ Your turn (round ' + (ss.round || 1) + ')') : (th ? 'ยังไม่ถึงเทิร์นคุณ' : 'Not your turn yet') };
+    }
+    async turnEnd() {
+      var seat = this.state.seat, id = this.state.charId;
+      if (!seat || !id || seat.character_id !== id || !this.turnState(this.th()).mine) return;
+      var r = await sb.rpc('end_my_turn', { p_session: seat.session_id, p_character: id });
+      if (r.error) return this.setState({ msg: SP.err(r.error, this.th()) });
+      this.setState({ seat: Object.assign({}, this.state.seat, { sessions: Object.assign({}, this.state.seat.sessions, r.data) }) });
     }
 
     /* Exhaustion / Surge Energy / Advance pts changed by a roll: write just those into the saved sheet so the GM Monitor updates now */

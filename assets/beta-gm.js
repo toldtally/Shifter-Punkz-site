@@ -63,6 +63,7 @@
       if (p && !this._applying && this.state.sid && ('order' in p || 'turn' in p || 'round' in p)) {
         clearTimeout(this._saveT);
         this._saveT = setTimeout(() => {
+          this._saveT = null;
           sb.from('sessions').update({ turn_order: this.state.order, turn: this.state.turn, round: this.state.round }).eq('id', this.state.sid).then(() => {});
         }, 400);
       }
@@ -240,6 +241,8 @@
           this.apply({ sessions: ss, session: Object.assign({}, this.state.session, p.new) });
           if (p.new && 'scene' in p.new) this.apply({ sceneShown: SP.sceneList(p.new.scene) });
           if (p.new && 'encounter' in p.new) this.apply({ encounter: SP.encounterList(p.new.encounter) });
+          // a player ended their own turn
+          if (p.new && 'turn' in p.new && !this._saveT && (p.new.turn !== this.state.turn || p.new.round !== this.state.round)) this.apply({ turn: p.new.turn || 0, round: p.new.round || 1 });
         });
       this._ch.subscribe();
       this._pres = sb.channel('presence-' + sid, { config: { presence: { key: this.state.profile.id } } });

@@ -594,6 +594,10 @@ html{scroll-behavior:smooth}
               </sc-if>
               <p class="cap" style="margin: 0">{{t.seNote}}</p>
             </div>
+            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px">
+              <span class="cap" style="margin: 0; color: {{turnColor}}">{{turnInfo}}</span>
+              <button type="button" class="btn sm" onClick="{{endTurn}}" disabled="{{turnOff}}" title="{{t.endTurnTip}}" style="border-color: #FFD400; color: #FFD400">{{t.endTurn}}</button>
+            </div>
           </div>
         </div>
 
@@ -871,6 +875,13 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this._bc) this._bc.close(); if (this._bgm) this._bgm.close(); }
   /* a roll goes to everyone at the table (canvas: BroadcastChannel; live site: session_events) */
+  /* End turn: Surge Energy boosts end; on the live site the turn order also moves on (when it is this character's turn) */
+  turnState() { return { off: false, mine: false, info: '' }; }
+  turnEnd() {}
+  endTurn() {
+    if (this.state.s.boost && this.state.s.boost.kind) { const was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); }
+    this.turnEnd();
+  }
   /* spend 1 SE on a boost of one kind; the point becomes EX */
   seUse(kind, sk) {
     const cur = this.state.s, b = cur.boost && cur.boost.kind ? cur.boost : null;
@@ -1012,6 +1023,7 @@ class Component extends DCLogic {
     const s = this.state.s;
     const num = (v) => parseInt(v, 10) || 0;
     const boost = s.boost && s.boost.kind ? s.boost : {};
+    const turn = this.turnState(th);
     const seSk = Math.min(this.state.seSk || 0, Math.max(0, s.skills.length - 1));
     const clampStr = (v, lo, hi) => (v === '' ? '' : String(Math.max(lo, Math.min(hi, num(v)))));
     const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
@@ -1422,6 +1434,10 @@ class Component extends DCLogic {
       seUseSkill: () => this.seUse('skill', seSk),
       boostOn: !!boost.kind,
       boostTxt: boost.kind === 'dice' ? L('SE BOOST: เต๋า +', 'SE BOOST: dice +') + boost.n : boost.kind === 'pwr' ? 'SE BOOST: PWR+ +' + boost.n : boost.kind === 'skill' ? L('SE BOOST: สกิล ', 'SE BOOST: skill ') + ((s.skills[boost.sk] || {}).name || '#' + (boost.sk + 1)) + ' +' + boost.n : '',
+      endTurn: () => this.endTurn(),
+      turnOff: turn.off,
+      turnInfo: turn.info,
+      turnColor: turn.mine ? '#FFD400' : '#8C88A6',
       boostClear: () => { const was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); },
       pools: [
         { name: 'Surge Energy', color: '#C084FC', tip: L('เลือกเพิ่มค่า 1 อย่าง: เพิ่มเต๋า • เพิ่ม PWR+ • อัพสกิล จากนั้นแต้มที่ใช้จะถูกแปลงเป็น EX', 'Pick one upgrade: add a die • PWR+ up • skill up, then the points spent turn into EX'), val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
@@ -1505,6 +1521,8 @@ class Component extends DCLogic {
       saveColor: this.state.dirty ? '#FFD400' : '#4ADE80',
       actionMsg: this.state.msg,
       t: {
+        endTurn: L('จบเทิร์น', 'End turn'),
+        endTurnTip: L('จบเทิร์นของตัวละครนี้ · บัฟจาก SE หายไป', 'End this character\'s turn · Surge Energy boosts end'),
         seUse: L('ใช้ Surge Energy · 1 แต้ม/ครั้ง', 'Spend Surge Energy · 1 point each'),
         seSkillPick: L('เลือกสกิลที่จะเพิ่มเลเวล', 'Skill to level up'),
         seSkillBtn: L('สกิล +1 LV', 'Skill +1 LV'),
@@ -1567,6 +1585,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=ff57215e"></script>
+<script src="../assets/beta-character.js?v=d874caf9"></script>
 </body>
 </html>
