@@ -321,6 +321,7 @@ html{scroll-behavior:smooth}
                   <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #D8D6E8">ADV {{p.adv}}</span>
                   <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #A9A5C2">COIN {{p.coins}}</span>
                   <span style="padding: 3px 8px; background: #0B0A12; border: 1px solid #2A2740; color: #4ADE80">SLOT {{p.slots}}</span>
+                  <sc-if value="{{p.boost}}" hint-placeholder-val="{{ false }}"><span title="{{p.boostTip}}" style="padding: 3px 8px; background: #1D1930; border: 1px solid #C084FC; color: #C084FC">▲ {{p.boost}}</span></sc-if>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 10px">
                   <sc-for list="{{p.loadout}}" as="lg" hint-placeholder-count="4">
@@ -645,7 +646,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=7a3db299"></script>
+<script src="../assets/dice.js?v=e62eb657"></script>
 <script>
 /* demo scene pictures for the prototype (the live site uses the GM's uploads or links) */
 function sceneArt(sky, glow, label) {
@@ -1248,6 +1249,7 @@ class Component extends DCLogic {
         bars: [{ k: 'IP', color: '#FF3D6E', v: c.ip + '/' + c.ipMax, pct: Math.round(c.ip / c.ipMax * 100) + '%' }].concat(c.wmMax ? [{ k: 'WM', color: '#2EE6F0', v: c.wm + '/' + c.wmMax, pct: Math.round(c.wm / c.wmMax * 100) + '%' }] : []),
         ba: ['FOR', 'TAC', 'TRI', 'SEN'].map((k, i) => ({ k: k, v: String(c.ba[i]) })),
         se: String(c.se), ex: String(c.ex), adv: String(c.adv), coins: String(c.coins),
+        boost: c.boost || '', boostTip: L('บัฟจาก Surge Energy หมดเมื่อเลื่อนเทิร์น', 'Surge Energy boost, ends when the turn moves on'),
         slots: loadout(c).slots,
         loadout: loadout(c).groups,
         inj: c.inj.map((n) => ({ n: n })),
@@ -1358,6 +1360,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=94b3ae6a"></script>
+<script src="../assets/beta-gm.js?v=3ba40357"></script>
 </body>
 </html>

@@ -207,7 +207,7 @@
     injectCss();
     var th = o.th !== false, L = function (a, b) { return th ? a : b; };
     var acc = o.color || C.cyan;
-    var st = { extra: 0, d8: o.free ? 2 : 0, d4: 0, cos: -1, ex: 0, secret: false, dice: null, base: null, used: 0, rolling: false };
+    var st = { extra: 0, se: 0, d8: o.free ? 2 : 0, d4: 0, cos: -1, ex: 0, secret: false, dice: null, base: null, used: 0, rolling: false };
     var prevFocus = document.activeElement;
     var back = el('div', { class: 'spd-back', role: 'presentation' });
     var card = el('div', { class: 'spd-card', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'spd-title', tabindex: '-1', style: '--acc:' + acc });
@@ -226,7 +226,7 @@
     var count8 = function () {
       if (o.free) return st.d8;
       if (o.enervated) return 1;
-      return Math.max(0, (o.base || 0) + st.extra);
+      return Math.max(0, (o.base || 0) + st.extra) + st.se;
     };
     var cosN = function () { return !o.free && !o.enervated && st.cos >= 0 ? (o.cosmic[st.cos].n || 0) : 0; };
     var exMax = function () { return Math.min(o.ex || 0, count8()); };
@@ -267,6 +267,11 @@
           else {
             b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: L('เต๋า +/−', 'Dice +/−') }),
               stepper(st.extra, -(o.base || 0), 6, function (v) { st.extra = v; render(); })]));
+            if ((o.se || 0) > 0 || st.se) {
+              b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', style: 'color:' + C.purple, text: L('SE → เต๋า', 'SE → dice') }),
+                stepper(st.se, 0, o.seLock ? 0 : (o.se || 0), function (v) { st.se = v; render(); }),
+                el('span', { class: 'spd-note', text: o.seLock ? L('เทิร์นนี้ใช้ SE เพิ่มอย่างอื่นไปแล้ว', 'SE already boosts something else this turn') : L('ใช้ SE เพิ่ม D8 (มี ' + o.se + ') · แต้มที่ใช้กลายเป็น EX', 'Spend SE for extra D8s (' + o.se + ' left) · spent points become EX') })]));
+            }
             var cos = (o.cosmic || []).filter(function (c) { return c.n > 0; });
             if (cos.length) {
               var row = el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'Cosmic' })]);
@@ -373,7 +378,8 @@
       st.rid = rid; st.srv = srv; st.finished = false;
       st.rolling = true;
       var pl = payload('roll');
-      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, secret: st.secret });
+      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, seUse: o.enervated ? 0 : st.se, secret: st.secret });
+      o.se = Math.max(0, (o.se || 0) - (o.enervated ? 0 : st.se)) + (pl.p8 ? 1 : 0); st.se = 0;
       render();
     }
     render();

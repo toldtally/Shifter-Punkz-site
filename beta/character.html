@@ -502,7 +502,7 @@ html{scroll-behavior:smooth}
             <div class="row">
               <div class="field narrow"><label class="lbl" for="spCur">Current</label><input id="spCur" class="fld" type="number" min="0" max="10" value="{{s.spCur}}" onInput="{{on.spCur}}" disabled="{{noWm}}"></div>
               <div class="field narrow"><label class="lbl" for="spMax">Max WM</label><input id="spMax" class="fld" type="number" min="1" max="10" value="{{s.spMax}}" onInput="{{on.spMax}}" disabled="{{noWm}}"></div>
-              <div class="field narrow"><label class="lbl" for="spPwr">PWR+</label><input id="spPwr" class="fld" type="number" min="0" max="2" value="{{s.spPwr}}" onInput="{{on.spPwr}}" disabled="{{noWm}}"></div>
+              <div class="field narrow"><label class="lbl" for="spPwr">PWR+ <span style="color: #C084FC">{{pwrBoost}}</span></label><input id="spPwr" class="fld" type="number" min="0" max="2" value="{{s.spPwr}}" onInput="{{on.spPwr}}" disabled="{{noWm}}"></div>
               <div class="field narrow"><label class="lbl" for="spRgn">RGN+</label><input id="spRgn" class="fld" type="number" min="0" max="2" value="{{s.spRgn}}" onInput="{{on.spRgn}}" disabled="{{noWm}}"></div>
             </div>
             <div class="meter" aria-hidden="true"><div style="width: {{spPct}}; background: #2EE6F0"></div></div>
@@ -576,6 +576,24 @@ html{scroll-behavior:smooth}
               <div class="field narrow" title="{{t.advTip}}"><label class="lbl" for="advPts">Advance pts</label><input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}"></div>
               <button type="button" class="btn sm ico-reset" onClick="{{newSession}}" title="{{t.newSessTipPool}}" aria-label="{{t.newSess}}"><span class="ico-reset-i" aria-hidden="true"></span></button>
             </div>
+            <!-- Surge Energy: spend points for a boost that lasts until the turn ends; points spent become EX -->
+            <div style="margin-top: 12px; border: 1px solid #2A2740; border-left: 3px solid #C084FC; padding: 10px; background: #0B0A12; display: flex; flex-direction: column; gap: 8px">
+              <div style="font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #C084FC">{{t.seUse}}</div>
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+                <sc-if value="{{sePwrShow}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{seUsePwr}}" disabled="{{sePwrOff}}" style="border-color: #C084FC; color: #C084FC">PWR+ +1</button></sc-if>
+                <select class="fld" aria-label="{{t.seSkillPick}}" onChange="{{onSeSkill}}" disabled="{{seNoSkills}}" style="width: auto; min-width: 0; flex: 1 1 120px; max-width: 220px">
+                  <sc-for list="{{seSkillOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                </select>
+                <button type="button" class="btn sm" onClick="{{seUseSkill}}" disabled="{{seSkillOff}}" style="border-color: #C084FC; color: #C084FC">{{t.seSkillBtn}}</button>
+              </div>
+              <sc-if value="{{boostOn}}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; padding: 6px 8px; background: #1D1930">
+                  <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #C084FC">{{boostTxt}}</span>
+                  <button type="button" class="btn sm" onClick="{{boostClear}}" style="min-height: 28px; padding: 0 10px; font-size: 11px">{{t.boostClear}}</button>
+                </div>
+              </sc-if>
+              <p class="cap" style="margin: 0">{{t.seNote}}</p>
+            </div>
           </div>
         </div>
 
@@ -624,10 +642,11 @@ html{scroll-behavior:smooth}
         <div class="panel pk">
           <div class="ph"><h2>General Skills</h2></div>
           <div class="pb">
-            <div class="thead" style="grid-template-columns: .6fr 1.4fr 28px"><div>Name</div><div>Effect</div><div></div></div>
+            <div class="thead" style="grid-template-columns: .6fr 64px 1.4fr 28px"><div>Name</div><div>LV</div><div>Effect</div><div></div></div>
             <sc-for list="{{skills}}" as="r" hint-placeholder-count="0">
-              <div class="rowline" style="grid-template-columns: .6fr 1.4fr 28px; align-items: start">
+              <div class="rowline" style="grid-template-columns: .6fr 64px 1.4fr 28px; align-items: start">
                 <textarea class="fld grow" rows="1" aria-label="Skill name" placeholder="{{t.phSkill}}" value="{{r.name}}" onInput="{{r.on_name}}" onKeyDown="{{oneLine}}"></textarea>
+                <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><input class="fld" type="number" min="0" max="10" aria-label="Skill level" value="{{r.lv}}" onInput="{{r.on_lv}}" style="text-align: center"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; text-align: center; color: #C084FC">{{r.boost}}</span></div>
                 <textarea class="fld grow" rows="1" aria-label="Skill effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
                 <button type="button" class="rm" aria-label="{{t.rmSkill}}" onClick="{{r.remove}}">×</button>
               </div>
@@ -690,7 +709,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=7a3db299"></script>
+<script src="../assets/dice.js?v=e62eb657"></script>
 <script>
 function initialSheet() {
   return {
@@ -852,6 +871,14 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this._bc) this._bc.close(); if (this._bgm) this._bgm.close(); }
   /* a roll goes to everyone at the table (canvas: BroadcastChannel; live site: session_events) */
+  /* spend 1 SE on a boost of one kind; the point becomes EX */
+  seUse(kind, sk) {
+    const cur = this.state.s, b = cur.boost && cur.boost.kind ? cur.boost : null;
+    if (!(cur.se > 0) || (b && b.kind !== kind) || (b && kind === 'skill' && b.sk !== sk)) return;
+    const was = this.state.dirty;
+    const patch = Object.assign({ se: cur.se - 1 }, this.exGain(1, cur), { boost: { kind: kind, n: (b ? b.n : 0) + 1, sk: kind === 'skill' ? sk : -1 } });
+    this.upd(patch); this.rollSaved(patch, was);
+  }
   /* EX tops out at 3; whatever would go past it comes off current IP straight away */
   exGain(n, s) {
     s = s || this.state.s;
@@ -875,11 +902,18 @@ class Component extends DCLogic {
       enervated: !!(s.inj && s.inj.Enervated),
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
       ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
+      se: s.se || 0, seLock: !!(s.boost && s.boost.kind && s.boost.kind !== 'dice'),
       onRoll: (p, sp) => {
         const cur = this.state.s;
         let patch = {};
         if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
-        if (sp.se) patch.se = Math.min(3, cur.se + sp.se);
+        // SE spent on extra dice becomes EX; a pair of [8] gives SE back
+        if (sp.se || sp.seUse) patch.se = Math.min(3, Math.max(0, cur.se - (sp.seUse || 0)) + (sp.se || 0));
+        if (sp.seUse) {
+          patch = Object.assign(patch, this.exGain(sp.seUse, Object.assign({}, cur, patch)));
+          const b = cur.boost && cur.boost.kind === 'dice' ? cur.boost.n : 0;
+          patch.boost = { kind: 'dice', n: b + sp.seUse, sk: -1 };
+        }
         if (Object.keys(patch).length) { const was = this.state.dirty; this.upd(patch); this.rollSaved(patch, was); }
         this.dicePost(p);
       },
@@ -977,6 +1011,8 @@ class Component extends DCLogic {
     const L = (a, b) => (th ? a : b);
     const s = this.state.s;
     const num = (v) => parseInt(v, 10) || 0;
+    const boost = s.boost && s.boost.kind ? s.boost : {};
+    const seSk = Math.min(this.state.seSk || 0, Math.max(0, s.skills.length - 1));
     const clampStr = (v, lo, hi) => (v === '' ? '' : String(Math.max(lo, Math.min(hi, num(v)))));
     const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
     const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
@@ -1333,7 +1369,7 @@ class Component extends DCLogic {
       addTraitX: add('traitX', { name: '', fx: '' }, traitXAllowed),
       traitXFull: s.traitX.length >= traitXAllowed,
       traitXLabel: traitXAllowed === 0 ? L('+ เพิ่ม Trait (ปลดล็อกทุก 8 Rep.)', '+ Add Trait (unlocks every 8 Rep.)') : L('+ เพิ่ม Trait (เพิ่มได้อีก ', '+ Add Trait (') + Math.max(0, traitXAllowed - s.traitX.length) + L(')', ' left)'),
-      newSession: () => this.upd({ adv: '5', slots: slotsStart() }),
+      newSession: () => this.upd({ adv: '5', slots: slotsStart(), boost: null }),
       bonded: rows('bonded', ['name', 'effect']),
       addBonded: add('bonded', { name: '', effect: '' }, 1),
       bondedFull: s.bonded.length >= 1,
@@ -1374,12 +1410,25 @@ class Component extends DCLogic {
       pool: String(pool),
       remain: String(pool - used),
       poolColor: pool - used < 0 ? '#FF3D6E' : '#2EE6F0',
+      // Surge Energy boosts (cleared when the GM moves the turn on)
+      pwrBoost: boost.kind === 'pwr' ? '+' + boost.n + ' SE' : '',
+      sePwrShow: s.factor === 'shifter',
+      sePwrOff: !(s.se > 0) || (boost.kind && boost.kind !== 'pwr') || (num(s.spPwr) + (boost.kind === 'pwr' ? boost.n : 0)) >= 2,
+      seSkillOpts: s.skills.length ? s.skills.map((r, i) => ({ v: String(i), sel: i === seSk, label: (r.name || L('สกิล ', 'Skill ') + (i + 1)) + ' · LV ' + (r.lv == null ? 1 : r.lv) })) : [{ v: '', sel: true, label: L('ยังไม่มีสกิล', 'No skills yet') }],
+      seNoSkills: !s.skills.length,
+      onSeSkill: (e) => this.setState({ seSk: parseInt(e && e.target ? e.target.value : 0, 10) || 0 }),
+      seSkillOff: !(s.se > 0) || !s.skills.length || (boost.kind && boost.kind !== 'skill') || (boost.kind === 'skill' && boost.sk !== seSk),
+      seUsePwr: () => this.seUse('pwr', -1),
+      seUseSkill: () => this.seUse('skill', seSk),
+      boostOn: !!boost.kind,
+      boostTxt: boost.kind === 'dice' ? L('SE BOOST: เต๋า +', 'SE BOOST: dice +') + boost.n : boost.kind === 'pwr' ? 'SE BOOST: PWR+ +' + boost.n : boost.kind === 'skill' ? L('SE BOOST: สกิล ', 'SE BOOST: skill ') + ((s.skills[boost.sk] || {}).name || '#' + (boost.sk + 1)) + ' +' + boost.n : '',
+      boostClear: () => { const was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); },
       pools: [
         { name: 'Surge Energy', color: '#C084FC', tip: L('เลือกเพิ่มค่า 1 อย่าง: เพิ่มเต๋า • เพิ่ม PWR+ • อัพสกิล จากนั้นแต้มที่ใช้จะถูกแปลงเป็น EX', 'Pick one upgrade: add a die • PWR+ up • skill up, then the points spent turn into EX'), val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
         { name: 'Exhaustion', color: '#A9A5C2', tip: L('+DC • ใช้แต้มเปลี่ยนเต๋า D8 เป็น D4', '+DC • Spend a point to turn a D8 into a D4'), val: String(s.ex), inc: () => this.upd(this.exGain(1)), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
       ],
-      skills: rows('skills', ['name', 'fx']),
-      addSkill: add('skills', { name: '', fx: '' }, skillCap),
+      skills: rows('skills', ['name', 'lv', 'fx'], { lv: [0, 10] }).map((r, i) => Object.assign(r, { lv: r.lv == null ? '1' : r.lv, boost: boost.kind === 'skill' && boost.sk === i ? '+' + boost.n + ' SE' : '' })),
+      addSkill: add('skills', { name: '', lv: '1', fx: '' }, skillCap),
       skillsFull: s.skills.length >= skillCap,
       skillsCap: s.skills.length + ' / ' + skillCap + L(' สกิล', ' skills'),
       skillsCapColor: s.skills.length > skillCap ? '#FF3D6E' : '#8C88A6',
@@ -1456,6 +1505,11 @@ class Component extends DCLogic {
       saveColor: this.state.dirty ? '#FFD400' : '#4ADE80',
       actionMsg: this.state.msg,
       t: {
+        seUse: L('ใช้ Surge Energy · 1 แต้ม/ครั้ง', 'Spend Surge Energy · 1 point each'),
+        seSkillPick: L('เลือกสกิลที่จะเพิ่มเลเวล', 'Skill to level up'),
+        seSkillBtn: L('สกิล +1 LV', 'Skill +1 LV'),
+        boostClear: L('ล้าง', 'Clear'),
+        seNote: L('เลือกเพิ่มได้อย่างเดียวต่อเทิร์น: เต๋า (ตอนทอย) · PWR+ (รวมไม่เกิน 2) · เลเวลสกิล — แต้ม SE ที่ใช้กลายเป็น EX และบัฟหายเมื่อ GM เลื่อนเทิร์น', 'One boost per turn: dice (when rolling) · PWR+ (max 2 total) · skill level — SE spent becomes EX; the boost ends when the GM moves the turn on'),
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
         menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
@@ -1513,6 +1567,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=8588387c"></script>
+<script src="../assets/beta-character.js?v=ff57215e"></script>
 </body>
 </html>

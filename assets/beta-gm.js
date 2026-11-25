@@ -11,6 +11,7 @@
       ip: SP.num(s.hpCur), ipMax: SP.num(s.hpMax) || 1, wm: SP.num(s.spCur), wmMax: ch.factor !== 'shifter' ? 0 : SP.num(s.spMax),
       ba: ['force', 'tactical', 'trick', 'sense'].map(function (k) { return SP.baOf(s, ch.factor, k); }),
       se: SP.num(s.se), ex: SP.num(s.ex), adv: SP.num(s.adv), coins: SP.num(s.coins),
+      boost: s.boost && s.boost.kind ? (s.boost.kind === 'dice' ? 'D8' : s.boost.kind === 'pwr' ? 'PWR+' : String(((s.skills || [])[s.boost.sk] || {}).name || 'SKILL').slice(0, 24)) + ' +' + SP.num(s.boost.n) : '',
       inj: Object.keys(inj).filter(function (k) { return inj[k]; }),
       at: new Date(ch.updated_at).getTime(), portrait: ch.portrait_path ? SP.imageUrl(ch.portrait_path) : '', sheet: s, factor: ch.factor
     };

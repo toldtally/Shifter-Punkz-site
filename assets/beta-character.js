@@ -55,7 +55,7 @@
 
     async loadSeat() {
       // a player may sit in one campaign and one one-shot at a time; this sheet cares about its own seat
-      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter), characters(name)').eq('user_id', this.state.profile.id);
+      var m = await sb.from('session_members').select('session_id, character_id, format, sessions(id, name, invite_code, status, bgm, format, scene, level, encounter, turn, round), characters(name)').eq('user_id', this.state.profile.id);
       var seats = (m.data || []).filter(function (x) { return x.sessions; });
       var seat = seats.find((x) => x.character_id === this.state.charId) || null;
       this.setState({ seats: seats, seat: seat, conflict: null, tbl: Object.assign({}, this.state.tbl, {
@@ -67,11 +67,17 @@
 
     subscribe(sess) {
       if (sess.bgm) this.onBgm(Object.assign({ type: 'state' }, sess.bgm));
+      this._turnKey = sess.turn + ':' + sess.round;
       this._ch = sb.channel('sheet-' + sess.id)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions', filter: 'id=eq.' + sess.id }, (p) => {
           var row = p.new || {};
           this.setState({ seat: Object.assign({}, this.state.seat, { sessions: Object.assign({}, this.state.seat.sessions, row) }) });
           if (row.bgm) this.onBgm(Object.assign({ type: 'state' }, row.bgm));
+          // the GM moved the turn on: Surge Energy boosts end
+          if ('turn' in row) {
+            var tk = row.turn + ':' + row.round;
+            if (tk !== this._turnKey) { this._turnKey = tk; if (this.state.s.boost && this.state.s.boost.kind) { var was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); } }
+          }
         })
         .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'session_members' }, () => this.loadSeat())
         // other people's rolls at this table tumble on this sheet too
