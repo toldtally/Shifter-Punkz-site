@@ -321,6 +321,33 @@ html{scroll-behavior:smooth}
       </div>
     </sc-if>
 
+    <!-- Skills list: every General skill; level 1 is free while free slots last, everything else costs REP Current -->
+    <sc-if value="{{skillsOpen}}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{closeSkills}}" aria-hidden="true" style="position: fixed; inset: 0; z-index: 90; background: rgba(11,10,18,0.86)"></div>
+      <div id="skills-dlg" role="dialog" aria-modal="true" aria-labelledby="skills-h" tabindex="-1" onKeyDown="{{skillsKey}}" class="trd-in" style="position: fixed; z-index: 91; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100vw - 24px)); max-height: min(86vh, 900px); display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; box-shadow: 0 24px 64px rgba(0,0,0,0.7); outline: none">
+        <div style="padding: 12px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
+          <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px">
+            <h2 id="skills-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.08em; color: #FFFFFF">GENERAL SKILLS</h2>
+            <span style="font-size: 12.5px; color: #A9A5C2">{{t.skillsSub}}</span>
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFD400">{{skillWallet}}</span>
+          <button type="button" onClick="{{closeSkills}}" aria-label="{{t.close}}" title="{{t.close}}" style="width: 34px; min-height: 34px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">✕</button>
+        </div>
+        <ul style="margin: 0; padding: 10px 12px 14px; list-style: none; overflow-y: auto; display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{skillList}}" as="sk" hint-placeholder-count="4">
+            <li style="display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; background: #0B0A12; border: 1px solid {{sk.border}}">
+              <span style="flex: 0 0 auto; min-width: 44px; height: 34px; display: flex; align-items: center; justify-content: center; background: #0B0A12; border: 1px solid #FF2E88; font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 12px; color: #FF2E88">LV{{sk.lv}}</span>
+              <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+                <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF">{{sk.name}} <span style="font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 12px; color: #FFD400">· {{sk.cost}} REP</span></span>
+                <span style="font-size: 13.5px; line-height: 1.65; color: #D8D6E8">{{sk.fx}}</span>
+              </div>
+              <button type="button" class="btn sm" onClick="{{sk.pick}}" disabled="{{sk.off}}" aria-pressed="{{sk.pressed}}" style="flex: 0 0 auto; border-color: {{sk.pickBorder}}; background: {{sk.pickBg}}; color: {{sk.pickFg}}">{{sk.pickText}}</button>
+            </li>
+          </sc-for>
+        </ul>
+      </div>
+    </sc-if>
+
     <!-- Encounter: NPCs the GM brought in; players see only picture, name and abnormal statuses -->
     <sc-if value="{{encOn}}" hint-placeholder-val="{{ false }}">
       <section aria-labelledby="enc-h" class="enc-in" style="margin-bottom: 16px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
@@ -643,7 +670,7 @@ html{scroll-behavior:smooth}
         </sc-if>
 
         <div class="panel pk">
-          <div class="ph"><h2>General Skills</h2></div>
+          <div class="ph"><h2>General Skills</h2><button type="button" class="btn sm" onClick="{{openSkills}}" aria-haspopup="dialog" style="border-color: #FF2E88; color: #FF2E88">All skills</button></div>
           <div class="pb">
             <div class="thead" style="grid-template-columns: .6fr 64px 1.4fr 28px"><div>Name</div><div>LV</div><div>Effect</div><div></div></div>
             <sc-for list="{{skills}}" as="r" hint-placeholder-count="0">
@@ -833,6 +860,46 @@ function cosmicFill(row, patch, cosmicDice) {
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 /* every Trait in the game (roll 2D8 or pick one); source: the Skills and Traits sheet, Traits tab */
+/* General skills from the "General" tab of the rules sheet: [name, level, effect, REP cost]. Levels must go in order from Lv1. */
+const SKILLS = [
+  ["Charismatic Eyes", 1, "การโน้มน้าวด้วยสายตา +1TrD", 1],
+  ["Awareness", 1, "การรับรู้ภยันตรายรอบตัว +1TcD", 1],
+  ["Dead Eyes", 1, "คุ้มกันสถานะ [Panic] 1 ครั้ง/session", 2],
+  ["Quick Draw", 1, "หากเริ่มการปะทะก่อน(melee) +1FD", 2],
+  ["On track", 1, "การเดินสะกดรอย, ย่องเบา +1TcD", 2],
+  ["Gun Slinger", 1, "เมื่อใช้อาวุธประเภทปืนพก +1TcD", 2],
+  ["Robbery", 1, "Action เกี่ยวกับการฉกฉวยสิ่งของเล็กๆ +1TcD", 2],
+  ["Body Shell", 1, "รับ DMG น้อยลง 1 แต่ไม่ต่ำกว่า 1", 2],
+  ["Bargaining", 1, "แอคชั่นเกี่ยวกับการเจรจา, ต่อรอง +1TrD", 2],
+  ["Safe Hands", 1, "แอคชั่นเกี่ยวกับการรักษา +1TrD", 2],
+  ["Taunting", 1, "TrD>6 เพื่อยั่วยุเป้าหมาย และยกเลิกแอคชั่นที่เป้าหมายกำลังทำอยู่ และ +1BD ให้แก่เป้าหมายในแอคชั่นถัดไป(stack ได้)", 2],
+  ["Battle Roar", 1, "คำรามเพื่อข่มขู่ ทำให้เป้าหมายที่อยู่ข้างหน้า 2 เมตรติดสถานะ [สตัน]", 3],
+  ["Inner Beast", 1, "เมื่อ HP เหลือ 3 หรือต่ำกว่า DMG+3", 3],
+  ["Cunning Rolls", 1, "เลือกผู้เล่น 1 คน(รวมถึงตัวเอง) re-roll เต๋าในการทอยครั้งนั้นกี่ลูกก็ได้ 1 ครั้งต่อ sessions", 4],
+  ["Healing", 1, "ลบล้าง Dbf ได้ 1 อย่าง(ต้องมีอุปกรณ์ เช่น ผ้าพันแผล) และทอย TrD>6 เพื่อ +1HP", 1],
+  ["Healing", 2, "ลบล้าง Dbf ได้ 1 อย่าง(ต้องมีอุปกรณ์ เช่น ผ้าพันแผล) และ +1HP ในการรักษานั้นได้ทันที", 2],
+  ["Healing", 3, "ลบล้าง Dbf ได้ 1 อย่าง(ต้องมีอุปกรณ์ เช่น ผ้าพันแผล) และ +1HP ในการรักษานั้นได้ทันที และเพิ่ม HP ได้อีกตามเต๋า >7", 3],
+  ["Smith", 1, "สามารถสร้างและซ่อมอาวุธและชุดเกราะ Lv1(1DMG / 1AMR) ได้", 1],
+  ["Smith", 2, "สามารถสร้างและซ่อมอาวุธและชุดเกราะระดับ Lv2(2DMG / 2AMR) ได้", 2],
+  ["Smith", 3, "สามารถเปลี่ยน FX ให้อาวุธและชุดเกราะได้ 1 อย่าง", 3],
+  ["Smith", 4, "สามารถเพิ่ม, เปลี่ยน FX ให้อาวุธและชุดเกราะได้ 2 อย่าง (ซ้ำไม่ได้)", 4],
+  ["Smith", 5, "สามารถเพิ่ม, เปลี่ยน FX ให้อาวุธและชุดเกราะได้ 2 อย่าง และสามารถติดอาวุธเพิ่มให้กับอาวุธที่ modify อยู่ได้ 1 อย่าง", 5],
+  ["Tinker", 1, "สามารถซ่อมหรือประดิษฐ์อุปกรณ์ที่เป็นของใช้ทั่วไปได้", 1],
+  ["Tinker", 2, "สามารถซ่อมประดิษฐ์อุปกรณ์ที่มีความ functional มากขึ้น เช่น โต๊ะพับ, บันไดเก้าอี้, DIY ฯลฯ", 2],
+  ["Tinker", 3, "สามารถสร้างที่ซ่อน, bunker ชั่วคราวได้", 3],
+  ["Tinker", 4, "สามารถสร้างที่อยู่อาศัยที่มีความซับซ้อนได้มากขึ้น เช่น บ้านสำหรับอยู่อาศัย", 4],
+  ["Tinker", 5, "การทอยเกี่ยวกับการสร้างที่ไม่เกี่ยวกับไฟฟ้าหรือเครื่องยนต์ TrD+2", 5],
+  ["Electrician", 1, "สามารถประดิษฐ์อุปกรณ์ไฟฟ้าทั่วไปได้, เข้าใจพื้นฐานระบบไฟฟ้าเป็นอย่างดี", 1],
+  ["Electrician", 2, "สามารถสร้างเครื่องใช้ไฟฟ้าในระดับช่างเทคนิคได้(คอมพิวเตอร์, โทรศัพท์ ฯลฯ)", 2],
+  ["Electrician", 3, "สามารถสร้างอุปกรณ์ขนาดเล็กที่สามารถควบคุมระยะไกลได้(โดรน, อุปกรณ์แจมสัญญาณ ฯลฯ)", 3],
+  ["Electrician", 4, "สามารถสร้างหุ่นยนต์สำหรับใช้งานได้ในระดับต้น", 4],
+  ["Electrician", 5, "สามารถสร้างเอนจิ้นไฟฟ้า, ยานพาหนะไฟฟ้า, หุ่นยนต์ขนาดใหญ่ได้", 5],
+  ["Multilingual", 1, "สามารถพูดภาษาเพิ่มได้ 1 ภาษา(รวม native)", 1],
+  ["Multilingual", 2, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 2],
+  ["Multilingual", 3, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 3],
+  ["Multilingual", 4, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 4],
+  ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
+];
 const TRAITS = [
   [2, 'Musician', 'นักดนตรี', 'การรับรู้ทางการได้ยินทำได้ง่ายกว่าคนทั่วไป (Tactical)'],
   [3, 'Magician', 'นักมายากล', 'สลับหรือปลดสิ่งของชิ้นเล็ก(slot 1)ในมือเป้าหมายในระยะประชิดมาเป็นของตัวเองได้ทันที'],
@@ -1095,7 +1162,7 @@ class Component extends DCLogic {
     const add = (key, blank, cap) => () => { if (this.state.s[key].length < cap) this.upd({ [key]: this.state.s[key].concat([blank]) }); };
 
     const traitXAllowed = Math.floor(repCur / 8);
-    const skillCap = (fk === 'outlaw' ? 4 : 2) + Math.floor(repCur / 2);
+    const skillCap = fk === 'outlaw' ? 4 : 2; // free level-1 skills; more skills or levels are bought with REP Current from All skills
     const cosCap = fk === 'shifter' ? 1 : 3; // a Shifter carries exactly one Cosmic Ability; Norms up to 3 Cosmic Gadgets
 
     // basic ability
@@ -1337,6 +1404,37 @@ class Component extends DCLogic {
       // name boxes (Trait, Bonded Item, General Skills) grow downward but stay one entry: Enter does not add a line
       oneLine: (e) => { if (e && e.key === 'Enter') e.preventDefault(); },
       // Traits pop-up
+      skillsOpen: !!this.state.skillsOpen,
+      openSkills: () => { this.setState({ skillsOpen: true }); setTimeout(() => { const d = document.getElementById('skills-dlg'); if (d) d.focus(); }, 30); },
+      closeSkills: () => this.setState({ skillsOpen: false }),
+      skillsKey: (e) => { if (e && e.key === 'Escape') this.setState({ skillsOpen: false }); },
+      skillWallet: L('ช่องฟรี ', 'Free slots ') + Math.max(0, skillCap - s.skills.length) + ' · REP ' + repCur,
+      skillList: SKILLS.map((x) => {
+        const fam = x[0], lv = x[1], fx = x[2], cost = x[3];
+        const at = s.skills.findIndex((r) => (r.name || '').trim().toLowerCase() === fam.toLowerCase());
+        const have = at === -1 ? 0 : num(s.skills[at].lv == null ? 1 : s.skills[at].lv);
+        const owned = have >= lv, next = lv === have + 1, free = lv === 1 && at === -1 && s.skills.length < skillCap;
+        const afford = free || repCur >= cost;
+        let text, off = false;
+        if (owned) { text = L('✓ มีแล้ว', '✓ Owned'); off = true; }
+        else if (!next) { text = L('ต้องมี LV' + (lv - 1) + ' ก่อน', 'Needs LV' + (lv - 1)); off = true; }
+        else if (free) text = L('รับฟรี', 'Take free');
+        else { text = (lv === 1 ? L('ซื้อ', 'Buy') : L('อัป LV' + lv, 'Up to LV' + lv)) + ' · ' + cost + ' REP'; off = !afford; }
+        return {
+          name: fam, lv: lv, fx: fx, cost: cost, off: off, pressed: owned ? 'true' : 'false', pickText: text,
+          border: owned ? '#FF2E88' : '#2A2740',
+          pickBorder: owned ? '#FF2E88' : next && afford ? '#FFD400' : '#3A3655', pickBg: owned ? '#FF2E88' : '#1D1930', pickFg: owned ? '#0B0A12' : next && afford ? '#FFD400' : '#8C88A6',
+          pick: () => {
+            if (off) return;
+            const cur = this.state.s, list = cur.skills.slice(), row = { name: fam, lv: String(lv), fx: fx };
+            if (at === -1) list.push(row); else list[at] = Object.assign({}, list[at], row);
+            const patch = { skills: list };
+            if (!free) patch.repCur = String(Math.max(0, num(cur.repCur) - cost));
+            this.upd(patch);
+            setTimeout(() => { const d = document.getElementById('skills-dlg'); if (d && !d.contains(document.activeElement)) d.focus(); }, 30); // keep Esc working
+          }
+        };
+      }),
       traitsOpen: !!this.state.traitsOpen,
       openTraits: () => { this.setState({ traitsOpen: true, traitRoll: null }); setTimeout(() => { const d = document.getElementById('traits-dlg'); if (d) d.focus(); }, 30); },
       closeTraits: () => this.setState({ traitsOpen: false }),
@@ -1445,8 +1543,8 @@ class Component extends DCLogic {
       skills: rows('skills', ['name', 'lv', 'fx'], { lv: [0, 10] }).map((r, i) => Object.assign(r, { lv: r.lv == null ? '1' : r.lv, boost: boost.kind === 'skill' && boost.sk === i ? '+' + boost.n + ' SE' : '' })),
       addSkill: add('skills', { name: '', lv: '1', fx: '' }, skillCap),
       skillsFull: s.skills.length >= skillCap,
-      skillsCap: s.skills.length + ' / ' + skillCap + L(' สกิล', ' skills'),
-      skillsCapColor: s.skills.length > skillCap ? '#FF3D6E' : '#8C88A6',
+      skillsCap: s.skills.length + L(' สกิล · ช่องฟรี ', ' skills · free slots ') + Math.max(0, skillCap - s.skills.length) + ' / ' + skillCap + L(' · เพิ่มจาก All skills ใช้ REP', ' · buy more from All skills with REP'),
+      skillsCapColor: '#8C88A6',
       weapons: rows('weapons', ['name', 'range', 'dmg', 'fx'], { range: [1, 5] }),
       addWeap: add('weapons', { name: '', range: '', dmg: '', fx: '' }, 2),
       weapFull: s.weapons.length >= 2,
@@ -1553,6 +1651,7 @@ class Component extends DCLogic {
         rmTrait: L('ลบ Trait', 'Remove Trait'),
         newSess: L('เริ่ม session ใหม่', 'New session'),
         advTip: L('เพิ่ม-ลดหน้าเต๋า', 'Raise or lower a die face'),
+        skillsSub: L('LV1 รับฟรีตามช่องของ Faction (Shifter / C.P.D. 2 · Norms 4) · นอกนั้นซื้อหรืออัปเลเวลด้วย REP Current · ต้องไล่จาก LV1 เสมอ', 'LV1 is free while Faction slots last (Shifter / C.P.D. 2 · Norms 4) · anything else costs REP Current · always start from LV1'),
         traitsSub: L('เลือก หรือ สุ่ม (2D8) Trait ของตัวละคร', 'Pick or roll (2D8) your character\'s Trait'),
         traitsRoll: L('🎲 สุ่ม 2D8', '🎲 Roll 2D8'),
         close: L('ปิด', 'Close'),
