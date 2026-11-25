@@ -61,6 +61,11 @@
     '.spd-btn.go{background:var(--acc);border-color:var(--acc);color:' + C.bg + '}' +
     '.spd-btn:disabled{opacity:.4;cursor:default}' +
     '.spd-feed{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:2147482000;display:flex;flex-direction:column-reverse;gap:8px;width:min(340px,calc(100vw - 32px));pointer-events:none;font-family:"IBM Plex Sans Thai",system-ui,sans-serif}' +
+    '.spd-feed.tr{left:auto;bottom:auto;right:max(16px,env(safe-area-inset-right,0px));top:calc(128px + env(safe-area-inset-top,0px));flex-direction:column}' +
+    '.spd-feed.tr .spd-pop{border-left:1px solid ' + C.line + ';border-top:3px solid var(--acc);transform-origin:top right;animation:spd-pop .38s cubic-bezier(.2,1.3,.4,1) both}' +
+    '.spd-feed.tr .spd-pop.out{animation:spd-pop-out .28s ease-in both}' +
+    '@keyframes spd-pop{0%{opacity:0;transform:translateY(-14px) scale(.82)}100%{opacity:1;transform:none}}' +
+    '@keyframes spd-pop-out{to{opacity:0;transform:translateY(-10px) scale(.92)}}' +
     '.spd-pop{pointer-events:auto;background:' + C.panel + ';border:1px solid ' + C.line + ';border-left:3px solid var(--acc);box-shadow:0 10px 30px rgba(0,0,0,.55);padding:8px 10px;animation:spd-in .25s ease-out both}' +
     '.spd-pop .spd-tray{min-height:0;padding:8px 4px;gap:8px 6px;border:0;background:transparent}' +
     '.spd-pop .spd-shape{width:40px;height:40px}.spd-pop .spd-num{font-size:15px}.spd-pop .spd-d4 .spd-num{padding-top:10px;font-size:13px}' +
@@ -390,12 +395,14 @@
 
   /* ---------- other people's rolls ---------- */
   var feedBox = null;
-  function show(p, th) {
+  /* opts.pos 'tr' = pop up at the top right (the character sheet, like the Scene picture); default bottom left */
+  function show(p, th, opts) {
     if (!p || !p.dice) return;
     injectCss();
     th = th !== false;
     if (!feedBox || !document.body.contains(feedBox)) { feedBox = el('div', { class: 'spd-feed', 'aria-live': 'polite' }); document.body.appendChild(feedBox); }
-    while (feedBox.children.length >= 4) feedBox.lastChild.remove();
+    feedBox.classList.toggle('tr', !!(opts && opts.pos === 'tr'));
+    while (feedBox.children.length >= 3) feedBox.lastChild.remove();
     var adj = p.ph === 'adj';
     var head = el('div', { class: 'spd-pop-h' }, [el('span', {}, [el('b', { text: p.who || '?' }), ' ' + (adj ? (th ? 'ใช้ Advance ' + p.adv + ' แต้ม' : 'used ' + p.adv + ' Advance') : (th ? 'ทอย ' : 'rolls ') + (p.lab || ''))]),
       el('span', { class: 'spd-pop-r', text: '…' })]);

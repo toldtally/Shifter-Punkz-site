@@ -742,7 +742,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=e62eb657"></script>
+<script src="../assets/dice.js?v=aa46c843"></script>
 <script>
 function initialSheet() {
   return {
@@ -938,7 +938,7 @@ class Component extends DCLogic {
   componentDidMount() {
     try {
       this._bc = new BroadcastChannel('sp-bgm');
-      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'state') this.onBgm(ev.data); if (ev.data && ev.data.type === 'scene') this.setState({ scene: ev.data.scene || null }); if (ev.data && ev.data.type === 'encounter') this.setState({ encounter: ev.data.encounter || null }); if (ev.data && ev.data.type === 'dice' && window.SPDice) window.SPDice.show(ev.data.roll, this.state.lang !== 'en'); };
+      this._bc.onmessage = (ev) => { if (ev.data && ev.data.type === 'state') this.onBgm(ev.data); if (ev.data && ev.data.type === 'scene') this.setState({ scene: ev.data.scene || null }); if (ev.data && ev.data.type === 'encounter') this.setState({ encounter: ev.data.encounter || null }); if (ev.data && ev.data.type === 'dice' && window.SPDice) window.SPDice.show(ev.data.roll, this.state.lang !== 'en', { pos: 'tr' }); };
       this._bc.postMessage({ type: 'hello' });
     } catch (e) { this._bc = null; }
   }
@@ -1689,6 +1689,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=d874caf9"></script>
+<script src="../assets/beta-character.js?v=a93f21cc"></script>
 </body>
 </html>

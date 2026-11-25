@@ -83,7 +83,7 @@
         // other people's rolls at this table tumble on this sheet too
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'session_events', filter: 'session_id=eq.' + sess.id }, (p) => {
           var ev = p.new;
-          if (ev && ev.kind === 'roll' && ev.actor_id !== this.state.profile.id && window.SPDice) window.SPDice.show(ev.payload, this.th());
+          if (ev && ev.kind === 'roll' && ev.actor_id !== this.state.profile.id && window.SPDice) window.SPDice.show(ev.payload, this.th(), { pos: 'tr' });
         });
       this._ch.subscribe();
       this._presence = sb.channel('presence-' + sess.id, { config: { presence: { key: this.state.profile.id } } });
