@@ -68,6 +68,7 @@
     subscribe(sess) {
       if (sess.bgm) this.onBgm(Object.assign({ type: 'state' }, sess.bgm));
       this._turnKey = sess.turn + ':' + sess.round;
+      this._turnWho = ((sess.turn_order || [])[sess.turn || 0] || {}).id || null;
       this._ch = sb.channel('sheet-' + sess.id)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions', filter: 'id=eq.' + sess.id }, (p) => {
           var row = p.new || {};
@@ -76,6 +77,13 @@
           // the GM moved the turn on: Surge Energy boosts end
           if ('turn' in row) {
             var tk = row.turn + ':' + row.round;
+            if (tk !== this._turnKey) {
+              // the GM moved on from this character's turn: Fever / Bleeding bite now (unless this sheet already ended it)
+              var ss = Object.assign({}, this.state.seat.sessions, row);
+              if (this._turnWho && this._turnWho === this.state.charId && !this._selfEnded) this.turnEndEffects();
+              this._selfEnded = false;
+              this._turnWho = ((ss.turn_order || [])[row.turn || 0] || {}).id || null;
+            }
             if (tk !== this._turnKey) { this._turnKey = tk; if (this.state.s.boost && this.state.s.boost.kind) { var was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); } }
           }
         })
@@ -106,7 +114,9 @@
     async turnEnd() {
       var seat = this.state.seat, id = this.state.charId;
       if (!seat || !id || seat.character_id !== id || !this.turnState(this.th()).mine) return;
+      this._selfEnded = true;
       var r = await sb.rpc('end_my_turn', { p_session: seat.session_id, p_character: id });
+      if (r.error) this._selfEnded = false;
       if (r.error) return this.setState({ msg: SP.err(r.error, this.th()) });
       this.setState({ seat: Object.assign({}, this.state.seat, { sessions: Object.assign({}, this.state.seat.sessions, r.data) }) });
     }
