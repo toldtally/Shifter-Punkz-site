@@ -596,27 +596,29 @@ html{scroll-behavior:smooth}
                   <div style="font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: {{pl.color}}; margin-bottom: 6px">{{pl.name}}</div>
                   <div style="font-size: 28px; font-weight: 700; font-family: 'Chakra Petch', sans-serif; color: #FFFFFF">{{pl.val}}</div>
                   <div style="display: flex; justify-content: center; gap: 8px; margin-top: 6px"><button type="button" class="step" aria-label="{{pl.name}} −" onClick="{{pl.dec}}">−</button><button type="button" class="step" aria-label="{{pl.name}} +" onClick="{{pl.inc}}">+</button></div>
+                  <!-- Surge Energy: spend points for a boost that lasts until the turn ends; points spent become EX -->
+                  <sc-if value="{{pl.isSe}}" hint-placeholder-val="{{ false }}">
+                    <div title="{{t.seNote}}" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #3A3655; display: flex; flex-direction: column; gap: 6px; text-align: left">
+                      <span style="font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #C084FC">{{t.seUse}}</span>
+                      <select class="fld" aria-label="{{t.seSkillPick}}" onChange="{{onSeSkill}}" disabled="{{seNoSkills}}" style="width: 100%; min-width: 0; padding: 4px 6px; font-size: 12px">
+                        <sc-for list="{{seSkillOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                      </select>
+                      <div style="display: flex; gap: 6px">
+                        <sc-if value="{{sePwrShow}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{seUsePwr}}" disabled="{{sePwrOff}}" title="{{t.sePwrTip}}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 6px; font-size: 11px; border-color: #C084FC; color: #C084FC">PWR+1</button></sc-if>
+                        <button type="button" class="btn sm" onClick="{{seUseSkill}}" disabled="{{seSkillOff}}" title="{{t.seSkillTip}}" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 6px; font-size: 11px; border-color: #C084FC; color: #C084FC">LV+1</button>
+                      </div>
+                      <sc-if value="{{boostOn}}" hint-placeholder-val="{{ false }}">
+                        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 6px; padding: 4px 6px; background: #1D1930">
+                          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C084FC; min-width: 0">{{boostTxt}}</span>
+                          <button type="button" class="btn sm" onClick="{{boostClear}}" style="min-height: 24px; padding: 0 8px; font-size: 10.5px">{{t.boostClear}}</button>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
                 </div>
               </sc-for>
             </div>
             <div class="row" style="margin-top: 10px; align-items: flex-end; flex-wrap: wrap; gap: 8px">
-              <!-- Surge Energy: spend points for a boost that lasts until the turn ends; points spent become EX -->
-              <div title="{{t.seNote}}" style="flex: 1 1 230px; min-width: 0; border: 1px solid #2A2740; border-left: 3px solid #C084FC; padding: 6px 8px; background: #0B0A12; display: flex; flex-direction: column; gap: 6px">
-                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
-                  <span style="font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: #C084FC; white-space: nowrap">{{t.seUse}}</span>
-                  <sc-if value="{{sePwrShow}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{seUsePwr}}" disabled="{{sePwrOff}}" title="{{t.sePwrTip}}" style="min-height: 30px; padding: 0 8px; font-size: 11px; border-color: #C084FC; color: #C084FC">PWR+1</button></sc-if>
-                  <select class="fld" aria-label="{{t.seSkillPick}}" onChange="{{onSeSkill}}" disabled="{{seNoSkills}}" style="flex: 1 1 80px; width: auto; min-width: 0; padding: 4px 6px; font-size: 12px">
-                    <sc-for list="{{seSkillOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
-                  </select>
-                  <button type="button" class="btn sm" onClick="{{seUseSkill}}" disabled="{{seSkillOff}}" title="{{t.seSkillTip}}" style="min-height: 30px; padding: 0 8px; font-size: 11px; border-color: #C084FC; color: #C084FC">LV+1</button>
-                </div>
-                <sc-if value="{{boostOn}}" hint-placeholder-val="{{ false }}">
-                  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px">
-                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #C084FC">{{boostTxt}}</span>
-                    <button type="button" class="btn sm" onClick="{{boostClear}}" style="min-height: 24px; padding: 0 8px; font-size: 10.5px">{{t.boostClear}}</button>
-                  </div>
-                </sc-if>
-              </div>
               <div class="field narrow" title="{{t.advTip}}"><label class="lbl" for="advPts">Advance pts</label><input id="advPts" class="fld" type="number" min="0" max="5" value="{{s.adv}}" onInput="{{on.adv}}"></div>
               <button type="button" class="btn sm ico-reset" onClick="{{newSession}}" title="{{t.newSessTipPool}}" aria-label="{{t.newSess}}"><span class="ico-reset-i" aria-hidden="true"></span></button>
             </div>
@@ -1537,8 +1539,8 @@ class Component extends DCLogic {
       turnColor: turn.mine ? '#FFD400' : '#8C88A6',
       boostClear: () => { const was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); },
       pools: [
-        { name: 'Surge Energy', color: '#C084FC', tip: L('เลือกเพิ่มค่า 1 อย่าง: เพิ่มเต๋า • เพิ่ม PWR+ • อัพสกิล จากนั้นแต้มที่ใช้จะถูกแปลงเป็น EX', 'Pick one upgrade: add a die • PWR+ up • skill up, then the points spent turn into EX'), val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
-        { name: 'Exhaustion', color: '#A9A5C2', tip: L('+DC • ใช้แต้มเปลี่ยนเต๋า D8 เป็น D4', '+DC • Spend a point to turn a D8 into a D4'), val: String(s.ex), inc: () => this.upd(this.exGain(1)), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
+        { name: 'Surge Energy', isSe: true, color: '#C084FC', tip: L('เลือกเพิ่มค่า 1 อย่าง: เพิ่มเต๋า • เพิ่ม PWR+ • อัพสกิล จากนั้นแต้มที่ใช้จะถูกแปลงเป็น EX', 'Pick one upgrade: add a die • PWR+ up • skill up, then the points spent turn into EX'), val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
+        { name: 'Exhaustion', isSe: false, color: '#A9A5C2', tip: L('+DC • ใช้แต้มเปลี่ยนเต๋า D8 เป็น D4', '+DC • Spend a point to turn a D8 into a D4'), val: String(s.ex), inc: () => this.upd(this.exGain(1)), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
       ],
       skills: rows('skills', ['name', 'lv', 'fx'], { lv: [0, 10] }).map((r, i) => Object.assign(r, { lv: r.lv == null ? '1' : r.lv, boost: boost.kind === 'skill' && boost.sk === i ? '+' + boost.n + ' SE' : '' })),
       addSkill: add('skills', { name: '', lv: '1', fx: '' }, skillCap),
