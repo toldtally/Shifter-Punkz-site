@@ -127,7 +127,8 @@
     return best;
   }
   function pair8(dice) { return dice.filter(function (d) { return d.s === 8 && d.v === 8; }).length >= 2; }
-  function pair1(dice) { return dice.filter(function (d) { return d.v === 1; }).length >= 2; }
+  /* pair of [1] counts only when no die shows anything higher (every die is a 1) */
+  function pair1(dice) { return dice.length >= 2 && dice.every(function (d) { return d.v === 1; }); }
   function why(dice, sc, th) {
     if (!dice.length) return '';
     if (sc.n1 && !sc.cut) return th ? 'ออก [1] ทุกลูก → 1' : 'All [1]s → 1';
