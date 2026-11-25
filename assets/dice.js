@@ -115,14 +115,23 @@
     var val = {}; rest.forEach(function (i) { val[i] = dice[i].v; });
     var cut = null;
     if (ones.length) { val[top] = Math.max(1, dice[top].v - ones.length); cut = { i: top, from: dice[top].v, to: val[top] }; }
-    var by = {};
-    rest.forEach(function (i) { (by[val[i]] = by[val[i]] || []).push(i); });
-    var best = { r: 0, from: [], k: 0, v: 0 };
-    Object.keys(by).forEach(function (v) {
-      var idx = by[v], cap = Math.max.apply(null, idx.map(function (i) { return dice[i].s; }));
-      var r = Math.min(+v + idx.length - 1, cap);
-      if (r > best.r || (r === best.r && idx.length > best.k)) best = { r: r, from: idx, k: idx.length, v: +v };
-    });
+    // matching dice merge into one die worth +1 per extra die (capped at the top face); a merged die that
+    // then matches another die merges again, e.g. 5,5,6 → 6,6 → 7
+    var ents = rest.map(function (i) { return { v: val[i], cap: dice[i].s, idx: [i] }; });
+    var steps = [];
+    for (;;) {
+      var by = {};
+      ents.forEach(function (e) { (by[e.v] = by[e.v] || []).push(e); });
+      var dup = Object.keys(by).map(Number).filter(function (v) { return by[v].length > 1; }).sort(function (a, b) { return a - b; })[0];
+      if (dup === undefined) break;
+      var grp = by[dup], cap = Math.max.apply(null, grp.map(function (e) { return e.cap; }));
+      var m = { v: Math.min(dup + grp.length - 1, cap), cap: cap, idx: [].concat.apply([], grp.map(function (e) { return e.idx; })) };
+      steps.push({ v: dup, k: grp.length, r: m.v, capped: m.v < dup + grp.length - 1 });
+      ents = ents.filter(function (e) { return grp.indexOf(e) === -1; }).concat([m]);
+    }
+    var top2 = ents.reduce(function (a, e) { return !a || e.v > a.v || (e.v === a.v && e.idx.length > a.idx.length) ? e : a; }, null);
+    var used = steps.filter(function (st) { return top2.idx.length > 1; });
+    var best = { r: top2.v, from: top2.idx, k: top2.idx.length, v: top2.idx.length > 1 && used.length ? used[0].v : top2.v, steps: top2.idx.length > 1 ? steps : [] };
     best.n1 = ones.length; best.cut = cut;
     return best;
   }
@@ -133,7 +142,7 @@
     if (!dice.length) return '';
     if (sc.n1 && !sc.cut) return th ? 'ออก [1] ทุกลูก → 1' : 'All [1]s → 1';
     var pre = sc.cut ? (th ? '[1] ×' + sc.n1 + ': ' : '[1] ×' + sc.n1 + ': ') + sc.cut.from + '→' + sc.cut.to + ' · ' : '';
-    if (sc.k > 1) return pre + (th ? 'เลข ' : 'Matching ') + sc.v + ' ×' + sc.k + ' → ' + sc.r + (sc.r < sc.v + sc.k - 1 ? (th ? ' (เต็มหน้าเต๋าแล้ว)' : ' (top face)') : '');
+    if (sc.steps && sc.steps.length) return pre + (th ? 'เลขซ้ำ ' : 'Matching ') + sc.steps.map(function (x) { return x.v + '×' + x.k + '→' + x.r + (x.capped ? (th ? ' (เต็มหน้า)' : ' (top)') : ''); }).join(' · ');
     return pre + (th ? 'ลูกสูงสุด ' : 'Highest die ') + sc.r;
   }
   function poolText(dice) {
