@@ -61,6 +61,8 @@
     '.spd-btn.go{background:var(--acc);border-color:var(--acc);color:' + C.bg + '}' +
     '.spd-btn:disabled{opacity:.4;cursor:default}' +
     '.spd-feed{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:2147482000;display:flex;flex-direction:column-reverse;gap:8px;width:min(340px,calc(100vw - 32px));pointer-events:none;font-family:"IBM Plex Sans Thai",system-ui,sans-serif}' +
+    '.spd-pop.spd-on{position:absolute;box-sizing:border-box;z-index:2147482000;pointer-events:auto;box-shadow:0 14px 40px rgba(0,0,0,.65);border-top:3px solid var(--acc);border-left:1px solid ' + C.line + ';transform-origin:center top;animation:spd-pop .38s cubic-bezier(.2,1.3,.4,1) both}' +
+    '.spd-pop.spd-on.out{animation:spd-pop-out .28s ease-in both}' +
     '.spd-feed.tr{left:auto;bottom:auto;right:max(16px,env(safe-area-inset-right,0px));top:calc(128px + env(safe-area-inset-top,0px));flex-direction:column}' +
     '.spd-feed.tr .spd-pop{border-left:1px solid ' + C.line + ';border-top:3px solid var(--acc);transform-origin:top right;animation:spd-pop .38s cubic-bezier(.2,1.3,.4,1) both}' +
     '.spd-feed.tr .spd-pop.out{animation:spd-pop-out .28s ease-in both}' +
@@ -401,15 +403,28 @@
     injectCss();
     th = th !== false;
     if (!feedBox || !document.body.contains(feedBox)) { feedBox = el('div', { class: 'spd-feed', 'aria-live': 'polite' }); document.body.appendChild(feedBox); }
-    feedBox.classList.toggle('tr', !!(opts && opts.pos === 'tr'));
-    while (feedBox.children.length >= 3) feedBox.lastChild.remove();
+    var anchor = opts && opts.anchor && opts.anchor.getBoundingClientRect ? opts.anchor : null;
+    if (!anchor) {
+      feedBox.classList.toggle('tr', !!(opts && opts.pos === 'tr'));
+      while (feedBox.children.length >= 3) feedBox.lastChild.remove();
+    }
     var adj = p.ph === 'adj';
     var head = el('div', { class: 'spd-pop-h' }, [el('span', {}, [el('b', { text: p.who || '?' }), ' ' + (adj ? (th ? 'ใช้ Advance ' + p.adv + ' แต้ม' : 'used ' + p.adv + ' Advance') : (th ? 'ทอย ' : 'rolls ') + (p.lab || ''))]),
       el('span', { class: 'spd-pop-r', text: '…' })]);
     var tr = el('div', { class: 'spd-tray' });
     var foot = el('div', { class: 'spd-sub' });
     var pop = el('div', { class: 'spd-pop', role: 'status', style: '--acc:' + (p.col || C.cyan) }, [head, tr, foot]);
-    feedBox.insertBefore(pop, feedBox.firstChild);
+    if (anchor) {
+      // sits on top of the roller's card (GM Monitor); a newer roll on the same card replaces it
+      if (anchor._spdPop) anchor._spdPop.remove();
+      anchor._spdPop = pop;
+      var rc = anchor.getBoundingClientRect(), w = Math.min(340, rc.width - 16);
+      pop.classList.add('spd-on');
+      pop.style.width = w + 'px';
+      pop.style.left = (rc.left + window.scrollX + (rc.width - w) / 2) + 'px';
+      pop.style.top = (rc.top + window.scrollY + 64) + 'px';
+      document.body.appendChild(pop);
+    } else feedBox.insertBefore(pop, feedBox.firstChild);
     var dice = p.dice.map(function (d) { return { s: d.s === 4 ? 4 : 8, v: Math.max(1, Math.min(d.s === 4 ? 4 : 8, d.v | 0)), c: d.c, m: d.m }; });
     drawDice(tr, dice, { rolling: !adj }).then(function () {
       var sc = score(dice);

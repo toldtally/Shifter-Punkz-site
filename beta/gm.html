@@ -292,7 +292,7 @@ html{scroll-behavior:smooth}
           <!-- Party cards -->
           <div style="flex: 999 1 640px; min-width: 0; align-self: flex-start; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 16px">
             <sc-for list="{{party}}" as="p" hint-placeholder-count="3">
-              <article class="{{p.flash}}" style="display: flex; flex-direction: column; gap: 12px; padding: 18px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{p.color}}">
+              <article id="{{p.cardId}}" class="{{p.flash}}" style="display: flex; flex-direction: column; gap: 12px; padding: 18px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{p.color}}">
                 <div style="display: flex; gap: 12px; align-items: center">
                   <div style="position: relative; width: 52px; height: 52px; flex-shrink: 0; background: #0B0A12; border: 1px solid {{p.color}}; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: {{p.color}}" aria-hidden="true"><sc-if value="{{p.hasPortrait}}" hint-placeholder-val="{{ false }}"><img src="{{p.portrait}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{p.noPortrait}}" hint-placeholder-val="{{ true }}">{{p.initial}}</sc-if><span style="position: absolute; right: -4px; bottom: -4px; width: 12px; height: 12px; border: 2px solid #151225; background: {{p.onlineColor}}"></span></div>
                   <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
@@ -646,7 +646,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=aa46c843"></script>
+<script src="../assets/dice.js?v=817beffc"></script>
 <script>
 /* demo scene pictures for the prototype (the live site uses the GM's uploads or links) */
 function sceneArt(sky, glow, label) {
@@ -729,7 +729,14 @@ class Component extends DCLogic {
     if (!window.SPDice || !roll) return;
     this.setState({ feed: [{ at: Date.now(), id: '_dice', who: roll.who || '?', col: roll.col || '#FFD400', th: window.SPDice.line(roll, true), en: window.SPDice.line(roll, false) }].concat(this.state.feed).slice(0, 100) });
   }
-  diceIn(roll) { if (window.SPDice) window.SPDice.show(roll, this.state.lang !== 'en'); this.diceFeed(roll); }
+  /* a player's roll tumbles on top of that player's card; the GM's own go bottom left */
+  diceIn(roll, charId) {
+    if (window.SPDice) {
+      const id = charId || Object.keys(this.state.chars).find((k) => this.state.chars[k].name === roll.who);
+      window.SPDice.show(roll, this.state.lang !== 'en', { anchor: id ? document.getElementById('pc-' + id) : null });
+    }
+    this.diceFeed(roll);
+  }
   gmRoll() {
     if (!window.SPDice) return;
     const th = this.state.lang !== 'en';
@@ -1242,6 +1249,7 @@ class Component extends DCLogic {
         };
       }),
       party: list.map((c) => ({
+        cardId: 'pc-' + c.id,
         name: c.name, factor: FN[c.f], color: C[c.f], initial: c.name.charAt(0), portrait: c.portrait || '', hasPortrait: !!c.portrait, noPortrait: !c.portrait,
         sub: L('ผู้เล่น: ', 'Player: ') + c.player + ' · ' + c.sub,
         onlineColor: c.online ? '#4ADE80' : '#3A3655',
@@ -1360,6 +1368,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=92fb5257"></script>
+<script src="../assets/beta-gm.js?v=b11cd60f"></script>
 </body>
 </html>

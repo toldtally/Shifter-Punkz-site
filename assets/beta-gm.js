@@ -227,7 +227,7 @@
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'session_events', filter: 'session_id=eq.' + sid }, (p) => {
           this.apply({ events: [p.new].concat(this.state.events).slice(0, 100) });
           // someone else's roll tumbles on screen too
-          if (p.new && p.new.kind === 'roll' && p.new.actor_id !== this.state.profile.id && window.SPDice) window.SPDice.show(p.new.payload, this.state.lang !== 'en');
+          if (p.new && p.new.kind === 'roll' && p.new.actor_id !== this.state.profile.id && window.SPDice) window.SPDice.show(p.new.payload, this.state.lang !== 'en', { anchor: p.new.character_id ? document.getElementById('pc-' + p.new.character_id) : null });
         })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'characters' }, (p) => {
           var row = p.new; if (!row || !this.state.chars[row.id]) return;
