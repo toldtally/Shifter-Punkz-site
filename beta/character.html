@@ -690,7 +690,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=5d5cbef6"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=8cf87acb"></script>
+<script src="../assets/dice.js?v=41b4c209"></script>
 <script>
 function initialSheet() {
   return {
@@ -880,17 +880,16 @@ class Component extends DCLogic {
         let patch = {};
         if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
         if (sp.se) patch.se = Math.min(3, cur.se + sp.se);
-        // pair of [1]: +1 EX and +1 Advance pts
-        if (sp.p1) {
-          patch = Object.assign(patch, this.exGain(sp.p1, Object.assign({}, cur, patch)));
-          patch.adv = String((parseInt(cur.adv, 10) || 0) + sp.p1);
-        }
         if (Object.keys(patch).length) { const was = this.state.dirty; this.upd(patch); this.rollSaved(patch, was); }
         this.dicePost(p);
       },
       onDone: (p, sp) => {
-        if (sp.adv) { const was = this.state.dirty, patch = { adv: String(Math.max(0, (parseInt(this.state.s.adv, 10) || 0) - sp.adv)) }; this.upd(patch); this.rollSaved(patch, was); }
-        this.dicePost(p);
+        // Advance pts spent; a pair of [1] still showing when the roll is done gives +1 EX and +1 Advance pts
+        const cur = this.state.s, was = this.state.dirty;
+        let patch = { adv: String(Math.max(0, (parseInt(cur.adv, 10) || 0) - (sp.adv || 0) + (sp.p1 || 0))) };
+        if (sp.p1) patch = Object.assign(patch, this.exGain(sp.p1, cur));
+        this.upd(patch); this.rollSaved(patch, was);
+        if (sp.adv) this.dicePost(p);
       }
     });
   }

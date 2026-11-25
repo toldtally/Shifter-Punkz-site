@@ -200,7 +200,7 @@
     back.appendChild(card);
     var close = function () {
       if (st.rolling) return;
-      if (st.dice && st.used && o.onDone) o.onDone(payload('adj'), { adv: st.used });
+      finish();
       document.removeEventListener('keydown', onKey, true);
       back.remove();
       if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch (e) {}
@@ -227,7 +227,7 @@
     var payload = function (ph) {
       var dice = st.dice || [], sc = score(dice);
       return { ph: ph, who: o.who || '', col: acc, lab: o.label || '', dice: dice.map(function (d) { var x = { s: d.s, v: d.v }; if (d.c) x.c = 1; if (d.m) x.m = d.m; return x; }),
-        r: sc.r, k: sc.k, p8: pair8(st.base || dice), p1: pair1(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '',
+        r: sc.r, k: sc.k, p8: pair8(st.base || dice), p1: ph === 'adj' ? pair1(dice) : pair1(st.base || dice), p1was: pair1(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '',
         id: st.rid || null, rid: ph === 'adj' ? st.rid || null : null, srv: !!st.rid || !!st.srv, mv: dice.map(function (d) { return d.m || 0; }) };
     };
 
@@ -294,7 +294,7 @@
       });
       var res = el('div', { class: 'spd-res', 'aria-live': 'polite' }); b.appendChild(res);
       var f2 = el('div', { class: 'spd-f' }); card.appendChild(f2);
-      var again = el('button', { type: 'button', class: 'spd-btn', onclick: function () { if (st.used && o.onDone) o.onDone(payload('adj'), { adv: st.used }); o.adv = (o.adv || 0) - st.used; o.ex = (o.ex || 0) - (st.exUsed || 0); st.dice = null; st.used = 0; st.rid = null; st.ex = Math.min(st.ex, o.ex || 0); render(); } }, [L('ทอยใหม่', 'New roll')]);
+      var again = el('button', { type: 'button', class: 'spd-btn', onclick: function () { finish(); o.adv = (o.adv || 0) - st.used; o.ex = (o.ex || 0) - (st.exUsed || 0); st.dice = null; st.used = 0; st.rid = null; st.ex = Math.min(st.ex, o.ex || 0); render(); } }, [L('ทอยใหม่', 'New roll')]);
       var done = el('button', { type: 'button', class: 'spd-btn go', onclick: close }, [L('เสร็จ', 'Done')]);
       f2.appendChild(again); f2.appendChild(done);
       var fill = function () {
@@ -303,7 +303,8 @@
         res.appendChild(el('div', {}, [el('div', { class: 'spd-sub', text: L('ผลทอย', 'RESULT') }), el('div', { class: 'spd-big', text: String(sc.r) })]));
         var side = el('div', { style: 'display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right' }, [el('div', { class: 'spd-why', text: why(st.dice, sc, th) })]);
         if (pair8(st.base)) side.appendChild(el('div', { class: 'spd-se', text: L('คู่ [8]! +1 Surge Energy', 'Pair of [8]! +1 Surge Energy') }));
-        if (pair1(st.base) && !o.free) side.appendChild(el('div', { class: 'spd-se', style: 'color:#FF3D6E', text: L('คู่ [1]! +1 EX · +1 Advance pts', 'Pair of [1]! +1 EX · +1 Advance pts') }));
+        if (!o.free && pair1(st.dice)) side.appendChild(el('div', { class: 'spd-se', style: 'color:#FF3D6E', text: L('คู่ [1]! +1 EX · +1 Advance pts (ได้เมื่อกดเสร็จ)', 'Pair of [1]! +1 EX · +1 Advance pts (on Done)') }));
+        else if (!o.free && pair1(st.base)) side.appendChild(el('div', { class: 'spd-note', text: L('ปรับหน้าเต๋าแล้ว คู่ [1] จึงไม่นับ', 'Faces moved, so the pair of [1] no longer counts') }));
         if (!o.free && (o.adv || 0) > 0) side.appendChild(el('div', { class: 'spd-note', text: L('▲▼ ใช้ Advance pts ปรับหน้าเต๋า (เหลือ ' + advLeft + ')', '▲▼ spend Advance pts to move faces (' + advLeft + ' left)') }));
         if (st.secret) side.appendChild(el('div', { class: 'spd-note', text: L('ทอยลับ ผู้เล่นไม่เห็น', 'Secret roll: players don\'t see it') }));
         res.appendChild(side);
@@ -312,6 +313,13 @@
       else fill();
     };
 
+    /* a roll is finished on Done / New roll / closing: Advance pts spent, and a pair of [1] still standing pays out */
+    function finish() {
+      if (!st.dice || st.finished) return;
+      st.finished = true;
+      var p1 = !o.free && pair1(st.dice) ? 1 : 0;
+      if ((st.used || p1) && o.onDone) o.onDone(payload('adj'), { adv: st.used, p1: p1 });
+    }
     function stepper(v, min, max, set) {
       return el('span', { class: 'spd-step' }, [
         el('button', { type: 'button', 'aria-label': '−', disabled: v <= min, onclick: function () { set(Math.max(min, v - 1)); } }, ['−']),
@@ -348,11 +356,10 @@
     }
     function landed(dice, rid, srv) {
       st.dice = dice; st.base = dice.map(function (d) { return { s: d.s, v: d.v, c: d.c }; });
-      st.rid = rid; st.srv = srv;
+      st.rid = rid; st.srv = srv; st.finished = false;
       st.rolling = true;
       var pl = payload('roll');
-      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, p1: pl.p1 && !o.free ? 1 : 0, secret: st.secret });
-      if (pl.p1 && !o.free) o.adv = (o.adv || 0) + 1; // the Advance pt from a pair of [1] can be spent on this roll
+      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, secret: st.secret });
       render();
     }
     render();
@@ -380,7 +387,7 @@
     drawDice(tr, dice, { rolling: !adj }).then(function () {
       var sc = score(dice);
       head.lastChild.textContent = String(sc.r);
-      foot.textContent = why(dice, sc, th) + (p.p8 && !adj ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.p1 && !adj && p.lab ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : '') + (p.cos ? ' · ' + p.cos : '');
+      foot.textContent = why(dice, sc, th) + (p.p8 && !adj ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.lab && p.p1 ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : p.lab && adj && p.p1was ? (th ? ' · คู่ [1] ไม่นับแล้ว' : ' · pair of [1] lost') : '') + (p.cos ? ' · ' + p.cos : '');
     });
     var t; var go = function () { pop.classList.add('out'); setTimeout(function () { pop.remove(); }, 320); };
     var arm = function () { clearTimeout(t); t = setTimeout(go, 9000); };
@@ -393,10 +400,10 @@
   /* one line for a feed: "Force 3D8 → 7" */
   function line(p, th) {
     if (!p || !p.dice) return '';
-    if (p.ph === 'adj') return (th ? 'ใช้ Advance ' + p.adv + ' แต้ม → ผล ' : 'used ' + p.adv + ' Advance → ') + p.r;
+    if (p.ph === 'adj') return (th ? 'ใช้ Advance ' + p.adv + ' แต้ม → ผล ' : 'used ' + p.adv + ' Advance → ') + p.r + (p.p1was && !p.p1 ? (th ? ' · คู่ [1] ไม่นับแล้ว' : ' · pair of [1] lost') : '');
     var dice = p.dice.map(function (d) { return { s: d.s, v: d.v, c: d.c }; });
     var faces = p.dice.map(function (d) { return (d.s === 4 ? 'd4:' : '') + d.v; }).join(',');
-    return (th ? 'ทอย ' : 'rolled ') + (p.lab ? p.lab + ' ' : '') + poolText(dice) + ' [' + faces + '] → ' + p.r + (p.p8 ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.p1 && p.lab ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : '');
+    return (th ? 'ทอย ' : 'rolled ') + (p.lab ? p.lab + ' ' : '') + poolText(dice) + ' [' + faces + '] → ' + p.r + (p.p8 ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.p1 && p.lab ? (th ? ' · คู่ [1]' : ' · pair of [1]') : '');
   }
 
   window.SPDice = { tray: tray, show: show, score: score, line: line, pair8: pair8, pair1: pair1 };
