@@ -578,7 +578,7 @@ html{scroll-behavior:smooth}
           <div class="ph"><h2 style="color: #2EE6F0">Whelm</h2></div>
           <div class="pb">
             <div class="row">
-              <div class="field narrow"><label class="lbl" for="spCur">Current</label><input id="spCur" class="fld" type="number" min="0" max="10" value="{{s.spCur}}" onInput="{{on.spCur}}" disabled="{{noWm}}"></div>
+              <div class="field narrow"><label class="lbl" for="spCur">Current</label><input id="spCur" class="fld" type="number" min="0" max="{{s.spMax}}" value="{{s.spCur}}" onInput="{{on.spCur}}" disabled="{{noWm}}"></div>
               <div class="field narrow"><label class="lbl" for="spMax">Max WM</label><input id="spMax" class="fld" type="number" min="1" max="10" value="{{s.spMax}}" onInput="{{on.spMax}}" disabled="{{noWm}}"></div>
               <div class="field narrow"><label class="lbl" for="spPwr">PWR+ <span style="color: #C084FC">{{pwrBoost}}</span></label><input id="spPwr" class="fld" type="number" min="0" max="2" value="{{s.spPwr}}" onInput="{{on.spPwr}}" disabled="{{noWm}}"></div>
               <div class="field narrow"><label class="lbl" for="spRgn">RGN+</label><input id="spRgn" class="fld" type="number" min="0" max="2" value="{{s.spRgn}}" onInput="{{on.spRgn}}" disabled="{{noWm}}"></div>
@@ -1230,7 +1230,13 @@ class Component extends DCLogic {
       },
       hpCur: set('hpCur', (v) => (v === '' || this.state.s.hpMax === '' ? v : clampStr(v, 0, num(this.state.s.hpMax)))),
       spPwr: set('spPwr', (v) => clampStr(v, 0, 2)), spRgn: set('spRgn', (v) => clampStr(v, 0, 2)),
-      spMax: set('spMax'), spCur: set('spCur'),
+      // same for WM: current never goes above MAX WM
+      spMax: (e) => {
+        const v = e && e.target ? e.target.value : '', patch = { spMax: v };
+        if (v !== '' && this.state.s.spCur !== '' && num(this.state.s.spCur) > num(v)) patch.spCur = String(Math.max(0, num(v)));
+        this.upd(patch);
+      },
+      spCur: set('spCur', (v) => (v === '' || this.state.s.spMax === '' ? v : clampStr(v, 0, num(this.state.s.spMax)))),
       adv: set('adv', (v) => clampStr(v, 0, 5)),
       faintDc: set('faintDc', (v) => clampStr(v, 1, 8)),
       coma: () => this.upd({ coma: !this.state.s.coma, comaAt: !this.state.s.coma ? this.sessionMark() : null }),
