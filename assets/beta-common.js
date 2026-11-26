@@ -30,7 +30,9 @@
   SP.baOf = function (sheet, factor, k) {
     var s = sheet || {}, ba = s.ba || {};
     // free points + points bought with REP (baRep) + a C.P.D. Division's +1, never past 3
-    return Math.min(3, SP.baVal(ba[k]) + SP.num((s.baRep || {})[k]) + (factor === 'cpd' && SP.DIVISIONS[s.traitName] === k ? 1 : 0));
+    var v = Math.min(3, SP.baVal(ba[k]) + SP.num((s.baRep || {})[k]) + (factor === 'cpd' && SP.DIVISIONS[s.traitName] === k ? 1 : 0));
+    // Cosmic Infected: −1, never below 1
+    return s.inj && s.inj['Cosmic Infected'] ? Math.max(1, v - 1) : v;
   };
 
   SP.timeAgo = function (iso, th) {

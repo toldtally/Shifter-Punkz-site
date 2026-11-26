@@ -5,7 +5,7 @@
  *   SPDice.show(payload, th)      // someone else's roll: a card that tumbles, then shows the result
  *   SPDice.score(dice)            // { r, from, k } — highest die; each matching die adds +1, capped at that die's top face
  *
- * A roll is D8s (D4s once Exhaustion turns them), plus Cosmic Dice. The result is the highest die;
+ * A roll is D8s (D4s once Exhaustion turns them), plus Cosmic Dice (with cosReplace — Cosmic Infected — they take D8 slots instead). The result is the highest die;
  * when several dice show the same number that number goes up by 1 per extra die, never past the die's top face.
  * A natural pair of [8] gives +1 Surge Energy. After the roll, Advance pts move faces up or down by 1 each.
  */
@@ -236,14 +236,15 @@
       return Math.max(0, (o.base || 0) + st.extra) + st.se;
     };
     var cosN = function () { return !o.free && !o.enervated && st.cos >= 0 ? (o.cosmic[st.cos].n || 0) : 0; };
-    var exMax = function () { return Math.min(o.ex || 0, count8()); };
+    var cosSwap = function () { return o.cosReplace ? Math.min(cosN(), count8()) : 0; };
+    var exMax = function () { return Math.min(o.ex || 0, count8() - cosSwap()); };
     var build = function () {
       if (o.fixed) return o.fixed.map(function (z) { return { s: z === 4 ? 4 : 8 }; });
-      var n8 = count8(), dice = [];
+      var sw = cosSwap(), n8 = count8() - sw, dice = [];
       var ex = Math.min(st.ex, exMax());
       for (var i = 0; i < n8; i++) dice.push({ s: i < ex ? 4 : 8 });
       for (var j = 0; j < (o.free ? st.d4 : 0); j++) dice.push({ s: 4 });
-      for (var k = 0; k < cosN(); k++) dice.push({ s: 4, c: 1 });
+      for (var k = 0; k < (o.cosReplace ? sw : cosN()); k++) dice.push({ s: 4, c: 1 });
       return dice;
     };
     var payload = function (ph) {
@@ -288,8 +289,9 @@
               var row = el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'Cosmic' })]);
               (o.cosmic || []).forEach(function (c, i) {
                 if (!(c.n > 0)) return;
-                row.appendChild(el('button', { type: 'button', class: 'spd-chip', 'aria-pressed': st.cos === i ? 'true' : 'false', onclick: function () { st.cos = st.cos === i ? -1 : i; render(); } }, [(c.name || 'Cosmic') + ' +' + c.n + 'D4']));
+                row.appendChild(el('button', { type: 'button', class: 'spd-chip', 'aria-pressed': st.cos === i ? 'true' : 'false', onclick: function () { st.cos = st.cos === i ? -1 : i; render(); } }, [(c.name || 'Cosmic') + (o.cosReplace ? ' · ' + L('แทน D8 ×', 'replaces D8 ×') + c.n : ' +' + c.n + 'D4')]));
               });
+              if (o.cosReplace) row.appendChild(el('span', { class: 'spd-note', text: L('Cosmic Infected: Cosmic Dice แทนที่ D8', 'Cosmic Infected: Cosmic Dice replace D8s') }));
               b.appendChild(row);
             }
           }
@@ -372,7 +374,7 @@
     function roll() {
       if (st.waiting) return;
       var dice = build();
-      st.exUsed = dice.filter(function (d) { return d.s === 4 && !o.free; }).length;
+      st.exUsed = dice.filter(function (d) { return d.s === 4 && !d.c && !o.free; }).length;
       st.cosName = cosN() ? o.cosmic[st.cos].name : '';
       if (!o.source) { dice.forEach(function (d) { d.v = rnd(d.s); }); return landed(dice, null, false); }
       st.waiting = true; st.err = ''; render();

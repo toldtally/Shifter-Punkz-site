@@ -647,6 +647,9 @@ html{scroll-behavior:smooth}
                   <span style="min-width: 16px; text-align: center; font-weight: 700; font-family: 'Chakra Petch', sans-serif; font-size: 16px; color: #2EE6F0">{{ab.val}}</span>
                   <button type="button" class="step" aria-label="{{ab.name}} +" title="{{ab.incTip}}" onClick="{{ab.inc}}" disabled="{{ab.incOff}}" style="width: 26px; height: 26px">+</button>
                 </span>
+                <sc-if value="{{ab.inf}}" hint-placeholder-val="{{ false }}">
+                  <span title="{{ab.infTip}}" style="padding: 1px 6px; border: 1px solid #C084FC; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .05em; color: #C084FC; white-space: nowrap">−1 INF</span>
+                </sc-if>
                 <sc-if value="{{ab.div}}" hint-placeholder-val="{{ false }}">
                   <span title="{{ab.divTip}}" style="padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .05em; color: #FFD400; white-space: nowrap">+1 DIV</span>
                 </sc-if>
@@ -821,9 +824,9 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
 <script src="../assets/sp.js?v=a60a9d0f"></script>
-<script src="../assets/beta-common.js?v=f5a747cd"></script>
+<script src="../assets/beta-common.js?v=1f9d034b"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
-<script src="../assets/dice.js?v=9ecd8612"></script>
+<script src="../assets/dice.js?v=30bef5a8"></script>
 <script>
 function initialSheet() {
   return {
@@ -1121,6 +1124,7 @@ class Component extends DCLogic {
       enervated: !!(s.inj && s.inj.Enervated),
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
       ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
+      cosReplace: !!(s.inj && s.inj['Cosmic Infected']),
       se: s.se || 0, seLock: !!(s.boost && s.boost.kind && s.boost.kind !== 'dice'),
       onRoll: (p, sp) => {
         const cur = this.state.s;
@@ -1343,7 +1347,10 @@ class Component extends DCLogic {
     const used = s.ba.force + s.ba.tactical + s.ba.trick + s.ba.sense;
     const baRep = Object.assign({ force: 0, tactical: 0, trick: 0, sense: 0 }, s.baRep || {});
     const baDiv = (k) => (cpd && DIVISIONS[s.traitName] === k ? 1 : 0);
-    const baValue = (k) => Math.min(3, 1 + s.ba[k] + (num(baRep[k]) || 0) + baDiv(k));
+    // Cosmic Infected: every Basic Ability −1 (never below 1)
+    const infected = !!(s.inj && s.inj['Cosmic Infected']);
+    const baBase = (k) => Math.min(3, 1 + s.ba[k] + (num(baRep[k]) || 0) + baDiv(k));
+    const baValue = (k) => (infected ? Math.max(1, baBase(k) - 1) : baBase(k));
     const restat = s.restat || null, locked = this.statLocked();
     const setBa = (k, d) => {
       const cur = this.state.s, br = Object.assign({ force: 0, tactical: 0, trick: 0, sense: 0 }, cur.baRep || {});
@@ -1376,7 +1383,7 @@ class Component extends DCLogic {
         { n: 'Fainted', tip: L('เมื่อเริ่มเทิร์น ทอยค่า Sense ให้มากกว่า Fainted DC เพื่อฟื้น', 'At the start of your turn, roll Sense over the Fainted DC to come to'), dc: true },
         { n: 'Hallucinated', tip: L('เห็นภาพหลอน เห็นศัตรูเป็นมิตร และมิตรเป็นศัตรู • DC+2', 'Hallucinations: foes look like friends and friends like foes • DC+2') }] },
       { group: 'Cosmic Overwhelm', items: [
-        { n: 'Cosmic Infected', tip: '' }, { n: 'Cosmic Stigma', tip: '' }, { n: 'Cosmic Outburst', tip: '' }] }
+        { n: 'Cosmic Infected', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • ลด Basic Ability ทุกอันลง 1', 'Cosmic Dice replace D8s, like EX • every Basic Ability −1') }, { n: 'Cosmic Stigma', tip: '' }, { n: 'Cosmic Outburst', tip: '' }] }
     ];
 
     const tbl = this.state.tbl;
@@ -1710,8 +1717,9 @@ class Component extends DCLogic {
         { k: 'sense', name: 'Sense', tip: L('สัญชาตญาณ, ความรู้สึก, สติสัมปชัญญะ', 'Instinct, feeling, awareness') }
       ].map((a) => Object.assign({}, a, {
         val: String(baValue(a.k)),
+        inf: infected && baBase(a.k) > 1, infTip: L('Cosmic Infected: −1', 'Cosmic Infected: −1'),
         decOff: (locked && restat !== 'ba') || (s.ba[a.k] <= 0 && !(num(baRep[a.k]) > 0)),
-        incOff: baValue(a.k) >= 3 || (pool - used <= 0 || s.ba[a.k] >= 2 - baDiv(a.k) ? num(s.repCur) < 5 : false),
+        incOff: baBase(a.k) >= 3 || (pool - used <= 0 || s.ba[a.k] >= 2 - baDiv(a.k) ? num(s.repCur) < 5 : false),
         incTip: pool - used > 0 && s.ba[a.k] < 2 - baDiv(a.k) ? '' : L('ใช้ 5 REP', 'Costs 5 REP'),
         div: cpd && DIVISIONS[s.traitName] === a.k, divTip: L('+1 จาก ' + s.traitName, '+1 from ' + s.traitName),
         inc: () => setBa(a.k, 1), dec: () => setBa(a.k, -1),
