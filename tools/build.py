@@ -83,6 +83,7 @@ BOOKS = '''<!-- Books: a code printed in any book unlocks the GM role -->
           <sc-if value="{{bk.hasPacks}}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-direction: column; gap: 10px">
               <sc-for list="{{bk.packs}}" as="pk" hint-placeholder-count="1">
+                <sc-if value="{{pk.showBook}}" hint-placeholder-val="{{ true }}"><p style="margin: 6px 0 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">CAMPAIGN // {{pk.bookTitle}}</p></sc-if>
                 <div style="padding: 12px 14px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid #2EE6F0; display: flex; flex-direction: column; gap: 10px">
                   <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px">
                     <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF">{{pk.title}}</span>
@@ -110,7 +111,7 @@ BOOKS = '''<!-- Books: a code printed in any book unlocks the GM role -->
           <form onSubmit="{{bk.redeem}}" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
             <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px">
               <label for="acc-book" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{bk.label}}</label>
-              <input id="acc-book" class="fld" type="text" autocomplete="off" spellcheck="false" maxlength="14" placeholder="BK-XXXX-XXXX" value="{{bk.code}}" onInput="{{bk.onCode}}" aria-invalid="{{bk.invalid}}" aria-describedby="acc-book-msg" style="font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase">
+              <input id="acc-book" class="fld" type="text" autocomplete="off" spellcheck="false" maxlength="14" placeholder="BK- / CP-XXXX-XXXX" value="{{bk.code}}" onInput="{{bk.onCode}}" aria-invalid="{{bk.invalid}}" aria-describedby="acc-book-msg" style="font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase">
             </div>
             <button type="submit" aria-busy="{{bk.busy}}" style="min-height: 46px; padding: 0 22px; border: 0; cursor: pointer; background: #FF2E88; color: #0B0A12; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em">{{bk.btn}}</button>
           </form>

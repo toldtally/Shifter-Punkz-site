@@ -45,17 +45,17 @@
       this.setState({ packs: pk.data || [], mySessions: ss.data || [] });
     }
 
-    async importPack(book) {
-      var pk = (this.state.packs || []).find(function (x) { return x.book === book; });
+    async importPack(id) {
+      var pk = (this.state.packs || []).find(function (x) { return x.id === id; });
       if (!pk || pk.imported_at) return;
-      var sid = (this.state.packSess || {})[book] || null;
-      this.setState({ packBusy: book, packMsg: null });
-      var r = await sb.rpc('import_pack', { p_book: book, p_session: sid });
+      var book = id, sid = (this.state.packSess || {})[id] || null;
+      this.setState({ packBusy: id, packMsg: null });
+      var r = await sb.rpc('import_pack', { p_pack: id, p_session: sid });
       if (r.error) {
         var m = r.error.message || '', th = this.th();
         var txt = /CHARACTER_LIMIT/.test(m) ? (th ? 'ตัวละครจะเกินจำนวนสูงสุด ลบตัวละครเก่าบางตัวก่อนแล้ว Import ใหม่' : 'This would go over your character limit. Delete some characters and try again.')
           : /PACK_PICK_SESSION/.test(m) ? (th ? 'เลือก session ที่จะใส่รูปฉากก่อน' : 'Pick a session for the scene pictures first.')
-          : /PACK_ALREADY_IMPORTED/.test(m) ? (th ? 'ชุดนี้ Import เข้าบัญชีไปแล้ว' : 'This pack is already in your account.')
+          : /PACK_ALREADY_IMPORTED/.test(m) ? (th ? 'Campaign นี้ Import เข้าบัญชีไปแล้ว' : 'This campaign is already in your account.')
           : SP.err(r.error, th);
         this.setState({ packBusy: null, packMsg: { book: book, err: true, text: txt } });
         return;
@@ -71,8 +71,8 @@
       if (e && e.preventDefault) e.preventDefault();
       var code = String(this.state.bookCode || '').trim().toUpperCase();
       var bad = function (th, en) { return { kind: 'error', th: th, en: en }; };
-      if (!/^BK-?[A-Z0-9]{4}-?[A-Z0-9]{4}$/.test(code.replace(/\s/g, ''))) {
-        return this.setState({ bookMsg: bad('รหัสหนังสือเป็นรูปแบบ BK-XXXX-XXXX อยู่ในหน้าแรกของหนังสือ', 'Book codes look like BK-XXXX-XXXX, inside the front cover.') });
+      if (!/^(BK|CP)-?[A-Z0-9]{4}-?[A-Z0-9]{4}$/.test(code.replace(/\s/g, ''))) {
+        return this.setState({ bookMsg: bad('รหัสหนังสือเป็นรูปแบบ BK-XXXX-XXXX (rulebook) หรือ CP-XXXX-XXXX (campaign book) อยู่ในหน้าแรกของหนังสือ', 'Book codes look like BK-XXXX-XXXX (rulebooks) or CP-XXXX-XXXX (campaign books), inside the front cover.') });
       }
       this.setState({ bookBusy: true, bookMsg: null });
       var wasGm = !!(this.state.profile && this.state.profile.gm_allowed);
@@ -91,7 +91,7 @@
       }
       await this.load();
       var pt = (this.state.packs || []).find(function (x) { return x.book === res; });
-      var name = BOOK_NAMES[res] ? BOOK_NAMES[res][this.th() ? 0 : 1] : pt ? (pt.title || res) : BOOK_NAMES.core[this.th() ? 0 : 1];
+      var name = BOOK_NAMES[res] ? BOOK_NAMES[res][this.th() ? 0 : 1] : pt ? (pt.book_title || res) : BOOK_NAMES.core[this.th() ? 0 : 1];
       this.setState({ bookBusy: false, bookCode: '', bookMsg: wasGm
         ? { kind: 'ok', th: 'เพิ่ม ' + name + ' เข้าบัญชีแล้ว', en: name + ' added to your account.' }
         : { kind: 'ok', th: 'เพิ่ม ' + name + ' แล้ว · ปลดล็อกบทบาท GM แล้ว เลือกเป็น GM ได้ที่ส่วนบทบาทด้านล่าง', en: name + ' added. The GM role is unlocked: pick it under Role below.' } });
@@ -190,13 +190,13 @@
       var owned = this.state.owned || [], bm = this.state.bookMsg, gmOk = !!(p && p.gm_allowed);
       var self = this, packs = this.state.packs || [], sess = this.state.mySessions || [], pm = this.state.packMsg;
       v.bk = {
-        title: L('อยากเป็น GM?', 'Want to be a GM?'),
+        title: gmOk ? L('คลัง GM', 'GM Vault') : L('อยากเป็น GM?', 'Want to be a GM?'),
         chip: gmOk ? L('GM ปลดล็อกแล้ว', 'GM UNLOCKED') : L('GM ล็อกอยู่', 'GM LOCKED'),
         chipColor: gmOk ? '#4ADE80' : '#8C88A6',
         sub: gmOk ? L('กรอกรหัสจากหนังสือเล่มอื่นเพื่อเพิ่มเข้าบัญชีได้ รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'Add codes from your other books here. Each code works once.')
                   : L('บทบาท GM เปิดให้เจ้าของหนังสือ Shifter Punkz TRPG อย่างน้อย 1 เล่ม กรอกรหัสในหน้าแรกของหนังสือเพื่อปลดล็อก รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'The GM role is for owners of at least one Shifter Punkz TRPG book. Enter the code inside the front cover to unlock it. Each code works once.'),
         hasOwned: owned.length > 0,
-        owned: owned.map(function (o) { var pt = (self.state.packs || []).find(function (x) { return x.book === o.book; }); var n = BOOK_NAMES[o.book] || (pt ? [pt.title || o.book, pt.title || o.book, '#2EE6F0'] : BOOK_NAMES.core); return { name: th ? n[0] : n[1], accent: n[2], when: L('ลงทะเบียน ', 'Added ') + new Date(o.redeemed_at).toLocaleDateString(th ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) }; }),
+        owned: owned.map(function (o) { var pt = (self.state.packs || []).find(function (x) { return x.book === o.book; }); var n = BOOK_NAMES[o.book] || (pt ? [pt.book_title || o.book, pt.book_title || o.book, '#2EE6F0'] : BOOK_NAMES.core); return { name: th ? n[0] : n[1], accent: n[2], when: L('ลงทะเบียน ', 'Added ') + new Date(o.redeemed_at).toLocaleDateString(th ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) }; }),
         label: L('รหัสหนังสือ', 'BOOK CODE'),
         code: this.state.bookCode || '',
         onCode: (e) => this.setState({ bookCode: String(e && e.target ? e.target.value : '').toUpperCase(), bookMsg: null }),
@@ -208,11 +208,12 @@
         msg: bm ? (th ? bm.th : bm.en) : '',
         msgColor: bm && bm.kind === 'error' ? '#FF3D6E' : '#4ADE80',
         hasPacks: packs.length > 0,
-        packs: packs.map((k) => {
-          var sid = (this.state.packSess || {})[k.book] || '', busy = this.state.packBusy === k.book, mine = pm && pm.book === k.book;
+        packs: packs.map((k, i) => {
+          var sid = (this.state.packSess || {})[k.id] || '', busy = this.state.packBusy === k.id, mine = pm && pm.book === k.id;
           var needS = k.scenes > 0;
           return {
-            title: k.title || k.book,
+            title: k.title || L('(ไม่มีชื่อ)', '(untitled)'),
+            showBook: i === 0 || packs[i - 1].book !== k.book, bookTitle: k.book_title || k.book,
             counts: 'PC ' + k.pcs + ' · NPC ' + k.npcs + ' · Scene ' + k.scenes,
             done: !!k.imported_at,
             doneText: (mine && !pm.err ? pm.text + ' · ' : '') + L('Import เข้าบัญชีแล้วเมื่อ ', 'Imported on ') + (k.imported_at ? new Date(k.imported_at).toLocaleDateString(th ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''),
@@ -222,13 +223,13 @@
             sess: sid,
             sessOpts: [{ v: '', label: sess.length ? L('— เลือก session —', '— Pick a session —') : L('ยังไม่มี session · สร้างที่ Session ของฉัน ก่อน', 'No sessions yet · create one in My sessions'), sel: !sid }]
               .concat(sess.map(function (x) { return { v: x.id, label: x.name, sel: x.id === sid }; })),
-            onSession: (e) => this.setState({ packSess: Object.assign({}, this.state.packSess, { [k.book]: e && e.target ? e.target.value : '' }), packMsg: null }),
+            onSession: (e) => this.setState({ packSess: Object.assign({}, this.state.packSess, { [k.id]: e && e.target ? e.target.value : '' }), packMsg: null }),
             btn: busy ? L('กำลัง Import…', 'Importing…') : L('Import เข้าบัญชี', 'Import to my account'),
             busy: busy ? 'true' : 'false',
             off: busy || (needS && !sid),
             op: busy || (needS && !sid) ? '0.45' : '1',
-            run: () => this.importPack(k.book),
-            note: mine && pm.err ? pm.text : L('Import ได้ครั้งเดียว · PC นับรวมในจำนวนตัวละครสูงสุด · NPC เข้า NPC Network ใช้ได้ทุก session และทำสำเนาได้', 'One import per book · PCs count toward your character limit · NPCs go to your NPC Network for every session and can be duplicated'),
+            run: () => this.importPack(k.id),
+            note: mine && pm.err ? pm.text : L('Import ได้ campaign ละครั้ง · PC นับรวมในจำนวนตัวละครสูงสุด · NPC เข้า NPC Network ใช้ได้ทุก session และทำสำเนาได้', 'One import per campaign · PCs count toward your character limit · NPCs go to your NPC Network for every session and can be duplicated'),
             noteColor: mine && pm.err ? '#FF3D6E' : '#8C88A6'
           };
         })
