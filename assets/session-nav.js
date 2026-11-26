@@ -68,7 +68,7 @@
       v.spCanAskGm = v.spNotGm && !!(u && u.gmAllowed);
       v.spWarn = !!this.state.spWarn;
       v.spWarnExpanded = this.state.spWarn ? 'true' : 'false';
-      v.spAskSessions = () => this.setState({ spWarn: !this.state.spWarn, spCharWarn: false });
+      v.spAskSessions = u && u.gmAllowed ? () => { location.href = 'beta/sessions.html'; } : () => this.setState({ spWarn: !this.state.spWarn, spCharWarn: false });
       v.spWarnText = this.state.spErr || (th ? 'Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).');
       v.spSwitchedGm = this.state.spSwitched === 'gm';
       v.spSwitchedPlayer = this.state.spSwitched === 'player';

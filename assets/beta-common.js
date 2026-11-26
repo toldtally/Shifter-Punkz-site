@@ -90,6 +90,10 @@
     };
     // a GM can sit at another GM's table without switching roles: "My characters" opens straight away
     v.askChars = function () { location.href = 'characters.html'; };
+    // top nav: every account has My characters; GM-unlocked accounts also get My sessions, whichever role is selected
+    v.navCanChars = true;
+    v.navCanGm = !!p.gm_allowed;
+    if (p.gm_allowed) v.askSessions = function () { location.href = 'sessions.html'; };
     v.switchToGm = function () { setRole('gm'); };
     v.switchToPlayer = function () { setRole('player'); };
     v.navLogout = async function (e) {

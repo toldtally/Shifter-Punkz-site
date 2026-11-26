@@ -90,6 +90,7 @@ html{scroll-behavior:smooth}
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
         <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
         <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+        <sc-if value="{{navCanChars}}" hint-placeholder-val="{{ true }}"><a href="characters.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navMine}}</a></sc-if>
         <a href="sessions.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navTables}}</a>
         <a href="npcs.html" aria-current="page" style="color: #FFD400; text-decoration: none; padding: 12px 0; border-bottom: 2px solid #FFD400">{{t.navNpc}}</a>
       </div>
@@ -538,7 +539,7 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
 <script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=323b0899"></script>
+<script src="../assets/beta-common.js?v=f83fe316"></script>
 <script>
 /* demo portraits for the prototype (the live site uses the GM's uploads) */
 function npcArt(bg, accent, mark) {
@@ -1339,6 +1340,7 @@ class Component extends DCLogic {
       hasToast: !!s.toast, toast: s.toast,
       userMenuOpen: !!s.userMenu,
       userMenuExpanded: s.userMenu ? 'true' : 'false',
+      navCanChars: true, // the live site decides from the account
       toggleUserMenu: () => this.setState({ userMenu: !s.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
       closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
       menuIsGm: (s.menuRole || 'gm') === 'gm',
@@ -1378,6 +1380,7 @@ class Component extends DCLogic {
         navHome: L('หน้าแรก', 'HOME'),
         navTables: L('Session ของฉัน', 'MY SESSIONS'),
         navNpc: 'NPC',
+        navMine: L('ตัวละครของฉัน', 'MY CHARACTERS'),
         sub: L('คลัง NPC ของคุณ ใช้ได้ทุก session ลากจัดวางบนแผนผัง จับกลุ่มเป็นแก๊ง แล้วโยงความสัมพันธ์ระหว่าง NPC กับ PC ใน session ของคุณ', 'Your NPC library for every session. Arrange them on the map, group them into gangs and link them to each other and to the PCs in your sessions.'),
         addNpc: L('+ สร้าง NPC', '+ New NPC'),
         dup: L('ทำสำเนา', 'Duplicate'),
@@ -1418,6 +1421,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-npcs.js?v=3f7a289c"></script>
+<script src="../assets/beta-npcs.js?v=e904a8d2"></script>
 </body>
 </html>

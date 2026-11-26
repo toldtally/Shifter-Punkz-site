@@ -79,6 +79,7 @@ html{scroll-behavior:smooth}
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
         <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
         <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+        <sc-if value="{{navCanChars}}" hint-placeholder-val="{{ true }}"><a href="characters.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navMine}}</a></sc-if>
         <a href="sessions.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navTables}}</a>
         <a href="npcs.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navNpc}}</a>
       </div>
@@ -737,7 +738,7 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
 <script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=323b0899"></script>
+<script src="../assets/beta-common.js?v=f83fe316"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
 <script src="../assets/dice.js?v=02914620"></script>
 <script>
@@ -1062,6 +1063,7 @@ class Component extends DCLogic {
     return {
       userMenuOpen: !!this.state.userMenu,
       userMenuExpanded: this.state.userMenu ? 'true' : 'false',
+      navCanChars: true, // the live site decides from the account
       toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
       closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
       menuIsGm: (this.state.menuRole || this.state.role) === 'gm',
@@ -1468,6 +1470,7 @@ class Component extends DCLogic {
         tableName: L('Session: ตรอกนีออนลาดพร้าว', 'SESSION: LAT PHRAO NEON ALLEY'),
         navTables: L('Session ของฉัน', 'MY SESSIONS'),
         navNpc: 'NPC',
+        navMine: L('ตัวละครของฉัน', 'MY CHARACTERS'),
         switchTable: L('SESSION', 'SESSION'),
         manageTables: L('จัดการ session ทั้งหมด / สร้าง session ใหม่', 'Manage sessions / new session'),
         oneRun: L('1 บัญชีรันได้ทีละ 1 session', 'One live session per account'),
@@ -1525,6 +1528,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=0217faa4"></script>
+<script src="../assets/beta-gm.js?v=19cb37d3"></script>
 </body>
 </html>

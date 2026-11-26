@@ -184,6 +184,7 @@
       v.menuCanAskGm = !!(p && p.gm_allowed && this.state.role !== 'gm');
       // a GM can sit at another GM's table without switching roles
       v.askChars = () => { location.href = 'characters.html'; };
+      if (p && p.gm_allowed) v.askSessions = () => { location.href = 'sessions.html'; };
       v.roles = v.roles.map((r) => Object.assign({}, r, {
         pick: () => { if (p && r.id !== this.state.role) this.patch({ role: r.id }).then((d) => { if (d) this.setState({ role: r.id, switched: true }); }); }
       }));

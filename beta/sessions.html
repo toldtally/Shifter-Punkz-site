@@ -75,6 +75,7 @@ html{scroll-behavior:smooth}
       <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
         <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
         <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+        <sc-if value="{{navCanChars}}" hint-placeholder-val="{{ true }}"><a href="characters.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navMine}}</a></sc-if>
         <a href="sessions.html" aria-current="page" style="color: #FFD400; text-decoration: none; padding: 12px 0; border-bottom: 2px solid #FFD400">{{t.navTables}}</a>
         <a href="npcs.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navNpc}}</a>
       </div>
@@ -273,7 +274,7 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
 <script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=323b0899"></script>
+<script src="../assets/beta-common.js?v=f83fe316"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
@@ -334,6 +335,7 @@ class Component extends DCLogic {
     return {
       userMenuOpen: !!this.state.userMenu,
       userMenuExpanded: this.state.userMenu ? 'true' : 'false',
+      navCanChars: true, // the live site decides from the account
       toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
       closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
       menuIsGm: (this.state.menuRole || 'gm') === 'gm',
@@ -476,6 +478,7 @@ class Component extends DCLogic {
         navHome: L('หน้าแรก', 'HOME'),
         navTables: L('Session ของฉัน', 'MY SESSIONS'),
         navNpc: 'NPC',
+        navMine: L('ตัวละครของฉัน', 'MY CHARACTERS'),
         title: L('Session ของฉัน', 'My sessions'),
         rule: L('1 บัญชีรันได้ทีละ 1 session — เมื่อเริ่ม session ใหม่ session ที่ LIVE อยู่จะถูกพักอัตโนมัติ ฝั่งผู้เล่นก็เช่นกัน 1 บัญชีนั่งได้ทีละ 1 session', 'One live session per account. Starting a session pauses whichever session is live. Players follow the same rule: one seat per account.'),
         newTitle: L('สร้าง session ใหม่', 'New session'),
@@ -503,6 +506,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-sessions.js?v=41e65f5d"></script>
+<script src="../assets/beta-sessions.js?v=aef058e7"></script>
 </body>
 </html>

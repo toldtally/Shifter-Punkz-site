@@ -20,11 +20,11 @@
       super.componentDidMount();
       var me = await SP.requireUser('npcs.html');
       if (!me) return;
-      if (me.profile.role !== 'gm') { location.replace(me.profile.gm_allowed ? 'sessions.html' : 'characters.html'); return; }
+      if (!me.profile.gm_allowed) { location.replace('characters.html'); return; }
       this.setState({ user: me.user, profile: me.profile, role: 'gm' });
       await this.load();
     }
-    onRoleChange(role) { if (role !== 'gm') location.href = 'characters.html'; }
+    onRoleChange() {}
     saveDemo() {}
 
     async load() {

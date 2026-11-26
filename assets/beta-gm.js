@@ -37,9 +37,9 @@
       this._clock = setInterval(() => this.setState({ now: Date.now() }), 1000);
       var me = await SP.requireUser('gm.html');
       if (!me) return;
-      this.setState({ user: me.user, profile: me.profile, role: me.profile.role });
       if (!me.profile.gm_allowed) { location.replace('characters.html'); return; }
-      if (me.profile.role !== 'gm') return;
+      // any GM-unlocked account runs its tables here, whichever role is selected
+      this.setState({ user: me.user, profile: me.profile, role: 'gm' });
       this.loadNpcs();
       await this.loadSessions();
       var want = new URLSearchParams(location.search).get('s');
@@ -54,7 +54,7 @@
     }
     componentWillUnmount() { clearInterval(this._clock); this.unsub(); if (this._bgm) this._bgm.close(); }
     tickLive() {}
-    onRoleChange(role) { if (role === 'gm') location.reload(); }
+    onRoleChange() {}
 
     /* persist turn order changes made by the design's handlers */
     setState(u) {

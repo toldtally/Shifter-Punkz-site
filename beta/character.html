@@ -142,6 +142,7 @@ html{scroll-behavior:smooth}
         <a href="../index.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navHome}}</a>
         <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">TRPG</a>
         <a href="characters.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navMine}}</a>
+        <sc-if value="{{navCanGm}}" hint-placeholder-val="{{ true }}"><a href="sessions.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navTables}}</a></sc-if>
       </div>
       <div style="position: relative" onKeyDown="{{userMenuKey}}">
         <button type="button" onClick="{{toggleUserMenu}}" aria-haspopup="true" aria-expanded="{{userMenuExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid #2EE6F0; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; background: transparent; cursor: pointer">
@@ -820,7 +821,7 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
 <script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=323b0899"></script>
+<script src="../assets/beta-common.js?v=f83fe316"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
 <script src="../assets/dice.js?v=02914620"></script>
 <script>
@@ -1544,6 +1545,7 @@ class Component extends DCLogic {
       portraitNoteColor: this.state.portraitErr ? '#FF3D6E' : '#8C88A6',
       userMenuOpen: !!this.state.userMenu,
       userMenuExpanded: this.state.userMenu ? 'true' : 'false',
+      navCanGm: true, // the live site decides from the account
       toggleUserMenu: () => this.setState({ userMenu: !this.state.userMenu, roleWarn: false, charWarn: false, menuSwitched: false }),
       closeUserMenu: () => this.setState({ userMenu: false, roleWarn: false }),
       menuIsGm: (this.state.menuRole || 'player') === 'gm',
@@ -1918,6 +1920,7 @@ class Component extends DCLogic {
         advisory: L('ประกาศ C.P.D. // ระดับรังสีคอสมิค: สูง // หลีกเลี่ยงพื้นที่ EXTINCTED ZONE', 'C.P.D. ADVISORY // COSMIC RADIATION: ELEVATED // AVOID ALL EXTINCTED ZONES'),
         navHome: L('หน้าแรก', 'HOME'),
         navMine: L('ตัวละครของฉัน', 'MY CHARACTERS'),
+        navTables: L('Session ของฉัน', 'MY SESSIONS'),
         title: L('สร้างตัวละคร', 'Create a character'),
         save: L('บันทึกตัวละคร', 'Save character'),
         phName: L('ชื่อตัวละคร', 'Character name'),

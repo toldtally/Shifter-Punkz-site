@@ -20,11 +20,11 @@
     async componentDidMount() {
       var me = await SP.requireUser('sessions.html');
       if (!me) return;
-      if (me.profile.role !== 'gm') { location.replace(me.profile.gm_allowed ? 'gm.html' : 'characters.html'); return; }
+      if (!me.profile.gm_allowed) { location.replace('characters.html'); return; }
       this.setState({ user: me.user, profile: me.profile, role: 'gm' });
       await this.load();
     }
-    onRoleChange(role) { if (role !== 'gm') location.href = 'characters.html'; }
+    onRoleChange() {}
 
     async load() {
       var r = await sb.from('sessions').select('*').eq('gm_id', this.state.profile.id).order('created_at', { ascending: false });
