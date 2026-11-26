@@ -571,7 +571,7 @@ const NPC_SKILLS = [
   ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
 ];
 /* NPC status (GM only): REP x2 = points to spend. Costs follow the player sheet:
-   every Basic Ability starts at 1, each point above that 5 REP, max 3;
+   every Basic Ability starts at 1 with 4 free points to add (like a player), each point past those 5 REP, max 3;
    Cosmic Ability / Gadget Lv2 5 REP, Lv3 12 more; a General skill's Lv1 is free, higher levels cost what the skill list says. */
 const NPC_BA = [['force', 'Force'], ['tactical', 'Tactical'], ['trick', 'Trick'], ['sense', 'Sense']];
 function npcStat(n) {
@@ -591,8 +591,10 @@ function npcStat(n) {
     skills: two(d.skills, { n: '', lv: 1 }), weapons: two(d.weapons, { n: '', fx: '' }), gears: two(d.gears, { n: '', fx: '' })
   };
 }
+/* points raised above the starting 1 across all four Basic Abilities */
+function npcBaUp(st) { return NPC_BA.reduce((a, b) => a + Math.max(0, (+st.ba[b[0]] || 1) - 1), 0); }
 function npcCost(st, factor) {
-  const ba = NPC_BA.reduce((a, b) => a + Math.max(0, (+st.ba[b[0]] || 1) - 1), 0) * 5;
+  const ba = Math.max(0, npcBaUp(st) - 4) * 5;
   const cl = +st.cos.lv || 1;
   const cos = factor === 'shifter' || factor === 'norms' ? (cl >= 3 ? 17 : cl === 2 ? 5 : 0) : 0;
   const sk = st.skills.reduce((a, k) => a + (k.n ? NPC_SKILLS.filter((r) => r[0] === k.n && r[1] > 1 && r[1] <= (+k.lv || 1)).reduce((b, r) => b + r[3], 0) : 0), 0);
@@ -1081,7 +1083,7 @@ class Component extends DCLogic {
           return { label: b[1], v: String(x), dec: () => set(-1), inc: () => set(1), decOff: x <= 1, incOff: x >= 3,
             decLabel: L('ลด ', 'Lower ') + b[1], incLabel: L('เพิ่ม ', 'Raise ') + b[1] };
         }),
-        baNote: L('เริ่มที่ 1 ทุกค่า · เพิ่มแต้มละ 5 REP · สูงสุด 3', 'Every stat starts at 1 · 5 REP per point above that · max 3'),
+        baNote: L('เริ่มที่ 1 ทุกค่า · แต้มฟรีใช้ไป ' + Math.min(4, npcBaUp(st)) + ' / 4 · เกินนั้นแต้มละ 5 REP · สูงสุด 3', 'Every stat starts at 1 · free points used ' + Math.min(4, npcBaUp(st)) + ' / 4 · past that 5 REP a point · max 3'),
         hasCos: fk === 'shifter' || fk === 'norms',
         cosTitle: fk === 'norms' ? 'Cosmic Gadget' : 'Cosmic Ability',
         cosName: st.cos.n, onCosName: (e) => this.editStat(id, { cos: Object.assign({}, st.cos, { n: val(e).slice(0, 60) }) }),
