@@ -824,7 +824,7 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
 <script src="../assets/sp.js?v=a60a9d0f"></script>
-<script src="../assets/beta-common.js?v=12722725"></script>
+<script src="../assets/beta-common.js?v=4b84e6e4"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
 <script src="../assets/dice.js?v=9fd4f18c"></script>
 <script>
@@ -1142,8 +1142,8 @@ class Component extends DCLogic {
     const col = { shifter: '#2EE6F0', outlaw: '#FF2E88', cpd: '#FFD400' }[s.factor] || '#2EE6F0';
     window.SPDice.tray(Object.assign({
       th: th, who: (s.name || '').trim() || (th ? 'ตัวละคร' : 'Character'), color: col, label: name,
-      base: s.inj && s.inj['Cosmic Stigma'] ? 1 : Math.max(0, val + m),
-      baseNote: s.inj && s.inj['Cosmic Stigma'] ? '(Cosmic Stigma: ' + (th ? 'ทอยได้แค่ 1D8' : 'only 1D8') + ')' : '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + (noMod && (parseInt(mod, 10) || 0) ? (th ? ' · Infected: ใช้ Mod ไม่ได้' : ' · Infected: no Mod') : '') + ')',
+      base: Math.max(0, val + m),
+      baseNote: '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + (noMod && (parseInt(mod, 10) || 0) ? (th ? ' · Infected: ใช้ Mod ไม่ได้' : ' · Infected: no Mod') : '') + ')',
       enervated: !!(s.inj && s.inj.Enervated),
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
       ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
@@ -1436,7 +1436,7 @@ class Component extends DCLogic {
     const used = s.ba.force + s.ba.tactical + s.ba.trick + s.ba.sense;
     const baRep = Object.assign({ force: 0, tactical: 0, trick: 0, sense: 0 }, s.baRep || {});
     const baDiv = (k) => (cpd && DIVISIONS[s.traitName] === k ? 1 : 0);
-    // Cosmic Infected: every Basic Ability −1 (never below 1); Cosmic Stigma (heavier): every Basic Ability rolls only 1D8 (see openRoll)
+    // Cosmic Infected: every Basic Ability −1 (never below 1); Cosmic Stigma leaves them as they are
     const stigma = !!(s.inj && s.inj['Cosmic Stigma']);
     const infected = !stigma && !!(s.inj && s.inj['Cosmic Infected']);
     const baBase = (k) => Math.min(3, 1 + s.ba[k] + (num(baRep[k]) || 0) + baDiv(k));
@@ -1473,7 +1473,7 @@ class Component extends DCLogic {
         { n: 'Fainted', tip: L('เมื่อเริ่มเทิร์น ทอยค่า Sense ให้มากกว่า Fainted DC เพื่อฟื้น', 'At the start of your turn, roll Sense over the Fainted DC to come to'), dc: true },
         { n: 'Hallucinated', tip: L('เห็นภาพหลอน เห็นศัตรูเป็นมิตร และมิตรเป็นศัตรู • DC+2', 'Hallucinations: foes look like friends and friends like foes • DC+2') }] },
       { group: 'Cosmic Overwhelm', items: [
-        { n: 'Cosmic Infected', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • −1 Basic Ability แต่ไม่ต่ำกว่า 1 • ไม่สามารถใช้ MOD เต๋าได้', 'Cosmic Dice replace D8s, like EX • −1 Basic Ability, min 1 • the dice Mod can\'t be used') }, { n: 'Cosmic Stigma', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • Hallucinated • Basic Ability ทุกอันทอยได้แค่ 1D8', 'Cosmic Dice replace D8s, like EX • Hallucinated • every Basic Ability rolls only 1D8') }, { n: 'Cosmic Outburst', tip: L('-2IP หากเทิร์นนั้นไม่ได้ใช้พลังคอสมิค • ทุกครั้งที่ใช้พลังคอสมิคจะเป็นการเพิ่มระดับ WM ขึ้นเรื่อยๆ', '-2 IP if you use no cosmic power that turn • every use of cosmic power keeps raising WM') }] }
+        { n: 'Cosmic Infected', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • −1 Basic Ability แต่ไม่ต่ำกว่า 1 • ไม่สามารถใช้ MOD เต๋าได้', 'Cosmic Dice replace D8s, like EX • −1 Basic Ability, min 1 • the dice Mod can\'t be used') }, { n: 'Cosmic Stigma', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • Hallucinated', 'Cosmic Dice replace D8s, like EX • Hallucinated') }, { n: 'Cosmic Outburst', tip: L('-2IP หากเทิร์นนั้นไม่ได้ใช้พลังคอสมิค • ทุกครั้งที่ใช้พลังคอสมิคจะเป็นการเพิ่มระดับ WM ขึ้นเรื่อยๆ', '-2 IP if you use no cosmic power that turn • every use of cosmic power keeps raising WM') }] }
     ];
 
     const tbl = this.state.tbl;
@@ -1818,7 +1818,7 @@ class Component extends DCLogic {
         { k: 'sense', name: 'Sense', tip: L('สัญชาตญาณ, ความรู้สึก, สติสัมปชัญญะ', 'Instinct, feeling, awareness') }
       ].map((a) => Object.assign({}, a, {
         val: String(baValue(a.k)),
-        inf: (infected && baBase(a.k) > 1) || stigma, infTip: stigma ? L('Cosmic Stigma: ทอยได้แค่ 1D8', 'Cosmic Stigma: rolls only 1D8') : 'Cosmic Infected: −1', infText: stigma ? '1D8 STG' : '−1 INF',
+        inf: infected && baBase(a.k) > 1, infTip: 'Cosmic Infected: −1', infText: '−1 INF',
         decOff: (locked && restat !== 'ba') || (s.ba[a.k] <= 0 && !(num(baRep[a.k]) > 0)),
         incOff: baBase(a.k) >= 3 || (pool - used <= 0 || s.ba[a.k] >= 2 - baDiv(a.k) ? num(s.repCur) < 5 : false),
         incTip: pool - used > 0 && s.ba[a.k] < 2 - baDiv(a.k) ? '' : L('ใช้ 5 REP', 'Costs 5 REP'),
