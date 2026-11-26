@@ -826,7 +826,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=a60a9d0f"></script>
 <script src="../assets/beta-common.js?v=1f9d034b"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
-<script src="../assets/dice.js?v=6c515523"></script>
+<script src="../assets/dice.js?v=d4f711c0"></script>
 <script>
 function initialSheet() {
   return {
@@ -988,14 +988,14 @@ const SKILLS = [
   ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
 ];
 /* Whelm Tier (rules sheet, tab "Whelm Tier"): how strong a use of cosmic power is; the tier is also its WM cost.
-   Tier 4–6 gives 1 EX, 7–9 gives 3 EX, 10 also needs a SeD roll >8. Blank cells are still to be decided. */
+   Tier 4–6 gives 1 EX, 7–9 gives 3 EX, 10 also needs a SeD roll >8. */
 const WHELM = [
   ['ระดับตาตุ่ม', 'สัมผัส', '1 ช่วงแขน', 'คนเดิน', '1 ฝ่ามือ', '0'],
-  ['ระดับครึ่งต้นขา', '1 ช่วงคืบ', '', 'คนวิ่ง', '1 แขนโอบ', '1-5'],
+  ['ระดับครึ่งต้นขา', '1 ช่วงคืบ', 'ลิฟท์โรงแรม', 'คนวิ่ง', '1 แขนโอบ', '1-5'],
   ['คนปกติ', '1 ช่วงศอก', '1 ห้องสตูดิโอ', 'สุนัขวิ่ง', '1 คนโอบ', '6-10'],
   ['บันไดลิง', '1 ก้าวยาว', 'ห้องโถงบ้านธรรมดา', 'ชีต้าห์วิ่ง', '2 คนโอบ', '11-20'],
-  ['', '3 ก้าวยาว', 'บ้านธรรมดาทั้งหลัง', 'รถยนต์', '3 คนโอบ', '20-30'],
-  ['', 'ถนน 2 เลน', 'ลาน ฮ.', 'รถแข่ง F1', 'รถยนต์ 1 คัน', '40-50'],
+  ['ช้าง 1 ตัว', '3 ก้าวยาว', 'บ้านธรรมดาทั้งหลัง', 'รถยนต์', '3 คนโอบ', '20-30'],
+  ['ตู้คอนเทนเนอร์', 'ถนน 2 เลน', 'ลาน ฮ.', 'รถแข่ง F1', 'รถยนต์ 1 คัน', '40-50'],
   ['บ้านเดี่ยว', 'ถนน 4 เลน', 'ห้องบอลรูม', 'ความเร็วลูกกระสุน', 'รถมินิบัส', '60-70'],
   ['บ้านแฝด', '1 ช่วงตึก', 'สนามบอล', 'รถไฟหัวกระสุน', 'รถทัวร์', '80-90'],
   ['ต้นไม้ใหญ่', '3 ช่วงตึก', '1 ห้างสรรพสินค้า', 'เครื่องบิน', 'รถทัวร์ 3 คัน', '100-140'],
@@ -1145,7 +1145,7 @@ class Component extends DCLogic {
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
       ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
       cosReplace: !!(s.inj && s.inj['Cosmic Infected']),
-      whelm: s.factor === 'shifter' ? { rows: WHELM.map(whelmRow), add: s.inj && s.inj['Cosmic Outburst'] ? (parseInt(s.outN, 10) || 0) : 0, wm: parseInt(s.spCur, 10) || 0 } : null,
+      whelm: s.factor === 'shifter' ? { rows: WHELM.map(whelmRow), outburst: !!(s.inj && s.inj['Cosmic Outburst']), add: s.inj && s.inj['Cosmic Outburst'] ? (parseInt(s.outN, 10) || 0) : 0, wm: parseInt(s.spCur, 10) || 0 } : null,
       se: s.se || 0, seLock: !!(s.boost && s.boost.kind && s.boost.kind !== 'dice'),
       onRoll: (p, sp) => {
         const cur = this.state.s;
@@ -1153,9 +1153,13 @@ class Component extends DCLogic {
         if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
         // a use of cosmic power: WM pays the Whelm Tier, tiers 4–6 / 7–9 / 10 give 1 / 3 / 3 EX, and the turn counts as "used" for Cosmic Outburst
         if (sp.whelm != null) {
-          patch.spCur = String(Math.max(0, (parseInt(cur.spCur, 10) || 0) - sp.whelm));
+          const outb = !!(cur.inj && cur.inj['Cosmic Outburst']);
+          // Cosmic Outburst costs no WM (its tier keeps climbing instead)
+          if (!outb) patch.spCur = String(Math.max(0, (parseInt(cur.spCur, 10) || 0) - sp.whelm));
           patch.cosUsed = true;
-          if (cur.inj && cur.inj['Cosmic Outburst']) patch.outN = (parseInt(cur.outN, 10) || 0) + 1;
+          if (outb) patch.outN = (parseInt(cur.outN, 10) || 0) + 1;
+          // spent past the WM left (confirmed in the tray): WM hits 0 and Cosmic Outburst starts now
+          else if (sp.over) { patch.inj = Object.assign({}, cur.inj, { 'Cosmic Outburst': true }); patch.outN = 0; }
           const g = sp.whelm >= 7 ? 3 : sp.whelm >= 4 ? 1 : 0;
           if (g) patch = Object.assign(patch, this.exGain(g, Object.assign({}, cur, patch)));
         }
