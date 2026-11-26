@@ -5,7 +5,7 @@
  *   SPDice.show(payload, th)      // someone else's roll: a card that tumbles, then shows the result
  *   SPDice.score(dice)            // { r, from, k } — highest die; each matching die adds +1, capped at that die's top face
  *
- * A roll is D8s (D4s once Exhaustion turns them), plus Cosmic Dice (with cosReplace — Cosmic Infected — they take D8 slots instead). The result is the highest die;
+ * A roll is D8s (D4s once Exhaustion turns them; an empty pool — ability 0 — rolls 1D4), plus Cosmic Dice (with cosReplace — Cosmic Infected — they take D8 slots instead). The result is the highest die;
  * when several dice show the same number that number goes up by 1 per extra die, never past the die's top face.
  * A natural pair of [8] gives +1 Surge Energy. After the roll, Advance pts move faces up or down by 1 each.
  */
@@ -246,6 +246,7 @@
       for (var i = 0; i < n8; i++) dice.push({ s: i < ex ? 4 : 8 });
       for (var j = 0; j < (o.free ? st.d4 : 0); j++) dice.push({ s: 4 });
       for (var k = 0; k < (o.cosReplace ? sw : cosN()); k++) dice.push({ s: 4, c: 1 });
+      if (!o.free && !dice.length) dice.push({ s: 4 }); // ability at 0 (e.g. Cosmic Stigma): roll 1D4
       return dice;
     };
     var payload = function (ph) {
@@ -323,6 +324,7 @@
         drawDice(tr, pre, {});
         Array.prototype.forEach.call(tr.children, function (n) { n.classList.remove('is-dim'); n.classList.remove('is-best'); n.querySelector('.spd-num').textContent = '?'; });
         b.appendChild(el('p', { class: 'spd-note', text: pre.length ? poolText(pre) : L('ยังไม่มีเต๋า', 'No dice yet') }));
+        if (!o.free && !o.fixed && count8() === 0 && !cosN()) b.appendChild(el('p', { class: 'spd-note', text: L('ค่า Ability เป็น 0 • ทอย 1D4 แทน', 'Ability is 0 • roll 1D4 instead') }));
         var f = el('div', { class: 'spd-f' }); card.appendChild(f);
         f.appendChild(el('button', { type: 'button', class: 'spd-btn', onclick: close }, [L('ยกเลิก', 'Cancel')]));
         if (st.err) b.appendChild(el('p', { class: 'spd-warn', role: 'alert', text: L('ทอยไม่สำเร็จ ลองอีกครั้ง', 'Roll failed, try again') + ' (' + st.err + ')' }));
