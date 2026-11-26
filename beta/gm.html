@@ -905,15 +905,14 @@ class Component extends DCLogic {
     const list = (a, f) => (a || []).filter((r) => r && r.n).map(f).join(' · ');
     const cell = (k, v, c) => (v ? { k: k, v: v, c: c || '#A9A5C2' } : { k: '', v: '', c: '#A9A5C2' });
     const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
-    // left: tier, IP, WM · right: Cosmic Ability / Gadget, Weapons, Gears (same rows)
+    // left: tier, IP, WM · right: Cosmic Ability / Gadget, General skills, Weapons, Gears
     const rows = [
       [cell(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1), d.boss ? '#FF3D6E' : '#2EE6F0'),
         (fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n ? cell(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400') : cell()],
-      [cell('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn)), cell('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))],
-      [fk === 'shifter' ? cell('WM', 'PWR+' + nz(d.pwr) + ' · RGN+' + Math.max(1, +d.wmRgn || 1), '#C084FC') : cell(), cell('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))]
+      [cell('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn)), cell('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)))],
+      [fk === 'shifter' ? cell('WM', 'PWR+' + nz(d.pwr) + ' · RGN+' + Math.max(1, +d.wmRgn || 1), '#C084FC') : cell(), cell('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))],
+      [cell('BONDED', d.bond || ''), cell('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))]
     ].filter((r) => r[0].v || r[1].v).map((r) => ({ lk: r[0].k, lv: r[0].v, lc: r[0].c, rk: r[1].k, rv: r[1].v, rc: r[1].c }));
-    add('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)));
-    add('BONDED', d.bond || '');
     const bar = (k, key, c, max, def, of) => {
       const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(max, +d[key] || 0)) : def;
       return { k: k, v: String(v), of: of, c: c, aria: k + ' ' + (n.name || ''), dec: () => this.npcAdjust(n.id, key, -1, max, def), inc: () => this.npcAdjust(n.id, key, 1, max, def),
