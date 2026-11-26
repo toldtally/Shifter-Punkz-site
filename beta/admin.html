@@ -36,6 +36,23 @@
   .t-ok { color:var(--ok); } .t-warn { color:var(--warn); } .t-bad { color:var(--bad); } .t-dim { color:var(--dim); }
   .msg { padding:24px; background:var(--panel); border:1px solid var(--line); color:var(--dim); }
   .note { color:var(--dim); font-size:13px; margin-top:14px; }
+  h2 { margin:48px 0 6px; font:700 24px/1.2 'Chakra Petch', sans-serif; }
+  .lead { margin:0 0 18px; color:var(--dim); font-size:14px; max-width:70ch; }
+  .card { background:var(--panel); border:1px solid var(--line); border-top:3px solid var(--pink); padding:16px; margin-bottom:14px; display:flex; flex-direction:column; gap:12px; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; }
+  .field { display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .field label { font:500 11px 'JetBrains Mono', monospace; letter-spacing:.1em; color:var(--dim); text-transform:uppercase; }
+  input.f, select.f, textarea.f { background:var(--bg); color:var(--fg); border:1px solid var(--line); padding:8px 10px; font:14px 'IBM Plex Sans Thai', sans-serif; min-height:40px; max-width:100%; }
+  textarea.f { font-family:'JetBrains Mono', monospace; font-size:13px; width:100%; min-height:120px; }
+  .btn { min-height:40px; padding:0 14px; border:1px solid var(--pink); background:transparent; color:var(--pink); font:700 13px 'Chakra Petch', sans-serif; cursor:pointer; }
+  .btn.solid { background:var(--pink); color:var(--bg); }
+  .btn:disabled { opacity:.45; cursor:default; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; padding:4px 4px 4px 10px; background:var(--bg); border:1px solid var(--line); font-size:13px; }
+  .chip b { font:600 10.5px 'JetBrains Mono', monospace; letter-spacing:.06em; }
+  .chip button { width:26px; height:26px; border:0; background:transparent; color:var(--dim); cursor:pointer; }
+  .stat-line { font:500 12px 'JetBrains Mono', monospace; color:var(--dim); }
+  .err { color:var(--bad); font-size:13px; }
 </style>
 </head>
 <body>
@@ -45,7 +62,10 @@
     <a class="back" href="account.html">← กลับไปหน้าบัญชี</a>
   </header>
   <div id="app"><div class="msg">กำลังโหลด…</div></div>
-  <p class="note">บัญชีที่ไม่ยืนยันอีเมลภายใน 7 วันจะถูกลบอัตโนมัติทุกคืนเวลาราว 03:17 น. · "ไม่ active" = ยืนยันแล้วแต่ไม่ได้เข้าใช้เกิน 30 วัน และยังไม่มีตัวละคร</p>
+  <p class="note" id="users-note">บัญชีที่ไม่ยืนยันอีเมลภายใน 7 วันจะถูกลบอัตโนมัติทุกคืนเวลาราว 03:17 น. · "ไม่ active" = ยืนยันแล้วแต่ไม่ได้เข้าใช้เกิน 30 วัน และยังไม่มีตัวละคร</p>
+  <h2>Campaign book packs</h2>
+  <p class="lead">ชุดเนื้อหาของหนังสือแต่ละเล่ม: เลือก PC, NPC และรูปฉากจากบัญชีนี้เข้าชุด แล้วสร้างโค้ด BK-XXXX-XXXX ไปพิมพ์ในหนังสือ · ผู้ใช้กรอกโค้ดที่หน้าตั้งค่าบัญชี จะปลดล็อก GM และ Import ชุดนี้เข้าบัญชีได้ 1 ครั้ง · เก็บต้นฉบับ (ตัวละคร, NPC, รูป) ไว้ อย่าลบ เพราะรูปในชุดใช้ไฟล์เดียวกับต้นฉบับ</p>
+  <div id="packs"><div class="msg">กำลังโหลด…</div></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/sp.js"></script>
@@ -109,7 +129,90 @@
     }
     rows = r.data.map(function (u) { return { u: u, st: status(u) }; });
     render();
+    packsInit();
   })();
+
+  /* ---------- campaign book packs ---------- */
+  var packsEl = document.getElementById('packs');
+  var P = { packs: [], items: {}, mine: { pc: [], npc: [], scene: [] }, open: null, codes: {}, err: '' };
+  var KIND = { pc: ['PC', '#2EE6F0'], npc: ['NPC', '#FFD400'], gang: ['GANG', '#C084FC'], link: ['LINK', '#8C88A6'], scene: ['SCENE', '#FF2E88'] };
+  async function packsLoad() {
+    var r = await SP.sb.rpc('admin_packs');
+    if (r.error) { P.err = SP.err(r.error, true); return; }
+    P.packs = r.data || [];
+    for (var i = 0; i < P.packs.length; i++) {
+      var it = await SP.sb.rpc('admin_pack_items', { p_book: P.packs[i].book });
+      P.items[P.packs[i].book] = it.data || [];
+    }
+  }
+  async function packsInit() {
+    var uid = (await SP.sb.auth.getUser()).data.user.id;
+    var res = await Promise.all([
+      SP.sb.from('characters').select('id, name, factor').eq('owner_id', uid).order('name'),
+      SP.sb.from('npcs').select('id, name').eq('gm_id', uid).order('name'),
+      SP.sb.from('session_images').select('id, title, sessions(name)').eq('gm_id', uid).order('created_at', { ascending: false })
+    ]);
+    P.mine.pc = (res[0].data || []).map(function (x) { return { id: x.id, label: x.name + ' · ' + (x.factor === 'outlaw' ? 'Norms' : x.factor === 'cpd' ? 'C.P.D.' : 'Shifter') }; });
+    P.mine.npc = (res[1].data || []).map(function (x) { return { id: x.id, label: x.name || '(ไม่มีชื่อ)' }; });
+    P.mine.scene = (res[2].data || []).map(function (x) { return { id: x.id, label: (x.title || '(ไม่มีชื่อ)') + (x.sessions ? ' · ' + x.sessions.name : '') }; });
+    await packsLoad();
+    packsRender();
+  }
+  async function act(fn) {
+    P.err = '';
+    try { var r = await fn(); if (r && r.error) P.err = SP.err(r.error, true); } catch (e) { P.err = SP.err(e, true); }
+    await packsLoad(); packsRender();
+  }
+  function packsRender() {
+    var h = '';
+    if (P.err) h += '<p class="err" role="alert">' + esc(P.err) + '</p>';
+    h += '<div class="card"><div class="row">' +
+      '<div class="field" style="flex:1 1 180px"><label for="pk-book">รหัสเล่ม (a-z 0-9 -)</label><input id="pk-book" class="f" placeholder="เช่น campaign-neon-alley" maxlength="40"></div>' +
+      '<div class="field" style="flex:2 1 240px"><label for="pk-title">ชื่อหนังสือ</label><input id="pk-title" class="f" placeholder="ชื่อที่ผู้ใช้จะเห็น" maxlength="120"></div>' +
+      '<button class="btn solid" id="pk-new">+ สร้างชุดใหม่</button></div></div>';
+    P.packs.forEach(function (pk) {
+      var items = P.items[pk.book] || [], open = P.open === pk.book;
+      var opt = function (k) { return '<option value="">— เลือก —</option>' + P.mine[k].filter(function (m) { return !items.some(function (i) { return i.kind === k && i.src_id === m.id; }); }).map(function (m) { return '<option value="' + m.id + '">' + esc(m.label) + '</option>'; }).join(''); };
+      h += '<div class="card" data-book="' + esc(pk.book) + '">' +
+        '<div class="row" style="justify-content:space-between;align-items:baseline"><div><b style="font:700 18px Chakra Petch,sans-serif">' + esc(pk.title || pk.book) + '</b> <span class="stat-line">' + esc(pk.book) + '</span></div>' +
+        '<span class="stat-line">PC ' + pk.pcs + ' · NPC ' + pk.npcs + ' · Gang ' + pk.gangs + ' · Link ' + pk.links + ' · Scene ' + pk.scenes + ' · โค้ด ' + pk.redeemed + '/' + pk.codes + ' ใช้แล้ว · Import ' + pk.imports + '</span></div>' +
+        '<div class="chips">' + (items.length ? items.map(function (i) { var k = KIND[i.kind]; return '<span class="chip"><b style="color:' + k[1] + '">' + k[0] + '</b>' + esc(i.name || '—') + (i.kind === 'link' || i.kind === 'gang' ? '' : '<button aria-label="เอาออก ' + esc(i.name) + '" data-rm="' + i.id + '">✕</button>') + '</span>'; }).join('') : '<span class="stat-line">ยังไม่มีเนื้อหา</span>') + '</div>' +
+        '<div class="row">' +
+          ['pc', 'npc', 'scene'].map(function (k) { return '<div class="field" style="flex:1 1 200px"><label>เพิ่ม ' + KIND[k][0] + '</label><div class="row" style="flex-wrap:nowrap"><select class="f" data-pick="' + k + '" style="flex:1;min-width:0">' + opt(k) + '</select><button class="btn" data-add="' + k + '">เพิ่ม</button></div></div>'; }).join('') +
+        '</div>' +
+        '<div class="row"><div class="field"><label>สร้างโค้ดใหม่</label><input class="f" type="number" min="1" max="500" value="10" data-n style="width:100px"></div><button class="btn" data-codes>สร้างโค้ด</button>' +
+          '<div class="field" style="flex:1 1 200px"><label>ชื่อหนังสือ</label><div class="row" style="flex-wrap:nowrap"><input class="f" data-title value="' + esc(pk.title) + '" maxlength="120" style="flex:1;min-width:0"><button class="btn" data-save>บันทึกชื่อ</button></div></div></div>' +
+        (P.codes[pk.book] ? '<div class="field"><label>โค้ดที่เพิ่งสร้าง (' + P.codes[pk.book].length + ')</label><textarea class="f" readonly>' + P.codes[pk.book].join('\n') + '</textarea><button class="btn" data-copy style="align-self:flex-start">คัดลอกทั้งหมด</button></div>' : '') +
+      '</div>';
+    });
+    packsEl.innerHTML = h;
+    var nb = document.getElementById('pk-new');
+    nb.onclick = function () {
+      var b = document.getElementById('pk-book').value.trim().toLowerCase(), t = document.getElementById('pk-title').value.trim();
+      if (!/^[a-z0-9-]{2,40}$/.test(b)) { P.err = 'รหัสเล่มใช้ได้แค่ a-z, 0-9 และ - (2–40 ตัว)'; packsRender(); return; }
+      act(function () { return SP.sb.rpc('admin_pack_save', { p_book: b, p_title: t }); });
+    };
+    packsEl.querySelectorAll('[data-book]').forEach(function (card) {
+      var book = card.getAttribute('data-book');
+      card.querySelectorAll('[data-rm]').forEach(function (b) { b.onclick = function () { act(function () { return SP.sb.rpc('admin_pack_remove', { p_item: b.getAttribute('data-rm') }); }); }; });
+      card.querySelectorAll('[data-add]').forEach(function (b) {
+        b.onclick = function () {
+          var k = b.getAttribute('data-add'), v = card.querySelector('[data-pick="' + k + '"]').value;
+          if (v) act(function () { return SP.sb.rpc('admin_pack_add', { p_book: book, p_kind: k, p_src: v }); });
+        };
+      });
+      card.querySelector('[data-save]').onclick = function () { var t = card.querySelector('[data-title]').value.trim(); act(function () { return SP.sb.rpc('admin_pack_save', { p_book: book, p_title: t }); }); };
+      card.querySelector('[data-codes]').onclick = function () {
+        var n = parseInt(card.querySelector('[data-n]').value, 10) || 0;
+        act(async function () { var r = await SP.sb.rpc('admin_pack_codes', { p_book: book, p_n: n }); if (!r.error) P.codes[book] = r.data || []; return r; });
+      };
+      var cp = card.querySelector('[data-copy]');
+      if (cp) cp.onclick = function () {
+        var ta = card.querySelector('textarea');
+        try { navigator.clipboard.writeText(ta.value).then(function () { cp.textContent = 'คัดลอกแล้ว ✓'; }, function () { ta.select(); }); } catch (e) { ta.select(); }
+      };
+    });
+  }
 })();
 </script>
 </body>

@@ -79,6 +79,34 @@ BOOKS = '''<!-- Books: a code printed in any book unlocks the GM role -->
               </sc-for>
             </ul>
           </sc-if>
+          <!-- campaign books: import the pre-made PCs, NPCs and scenes once -->
+          <sc-if value="{{bk.hasPacks}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <sc-for list="{{bk.packs}}" as="pk" hint-placeholder-count="1">
+                <div style="padding: 12px 14px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid #2EE6F0; display: flex; flex-direction: column; gap: 10px">
+                  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px">
+                    <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF">{{pk.title}}</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #A9A5C2">{{pk.counts}}</span>
+                  </div>
+                  <sc-if value="{{pk.done}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 13px; color: #4ADE80">{{pk.doneText}}</p></sc-if>
+                  <sc-if value="{{pk.canImport}}" hint-placeholder-val="{{ true }}">
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+                      <sc-if value="{{pk.needSession}}" hint-placeholder-val="{{ false }}">
+                        <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px">
+                          <label style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{pk.sessLabel}}</label>
+                          <select class="fld" aria-label="{{pk.sessLabel}}" value="{{pk.sess}}" onChange="{{pk.onSession}}">
+                            <sc-for list="{{pk.sessOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                          </select>
+                        </div>
+                      </sc-if>
+                      <button type="button" onClick="{{pk.run}}" disabled="{{pk.off}}" aria-busy="{{pk.busy}}" style="opacity: {{pk.op}}; min-height: 46px; padding: 0 22px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{pk.btn}}</button>
+                    </div>
+                    <span style="font-size: 12.5px; line-height: 1.6; color: {{pk.noteColor}}">{{pk.note}}</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
           <form onSubmit="{{bk.redeem}}" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
             <div style="flex: 1 1 220px; display: flex; flex-direction: column; gap: 6px">
               <label for="acc-book" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{bk.label}}</label>
