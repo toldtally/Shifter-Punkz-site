@@ -250,7 +250,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=6cfcb537"></script>
-<script src="../assets/sp.js?v=9f7442c4"></script>
+<script src="../assets/sp.js?v=c8ef47ce"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script>
 class Component extends DCLogic {
@@ -312,7 +312,7 @@ class Component extends DCLogic {
       canNew: all.length < this.charLimit(),
       atLimit: all.length >= this.charLimit(),
       limitText: L('ครบ ' + this.charLimit() + ' ตัวแล้ว', 'Limit of ' + this.charLimit() + ' reached'),
-      limitTip: L('ผู้เล่นสร้างได้สูงสุด 5 ตัว · ผู้ที่ปลดล็อก GM แล้วสร้างได้ 10 ตัว · ลบตัวละครเก่าเพื่อสร้างใหม่', 'Players can keep 5 characters · 10 once GM is unlocked · delete one to make room'),
+      limitTip: L('ผู้เล่นสร้างได้สูงสุด 5 ตัว · ผู้ที่ปลดล็อก GM แล้วสร้างได้ 10 ตัว · ตัวละคร KIA ไม่นับ', 'Players can keep 5 characters · 10 once GM is unlocked · KIA characters do not count'),
       filters: fdefs.map((d) => ({
         label: d.label,
         count: String(d.id === 'all' ? all.length : all.filter((c) => c.f === d.id).length),
@@ -417,6 +417,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-characters.js?v=84ca501a"></script>
+<script src="../assets/beta-characters.js?v=b3eb668b"></script>
 </body>
 </html>

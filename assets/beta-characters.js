@@ -54,8 +54,9 @@
       var cur = this.state.filter;
       var shown = list.filter((c) => cur === 'all' || c.f === cur);
       var lim = this.charLimit();
-      v.countLabel = list.length + ' / ' + lim + L(' ตัวละคร', ' CHARACTERS');
-      v.canNew = list.length < lim; v.atLimit = !v.canNew;
+      var alive = list.filter((c) => !c.s.dead).length;
+      v.countLabel = alive + ' / ' + lim + L(' ตัวละคร', ' CHARACTERS') + (alive < list.length ? L(' (+' + (list.length - alive) + ' KIA)', ' (+' + (list.length - alive) + ' KIA)') : '');
+      v.canNew = alive < lim; v.atLimit = !v.canNew;
       v.limitText = L('ครบ ' + lim + ' ตัวแล้ว', 'Limit of ' + lim + ' reached');
       v.filters = v.filters.map((fl, i) => {
         var id = ['all', 'shifter', 'norms', 'cpd'][i];
