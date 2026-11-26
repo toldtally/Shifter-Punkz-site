@@ -31,8 +31,8 @@
     var s = sheet || {}, ba = s.ba || {};
     // free points + points bought with REP (baRep) + a C.P.D. Division's +1, never past 3
     var v = Math.min(3, SP.baVal(ba[k]) + SP.num((s.baRep || {})[k]) + (factor === 'cpd' && SP.DIVISIONS[s.traitName] === k ? 1 : 0));
-    // Cosmic Infected: −1, never below 1 · Cosmic Stigma (heavier): −1 and it can reach 0
-    if (s.inj && s.inj['Cosmic Stigma']) return Math.max(0, v - 1);
+    // Cosmic Infected: −1, never below 1 · Cosmic Stigma keeps the value (its rolls are 1D8 only)
+    if (s.inj && s.inj['Cosmic Stigma']) return v;
     return s.inj && s.inj['Cosmic Infected'] ? Math.max(1, v - 1) : v;
   };
 
