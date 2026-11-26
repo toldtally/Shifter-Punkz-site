@@ -537,6 +537,35 @@ html{scroll-behavior:smooth}
               </div>
             </div>
             <div style="flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+              <!-- status of one library NPC, for rolls outside an encounter (GM only) -->
+              <sc-if value="{{peek.has}}" hint-placeholder-val="{{ false }}">
+                <div role="region" aria-label="{{peek.aria}}" style="display: flex; gap: 10px; padding: 10px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid #FFD400">
+                  <span style="width: 56px; height: 56px; flex-shrink: 0; overflow: hidden; background: #1D1930; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; color: #FFD400"><sc-if value="{{peek.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{peek.url}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{peek.noPic}}" hint-placeholder-val="{{ false }}">{{peek.initial}}</sc-if></span>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                    <div style="display: flex; align-items: center; gap: 8px">
+                      <span style="flex: 1; min-width: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{peek.name}}</span>
+                      <span style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: #8C88A6">{{t.peekGmOnly}}</span>
+                      <button type="button" onClick="{{peek.close}}" aria-label="{{t.peekClose}}" title="{{t.peekClose}}" style="width: 32px; min-height: 32px; flex-shrink: 0; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">✕</button>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                      <sc-for list="{{peek.bars}}" as="br" hint-placeholder-count="2">
+                        <div role="group" aria-label="{{br.aria}}" style="display: flex; align-items: center; gap: 6px; padding: 3px 4px 3px 8px; border: 1px solid #2A2740; border-left: 3px solid {{br.c}}">
+                          <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: {{br.c}}">{{br.k}}</span>
+                          <button type="button" onClick="{{br.dec}}" disabled="{{br.decOff}}" aria-label="{{br.decLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">−</button>
+                          <span style="min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #FFFFFF">{{br.v}}<span style="color: #8C88A6"> / 10</span></span>
+                          <button type="button" onClick="{{br.inc}}" disabled="{{br.incOff}}" aria-label="{{br.incLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">+</button>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
+                      <sc-for list="{{peek.stLines}}" as="ln" hint-placeholder-count="4">
+                        <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{ln.c}}; padding-top: 1px">{{ln.k}}</dt>
+                        <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{ln.v}}</dd>
+                      </sc-for>
+                    </dl>
+                  </div>
+                </div>
+              </sc-if>
               <label for="npc-lib-q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">{{t.npcSearch}}</label>
               <input id="npc-lib-q" class="fld" type="search" value="{{npcQ}}" onInput="{{onNpcQ}}" placeholder="{{t.npcSearchPh}}">
               <sc-if value="{{npcLibNone}}" hint-placeholder-val="{{ false }}">
@@ -557,6 +586,7 @@ html{scroll-behavior:smooth}
                     <div style="padding: 6px 8px 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px">
                       <button type="button" onClick="{{nc.scene}}" aria-pressed="{{nc.scenePressed}}" disabled="{{nc.sceneOff}}" title="{{nc.sceneTip}}" style="min-height: 34px; padding: 0 4px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; border: 1px solid #FF2E88; background: {{nc.sceneBg}}; color: {{nc.sceneFg}}">{{nc.sceneText}}</button>
                       <button type="button" onClick="{{nc.enc}}" aria-pressed="{{nc.encPressed}}" title="{{nc.encTip}}" style="min-height: 34px; padding: 0 4px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; border: 1px solid #FF3D6E; background: {{nc.encBg}}; color: {{nc.encFg}}">{{nc.encText}}</button>
+                      <button type="button" onClick="{{nc.peek}}" aria-pressed="{{nc.peekPressed}}" title="{{t.peekTip}}" style="grid-column: 1 / -1; min-height: 32px; padding: 0 4px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; border: 1px solid #FFD400; background: {{nc.peekBg}}; color: {{nc.peekFg}}">{{nc.peekText}}</button>
                     </div>
                   </li>
                 </sc-for>
@@ -832,6 +862,31 @@ class Component extends DCLogic {
     if (saved) this.npcStatSave(id, saved);
   }
   npcStatSave() {}
+  /* an NPC's status from the NPC page as GM-only lines plus current IP / WM counters */
+  npcStatView(n) {
+    const L = (a, b) => (this.state.lang !== 'en' ? a : b);
+    const d = n.stat || {};
+    const fk = n.factor || '', ln = [];
+    const add = (k, v, c) => { if (v) ln.push({ k: k, v: v, c: c || '#A9A5C2' }); };
+    const nz = (v) => (v == null || v === '' ? '0' : String(v));
+    add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1) + ' · Slots ' + (d.slots || (fk === 'norms' ? 8 : 5)), d.boss ? '#FF3D6E' : '#2EE6F0');
+    add('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
+    add('WM', 'PWR+' + nz(d.pwr) + (fk === 'shifter' ? ' · RGN+' + Math.max(1, +d.wmRgn || 1) : ''), '#C084FC');
+    const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
+    add('ABILITY', 'Force ' + b1('force') + ' · Tactical ' + b1('tactical') + ' · Trick ' + b1('trick') + ' · Sense ' + b1('sense'));
+    if ((fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n) add(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400');
+    const list = (a, f) => (a || []).filter((r) => r && r.n).map(f).join(' · ');
+    add('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)));
+    add('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
+    add('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
+    add('BONDED', d.bond || '');
+    const bar = (k, key, c) => {
+      const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(10, +d[key] || 0)) : 10;
+      return { k: k, v: String(v), c: c, aria: k + ' ' + (n.name || ''), dec: () => this.npcAdjust(n.id, key, -1), inc: () => this.npcAdjust(n.id, key, 1),
+        decOff: v <= 0, incOff: v >= 10, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
+    };
+    return { stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF'), bar('WM', 'wmCur', '#C084FC')] };
+  }
   encDrop(id) { this.encSet((this.state.encounter || []).filter((x) => x.id !== id)); }
   encToggle(id, st) {
     this.encSet((this.state.encounter || []).map((x) => (x.id !== id ? x : Object.assign({}, x, { status: x.status.indexOf(st) === -1 ? x.status.concat([st]) : x.status.filter((y) => y !== st) }))));
@@ -1057,30 +1112,7 @@ class Component extends DCLogic {
             name: x.name || L('(ไม่มีชื่อ)', '(unnamed)'), url: x.url, hasPic: !!x.url, noPic: !x.url, initial: ini(x.name),
             remove: () => this.encDrop(x.id), removeLabel: L('เอาออกจาก Encounter: ', 'Take out of the encounter: ') + (x.name || ''),
             statusLabel: L('สถานะผิดปกติของ ', 'Abnormal statuses of ') + (x.name || ''),
-            ...(() => {
-              const n = all.find((y) => y.id === x.id), d = (n && n.stat) || {};
-              if (!n) return { hasSt: false, stLines: [], bars: [] };
-              const fk = n.factor || '', ln = [];
-              const add = (k, v, c) => { if (v) ln.push({ k: k, v: v, c: c || '#A9A5C2' }); };
-              const nz = (v) => (v == null || v === '' ? '0' : String(v));
-              add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1) + ' · Slots ' + (d.slots || (fk === 'norms' ? 8 : 5)), d.boss ? '#FF3D6E' : '#2EE6F0');
-              add('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
-              add('WM', 'PWR+' + nz(d.pwr) + (fk === 'shifter' ? ' · RGN+' + Math.max(1, +d.wmRgn || 1) : ''), '#C084FC');
-              const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
-              add('ABILITY', 'Force ' + b1('force') + ' · Tactical ' + b1('tactical') + ' · Trick ' + b1('trick') + ' · Sense ' + b1('sense'));
-              if ((fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n) add(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400');
-              const list = (a, f) => (a || []).filter((r) => r && r.n).map(f).join(' · ');
-              add('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)));
-              add('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
-              add('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
-              add('BONDED', d.bond || '');
-              const bar = (k, key, c) => {
-                const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(10, +d[key] || 0)) : 10;
-                return { k: k, v: String(v), c: c, aria: k + ' ' + (x.name || ''), dec: () => this.npcAdjust(x.id, key, -1), inc: () => this.npcAdjust(x.id, key, 1),
-                  decOff: v <= 0, incOff: v >= 10, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
-              };
-              return { hasSt: true, stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF'), bar('WM', 'wmCur', '#C084FC')] };
-            })(),
+            ...(() => { const n = all.find((y) => y.id === x.id); return n ? Object.assign({ hasSt: true }, this.npcStatView(n)) : { hasSt: false, stLines: [], bars: [] }; })(),
             statuses: ENC_STATUS.map((st) => {
               const onS = x.status.indexOf(st) !== -1;
               return { n: st, pressed: onS ? 'true' : 'false', toggle: () => this.encToggle(x.id, st),
@@ -1095,9 +1127,17 @@ class Component extends DCLogic {
           onNpcQ: (e) => this.setState({ npcQ: e && e.target ? e.target.value : '' }),
           npcLibNone: lib.length === 0,
           npcLibNoneText: all.length ? L('ไม่พบ NPC ที่ตรงกับคำค้น', 'No NPC matches that search') : L('ยังไม่มี NPC สร้างได้ที่หน้า NPC', 'No NPCs yet. Make some on the NPC page.'),
+          peek: (() => {
+            const n = all.find((y) => y.id === this.state.npcPeek);
+            if (!n) return { has: false, bars: [], stLines: [] };
+            return Object.assign({ has: true, name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), aria: L('สถานะของ ', 'Status of ') + (n.name || ''),
+              url: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: ini(n.name), close: () => this.setState({ npcPeek: null }) }, this.npcStatView(n));
+          })(),
           npcLib: lib.map((n) => {
-            const onScene = shownIds.indexOf('npc-' + n.id) !== -1, inEnc = enc.some((x) => x.id === n.id);
+            const onScene = shownIds.indexOf('npc-' + n.id) !== -1, inEnc = enc.some((x) => x.id === n.id), peeking = this.state.npcPeek === n.id;
             return {
+              peek: () => this.setState({ npcPeek: peeking ? null : n.id }), peekPressed: peeking ? 'true' : 'false',
+              peekText: peeking ? L('■ ปิดสถานะ', '■ Hide status') : L('ดูสถานะ', 'Status'), peekBg: peeking ? '#FFD400' : 'transparent', peekFg: peeking ? '#0B0A12' : '#FFD400',
               name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), meta: n.role || '—', url: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: ini(n.name),
               border: inEnc ? '#FF3D6E' : onScene ? '#FF2E88' : '#2A2740',
               badge: onScene || inEnc, badgeText: inEnc ? 'ENCOUNTER' : 'ON SCREEN', badgeColor: inEnc ? '#FF3D6E' : '#FF2E88',
@@ -1417,6 +1457,8 @@ class Component extends DCLogic {
         encClear: L('จบ Encounter', 'End encounter'),
         npcSearch: L('ค้นหา NPC', 'Search NPCs'),
         npcSearchPh: L('ค้นหา NPC…', 'Search NPCs…'),
+        peekTip: L('ดูสถานะ NPC สำหรับทอยเต๋านอก Encounter (เห็นเฉพาะ GM)', 'See this NPC\'s status for rolls outside an encounter (GM only)'),
+        peekClose: L('ปิดสถานะ NPC', 'Close NPC status'), peekGmOnly: L('เห็นเฉพาะ GM', 'GM ONLY'),
         npcLib: L('คลัง NPC', 'NPC library'),
         npcHint: L('"ขึ้นภาพ" ส่งแค่รูป NPC ขึ้นจอผู้เล่นแบบ Scene · "+ Encounter" ใส่ NPC ลงแถบ Encounter บนใบตัวละครผู้เล่น ผู้เล่นเห็นรูป ชื่อ และสถานะผิดปกติที่ GM กดไว้เท่านั้น', '"Show picture" puts only the NPC\'s picture on players\' screens, like a scene. "+ Encounter" adds them to the Encounter strip on players\' sheets: players see the picture, the name and the abnormal statuses you switch on, nothing else.'),
         sceneNow: L('บนจอผู้เล่นตอนนี้', 'ON PLAYERS\' SCREENS NOW'),
