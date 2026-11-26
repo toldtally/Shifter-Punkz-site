@@ -896,8 +896,14 @@ class Component extends DCLogic {
     const node = gid ? this.state.gangs.find((g) => g.id === gid) : this.nodeOf(key);
     if (!node) return;
     const multi = this.state.multi || [];
-    const group = multi.length > 1 && multi.indexOf(key) !== -1 ? multi.filter((k) => k !== key).map((k) => { const n = this.nodeOf(k); return n ? { key: k, x: n.x, y: n.y } : null; }).filter(Boolean) : [];
-    const members = key.indexOf('gang:') === 0 ? this.state.npcs.filter((n) => n.gang === node.id).map((n) => ({ id: n.id, x: n.x, y: n.y })) : [];
+    let group = multi.length > 1 && multi.indexOf(key) !== -1 ? multi.filter((k) => k !== key).map((k) => { const n = this.nodeOf(k); return n ? { key: k, x: n.x, y: n.y } : null; }).filter(Boolean) : [];
+    // gangs in the selection carry the NPCs inside them (each NPC moves once)
+    const gangIds = (key.indexOf('gang:') === 0 ? [node.id] : []).concat(group.filter((g) => g.key.indexOf('gang:') === 0).map((g) => g.key.slice(5)));
+    if (group.length) {
+      const have = {}; group.forEach((g) => { have[g.key] = 1; }); have[key] = 1;
+      this.state.npcs.forEach((n) => { if (n.gang && gangIds.indexOf(n.gang) !== -1 && !have['npc:' + n.id]) { group.push({ key: 'npc:' + n.id, x: n.x, y: n.y, carried: true }); have['npc:' + n.id] = 1; } });
+    }
+    const members = key.indexOf('gang:') === 0 && !group.length ? this.state.npcs.filter((n) => n.gang === node.id).map((n) => ({ id: n.id, x: n.x, y: n.y })) : [];
     this._drag = { group: group, key: key, sx: e.clientX, sy: e.clientY, x: node.x, y: node.y, w: node.w, h: node.h, members: members, moved: false };
   }
   /* drag on empty map space draws a box; the cards inside it become the selection */
@@ -925,7 +931,8 @@ class Component extends DCLogic {
     if (e.clientY > r.bottom - 30) sc.scrollTop += 18; else if (e.clientY < r.top + 30) sc.scrollTop -= 18;
     const x0 = Math.min(bx.x0, bx.x1), x1 = Math.max(bx.x0, bx.x1), y0 = Math.min(bx.y0, bx.y1), y1 = Math.max(bx.y0, bx.y1);
     const inside = this.state.npcs.map((n) => ['npc:' + n.id, n]).concat(this.state.pcs.map((p) => ['pc:' + p.id, p]))
-      .filter((q) => q[1].x >= x0 && q[1].x <= x1 && q[1].y >= y0 && q[1].y <= y1).map((q) => q[0]);
+      .filter((q) => q[1].x >= x0 && q[1].x <= x1 && q[1].y >= y0 && q[1].y <= y1).map((q) => q[0])
+      .concat(this.state.gangs.filter((g) => g.x >= x0 && g.y >= y0 && g.x + g.w <= x1 && g.y + g.h <= y1).map((g) => 'gang:' + g.id));
     bx.moved = true;
     this.setState({ box: { x: Math.round(x0), y: Math.round(y0), w: Math.round(x1 - x0), h: Math.round(y1 - y0) }, multi: bx.base.concat(inside.filter((k) => bx.base.indexOf(k) === -1)), sel: null, askDel: false });
   }
@@ -956,7 +963,7 @@ class Component extends DCLogic {
     if (k === 'resize') {
       return this.setState({ gangs: this.state.gangs.map((g) => (g.id === id ? Object.assign({}, g, { w: Math.round(Math.min(Math.max(d.w + dx, 220), NPC_W - g.x)), h: Math.round(Math.min(Math.max(d.h + dy, 160), NPC_H - g.y)) }) : g)) });
     }
-    if (k === 'gang') {
+    if (k === 'gang' && !d.group.length) {
       const g0 = this.state.gangs.find((g) => g.id === id);
       const nx = Math.round(Math.min(Math.max(d.x + dx, 0), NPC_W - g0.w)), ny = Math.round(Math.min(Math.max(d.y + dy, 0), NPC_H - g0.h));
       const mx = nx - d.x, my = ny - d.y;
@@ -965,12 +972,18 @@ class Component extends DCLogic {
         npcs: this.state.npcs.map((n) => { const m = d.members.find((q) => q.id === n.id); return m ? Object.assign({}, n, { x: m.x + mx, y: m.y + my }) : n; })
       });
     }
-    const p = this.clamp(d.x + dx, d.y + dy);
+    // a gang frame keeps inside the map by its whole size; cards by their point
+    const place = (key, x, y) => {
+      if (key.indexOf('gang:') === 0) { const g = this.state.gangs.find((q) => 'gang:' + q.id === key); return { x: Math.round(Math.min(Math.max(x, 0), NPC_W - g.w)), y: Math.round(Math.min(Math.max(y, 0), NPC_H - g.h)) }; }
+      return this.clamp(x, y);
+    };
+    const p = place(d.key, d.x + dx, d.y + dy);
     const mx = p.x - d.x, my = p.y - d.y;
     const at = {};
     at[d.key] = p;
-    d.group.forEach((g) => { at[g.key] = this.clamp(g.x + mx, g.y + my); });
+    d.group.forEach((g) => { at[g.key] = place(g.key, g.x + mx, g.y + my); });
     this.setState({
+      gangs: this.state.gangs.map((n) => (at['gang:' + n.id] ? Object.assign({}, n, at['gang:' + n.id]) : n)),
       npcs: this.state.npcs.map((n) => (at['npc:' + n.id] ? Object.assign({}, n, at['npc:' + n.id]) : n)),
       pcs: this.state.pcs.map((n) => (at['pc:' + n.id] ? Object.assign({}, n, at['pc:' + n.id]) : n))
     });
@@ -985,10 +998,11 @@ class Component extends DCLogic {
     this._dragAt = Date.now();
     setTimeout(() => { this._dragAt = 0; }, 60);
     const [k, id] = [d.key.slice(0, d.key.indexOf(':')), d.key.slice(d.key.indexOf(':') + 1)];
-    if (k === 'npc' || k === 'pc') {
-      // every card that moved: NPCs join or leave the gang frame they landed in
+    if (k === 'npc' || k === 'pc' || (k === 'gang' && d.group.length)) {
+      // every card that moved: NPCs join or leave the gang frame they landed in; moved gangs are saved
       [d.key].concat(d.group.map((g) => g.key)).forEach((key) => {
         const kk = key.slice(0, key.indexOf(':')), kid = key.slice(key.indexOf(':') + 1);
+        if (kk === 'gang') return this.commit('gang', this.state.gangs.find((x) => x.id === kid));
         if (kk === 'pc') return this.commit('pc', this.state.pcs.find((x) => x.id === kid));
         const n = this.state.npcs.find((x) => x.id === kid);
         if (!n) return;
@@ -1017,7 +1031,7 @@ class Component extends DCLogic {
     if (this.justDragged()) return;
     if (!this.state.linkMode && e && (e.shiftKey || e.metaKey || e.ctrlKey)) {
       const cur = (this.state.multi || []).slice();
-      if (!cur.length && this.state.sel && (this.state.sel.kind === 'npc' || this.state.sel.kind === 'pc')) cur.push(this.state.sel.kind + ':' + this.state.sel.id);
+      if (!cur.length && this.state.sel && (this.state.sel.kind === 'npc' || this.state.sel.kind === 'pc' || this.state.sel.kind === 'gang')) cur.push(this.state.sel.kind + ':' + this.state.sel.id);
       const m = cur.indexOf(key) === -1 ? cur.concat([key]) : cur.filter((k) => k !== key);
       return this.setState({ multi: m.length > 1 ? m : [], sel: m.length === 1 ? { kind: m[0].slice(0, m[0].indexOf(':')), id: m[0].slice(m[0].indexOf(':') + 1) } : null, askDel: false });
     }
@@ -1086,11 +1100,11 @@ class Component extends DCLogic {
       };
     });
     const gangs = s.gangs.map((g) => {
-      const pressed = isSel('gang', g.id), n = s.npcs.filter((x) => x.gang === g.id).length;
+      const pressed = isSel('gang', g.id) || (s.multi || []).indexOf('gang:' + g.id) !== -1, n = s.npcs.filter((x) => x.gang === g.id).length;
       return {
         id: g.id, x: g.x, y: g.y, w: g.w, h: g.h, color: g.color, name: g.name || L('แก๊งไม่มีชื่อ', 'Unnamed gang'), count: n + ' NPC',
         fill: g.color + '12', ring: pressed ? '0 0 0 2px ' + g.color + ', 0 0 30px ' + g.color + '40' : 'none', pressed: pressed ? 'true' : 'false',
-        pick: () => { if (!this.justDragged()) this.setState({ sel: { kind: 'gang', id: g.id }, askDel: false }); }
+        pick: (e) => { if (this.justDragged()) return; if (!this.state.linkMode && e && (e.shiftKey || e.metaKey || e.ctrlKey)) return this.pickNode('gang:' + g.id, e); this.setState({ sel: { kind: 'gang', id: g.id }, multi: [], askDel: false }); }
       };
     });
 
@@ -1104,7 +1118,7 @@ class Component extends DCLogic {
     const multi = (s.multi || []).filter((k) => this.nodeOf(k));
     v.selMulti = multi.length > 1 && !curNpc && !curGang && !curLink && !curPc;
     v.selNone = !curNpc && !curGang && !curLink && !curPc && !v.selMulti; v.hasSel = !v.selNone;
-    v.multiItems = multi.map((k) => ({ name: this.nameOf(k), kind: k.indexOf('pc:') === 0 ? 'PC' : 'NPC', pick: () => this.setState({ sel: { kind: k.slice(0, k.indexOf(':')), id: k.slice(k.indexOf(':') + 1) }, multi: [] }) }));
+    v.multiItems = multi.map((k) => ({ name: this.nameOf(k), kind: k.indexOf('pc:') === 0 ? 'PC' : k.indexOf('gang:') === 0 ? 'GANG' : 'NPC', pick: () => this.setState({ sel: { kind: k.slice(0, k.indexOf(':')), id: k.slice(k.indexOf(':') + 1) }, multi: [] }) }));
     v.multiCount = multi.length;
     v.boxOn = !!s.box; v.box = s.box || { x: 0, y: 0, w: 0, h: 0 };
     v.insTitle = v.selMulti ? L('เลือก ' + multi.length + ' การ์ด', multi.length + ' CARDS SELECTED') : curNpc ? 'NPC' : curGang ? L('แก๊ง / กลุ่ม', 'GANG') : curLink ? L('ความสัมพันธ์', 'RELATIONSHIP') : curPc ? 'PC' : L('NPC ทั้งหมด', 'ALL NPCS');
@@ -1389,7 +1403,7 @@ class Component extends DCLogic {
         addPc: L('เพิ่ม PC ลงแผนผัง', 'Add a PC to the map'),
         mapLabel: L('แผนผังความสัมพันธ์ NPC', 'NPC relationship map'),
         mapTip: L('ลากการ์ดเพื่อย้าย · ลากที่ว่างเพื่อคลุมหลายการ์ด · Shift+คลิกเพื่อเลือกเพิ่ม · กดเมาส์กลางค้างเพื่อเลื่อนแผนผัง · ลาก NPC เข้ากรอบแก๊งเพื่อให้สังกัด', 'Drag cards to move · drag empty space to box-select · Shift+click to add · hold the middle button to pan · drop an NPC in a gang frame to join it'),
-        multiTip: L('ลากการ์ดใบไหนก็ได้ที่เลือกไว้ เพื่อย้ายทั้งหมดพร้อมกัน กด Esc หรือคลิกที่ว่างเพื่อยกเลิกการเลือก', 'Drag any selected card to move them all together. Esc or a click on empty space clears the selection.'),
+        multiTip: L('ลากการ์ดหรือป้ายแก๊งที่เลือกไว้ เพื่อย้ายทั้งหมดพร้อมกัน (แก๊งพา NPC ข้างในไปด้วย) · ลากคลุมแก๊งทั้งกรอบหรือ Shift+คลิกป้ายแก๊งเพื่อเลือกเพิ่ม · กด Esc หรือคลิกที่ว่างเพื่อยกเลิก', 'Drag any selected card or gang label to move them all together (gangs bring the NPCs inside). Box a whole gang frame or Shift+click its label to add it. Esc or a click on empty space clears the selection.'),
         clearSel: L('ยกเลิกการเลือก', 'Clear selection'),
         zoomIn: L('ขยาย', 'Zoom in'), zoomOut: L('ย่อ', 'Zoom out'), fit: L('พอดีจอ', 'FIT'),
         dragTip: L('ลากเพื่อย้ายทั้งแก๊ง · คลิกเพื่อแก้ไข', 'Drag to move the whole gang · click to edit'),
