@@ -222,6 +222,25 @@ html{scroll-behavior:smooth}
         </sc-if>
       </div>
     </sc-if>
+    <!-- after waking from COMA: re-stat one of Basic Ability / Trait / General skills, or keep everything -->
+    <sc-if value="{{restatOn}}" hint-placeholder-val="{{ false }}">
+      <div role="region" aria-label="Re-stat" style="margin-bottom: 14px; padding: 14px 16px; background: #0E1A22; border: 1px solid #1E4A5A; border-left: 3px solid #2EE6F0; display: flex; flex-direction: column; gap: 10px">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #2EE6F0">RE-STAT // {{restatTag}}</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.6; color: #D8D6E8">{{restatBody}}</p>
+        <sc-if value="{{restatPicking}}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{restatOpts}}" as="ro" hint-placeholder-count="4">
+              <button type="button" class="btn" onClick="{{ro.pick}}" style="border-color: {{ro.color}}; color: {{ro.color}}">{{ro.label}}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{restatActive}}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <button type="button" class="btn" onClick="{{restatDone}}" style="border-color: #2EE6F0; background: #2EE6F0; color: #0B0A12">{{t.restatDone}}</button>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
 
     <section aria-label="Table" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; padding: 14px 16px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid {{tb.accent}}">
       <sc-if value="{{tb.out}}" hint-placeholder-val="{{ true }}">
@@ -491,12 +510,12 @@ html{scroll-behavior:smooth}
 
         <div class="panel pk">
           <div class="ph"><h2>{{traitTitle}}</h2>
-            <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{openTraits}}" aria-haspopup="dialog" style="border-color: #FF2E88; color: #FF2E88">All traits</button></sc-if>
+            <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{openTraits}}" aria-haspopup="dialog" disabled="{{traitLock}}" style="border-color: #FF2E88; color: #FF2E88">All traits</button></sc-if>
           </div>
           <div class="pb">
             <div class="row">
               <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
-                <div class="field" style="flex: 1"><label class="lbl" for="fTraitName">Name</label><textarea id="fTraitName" class="fld grow" rows="1" maxlength="40" placeholder="{{traitPh}}" value="{{s.traitName}}" onInput="{{on.traitName}}" onKeyDown="{{oneLine}}"></textarea></div>
+                <div class="field" style="flex: 1"><label class="lbl" for="fTraitName">Name</label><textarea id="fTraitName" class="fld grow" rows="1" maxlength="40" placeholder="{{traitPh}}" value="{{s.traitName}}" onInput="{{on.traitName}}" onKeyDown="{{oneLine}}" disabled="{{traitLock}}"></textarea></div>
               </sc-if>
               <sc-if value="{{cpdDiv}}" hint-placeholder-val="{{ false }}">
                 <div class="field" style="flex: 1"><label class="lbl" for="fDivision">Division</label>
@@ -509,7 +528,7 @@ html{scroll-behavior:smooth}
                 </div>
               </sc-if>
               <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
-                <div class="field" style="flex: 2"><label class="lbl" for="fTraitFx">Ability</label><textarea id="fTraitFx" class="fld grow" rows="1" placeholder="{{t.phTraitFx}}" style="min-height: 36px" value="{{s.traitFx}}" onInput="{{on.traitFx}}"></textarea></div>
+                <div class="field" style="flex: 2"><label class="lbl" for="fTraitFx">Ability</label><textarea id="fTraitFx" class="fld grow" rows="1" placeholder="{{t.phTraitFx}}" style="min-height: 36px" value="{{s.traitFx}}" onInput="{{on.traitFx}}" disabled="{{traitLock}}"></textarea></div>
               </sc-if>
             </div>
             <sc-if value="{{notCpd}}" hint-placeholder-val="{{ true }}">
@@ -518,7 +537,7 @@ html{scroll-behavior:smooth}
                   <div class="rowline" style="grid-template-columns: 1fr 2fr 28px; align-items: start">
                     <textarea class="fld grow" rows="1" aria-label="Trait name" placeholder="{{t.phTraitName}}" value="{{r.name}}" onInput="{{r.on_name}}" onKeyDown="{{oneLine}}"></textarea>
                     <textarea class="fld grow" rows="1" aria-label="Trait ability" placeholder="Ability" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
-                    <button type="button" class="rm" aria-label="{{t.rmTrait}}" onClick="{{r.remove}}">×</button>
+                    <button type="button" class="rm" aria-label="{{t.rmTrait}}" onClick="{{r.remove}}" disabled="{{r.off}}">×</button>
                   </div>
                 </sc-for>
                 <button type="button" class="add" onClick="{{addTraitX}}" disabled="{{traitXFull}}">{{traitXLabel}}</button>
@@ -623,9 +642,9 @@ html{scroll-behavior:smooth}
               <div title="{{ab.tip}}" style="display: flex; align-items: center; gap: 10px; border: 1px solid #2A2740; padding: 6px 8px; background: #0B0A12; margin-bottom: 6px">
                 <span style="font-size: 13px; font-weight: 600; letter-spacing: .03em; color: #FFFFFF">{{ab.name}}</span>
                 <span style="display: flex; align-items: center; gap: 8px">
-                  <button type="button" class="step" aria-label="{{ab.name}} −" onClick="{{ab.dec}}">−</button>
+                  <button type="button" class="step" aria-label="{{ab.name}} −" onClick="{{ab.dec}}" disabled="{{ab.decOff}}">−</button>
                   <span style="min-width: 16px; text-align: center; font-weight: 700; font-family: 'Chakra Petch', sans-serif; font-size: 16px; color: #2EE6F0">{{ab.val}}</span>
-                  <button type="button" class="step" aria-label="{{ab.name}} +" onClick="{{ab.inc}}" style="width: 26px; height: 26px">+</button>
+                  <button type="button" class="step" aria-label="{{ab.name}} +" title="{{ab.incTip}}" onClick="{{ab.inc}}" disabled="{{ab.incOff}}" style="width: 26px; height: 26px">+</button>
                 </span>
                 <sc-if value="{{ab.div}}" hint-placeholder-val="{{ false }}">
                   <span title="{{ab.divTip}}" style="padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .05em; color: #FFD400; white-space: nowrap">+1 DIV</span>
@@ -634,7 +653,7 @@ html{scroll-behavior:smooth}
                 <button type="button" onClick="{{ab.roll}}" aria-label="{{ab.rollLabel}}" title="{{ab.rollLabel}}" style="width: 34px; height: 30px; flex-shrink: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer"><svg width="18" height="18" viewBox="0 0 100 100" aria-hidden="true" style="display: block"><polygon points="50,4 95,50 50,96 5,50" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><polygon points="50,22 78,62 22,62" fill="currentColor" fill-opacity=".35"/></svg></button>
               </div>
             </sc-for>
-            <p style="margin: 8px 0 0; font-size: 12.5px; color: #A9A5C2">{{t.pointsLeft}} <b style="color: {{poolColor}}">{{remain}}</b> / {{pool}}</p>
+            <p style="margin: 8px 0 0; font-size: 12.5px; color: #A9A5C2">{{t.pointsLeft}} <b style="color: {{poolColor}}">{{remain}}</b> / {{pool}}{{baRepNote}}</p>
           </div>
         </div>
 
@@ -687,7 +706,7 @@ html{scroll-behavior:smooth}
             <sc-for list="{{cosmic}}" as="r" hint-placeholder-count="0">
               <div style="border-bottom: 1px solid #2A2740; padding: 8px 0; display: flex; flex-direction: column; gap: 6px">
                 <div class="rowline" style="grid-template-columns: .5fr 1fr 52px 28px; align-items: start; margin: 0">
-                  <select class="fld" aria-label="Cosmic type" onChange="{{r.on_type}}" style="color: {{r.typeColor}}; min-width: 0">
+                  <select class="fld" aria-label="Cosmic type" onChange="{{r.on_type}}" disabled="{{r.rmOff}}" style="color: {{r.typeColor}}; min-width: 0">
                     <sc-for list="{{r.typeOpts}}" as="o" hint-placeholder-count="9">
                       <option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option>
                     </sc-for>
@@ -702,9 +721,21 @@ html{scroll-behavior:smooth}
                   <sc-if value="{{r.nameFree}}" hint-placeholder-val="{{ false }}">
                     <textarea class="fld grow" rows="1" aria-label="Cosmic name" placeholder="{{cosPh}}" value="{{r.name}}" onInput="{{r.on_name}}" onKeyDown="{{oneLine}}" style="min-width: 0"></textarea>
                   </sc-if>
-                  <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
-                  <button type="button" class="rm" aria-label="{{t.rmCos}}" onClick="{{r.remove}}">×</button>
+                  <sc-if value="{{r.cdFree}}" hint-placeholder-val="{{ false }}">
+                    <input class="fld" type="number" min="0" max="3" aria-label="Cosmic dice" placeholder="Dice" value="{{r.cd}}" onInput="{{r.on_cd}}">
+                  </sc-if>
+                  <sc-if value="{{r.cdShow}}" hint-placeholder-val="{{ true }}">
+                    <span title="Cosmic Dice" style="min-height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid #2A2740; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #C084FC">{{r.cdText}}</span>
+                  </sc-if>
+                  <button type="button" class="rm" aria-label="{{t.rmCos}}" onClick="{{r.remove}}" disabled="{{r.rmOff}}">×</button>
                 </div>
+                <sc-if value="{{r.cdShow}}" hint-placeholder-val="{{ true }}">
+                  <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+                    <span class="lbl">Cosmic Dice</span>
+                    <sc-if value="{{r.cdDownShow}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn sm" onClick="{{r.cdDown}}" disabled="{{r.cdDownOff}}" style="border-color: #A9A5C2; color: #D8D6E8">{{r.cdDownText}}</button></sc-if>
+                    <button type="button" class="btn sm" onClick="{{r.cdUp}}" disabled="{{r.cdUpOff}}" style="border-color: #C084FC; color: #C084FC">{{r.cdUpText}}</button>
+                  </div>
+                </sc-if>
                 <label style="display: flex; flex-direction: column; gap: 4px"><span class="lbl">Active</span>
                   <textarea class="fld grow" rows="2" aria-label="Cosmic active" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}" style="min-height: 58px"></textarea>
                 </label>
@@ -727,10 +758,10 @@ html{scroll-behavior:smooth}
             <div class="thead" style="grid-template-columns: .6fr 64px 1.4fr 28px"><div>Name</div><div>LV</div><div>Effect</div><div></div></div>
             <sc-for list="{{skills}}" as="r" hint-placeholder-count="0">
               <div class="rowline" style="grid-template-columns: .6fr 64px 1.4fr 28px; align-items: start">
-                <textarea class="fld grow" rows="1" aria-label="Skill name" placeholder="{{t.phSkill}}" value="{{r.name}}" onInput="{{r.on_name}}" onKeyDown="{{oneLine}}"></textarea>
-                <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><input class="fld" type="number" min="0" max="10" aria-label="Skill level" value="{{r.lv}}" onInput="{{r.on_lv}}" style="text-align: center"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; text-align: center; color: #C084FC">{{r.boost}}</span></div>
+                <textarea class="fld grow" rows="1" aria-label="Skill name" placeholder="{{t.phSkill}}" value="{{r.name}}" onInput="{{r.on_name}}" onKeyDown="{{oneLine}}" disabled="{{r.off}}"></textarea>
+                <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><input class="fld" type="number" min="0" max="10" aria-label="Skill level" value="{{r.lv}}" onInput="{{r.on_lv}}" disabled="{{r.off}}" style="text-align: center"><span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; text-align: center; color: #C084FC">{{r.boost}}</span></div>
                 <textarea class="fld grow" rows="1" aria-label="Skill effect" placeholder="{{t.phFx}}" value="{{r.fx}}" onInput="{{r.on_fx}}"></textarea>
-                <button type="button" class="rm" aria-label="{{t.rmSkill}}" onClick="{{r.remove}}">×</button>
+                <button type="button" class="rm" aria-label="{{t.rmSkill}}" onClick="{{r.remove}}" disabled="{{r.off}}">×</button>
               </div>
             </sc-for>
             <button type="button" class="add" onClick="{{addSkill}}" disabled="{{skillsFull}}">{{t.addSkill}}</button>
@@ -789,7 +820,7 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
 <script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=942fe33a"></script>
+<script src="../assets/beta-common.js?v=62acd8fc"></script>
 <script src="../assets/bgm.js?v=9ad01035"></script>
 <script src="../assets/dice.js?v=02914620"></script>
 <script>
@@ -801,7 +832,7 @@ function initialSheet() {
     hpCur: '10', hpMax: '10', hpAmr: '0', hpRgn: '0',
     spCur: '10', spMax: '10', spPwr: '0', spRgn: '1',
     coma: false, inj: {}, faintDc: '8', notes: '', portrait: '',
-    ba: { force: 0, tactical: 0, trick: 0, sense: 0 }, baMod: { force: '0', tactical: '0', trick: '0', sense: '0' },
+    ba: { force: 0, tactical: 0, trick: 0, sense: 0 }, baRep: { force: 0, tactical: 0, trick: 0, sense: 0 }, statLock: false, restat: null, baMod: { force: '0', tactical: '0', trick: '0', sense: '0' },
     se: 0, ex: 0, adv: '5', skills: [], weapons: [], gears: [], cosmic: []
   };
 }
@@ -1053,12 +1084,12 @@ class Component extends DCLogic {
   comaWake() {
     const s = this.state.s, th = this.state.lang !== 'en';
     const n = Math.max(0, parseInt(s.ex, 10) || 0), was = this.state.dirty;
-    if (!n || !window.SPDice) { const patch = { coma: false, comaAt: null, crisisSafe: crisisCond(s), ex: 0 }; this.upd(patch); this.rollSaved(patch, was); return; }
+    if (!n || !window.SPDice) { const patch = { coma: false, comaAt: null, crisisSafe: crisisCond(s), ex: 0, restat: 'pick' }; this.upd(patch); this.rollSaved(patch, was); return; }
     window.SPDice.tray({ th: th, free: true, once: true, fixed: Array(n).fill(8), who: (s.name || '').trim() || (th ? 'ตัวละคร' : 'Character'), color: '#A9A5C2',
       label: th ? 'ฟื้นจาก COMA · ทอย EX' : 'Wake from COMA · roll EX', source: this.diceRoller(),
       note: th ? 'ทอย EX ทั้งหมด ' + n + ' ลูก เก็บไว้เฉพาะลูกที่ออก [1] เป็น EX ติดตัวใน session นี้' : 'Roll all ' + n + ' EX; only the [1]s stay as EX this session',
       onFinal: (p, dice) => {
-        const patch = { coma: false, comaAt: null, crisisSafe: crisisCond(this.state.s), ex: Math.min(3, dice.filter((d) => d.v === 1).length) };
+        const patch = { coma: false, comaAt: null, crisisSafe: crisisCond(this.state.s), ex: Math.min(3, dice.filter((d) => d.v === 1).length), restat: 'pick' };
         this.upd(patch); this.rollSaved(patch, this.state.dirty && was);
       }
     });
@@ -1139,6 +1170,10 @@ class Component extends DCLogic {
   sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 4); }
   /* a seated character keeps its Faction until it leaves the session */
   factorLocked() { return !!(this.state.tbl && this.state.tbl.joined); }
+  /* Basic Ability, Trait and General skills lock once the character has joined a session (the live site marks the sheet);
+     after waking from COMA the player may re-stat one of them */
+  statLocked() { return !!this.state.s.statLock || this.factorLocked(); }
+  setRestat(v) { const was = this.state.dirty; this.upd({ restat: v }); this.rollSaved({ restat: v }, was); }
   sceneSetPos(i, p) {
     const all = (this.state.scPos || [null, null, null, null]).slice();
     all[i] = p;
@@ -1298,20 +1333,36 @@ class Component extends DCLogic {
     const add = (key, blank, cap) => () => { if (this.state.s[key].length < cap) this.upd({ [key]: this.state.s[key].concat([blank]) }); };
 
     const traitXAllowed = Math.floor(repCur / 8);
+    const traitLock = this.statLocked() && s.restat !== 'trait', skillLock = this.statLocked() && s.restat !== 'skill';
     const skillCap = fk === 'outlaw' ? 4 : 2; // free level-1 skills; more skills or levels are bought with REP Current from All skills
     const cosCap = fk === 'shifter' ? 1 : 3; // a Shifter carries exactly one Cosmic Ability; Norms up to 3 Cosmic Gadgets
 
     // basic ability
     const pool = 4 + f.bonus;
     const used = s.ba.force + s.ba.tactical + s.ba.trick + s.ba.sense;
+    const baRep = Object.assign({ force: 0, tactical: 0, trick: 0, sense: 0 }, s.baRep || {});
+    const baDiv = (k) => (cpd && DIVISIONS[s.traitName] === k ? 1 : 0);
+    const baValue = (k) => Math.min(3, 1 + s.ba[k] + (num(baRep[k]) || 0) + baDiv(k));
+    const restat = s.restat || null, locked = this.statLocked();
     const setBa = (k, d) => {
-      const cur = this.state.s;
+      const cur = this.state.s, br = Object.assign({ force: 0, tactical: 0, trick: 0, sense: 0 }, cur.baRep || {});
       const u = cur.ba.force + cur.ba.tactical + cur.ba.trick + cur.ba.sense;
       const p = 4 + F[cur.factor].bonus;
-      // a stat tops out at 3; a C.P.D.'s Division stat already has +1, so it takes at most 1 point
-      const cap = cur.factor === 'cpd' && DIVISIONS[cur.traitName] === k ? 1 : 2;
-      if (d > 0 && (u >= p || cur.ba[k] >= cap)) return;
-      this.upd({ ba: Object.assign({}, cur.ba, { [k]: Math.max(0, Math.min(cap, cur.ba[k] + d)) }) });
+      const div = cur.factor === 'cpd' && DIVISIONS[cur.traitName] === k ? 1 : 0;
+      // a stat tops out at 3; free points go up to 2 (1 on a C.P.D.'s Division stat), past that each point costs 5 REP
+      const cap = 2 - div, val = 1 + cur.ba[k] + (num(br[k]) || 0) + div;
+      if (d > 0) {
+        if (val >= 3) return;
+        if (u < p && cur.ba[k] < cap) { this.upd({ ba: Object.assign({}, cur.ba, { [k]: cur.ba[k] + 1 }) }); return; }
+        const rc = num(cur.repCur);
+        if (rc < 5) return;
+        this.upd({ baRep: Object.assign({}, br, { [k]: (num(br[k]) || 0) + 1 }), repCur: String(rc - 5) });
+        return;
+      }
+      // lowering: free while the sheet is unlocked, or during a COMA re-stat of Basic Ability (REP points come back)
+      if (this.statLocked() && cur.restat !== 'ba') return;
+      if ((num(br[k]) || 0) > 0) this.upd({ baRep: Object.assign({}, br, { [k]: num(br[k]) - 1 }), repCur: String(num(cur.repCur) + 5) });
+      else if (cur.ba[k] > 0) this.upd({ ba: Object.assign({}, cur.ba, { [k]: cur.ba[k] - 1 }) });
     };
 
     const injDefs = [
@@ -1564,6 +1615,7 @@ class Component extends DCLogic {
           pick: () => {
             if (off) return;
             const cur = this.state.s, list = cur.skills.slice(), row = { name: fam, lv: String(lv), fx: fx };
+            if (lv === 1 && !free) row.paid1 = true; // a bought (not free) Lv1 is refunded on a re-stat
             if (at === -1) list.push(row); else list[at] = Object.assign({}, list[at], row);
             const patch = { skills: list };
             if (!free) patch.repCur = String(Math.max(0, num(cur.repCur) - cost));
@@ -1591,7 +1643,7 @@ class Component extends DCLogic {
           bg: hit ? '#06181A' : '#0B0A12', border: hit ? '#2EE6F0' : mine ? '#FF2E88' : '#2A2740',
           pressed: mine ? 'true' : 'false', pickText: mine ? L('✓ ใช้อยู่', '✓ In use') : L('ใช้ Trait นี้', 'Use this'),
           pickBorder: mine ? '#FF2E88' : '#3A3655', pickBg: mine ? '#FF2E88' : '#1D1930', pickFg: mine ? '#0B0A12' : '#D8D6E8',
-          pick: () => { this.upd({ traitName: name.slice(0, 40), traitFx: x[3] }); this.setState({ traitsOpen: false }); }
+          pick: () => { if (traitLock) return; this.upd({ traitName: name.slice(0, 40), traitFx: x[3] }); this.setState({ traitsOpen: false }); }
         };
       }),
       // hover hint on Coins: starting money depends on the Faction
@@ -1600,18 +1652,28 @@ class Component extends DCLogic {
       cpdDiv: cpd,
       divColor: DIVISIONS[s.traitName] ? '#FFFFFF' : '#6E6A88',
       divOpts: [{ v: '', label: L('— เลือก Division —', '— Pick a Division —'), sel: !DIVISIONS[s.traitName] }].concat(Object.keys(DIVISIONS).map((d) => ({ v: d, label: d + ' · +1 ' + DIVISIONS[d].charAt(0).toUpperCase() + DIVISIONS[d].slice(1), sel: s.traitName === d }))),
-      divLocked: this.factorLocked(),
+      divLocked: this.factorLocked() || (locked && restat !== 'trait'),
       onDivision: (e) => {
         if (this.factorLocked()) return;
-        const d = e && e.target ? e.target.value : '', k = DIVISIONS[d], ba = this.state.s.ba;
-        // the Division's +1 can't push a stat past 3: give back the extra point if that stat already had 2
-        this.upd(Object.assign({ traitName: d }, k && ba[k] > 1 ? { ba: Object.assign({}, ba, { [k]: 1 }) } : {}));
+        if (this.statLocked() && this.state.s.restat !== 'trait') return;
+        const cur = this.state.s, d = e && e.target ? e.target.value : '', k = DIVISIONS[d], ba = cur.ba;
+        const br = Object.assign({ force: 0, tactical: 0, trick: 0, sense: 0 }, cur.baRep || {});
+        // the Division's +1 can't push a stat past 3: REP points come back first, then the extra free point
+        const patch = { traitName: d };
+        if (k) {
+          let over = 1 + ba[k] + (num(br[k]) || 0) + 1 - 3;
+          const back = Math.min(over > 0 ? over : 0, num(br[k]) || 0);
+          if (back) { patch.baRep = Object.assign({}, br, { [k]: num(br[k]) - back }); patch.repCur = String(num(cur.repCur) + back * 5); over -= back; }
+          if (over > 0 || ba[k] > 1) patch.ba = Object.assign({}, ba, { [k]: Math.min(ba[k], 1) });
+        }
+        this.upd(patch);
       },
       divHint: this.factorLocked() ? L('ล็อก Division ไว้ระหว่างอยู่ใน session · ออกจาก session ก่อนถึงจะเปลี่ยนได้', 'Division is locked while this character is in a session. Leave the session to change it.') : DIVISIONS[s.traitName] ? L('ได้ +1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' ใน Basic Ability ทันที', '+1 ' + DIVISIONS[s.traitName].charAt(0).toUpperCase() + DIVISIONS[s.traitName].slice(1) + ' to Basic Ability right away') : L('แต่ละ Division ให้ +1 กับ Basic Ability หนึ่งค่า', 'Each Division adds +1 to one Basic Ability'),
       traitPh: cpd ? L('ชื่อหน่วยงานที่สังกัด (Division)', 'Your Division') : L('ชื่อ Trait', 'Trait name'),
       notCpd: !cpd,
       isCpd: cpd,
-      traitX: rows('traitX', ['name', 'fx']),
+      traitX: rows('traitX', ['name', 'fx']).map((r) => Object.assign(r, { off: traitLock })),
+      traitLock: traitLock,
       addTraitX: add('traitX', { name: '', fx: '' }, traitXAllowed),
       traitXFull: s.traitX.length >= traitXAllowed,
       traitXLabel: traitXAllowed === 0 ? L('+ เพิ่ม Trait (ปลดล็อกทุก 8 Rep.)', '+ Add Trait (unlocks every 8 Rep.)') : L('+ เพิ่ม Trait (เพิ่มได้อีก ', '+ Add Trait (') + Math.max(0, traitXAllowed - s.traitX.length) + L(')', ' left)'),
@@ -1645,10 +1707,13 @@ class Component extends DCLogic {
         { k: 'trick', name: 'Trick', tip: L('ความรู้, ไหวพริบ, วาจา', 'Knowledge, wit, speech') },
         { k: 'sense', name: 'Sense', tip: L('สัญชาตญาณ, ความรู้สึก, สติสัมปชัญญะ', 'Instinct, feeling, awareness') }
       ].map((a) => Object.assign({}, a, {
-        val: String(Math.min(3, 1 + s.ba[a.k] + (cpd && DIVISIONS[s.traitName] === a.k ? 1 : 0))),
+        val: String(baValue(a.k)),
+        decOff: (locked && restat !== 'ba') || (s.ba[a.k] <= 0 && !(num(baRep[a.k]) > 0)),
+        incOff: baValue(a.k) >= 3 || (pool - used <= 0 || s.ba[a.k] >= 2 - baDiv(a.k) ? num(s.repCur) < 5 : false),
+        incTip: pool - used > 0 && s.ba[a.k] < 2 - baDiv(a.k) ? '' : L('ใช้ 5 REP', 'Costs 5 REP'),
         div: cpd && DIVISIONS[s.traitName] === a.k, divTip: L('+1 จาก ' + s.traitName, '+1 from ' + s.traitName),
         inc: () => setBa(a.k, 1), dec: () => setBa(a.k, -1),
-        roll: () => this.openRoll(a.name, Math.min(3, 1 + s.ba[a.k] + (cpd && DIVISIONS[s.traitName] === a.k ? 1 : 0)), s.baMod[a.k]),
+        roll: () => this.openRoll(a.name, baValue(a.k), s.baMod[a.k]),
         rollLabel: L('ทอย ' + a.name, 'Roll ' + a.name),
         mod: s.baMod[a.k],
         onMod: (e) => this.upd({ baMod: Object.assign({}, this.state.s.baMod, { [a.k]: e && e.target ? e.target.value : '0' }) })
@@ -1656,6 +1721,7 @@ class Component extends DCLogic {
       pool: String(pool),
       remain: String(pool - used),
       poolColor: pool - used < 0 ? '#FF3D6E' : '#2EE6F0',
+      baRepNote: L(' · เกินแต้มฟรีใช้ 5 REP/แต้ม (สูงสุด 3) · ซื้อแล้ว ', ' · past the free points 5 REP a point (max 3) · bought ') + ['force', 'tactical', 'trick', 'sense'].reduce((a, k) => a + (num(baRep[k]) || 0), 0) + L(' แต้ม', ''),
       // Surge Energy boosts (cleared when the GM moves the turn on)
       pwrBoost: boost.kind === 'pwr' ? '+' + boost.n + ' SE' : '',
       sePwrShow: s.factor === 'shifter',
@@ -1671,11 +1737,31 @@ class Component extends DCLogic {
       boostTxt: boost.kind === 'dice' ? L('SE BOOST: เต๋า +', 'SE BOOST: dice +') + boost.n : boost.kind === 'pwr' ? 'SE BOOST: PWR+ +' + boost.n : boost.kind === 'skill' ? L('SE BOOST: สกิล ', 'SE BOOST: skill ') + ((s.skills[boost.sk] || {}).name || '#' + (boost.sk + 1)) + ' +' + boost.n : '',
       crisisOn: crisis,
       crisisWhy: ipZero ? L('IP เหลือ 0', 'IP is down to 0') : L('ติด Injuries ครบ 5 ข้อ', '5 Injuries'),
-      crisisForce: () => this.crisisRoll('Force', Math.min(3, 1 + s.ba.force + (s.factor === 'cpd' && DIVISIONS[s.traitName] === 'force' ? 1 : 0)), s.baMod.force),
-      crisisSense: () => this.crisisRoll('Sense', Math.min(3, 1 + s.ba.sense + (s.factor === 'cpd' && DIVISIONS[s.traitName] === 'sense' ? 1 : 0)), s.baMod.sense),
+      crisisForce: () => this.crisisRoll('Force', baValue('force'), s.baMod.force),
+      crisisSense: () => this.crisisRoll('Sense', baValue('sense'), s.baMod.sense),
       comaOn: !!s.coma && !s.dead,
       comaWakeReady: !!s.coma && !s.dead && !!s.comaAt && mark !== 'offline' && mark !== s.comaAt,
       comaWake: () => this.comaWake(),
+      ...(() => {
+        const r = !s.dead && !s.coma ? s.restat : null;
+        const names = { ba: 'Basic Ability', trait: cpd ? 'Division' : 'Trait', skill: 'General skills' };
+        return {
+          restatOn: !!r, restatPicking: r === 'pick', restatActive: !!r && r !== 'pick',
+          restatTag: r === 'pick' ? L('เลือก 1 อย่าง', 'pick one') : names[r] || '',
+          restatBody: r === 'pick'
+            ? L('ฟื้นจาก COMA แล้ว เลือกปรับค่าถาวรได้ 1 อย่าง หรือเลือกไม่เปลี่ยนอะไร · ระหว่าง re-stat ลด Cosmic Dice เพื่อคืน REP ได้ด้วย', 'Back from COMA: permanently change one of these, or keep everything. While re-statting you can also lower Cosmic Dice to get REP back.')
+            : r === 'ba' ? L('ปรับ Basic Ability ได้อิสระ · แต้มที่ซื้อด้วย REP ลดแล้วได้คืนแต้มละ 5 · กด "เสร็จสิ้น" เมื่อปรับเสร็จ', 'Move Basic Ability points freely; points bought with REP refund 5 each. Press Done when finished.')
+            : r === 'trait' ? L('เปลี่ยน ' + names.trait + ' ได้ · กด "เสร็จสิ้น" เมื่อเปลี่ยนเสร็จ', 'Change your ' + names.trait + '. Press Done when finished.')
+            : L('ลบหรือเปลี่ยน General skill ได้ · สกิลที่ลบจะคืน REP ที่จ่ายไป · กด "เสร็จสิ้น" เมื่อปรับเสร็จ', 'Remove or change General skills; a removed skill refunds the REP it cost. Press Done when finished.'),
+          restatOpts: [
+            { k: 'ba', label: 'Basic Ability', color: '#2EE6F0' },
+            { k: 'trait', label: names.trait, color: '#FF2E88' },
+            { k: 'skill', label: 'General skill', color: '#FFD400' },
+            { k: null, label: L('ไม่เปลี่ยนอะไร', 'Keep everything'), color: '#A9A5C2' }
+          ].map((o) => ({ label: o.label, color: o.color, pick: () => this.setRestat(o.k) })),
+          restatDone: () => this.setRestat(null)
+        };
+      })(),
       deadOn: !!s.dead,
       deathAsk: !!s.deathPending && !s.dead,
       deathConfirm: () => { const was = this.state.dirty, patch = { dead: true, deathPending: false }; this.upd(patch); this.rollSaved(patch, was); },
@@ -1688,9 +1774,22 @@ class Component extends DCLogic {
         { name: 'Surge Energy', flex: '2 1 200px', isEx: false, isSe: true, ls: '.08em', hj: boost.kind ? 'space-between' : 'center', boostOn: !!boost.kind, color: '#C084FC', tip: L('เลือกเพิ่มค่า 1 อย่าง: เพิ่มเต๋า • เพิ่ม PWR+ • อัพสกิล จากนั้นแต้มที่ใช้จะถูกแปลงเป็น EX', 'Pick one upgrade: add a die • PWR+ up • skill up, then the points spent turn into EX'), val: String(s.se), inc: () => this.upd({ se: Math.min(3, this.state.s.se + 1) }), dec: () => this.upd({ se: Math.max(0, this.state.s.se - 1) }) },
         { name: 'Exhaustion', flex: '1 1 96px', isSe: false, isEx: true, ls: '.08em', hj: 'center', boostOn: false, color: '#A9A5C2', tip: L('+DC • ใช้แต้มเปลี่ยนเต๋า D8 เป็น D4', '+DC • Spend a point to turn a D8 into a D4'), val: String(s.ex), inc: () => this.upd(this.exGain(1)), dec: () => this.upd({ ex: Math.max(0, this.state.s.ex - 1) }) }
       ],
-      skills: rows('skills', ['name', 'lv', 'fx'], { lv: [0, 10] }).map((r, i) => Object.assign(r, { lv: r.lv == null ? '1' : r.lv, boost: boost.kind === 'skill' && boost.sk === i ? '+' + boost.n + ' SE' : '' })),
-      addSkill: add('skills', { name: '', lv: '1', fx: '' }, skillCap),
-      skillsFull: s.skills.length >= skillCap,
+      skills: rows('skills', ['name', 'lv', 'fx'], { lv: [0, 10] }).map((r, i) => Object.assign(r, {
+        lv: r.lv == null ? '1' : r.lv, boost: boost.kind === 'skill' && boost.sk === i ? '+' + boost.n + ' SE' : '', off: skillLock,
+        // during a COMA re-stat of General skills a removed skill gives back the REP it cost
+        remove: () => {
+          const cur = this.state.s;
+          if (this.statLocked() && cur.restat !== 'skill') return;
+          const row = cur.skills[i] || {}, fam = String(row.name || '').trim().toLowerCase(), lv = num(row.lv == null ? 1 : row.lv);
+          const back = this.statLocked() ? SKILLS.filter((x) => x[0].toLowerCase() === fam && x[1] <= lv && (x[1] > 1 || row.paid1)).reduce((a, x) => a + x[3], 0) : 0;
+          const patch = { skills: cur.skills.filter((_, j) => j !== i) };
+          if (back) patch.repCur = String(num(cur.repCur) + back);
+          this.upd(patch);
+        }
+      })),
+      skillLock: skillLock,
+      addSkill: skillLock ? () => {} : add('skills', { name: '', lv: '1', fx: '' }, skillCap),
+      skillsFull: skillLock || s.skills.length >= skillCap,
       skillsCap: s.skills.length + L(' สกิล · ช่องฟรี ', ' skills · free slots ') + Math.max(0, skillCap - s.skills.length) + ' / ' + skillCap + L(' · เพิ่มจาก All skills ใช้ REP', ' · buy more from All skills with REP'),
       skillsCapColor: '#8C88A6',
       weapons: rows('weapons', ['name', 'range', 'dmg', 'fx'], { range: [1, 5] }),
@@ -1704,8 +1803,24 @@ class Component extends DCLogic {
         const list = COSMIC_NAMES[r.type] || [];
         const pick = fk !== 'outlaw';
         const names = r.name && list.indexOf(r.name) < 0 ? list.concat([r.name]) : list;
+        // Shifter: Cosmic Dice go up with REP (to Lv2 5, to Lv3 12); a picked ability can't be swapped once the sheet is locked
+        const cdN = Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)), shifterCd = pick && fk === 'shifter';
+        const upCost = cdN === 1 ? 5 : cdN === 2 ? 12 : 0, downBack = cdN === 3 ? 12 : cdN === 2 ? 5 : 0;
+        const setCd = (v, rep) => {
+          const cur = this.state.s, arr = cur.cosmic.slice();
+          arr[i] = cosmicFill(arr[i], { cd: String(v) });
+          this.upd({ cosmic: arr, repCur: String(Math.max(0, num(cur.repCur) + rep)) });
+        };
+        const cosLock = shifterCd && this.statLocked() && !!(r.type && r.name);
         return {
-          namePick: pick, nameFree: !pick, nameOff: pick && !r.type, hasPassive: pick,
+          cdFree: !shifterCd, cdShow: shifterCd, cdText: cdN ? cdN + ' CD' : '—', rmOff: cosLock,
+          cdUpText: cdN >= 3 ? L('CD สูงสุดแล้ว', 'Max CD') : L('อัปเป็น ' + (cdN + 1) + ' CD · ' + upCost + ' REP', 'Up to ' + (cdN + 1) + ' CD · ' + upCost + ' REP'),
+          cdUpOff: !cdN || cdN >= 3 || repCur < upCost,
+          cdUp: () => { const c = Math.max(0, Math.min(3, parseInt(this.state.s.cosmic[i].cd, 10) || 0)), cost = c === 1 ? 5 : c === 2 ? 12 : 0; if (!cost || num(this.state.s.repCur) < cost) return; setCd(c + 1, -cost); },
+          cdDownShow: !!s.restat && cdN > 1, cdDownOff: !s.restat || cdN <= 1,
+          cdDownText: L('ลดเป็น ' + (cdN - 1) + ' CD · คืน ' + downBack + ' REP', 'Down to ' + (cdN - 1) + ' CD · ' + downBack + ' REP back'),
+          cdDown: () => { if (!this.state.s.restat) return; const c = Math.max(0, Math.min(3, parseInt(this.state.s.cosmic[i].cd, 10) || 0)), back = c === 3 ? 12 : c === 2 ? 5 : 0; if (!back) return; setCd(c - 1, back); },
+          namePick: pick, nameFree: !pick, nameOff: (pick && !r.type) || cosLock, hasPassive: pick,
           nameColor: r.name ? '#FFFFFF' : '#6E6A88',
           nameOpts: [{ v: '', label: r.type ? L('— Name —', '— Name —') : L('เลือก Type ก่อน', 'Pick a Type first'), sel: !r.name }].concat(names.map((n) => ({ v: n, label: n + (COSMIC_TAGS[r.type + '/' + n] ? ' (' + COSMIC_TAGS[r.type + '/' + n] + ')' : ''), sel: r.name === n }))),
           on_type: (e) => {
@@ -1774,6 +1889,7 @@ class Component extends DCLogic {
         comaTag: L('ใช้ไม่ได้ใน session นี้', 'out for this session'),
         comaBody: L('ตัวละครนี้ติด COMA และเล่นต่อไม่ได้ใน session นี้ · เมื่อนำมาเล่นใน session ถัดไป ให้ทอย EX ทั้งหมด เก็บไว้เฉพาะลูกที่ออก [1]', 'This character is in a COMA and can\'t act for the rest of this session · in the next session, roll all EX and keep only the [1]s'),
         comaWake: L('ฟื้นจาก COMA · ทอย EX', 'Wake up · roll EX'),
+        restatDone: L('เสร็จสิ้น', 'Done'),
         deadTag: L('ตัวละครเสียชีวิต', 'character lost'),
         deathTag: L('ทอยไม่ถึง 8', 'the roll fell short'),
         deathTitle: L('ตัวละครนี้กำลังจะเสียชีวิต', 'This character is about to die'),

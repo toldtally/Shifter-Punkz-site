@@ -29,7 +29,8 @@
   SP.DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
   SP.baOf = function (sheet, factor, k) {
     var s = sheet || {}, ba = s.ba || {};
-    return Math.min(3, SP.baVal(ba[k]) + (factor === 'cpd' && SP.DIVISIONS[s.traitName] === k ? 1 : 0));
+    // free points + points bought with REP (baRep) + a C.P.D. Division's +1, never past 3
+    return Math.min(3, SP.baVal(ba[k]) + SP.num((s.baRep || {})[k]) + (factor === 'cpd' && SP.DIVISIONS[s.traitName] === k ? 1 : 0));
   };
 
   SP.timeAgo = function (iso, th) {
