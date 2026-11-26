@@ -303,6 +303,7 @@
               stepper(st.tier, 0, 10, function (v) { st.tier = v; st.overOk = false; render(); }),
               el('span', { class: 'spd-note', text: (o.whelm.outburst ? L('ระดับ ' + eff + ' · Outburst ไม่ใช้ WM', 'Tier ' + eff + ' · Outburst costs no WM') + (add ? ' (+' + add + ')' : '') : L('ใช้ ' + eff + ' WM', 'Costs ' + eff + ' WM')) +
                 (exG ? L(' · ได้ ' + exG + ' EX', ' · +' + exG + ' EX') : '') + (whelmOver() ? L(' · WM ไม่พอ (มี ' + (o.whelm.wm || 0) + ')', ' · not enough WM (' + (o.whelm.wm || 0) + ')') : '') +
+                (o.whelm.outburst && eff >= 10 ? L(' · Outburst จบหลังใช้ครั้งนี้ → ติด Fainted', ' · Outburst ends after this → Fainted') : '') +
                 (st.tier >= 10 && !o.whelm.outburst ? L(' · MAX WM −1 แล้วทอย Sense ให้ได้ 8 (ไม่ถึง = Fainted)', ' · MAX WM −1, then roll Sense for 8 (below = Fainted)') : '') })]));
             if (info) b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: '' }), el('span', { class: 'spd-note', text: info })]));
             // spending past the WM left needs a confirmation: WM drops to 0 and the character gets Cosmic Outburst

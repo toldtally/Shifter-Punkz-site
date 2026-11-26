@@ -826,7 +826,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=a60a9d0f"></script>
 <script src="../assets/beta-common.js?v=1f9d034b"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
-<script src="../assets/dice.js?v=7fdd9907"></script>
+<script src="../assets/dice.js?v=57163541"></script>
 <script>
 function initialSheet() {
   return {
@@ -1158,6 +1158,8 @@ class Component extends DCLogic {
           if (!outb) patch.spCur = String(Math.max(0, (parseInt(cur.spCur, 10) || 0) - sp.whelm));
           patch.cosUsed = true;
           if (outb) patch.outN = (parseInt(cur.outN, 10) || 0) + 1;
+          // Outburst burns out once its tier reaches 10: it clears and the character is Fainted
+          if (outb && sp.whelm >= 10) { patch.inj = Object.assign({}, cur.inj, { 'Cosmic Outburst': false, Fainted: true }); patch.outN = 0; }
           // spent past the WM left (confirmed in the tray): WM hits 0 and Cosmic Outburst starts now
           else if (sp.over) { patch.inj = Object.assign({}, cur.inj, { 'Cosmic Outburst': true }); patch.outN = 0; }
           // EX comes from the picked tier only (Outburst's stacked tiers don't count)
