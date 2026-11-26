@@ -201,7 +201,7 @@
         var r = await sb.from('npcs').select('data').eq('id', id).single();
         if (r.error) return;
         var data = Object.assign({}, r.data.data || {});
-        data.stat = Object.assign({}, data.stat || {}, { ipCur: stat.ipCur, wmCur: stat.wmCur });
+        data.stat = Object.assign({}, data.stat || {}, { ipCur: stat.ipCur, wmCur: stat.wmCur, slots: stat.slots });
         await sb.from('npcs').update({ data: data }).eq('id', id);
       }, 500);
     }

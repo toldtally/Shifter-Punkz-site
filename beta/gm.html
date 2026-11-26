@@ -516,7 +516,7 @@ html{scroll-behavior:smooth}
                             <div role="group" aria-label="{{br.aria}}" style="display: flex; align-items: center; gap: 6px; padding: 3px 4px 3px 8px; border: 1px solid #2A2740; border-left: 3px solid {{br.c}}">
                               <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: {{br.c}}">{{br.k}}</span>
                               <button type="button" onClick="{{br.dec}}" disabled="{{br.decOff}}" aria-label="{{br.decLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">−</button>
-                              <span style="min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #FFFFFF">{{br.v}}<span style="color: #8C88A6"> / 10</span></span>
+                              <span style="min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #FFFFFF">{{br.v}}<span style="color: #8C88A6">{{br.of}}</span></span>
                               <button type="button" onClick="{{br.inc}}" disabled="{{br.incOff}}" aria-label="{{br.incLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">+</button>
                             </div>
                           </sc-for>
@@ -552,7 +552,7 @@ html{scroll-behavior:smooth}
                         <div role="group" aria-label="{{br.aria}}" style="display: flex; align-items: center; gap: 6px; padding: 3px 4px 3px 8px; border: 1px solid #2A2740; border-left: 3px solid {{br.c}}">
                           <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: {{br.c}}">{{br.k}}</span>
                           <button type="button" onClick="{{br.dec}}" disabled="{{br.decOff}}" aria-label="{{br.decLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">−</button>
-                          <span style="min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #FFFFFF">{{br.v}}<span style="color: #8C88A6"> / 10</span></span>
+                          <span style="min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #FFFFFF">{{br.v}}<span style="color: #8C88A6">{{br.of}}</span></span>
                           <button type="button" onClick="{{br.inc}}" disabled="{{br.incOff}}" aria-label="{{br.incLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">+</button>
                         </div>
                       </sc-for>
@@ -849,13 +849,14 @@ class Component extends DCLogic {
     this.encSet(list.concat([{ id: n.id, name: n.name || '', url: n.pic || '', status: [], at: Date.now() }]).slice(-8));
   }
   /* current IP / WM of an NPC in the encounter (GM only): kept in the NPC's status */
-  npcAdjust(id, key, d) {
+  npcAdjust(id, key, d, max, def) {
+    max = max || 10; def = def == null ? 10 : def;
     let saved = null;
     const lib = (this.state.npcLib || []).map((n) => {
       if (n.id !== id) return n;
       const st = n.stat || {};
-      const cur = st[key] != null && st[key] !== '' ? +st[key] || 0 : 10;
-      saved = Object.assign({}, st, { [key]: String(Math.max(0, Math.min(10, cur + d))) });
+      const cur = st[key] != null && st[key] !== '' ? +st[key] || 0 : def;
+      saved = Object.assign({}, st, { [key]: String(Math.max(0, Math.min(max, cur + d))) });
       return Object.assign({}, n, { stat: saved });
     });
     this.setState({ npcLib: lib });
@@ -869,7 +870,7 @@ class Component extends DCLogic {
     const fk = n.factor || '', ln = [];
     const add = (k, v, c) => { if (v) ln.push({ k: k, v: v, c: c || '#A9A5C2' }); };
     const nz = (v) => (v == null || v === '' ? '0' : String(v));
-    add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1) + ' · Slots ' + (d.slots || (fk === 'norms' ? 8 : 5)), d.boss ? '#FF3D6E' : '#2EE6F0');
+    add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1), d.boss ? '#FF3D6E' : '#2EE6F0');
     add('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
     add('WM', 'PWR+' + nz(d.pwr) + (fk === 'shifter' ? ' · RGN+' + Math.max(1, +d.wmRgn || 1) : ''), '#C084FC');
     const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
@@ -880,12 +881,12 @@ class Component extends DCLogic {
     add('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
     add('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
     add('BONDED', d.bond || '');
-    const bar = (k, key, c) => {
-      const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(10, +d[key] || 0)) : 10;
-      return { k: k, v: String(v), c: c, aria: k + ' ' + (n.name || ''), dec: () => this.npcAdjust(n.id, key, -1), inc: () => this.npcAdjust(n.id, key, 1),
-        decOff: v <= 0, incOff: v >= 10, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
+    const bar = (k, key, c, max, def, of) => {
+      const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(max, +d[key] || 0)) : def;
+      return { k: k, v: String(v), of: of, c: c, aria: k + ' ' + (n.name || ''), dec: () => this.npcAdjust(n.id, key, -1, max, def), inc: () => this.npcAdjust(n.id, key, 1, max, def),
+        decOff: v <= 0, incOff: v >= max, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
     };
-    return { stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF'), bar('WM', 'wmCur', '#C084FC')] };
+    return { stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF', 10, 10, ' / 10'), bar('WM', 'wmCur', '#C084FC', 10, 10, ' / 10'), bar('Slots', 'slots', '#FFD400', 99, fk === 'norms' ? 8 : 5, '')] };
   }
   encDrop(id) { this.encSet((this.state.encounter || []).filter((x) => x.id !== id)); }
   encToggle(id, st) {
@@ -1491,6 +1492,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=5b7b5195"></script>
+<script src="../assets/beta-gm.js?v=0217faa4"></script>
 </body>
 </html>
