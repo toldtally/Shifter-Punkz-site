@@ -359,12 +359,26 @@ html{scroll-behavior:smooth}
               <sc-if value="{{st.hasCos}}" hint-placeholder-val="{{ true }}">
                 <div style="display: flex; flex-direction: column; gap: 4px">
                   <label for="st-cos" class="lbl">{{st.cosTitle}}</label>
-                  <div style="display: flex; gap: 6px">
-                    <input id="st-cos" class="fld" type="text" maxlength="60" value="{{st.cosName}}" onInput="{{st.onCosName}}" style="flex: 1; min-width: 0">
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                    <sc-if value="{{st.cosPick}}" hint-placeholder-val="{{ true }}">
+                      <select id="st-cos" class="fld" value="{{st.cosKey}}" onChange="{{st.onCosKey}}" style="flex: 1; min-width: 0">
+                        <sc-for list="{{st.cosOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                      </select>
+                    </sc-if>
+                    <sc-if value="{{st.cosTyped}}" hint-placeholder-val="{{ false }}">
+                      <select class="fld" aria-label="Cosmic Type" value="{{st.cosType}}" onChange="{{st.onCosType}}" style="flex: 1; min-width: 0">
+                        <sc-for list="{{st.cosTypeOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                      </select>
+                      <input id="st-cos" class="fld" type="text" maxlength="60" value="{{st.cosName}}" onInput="{{st.onCosName}}" placeholder="{{st.cosNamePh}}" style="order: -1; flex: 1 1 100%; min-width: 0">
+                    </sc-if>
                     <select class="fld" aria-label="{{st.cosTitle}} level" value="{{st.cosLv}}" onChange="{{st.onCosLv}}" style="width: auto">
                       <sc-for list="{{st.cosLvs}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
                     </select>
                   </div>
+                  <sc-if value="{{st.cosHasInfo}}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 12px; line-height: 1.5; color: #A9A5C2">{{st.cosInfo}}</span>
+                    <sc-if value="{{st.cosHasPassive}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; line-height: 1.5; color: #8C88A6">Passive: {{st.cosPassive}}</span></sc-if>
+                  </sc-if>
                 </div>
               </sc-if>
               <div style="display: flex; flex-direction: column; gap: 6px">
@@ -570,6 +584,94 @@ const NPC_SKILLS = [
   ["Multilingual", 4, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 4],
   ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
 ];
+/* Cosmic Abilities, the same lists as the Character Sheet: types (with the Basic Ability each runs on), names, duration/target tags and rulebook text */
+const NPC_COS_TYPES = [['Shape', 'FORCE'], ['Heat', 'FORCE'], ['Energy', 'TACTICAL'], ['Velocity', 'TACTICAL'], ['Space', 'TRICK'], ['Impulse', 'TRICK'], ['Entropy', 'SENSE'], ['Density', 'SENSE']];
+const NPC_COS_NAMES = {
+  Shape: ['Vapor', 'Shadow', 'Chameleon', 'Camouflage', 'Re-shape', 'Scale', 'Sharpen', 'Labyrinth'],
+  Heat: ['Burner', 'Glacier', 'Burst'],
+  Energy: ['Magnet', 'Voltage', 'Luminary', 'Breeze', 'Devour'],
+  Velocity: ['Haste', 'Quickness', 'Redirect', 'Snitch', 'Accel', 'Slow', 'Jump', 'Anchor'],
+  Space: ['Replace', 'Maze', 'Room', 'Compress', 'Blink', 'Image', 'Fold', 'Point'],
+  Impulse: ['Emotion', 'Fracture', 'Possess', 'Learn', 'Absorb'],
+  Entropy: ['Reverse', 'Transfer', 'Crack', 'Jam', 'Isolation', 'Decay'],
+  Density: ['Weight', 'Noise', 'Mass', 'Solidify', 'Stuff', 'Gravity', 'Elastic', 'Matter']
+};
+const NPC_COS_TAGS = {
+  'Shape/Vapor': '1 turn - Self', 'Shape/Shadow': '1 turn - Any', 'Shape/Chameleon': '1 turn - Self', 'Shape/Camouflage': '1 turn - Self',
+  'Shape/Re-shape': 'Instant - Any', 'Shape/Scale': 'Instant - Any', 'Shape/Sharpen': 'Instant - Any', 'Shape/Labyrinth': '1 scene - Any',
+  'Heat/Burner': 'Instant - Any', 'Heat/Glacier': 'Instant - Any', 'Heat/Burst': 'Instant - Any',
+  'Energy/Magnet': 'Instant - Any', 'Energy/Voltage': '1 turn - Any', 'Energy/Luminary': '1 turn - Any', 'Energy/Breeze': '1 turn - Any', 'Energy/Devour': 'Instant - Self',
+  'Velocity/Haste': 'Instant - Self', 'Velocity/Quickness': 'Instant - Any', 'Velocity/Redirect': 'Instant - Any', 'Velocity/Snitch': '1 scene - Any',
+  'Velocity/Accel': 'Instant - Any', 'Velocity/Slow': '1 turn - Any', 'Velocity/Jump': 'Instant - Any', 'Velocity/Anchor': '1 turn - Any',
+  'Space/Replace': 'Instant - Any', 'Space/Maze': '1 scene - Any', 'Space/Room': '1 turn / Instant - Any', 'Space/Compress': 'Instant - Any',
+  'Space/Blink': 'Instant - Self', 'Space/Image': '1 scene - Any', 'Space/Fold': '1 turn - Any', 'Space/Point': 'Instant - Any',
+  'Impulse/Emotion': 'Instant - Any', 'Impulse/Possess': 'Instant - Any', 'Impulse/Learn': 'Whole - Any', 'Impulse/Absorb': 'Instant - Self',
+  'Entropy/Reverse': 'Instant - Self', 'Entropy/Transfer': 'Instant - Self', 'Entropy/Crack': 'Instant - Any', 'Entropy/Jam': '1 turn - Any', 'Entropy/Decay': '1 turn - Any',
+  'Density/Weight': 'Instant - Any', 'Density/Noise': 'Instant - Any', 'Density/Mass': 'Instant - Any', 'Density/Solidify': 'Instant - Any', 'Density/Stuff': 'Instant - Any', 'Density/Gravity': 'Instant - Any', 'Density/Elastic': 'Instant - Any', 'Density/Matter': 'Instant - Any'
+};
+const NPC_COS_INFO = {
+  'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในระยะสายตา', passive: 'มักมีของ 1 อย่างในฉากติดตัวมาด้วยโดยไม่ตั้งใจชิ้นละฉาก โดยของชิ้นนั้นจะขึ้นอยู่กับ GM (slot 0)' },
+  'Energy/Voltage': { fx: 'ควบคุมพลังงานไฟฟ้าจากแหล่งที่มีกระแสไฟฟ้า', passive: 'มีไฟฟ้าสถิตบางๆออกมาจากตัว เหมือนผิวแห้งตลอดเวลา' },
+  'Energy/Magnet': { fx: 'คุมแรงแม่เหล็กกับวัตถุที่มีพลังงานแม่เหล็กในระยะสายตา', passive: '' },
+  'Energy/Luminary': { fx: 'ย้ายหรือควบคุมแหล่งกำเนิดแสง 1 อย่างในระยะสายตา', passive: '' },
+  'Energy/Breeze': { fx: 'ควบคุมกระแสและความแรงลมในพื้นที่ของตัวเอง', passive: '' },
+  'Energy/Devour': { fx: 'ดูดกลืนอากาศเข้าปากและยิงใส่เป้าหมายเป็นกระสุนเล็ก-ใหญ่ สามารถคอมโบธาตุอื่นที่อยู่ในอากาศที่ดูดกลืนได้', passive: '' },
+  'Space/Room': { fx: 'กางอาณาเขตเพื่อขัง Subject ในเขตที่ตัวเองสร้าง หรือกั้นเขตบังไม่ให้วัตถุผ่านเข้ามาในเขตที่สร้าง / สร้างพื้นที่เก็บของตามขนาด WM tier โดยเสีย Max WM ตามขนาดพื้นที่ที่สร้าง โดยของที่เก็บจะอยู่ในมิติ Room ที่ติดตัวเจ้าของห้องตลอด', passive: 'กลัวที่แคบ' },
+  'Density/Weight': { fx: 'เพิ่มหรือลดน้ำหนักของวัตถุที่ต้องการ', passive: '' },
+  'Density/Noise': { fx: 'ปรับความดังของเสียง', passive: '' },
+  'Density/Mass': { fx: 'ควบคุมสมดุลความหนาแน่นของเป้าหมาย ทำให้เป้าหมายเสียสมดุลความหนาแน่น(การทรงตัว ฯลฯ)', passive: '' },
+  'Density/Solidify': { fx: 'เปลี่ยนความแข็ง-อ่อนของวัตถุชั่วคราว โดยที่ยังคงสถานะของมวลนั้นๆอยู่', passive: '' },
+  'Density/Stuff': { fx: 'คงสภาพความหนาแน่นให้กับวัตถุในชั่วขณะหนึ่ง(คงสภาพ, รูปร่าง)', passive: '' },
+  'Density/Gravity': { fx: 'ควบคุมแรงโน้มถ่วงในพื้นที่ของตัวเอง', passive: '' },
+  'Density/Elastic': { fx: 'สร้างความยืดหยุ่นให้กับวัตถุผ่านการสัมผัส', passive: '' },
+  'Density/Matter': { fx: 'เปลี่ยนสถานะของสสารผ่านการสัมผัส', passive: '' },
+  'Entropy/Reverse': { fx: 'ย้อนเวลาสภาพของตัวเองกลับไปเมื่อเทิร์นที่แล้ว', passive: '' },
+  'Entropy/Transfer': { fx: 'ย้ายความเสื่อมของวัตถุหนึ่งที่พังไปยังอีกวัตถุหนึ่งที่มีสภาพสมบูรณ์ โดยวัตถุนั้นต้องเป็นประเภทที่ใกล้เคียงกัน', passive: '' },
+  'Entropy/Crack': { fx: 'แปลงสภาพสิ่งสมบูรณ์ให้เริ่มพัง (เครื่องจักรเริ่มทำงานผิดพลาด, โครงสร้างที่มั่นคงเริ่มสั่นคลอน)', passive: '' },
+  'Entropy/Jam': { fx: 'ก่อกวนคลื่นสัญญาณในคลื่นวิทยุ, ระบบซอฟท์แวร์ รวมถึงความทรงจำในชั่วขณะหนึ่ง', passive: '' },
+  'Entropy/Isolation': { fx: 'สร้างพื้นที่ระบบปิดของตัวเอง(สร้างพื้นที่ที่ไม่ให้ก๊าซออกจากเขตที่กำหนด)', passive: '' },
+  'Entropy/Decay': { fx: 'ปรับเวลาความเสื่อมให้กับวัตถุ 1 อย่างให้เร็วขึ้นหรือช้าลง', passive: '' },
+  'Impulse/Emotion': { fx: 'ย้ายความรู้สึกเป้าหมายมาสู่ตัวเอง หรือย้ายความรู้สึกตัวเองไปยังเป้าหมาย', passive: '' },
+  'Impulse/Possess': { fx: 'แฝงจิตไปยังเป้าหมายที่เป็นสิ่งมีชีวิต 1 อย่าง', passive: '' },
+  'Impulse/Learn': { fx: ['ยืมความชำนาญจากเป้าหมาย 1 คน มาใช้ผ่านการสัมผัส เช่น แตะตัวนักดาบระดับปรมาจารย์ จะสามารถใช้ดาบได้คล่องแคล่วเหมือนนักดาบคนนั้นได้ทันที (สามารถเปลี่ยนความชำนาญได้)', 'ยืมความชำนาญจากเป้าหมาย 2 คน มาใช้ผ่านการสัมผัส เช่น แตะตัวนักดาบระดับปรมาจารย์ จะสามารถใช้ดาบได้คล่องแคล่วเหมือนนักดาบคนนั้นได้ทันที (สามารถเปลี่ยนความชำนาญได้)', 'ยืมความชำนาญจากเป้าหมาย 3 คน มาใช้ผ่านการสัมผัส เช่น แตะตัวนักดาบระดับปรมาจารย์ จะสามารถใช้ดาบได้คล่องแคล่วเหมือนนักดาบคนนั้นได้ทันที (สามารถเปลี่ยนความชำนาญได้)'], passive: '' },
+  'Impulse/Absorb': { fx: ['ประกาศใช้สกิลเพื่อเก็บแรงปะทะทั้งทางกายและจิตใจมาที่ร่างกายโดยเสีย MAX IP ตามจำนวนครั้งที่ถูกปะทะ และส่งออกแรงนั้นไปยังเป้าหมายด้วยการสัมผัส ความแรงจะเท่ากับ MAX IP ที่เสียไป หลังจากใช้จะได้รับ MAX IP คืน แต่ IP ปัจจุบันจะลดลง 3 - ไม่สามารถเก็บสถานะผิดปกติที่เป็นอยู่แล้วได้', 'ประกาศใช้สกิลเพื่อเก็บแรงปะทะทั้งทางกายและจิตใจมาที่ร่างกายโดยเสีย MAX IP ตามจำนวนครั้งที่ถูกปะทะ และส่งออกแรงนั้นไปยังเป้าหมายด้วยการสัมผัส ความแรงจะเท่ากับ MAX IP ที่เสียไป หลังจากใช้จะได้รับ MAX IP คืน แต่ IP ปัจจุบันจะลดลง 2 - ไม่สามารถเก็บสถานะผิดปกติที่เป็นอยู่แล้วได้', 'ประกาศใช้สกิลเพื่อเก็บแรงปะทะทั้งทางกายและจิตใจมาที่ร่างกายโดยเสีย MAX IP ตามจำนวนครั้งที่ถูกปะทะ และส่งออกแรงนั้นไปยังเป้าหมายด้วยการสัมผัส ความแรงจะเท่ากับ MAX IP ที่เสียไป หลังจากใช้จะได้รับ MAX IP คืน แต่ IP ปัจจุบันจะลดลง 1 - ไม่สามารถเก็บสถานะผิดปกติที่เป็นอยู่แล้วได้'], passive: 'AMR+1' },
+  'Space/Compress': { fx: 'บีบอัดบรรยากาศในบริเวณที่ต้องการ', passive: '' },
+  'Space/Blink': { fx: 'วาร์ปตัวเองไปยังจุดอื่นในระยะที่ต้องการ', passive: '' },
+  'Space/Image': { fx: 'สร้างสถานที่จำลองทับโลกจริงจากความทรงจำ', passive: '' },
+  'Space/Fold': { fx: 'เปิดรูหนอนจากที่หนึ่งไปยังอีกที่หนึ่ง', passive: '' },
+  'Space/Point': { fx: 'สร้างจุดวาร์ป 1 ที่สำหรับเป็นจุดวาร์ปกลับไปยังจุดนั้น', passive: '' },
+  'Heat/Burner': { fx: 'ปรับความร้อนของวัตถุ หรือเรียกไฟออกมาจากตัว', passive: 'ตัวร้อนกว่าปกติ หาก Outburst ร่างจะติดไฟ' },
+  'Heat/Glacier': { fx: 'ปรับความเย็นของวัตถุ หรือสร้างน้ำแข็งออกมาจากตัว', passive: 'ตัวเย็นกว่าปกติ หาก Outburst ทุกอย่างที่สัมผัสจะเป็นน้ำแข็ง' },
+  'Heat/Burst': { fx: ['เปลี่ยนวัตถุ 1 อย่างเป็นระเบิดเวลานาน 30 วินาที (1 รอบเทิร์น) ความรุนแรงอยู่ที่ปริมาตรของวัตถุนั้นๆ', 'เปลี่ยนวัตถุ 1 อย่างเป็นระเบิดเวลา 3-30 วินาที (กำหนดให้ระเบิดได้ใน 1 เทิร์น ถึง 1 รอบเทิร์น) ความรุนแรงอยู่ที่ปริมาตรของวัตถุนั้นๆ', 'เปลี่ยนวัตถุ 1 อย่างเป็นระเบิดที่กำหนดเวลาระเบิดได้ทันที ความรุนแรงอยู่ที่ปริมาตรของวัตถุนั้นๆ'], passive: '' },
+  'Shape/Vapor': { fx: 'เปลี่ยนร่างตัวเองเป็นไอคอสมิค สามารถแทรกผ่านรูเล็กๆและที่ๆไปได้ยากได้ / ลอยผ่านเป้าหมายเพื่อให้เป้าหมายมีโอกาสติด Cosmic Overwhelm ได้', passive: '' },
+  'Shape/Shadow': { fx: 'คุมเงาตัวเองเป็นอีก 1 ร่าง สามารถใช้เงานั้น interact กับวัตถุที่มีเงาทอดถึง', passive: '' },
+  'Shape/Chameleon': { fx: 'ปรับสภาพผิวตัวเองให้กลืนไปกับสภาพแวดล้อม', passive: '' },
+  'Shape/Camouflage': { fx: 'เปลี่ยนร่างตัวเองให้เป็นร่างของเป้าหมายที่สัมผัสไว้ล่าสุด', passive: '' },
+  'Shape/Re-shape': { fx: 'เปลี่ยนรูปร่างของวัตถุ โดยที่วัตถุนั้นยังคงมวลเหมือนเดิม', passive: '' },
+  'Shape/Scale': { fx: 'ย่อและขยายวัตถุที่สัมผัส ใช้กับตัวเองไม่ได้', passive: '' },
+  'Shape/Sharpen': { fx: 'เพิ่มความคมให้กับวัตถุที่สัมผัส', passive: '' },
+  'Shape/Labyrinth': { fx: 'ควบคุมโครงสร้างของสิ่งปลูกสร้างที่ตัวเองอยู่', passive: '' },
+  'Velocity/Haste': { fx: 'เพิ่มความเร็วของตัวเอง', passive: '' },
+  'Velocity/Quickness': { fx: 'เพิ่มความเร็วของวัตถุให้เคลื่อนที่เร็วขึ้นหรือช้าลง', passive: '' },
+  'Velocity/Redirect': { fx: 'เปลี่ยนวิถีการเคลื่อนที่ของวัตถุที่กำลังเคลื่อนที่ได้ทันที', passive: '' },
+  'Velocity/Snitch': { fx: 'ดึงความเร็วจากเป้าหมายหนึ่งเก็บไว้ และเลือกใช้ความเร็วนั้นเมื่อไหร่ก็ได้ในฉากนั้น', passive: '' },
+  'Velocity/Accel': { fx: 'อัดความเร็วเข้าไปในวัตถุ 1 อย่าง', passive: '' },
+  'Velocity/Slow': { fx: ['ลดความเร็วเป้าหมาย 1 อย่างในระยะสายตาจนเกือบหยุด', 'ลดความเร็วเป้าหมาย 3 อย่างในระยะสายตาจนเกือบหยุด', 'ลดความเร็วเป้าหมาย 5 อย่างในระยะสายตาจนเกือบหยุด'], passive: '' },
+  'Velocity/Jump': { fx: 'สลับความเร็วระหว่างวัตถุ 2 ชิ้น ในระยะสายตา', passive: '' },
+  'Velocity/Anchor': { fx: 'ตรึงทิศทางของความเร็ว เป้าหมายที่ถูกตรึงไม่สามารถเปลี่ยนทิศทางได้หากยังเคลื่อนที่', passive: '' }
+};
+/* the Cosmic Ability text for a level (an entry may give one Active per level) */
+function npcCosText(key, k, lv) {
+  const v = (NPC_COS_INFO[key] || {})[k];
+  if (!Array.isArray(v)) return v || '';
+  return v[Math.min(Math.max(lv || 1, 1), v.length) - 1] || '';
+}
+/* an older NPC may hold just the ability name: find its type */
+function npcCosType(c) {
+  if (c.type) return c.type;
+  const t = NPC_COS_TYPES.find((x) => (NPC_COS_NAMES[x[0]] || []).indexOf(c.n) !== -1);
+  return t ? t[0] : '';
+}
 /* NPC status (GM only): REP x2 = points to spend. Costs follow the player sheet:
    every Basic Ability starts at 1 with 4 free points to add (like a player), each point past those 5 REP, max 3;
    Cosmic Ability / Gadget Lv2 5 REP, Lv3 12 more; a General skill's Lv1 is free, higher levels cost what the skill list says. */
@@ -587,7 +689,7 @@ function npcStat(n) {
     ipCur: d.ipCur != null ? String(d.ipCur) : '10', wmCur: d.wmCur != null ? String(d.wmCur) : '10',
     // every Basic Ability starts at 1 (the free start); each point above that costs 5 REP
     ba: NPC_BA.reduce((o, b) => { o[b[0]] = Math.max(1, Math.min(3, +((d.ba || {})[b[0]]) || 1)); return o; }, {}),
-    cos: Object.assign({ n: '', lv: 1 }, d.cos || {}),
+    cos: Object.assign({ n: '', lv: 1, type: '' }, d.cos || {}),
     skills: two(d.skills, { n: '', lv: 1 }), weapons: two(d.weapons, { n: '', fx: '' }), gears: two(d.gears, { n: '', fx: '' })
   };
 }
@@ -1086,7 +1188,27 @@ class Component extends DCLogic {
         baNote: L('เริ่มที่ 1 ทุกค่า · แต้มฟรีใช้ไป ' + Math.min(4, npcBaUp(st)) + ' / 4 · เกินนั้นแต้มละ 5 REP · สูงสุด 3', 'Every stat starts at 1 · free points used ' + Math.min(4, npcBaUp(st)) + ' / 4 · past that 5 REP a point · max 3'),
         hasCos: fk === 'shifter' || fk === 'norms',
         cosTitle: fk === 'norms' ? 'Cosmic Gadget' : 'Cosmic Ability',
-        cosName: st.cos.n, onCosName: (e) => this.editStat(id, { cos: Object.assign({}, st.cos, { n: val(e).slice(0, 60) }) }),
+        cosName: st.cos.n, onCosName: (e) => this.editStat(id, { cos: Object.assign({}, st.cos, { n: val(e).slice(0, 60), type: npcCosType(st.cos) }) }),
+        ...(() => {
+          const ct = npcCosType(st.cos), key = ct && st.cos.n ? ct + '/' + st.cos.n : '';
+          const base = (NPC_COS_TYPES.find((x) => x[0] === ct) || [])[1] || '';
+          const all = [];
+          NPC_COS_TYPES.forEach((t) => (NPC_COS_NAMES[t[0]] || []).forEach((nm) => all.push([t[0], nm])));
+          const fx = fk === 'shifter' ? npcCosText(key, 'fx', +st.cos.lv || 1) : '', pas = fk === 'shifter' ? npcCosText(key, 'passive', 1) : '';
+          return {
+            cosPick: fk === 'shifter', cosTyped: fk === 'norms', cosKey: key,
+            cosOpts: [{ v: '', label: L('— เลือก Cosmic Ability —', '— Pick a Cosmic Ability —'), sel: !key }].concat(all.map((a) => {
+              const k = a[0] + '/' + a[1], tag = NPC_COS_TAGS[k];
+              return { v: k, label: a[0] + ' · ' + a[1] + (tag ? ' (' + tag + ')' : ''), sel: k === key };
+            })),
+            onCosKey: (e) => { const v = val(e), i = v.indexOf('/'); this.editStat(id, { cos: Object.assign({}, st.cos, i > 0 ? { type: v.slice(0, i), n: v.slice(i + 1) } : { type: '', n: '' }) }); },
+            cosType: ct, cosNamePh: L('ชื่อ Gadget', 'Gadget name'),
+            cosTypeOpts: [{ v: '', label: 'Type', sel: !ct }].concat(NPC_COS_TYPES.map((t) => ({ v: t[0], label: t[0], sel: t[0] === ct }))),
+            onCosType: (e) => this.editStat(id, { cos: Object.assign({}, st.cos, { type: val(e) }) }),
+            cosHasInfo: !!(base || fx), cosInfo: (base ? base + (fx ? ' · ' : '') : '') + fx,
+            cosHasPassive: !!pas, cosPassive: pas
+          };
+        })(),
         cosLvs: [[1, 'Lv1'], [2, 'Lv2 · 5 REP'], [3, 'Lv3 · 17 REP']].map((o) => ({ v: String(o[0]), label: o[1], sel: (+st.cos.lv || 1) === o[0] })),
         cosLv: String(+st.cos.lv || 1),
         onCosLv: (e) => this.editStat(id, { cos: Object.assign({}, st.cos, { lv: +val(e) || 1 }) }),

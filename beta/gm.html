@@ -908,7 +908,7 @@ class Component extends DCLogic {
     // left: tier, IP, WM · right: Cosmic Ability / Gadget, General skills, Weapons, Gears
     const rows = [
       [cell(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1), d.boss ? '#FF3D6E' : '#2EE6F0'),
-        (fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n ? cell(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400') : cell()],
+        (fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n ? cell(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + (d.cos.type ? ' (' + d.cos.type + ')' : '') + ' Lv' + (d.cos.lv || 1), '#FFD400') : cell()],
       [cell('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn)), cell('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)))],
       [fk === 'shifter' ? cell('WM', 'PWR+' + nz(d.pwr) + ' · RGN+' + Math.max(1, +d.wmRgn || 1), '#C084FC') : cell(), cell('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))],
       [cell('BONDED', d.bond || ''), cell('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))]
