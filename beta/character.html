@@ -826,7 +826,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=a60a9d0f"></script>
 <script src="../assets/beta-common.js?v=1f9d034b"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
-<script src="../assets/dice.js?v=17e199bc"></script>
+<script src="../assets/dice.js?v=7fdd9907"></script>
 <script>
 function initialSheet() {
   return {
@@ -988,7 +988,7 @@ const SKILLS = [
   ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
 ];
 /* Whelm Tier (rules sheet, tab "Whelm Tier"): how strong a use of cosmic power is; the tier is also its WM cost.
-   Tier 4–6 gives 1 EX, 7–9 gives 3 EX, 10 also needs a SeD roll >8. */
+   Tier 4–6 gives 1 EX, 7–9 gives 3 EX, 10 also lowers MAX WM by 1 and needs a Sense roll of 8 (below = Fainted). */
 const WHELM = [
   ['ระดับตาตุ่ม', 'สัมผัส', '1 ช่วงแขน', 'คนเดิน', '1 ฝ่ามือ', '0'],
   ['ระดับครึ่งต้นขา', '1 ช่วงคืบ', 'ลิฟท์โรงแรม', 'คนวิ่ง', '1 แขนโอบ', '1-5'],
@@ -1162,6 +1162,13 @@ class Component extends DCLogic {
           else if (sp.over) { patch.inj = Object.assign({}, cur.inj, { 'Cosmic Outburst': true }); patch.outN = 0; }
           // EX comes from the picked tier only (Outburst's stacked tiers don't count)
           const tb = sp.whelmBase != null ? sp.whelmBase : sp.whelm, g = tb >= 7 ? 3 : tb >= 4 ? 1 : 0;
+          // 10 WM in one use: MAX WM −1, then a Sense roll for 8 (below 8 = Fainted) once this roll is done
+          if (tb >= 10 && !outb) {
+            const mx = Math.max(1, (parseInt(cur.spMax, 10) || 10) - 1);
+            patch.spMax = String(mx);
+            patch.spCur = String(Math.min(mx, parseInt(patch.spCur != null ? patch.spCur : cur.spCur, 10) || 0));
+            this._senseCheck = true;
+          }
           if (g) patch = Object.assign(patch, this.exGain(g, Object.assign({}, cur, patch)));
         }
         // SE spent on extra dice becomes EX; a pair of [8] gives SE back
@@ -1185,9 +1192,26 @@ class Component extends DCLogic {
     }, extra || {}, {
       onFinal: (p, dice) => {
         if (extra && extra.onFinal) extra.onFinal(p, dice);
+        if (this._senseCheck) { this._senseCheck = false; setTimeout(() => this.whelmSense(), 450); }
         if (this.isRoleplay()) this.clearBoost(); // roleplay: an SE boost lasts for one roll
       }
     }));
+  }
+  /* after a 10-WM use: roll Sense, below 8 ticks Fainted */
+  whelmSense() {
+    const s = this.state.s, th = this.state.lang !== 'en', k = 'sense';
+    const br = Object.assign({ sense: 0 }, s.baRep || {});
+    let v = Math.min(3, 1 + (s.ba[k] || 0) + (parseInt(br[k], 10) || 0) + (s.factor === 'cpd' && DIVISIONS[s.traitName] === k ? 1 : 0));
+    if (s.inj && s.inj['Cosmic Infected']) v = Math.max(1, v - 1);
+    this.openRoll('Sense', v, s.baMod[k], {
+      label: th ? 'Sense · หลังใช้ 10 WM' : 'Sense · after 10 WM',
+      note: th ? 'ทอยให้ได้ 8 · ต่ำกว่า 8 = Fainted' : 'Roll 8 · below 8 = Fainted',
+      onFinal: (p) => {
+        if ((p && p.r) >= 8) return;
+        const cur = this.state.s, was = this.state.dirty, patch = { inj: Object.assign({}, cur.inj, { Fainted: true }) };
+        this.upd(patch); this.rollSaved(patch, was);
+      }
+    });
   }
   /* CM's BGM state arrives here (BroadcastChannel on the canvas, Supabase realtime on the live site) */
   onBgm(msg) {
