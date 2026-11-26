@@ -158,7 +158,7 @@
   }
   async function act(fn) {
     P.err = '';
-    try { var r = await fn(); if (r && r.error) P.err = /PACK_IN_USE/.test(r.error.message) ? 'ลบไม่ได้ มีผู้ใช้ Import campaign นี้ไปแล้ว' : SP.err(r.error, true); } catch (e) { P.err = SP.err(e, true); }
+    try { var r = await fn(); if (r && r.error) P.err = /PACK_IN_USE/.test(r.error.message) ? 'ลบไม่ได้ มีผู้ใช้ Import campaign นี้ไปแล้ว' : /BOOK_IN_USE/.test(r.error.message) ? 'ลบไม่ได้ มีผู้ใช้โค้ดของเล่มนี้หรือ Import campaign ไปแล้ว' : SP.err(r.error, true); } catch (e) { P.err = SP.err(e, true); }
     await packsLoad(); packsRender();
   }
   function packHtml(pk) {
@@ -183,7 +183,7 @@
       h += '<div class="card" data-book="' + esc(bk.book) + '">' +
         '<div class="row" style="justify-content:space-between;align-items:baseline"><div><b style="font:700 18px Chakra Petch,sans-serif">' + esc(bk.title || bk.book) + '</b> <span class="stat-line">' + esc(bk.book) + '</span></div>' +
         '<span class="stat-line">' + packs.length + ' campaign · โค้ด CP ' + bk.redeemed + '/' + bk.codes + ' ใช้แล้ว</span></div>' +
-        '<div class="row"><div class="field" style="flex:1 1 220px"><label>ชื่อหนังสือ</label><div class="row" style="flex-wrap:nowrap"><input class="f" data-btitle value="' + esc(bk.title) + '" maxlength="120" style="flex:1;min-width:0"><button class="btn" data-bsave>บันทึกชื่อ</button></div></div>' +
+        '<div class="row"><div class="field" style="flex:1 1 220px"><label>ชื่อหนังสือ</label><div class="row" style="flex-wrap:nowrap"><input class="f" data-btitle value="' + esc(bk.title) + '" maxlength="120" style="flex:1;min-width:0"><button class="btn" data-bsave>บันทึกชื่อ</button><button class="btn" data-bdel title="ลบหนังสือเล่มนี้ พร้อม campaign และโค้ดที่ยังไม่ถูกใช้" style="border-color:var(--line);color:var(--dim)">ลบเล่ม</button></div></div>' +
           '<div class="field"><label>สร้างโค้ด CP ใหม่</label><div class="row" style="flex-wrap:nowrap"><input class="f" type="number" min="1" max="500" value="10" data-n style="width:90px"><button class="btn" data-codes>สร้างโค้ด</button></div></div></div>' +
         (P.codes[bk.book] ? '<div class="field"><label>โค้ดที่เพิ่งสร้าง (' + P.codes[bk.book].length + ')</label><textarea class="f" readonly>' + P.codes[bk.book].join('\n') + '</textarea><button class="btn" data-copy style="align-self:flex-start">คัดลอกทั้งหมด</button></div>' : '') +
         packs.map(packHtml).join('') +
@@ -199,6 +199,11 @@
     packsEl.querySelectorAll('[data-book]').forEach(function (card) {
       var book = card.getAttribute('data-book');
       card.querySelector('[data-bsave]').onclick = function () { var t = card.querySelector('[data-btitle]').value.trim(); act(function () { return SP.sb.rpc('admin_book_save', { p_book: book, p_title: t }); }); };
+      var bdel = card.querySelector('[data-bdel]');
+      bdel.onclick = function () {
+        if (bdel.getAttribute('data-sure')) act(function () { return SP.sb.rpc('admin_book_delete', { p_book: book }); });
+        else { bdel.setAttribute('data-sure', '1'); bdel.textContent = 'กดอีกครั้งเพื่อลบ'; bdel.style.color = 'var(--bad)'; bdel.style.borderColor = 'var(--bad)'; }
+      };
       card.querySelector('[data-codes]').onclick = function () {
         var n = parseInt(card.querySelector('[data-n]').value, 10) || 0;
         act(async function () { var r = await SP.sb.rpc('admin_book_codes', { p_book: book, p_n: n }); if (!r.error) P.codes[book] = r.data || []; return r; });
