@@ -88,6 +88,8 @@
       page.setState({ profile: r.data, role: role, menuRole: role, roleWarn: false, charWarn: false, menuSwitched: role });
       if (page.onRoleChange) page.onRoleChange(role);
     };
+    // a GM can sit at another GM's table without switching roles: "My characters" opens straight away
+    v.askChars = function () { location.href = 'characters.html'; };
     v.switchToGm = function () { setRole('gm'); };
     v.switchToPlayer = function () { setRole('player'); };
     v.navLogout = async function (e) {

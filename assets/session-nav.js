@@ -76,7 +76,8 @@
       v.spSwitchedPlayerLabel = th ? '✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว' : '✓ You are now a Player';
       v.spCharWarn = !!this.state.spCharWarn;
       v.spCharWarnExpanded = this.state.spCharWarn ? 'true' : 'false';
-      v.spAskChars = () => this.setState({ spCharWarn: !this.state.spCharWarn, spWarn: false });
+      // a GM can play at another GM's table without switching roles
+      v.spAskChars = () => { location.href = 'beta/characters.html'; };
       v.spCharWarnText = this.state.spErr || (th ? 'ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).');
       v.spSwitchPlayerLabel = th ? 'เปลี่ยนเป็นผู้เล่น' : 'Switch to Player';
       var setRole = async (role) => {
