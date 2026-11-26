@@ -511,6 +511,16 @@ html{scroll-behavior:smooth}
                       </div>
                       <!-- the NPC's status from the NPC page: GM only, never sent to players -->
                       <sc-if value="{{en.hasSt}}" hint-placeholder-val="{{ false }}">
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                          <sc-for list="{{en.bars}}" as="br" hint-placeholder-count="2">
+                            <div role="group" aria-label="{{br.aria}}" style="display: flex; align-items: center; gap: 6px; padding: 3px 4px 3px 8px; border: 1px solid #2A2740; border-left: 3px solid {{br.c}}">
+                              <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: {{br.c}}">{{br.k}}</span>
+                              <button type="button" onClick="{{br.dec}}" disabled="{{br.decOff}}" aria-label="{{br.decLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">−</button>
+                              <span style="min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #FFFFFF">{{br.v}}<span style="color: #8C88A6"> / 10</span></span>
+                              <button type="button" onClick="{{br.inc}}" disabled="{{br.incOff}}" aria-label="{{br.incLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">+</button>
+                            </div>
+                          </sc-for>
+                        </div>
                         <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
                           <sc-for list="{{en.stLines}}" as="ln" hint-placeholder-count="4">
                             <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{ln.c}}; padding-top: 1px">{{ln.k}}</dt>
@@ -808,6 +818,20 @@ class Component extends DCLogic {
     const list = (this.state.encounter || []).filter((x) => x.id !== n.id);
     this.encSet(list.concat([{ id: n.id, name: n.name || '', url: n.pic || '', status: [], at: Date.now() }]).slice(-8));
   }
+  /* current IP / WM of an NPC in the encounter (GM only): kept in the NPC's status */
+  npcAdjust(id, key, d) {
+    let saved = null;
+    const lib = (this.state.npcLib || []).map((n) => {
+      if (n.id !== id) return n;
+      const st = n.stat || {};
+      const cur = st[key] != null && st[key] !== '' ? +st[key] || 0 : 10;
+      saved = Object.assign({}, st, { [key]: String(Math.max(0, Math.min(10, cur + d))) });
+      return Object.assign({}, n, { stat: saved });
+    });
+    this.setState({ npcLib: lib });
+    if (saved) this.npcStatSave(id, saved);
+  }
+  npcStatSave() {}
   encDrop(id) { this.encSet((this.state.encounter || []).filter((x) => x.id !== id)); }
   encToggle(id, st) {
     this.encSet((this.state.encounter || []).map((x) => (x.id !== id ? x : Object.assign({}, x, { status: x.status.indexOf(st) === -1 ? x.status.concat([st]) : x.status.filter((y) => y !== st) }))));
@@ -1034,23 +1058,28 @@ class Component extends DCLogic {
             remove: () => this.encDrop(x.id), removeLabel: L('เอาออกจาก Encounter: ', 'Take out of the encounter: ') + (x.name || ''),
             statusLabel: L('สถานะผิดปกติของ ', 'Abnormal statuses of ') + (x.name || ''),
             ...(() => {
-              const n = all.find((y) => y.id === x.id), d = n && n.stat;
-              if (!d) return { hasSt: false, stLines: [] };
+              const n = all.find((y) => y.id === x.id), d = (n && n.stat) || {};
+              if (!n) return { hasSt: false, stLines: [], bars: [] };
               const fk = n.factor || '', ln = [];
               const add = (k, v, c) => { if (v) ln.push({ k: k, v: v, c: c || '#A9A5C2' }); };
               const nz = (v) => (v == null || v === '' ? '0' : String(v));
               add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1) + ' · Slots ' + (d.slots || (fk === 'norms' ? 8 : 5)), d.boss ? '#FF3D6E' : '#2EE6F0');
-              add('IP', '10 · AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
-              add('WM', '10 · PWR+' + nz(d.pwr) + (fk === 'shifter' ? ' · RGN+' + nz(d.wmRgn) : ''), '#C084FC');
-              const ba = d.ba || {};
-              add('ABILITY', 'Force ' + (ba.force || 0) + ' · Tactical ' + (ba.tactical || 0) + ' · Trick ' + (ba.trick || 0) + ' · Sense ' + (ba.sense || 0));
+              add('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
+              add('WM', 'PWR+' + nz(d.pwr) + (fk === 'shifter' ? ' · RGN+' + Math.max(1, +d.wmRgn || 1) : ''), '#C084FC');
+              const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
+              add('ABILITY', 'Force ' + b1('force') + ' · Tactical ' + b1('tactical') + ' · Trick ' + b1('trick') + ' · Sense ' + b1('sense'));
               if ((fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n) add(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400');
               const list = (a, f) => (a || []).filter((r) => r && r.n).map(f).join(' · ');
               add('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)));
               add('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
               add('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
               add('BONDED', d.bond || '');
-              return { hasSt: true, stLines: ln };
+              const bar = (k, key, c) => {
+                const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(10, +d[key] || 0)) : 10;
+                return { k: k, v: String(v), c: c, aria: k + ' ' + (x.name || ''), dec: () => this.npcAdjust(x.id, key, -1), inc: () => this.npcAdjust(x.id, key, 1),
+                  decOff: v <= 0, incOff: v >= 10, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
+              };
+              return { hasSt: true, stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF'), bar('WM', 'wmCur', '#C084FC')] };
             })(),
             statuses: ENC_STATUS.map((st) => {
               const onS = x.status.indexOf(st) !== -1;
@@ -1420,6 +1449,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=4a440f30"></script>
+<script src="../assets/beta-gm.js?v=5b7b5195"></script>
 </body>
 </html>

@@ -193,6 +193,18 @@
       var r = await sb.from('npcs').select('id, name, portrait_url, data').eq('gm_id', this.state.profile.id).order('name');
       this.apply({ npcLib: (r.data || []).map(function (n) { return { id: n.id, name: n.name, role: (n.data && n.data.role) || '', pic: n.portrait_url || '', factor: (n.data && n.data.factor) || '', stat: (n.data && n.data.stat) || null }; }) });
     }
+    /* an encounter NPC's current IP / WM: merge into npcs.data.stat (debounced per NPC) */
+    npcStatSave(id, stat) {
+      this._npcT = this._npcT || {};
+      clearTimeout(this._npcT[id]);
+      this._npcT[id] = setTimeout(async () => {
+        var r = await sb.from('npcs').select('data').eq('id', id).single();
+        if (r.error) return;
+        var data = Object.assign({}, r.data.data || {});
+        data.stat = Object.assign({}, data.stat || {}, { ipCur: stat.ipCur, wmCur: stat.wmCur });
+        await sb.from('npcs').update({ data: data }).eq('id', id);
+      }, 500);
+    }
     async encSet(list) {
       var sid = this.state.sid;
       if (!sid) return;
