@@ -682,8 +682,8 @@ html{scroll-behavior:smooth}
                         <select class="fld" aria-label="{{t.seSkillPick}}" onChange="{{onSeSkill}}" disabled="{{seNoSkills}}" style="width: 100%; min-width: 0; height: 22px; padding: 0 4px; font-size: 11px">
                         <sc-for list="{{seSkillOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
                       </select>
-                        <sc-if value="{{sePwrShow}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{seUsePwr}}" disabled="{{sePwrOff}}" title="{{t.sePwrTip}}" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; min-height: 22px; padding: 0 4px; font-size: 10.5px; border-color: #C084FC; color: #C084FC">PWR+1</button></sc-if>
                         <button type="button" class="btn sm" onClick="{{seUseSkill}}" disabled="{{seSkillOff}}" title="{{t.seSkillTip}}" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; min-height: 22px; padding: 0 4px; font-size: 10.5px; border-color: #C084FC; color: #C084FC">LV+1</button>
+                        <sc-if value="{{sePwrShow}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn sm" onClick="{{seUsePwr}}" disabled="{{sePwrOff}}" title="{{t.sePwrTip}}" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; min-height: 22px; padding: 0 4px; font-size: 10.5px; border-color: #C084FC; color: #C084FC">PWR+1</button></sc-if>
                       </div>
                     </sc-if>
                   </div>
