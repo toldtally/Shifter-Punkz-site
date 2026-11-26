@@ -509,6 +509,15 @@ html{scroll-behavior:smooth}
                           <button type="button" onClick="{{es.toggle}}" aria-pressed="{{es.pressed}}" style="{{es.style}}">{{es.n}}</button>
                         </sc-for>
                       </div>
+                      <!-- the NPC's status from the NPC page: GM only, never sent to players -->
+                      <sc-if value="{{en.hasSt}}" hint-placeholder-val="{{ false }}">
+                        <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
+                          <sc-for list="{{en.stLines}}" as="ln" hint-placeholder-count="4">
+                            <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{ln.c}}; padding-top: 1px">{{ln.k}}</dt>
+                            <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{ln.v}}</dd>
+                          </sc-for>
+                        </dl>
+                      </sc-if>
                     </div>
                   </li>
                 </sc-for>
@@ -763,7 +772,7 @@ class Component extends DCLogic {
     this._clock = setInterval(() => this.setState({ now: Date.now() }), 1000);
     this._live = setInterval(() => this.tickLive(), 4500);
     // prototype: the NPC Network artboard keeps its NPCs in this browser
-    const lib = (d) => { if (d && Array.isArray(d.npcs)) this.setState({ npcLib: d.npcs.map((n) => ({ id: n.id, name: n.name, role: n.role || '', pic: n.pic || '' })) }); };
+    const lib = (d) => { if (d && Array.isArray(d.npcs)) this.setState({ npcLib: d.npcs.map((n) => ({ id: n.id, name: n.name, role: n.role || '', pic: n.pic || '', factor: n.factor || '', stat: n.stat || null })) }); };
     try { lib(JSON.parse(localStorage.getItem('sp-demo-npcnet') || 'null')); } catch (e) {}
     try { this._npcCh = new BroadcastChannel('sp-demo-npcnet'); this._npcCh.onmessage = (ev) => lib(ev.data); } catch (e) {}
   }
@@ -1024,6 +1033,25 @@ class Component extends DCLogic {
             name: x.name || L('(ไม่มีชื่อ)', '(unnamed)'), url: x.url, hasPic: !!x.url, noPic: !x.url, initial: ini(x.name),
             remove: () => this.encDrop(x.id), removeLabel: L('เอาออกจาก Encounter: ', 'Take out of the encounter: ') + (x.name || ''),
             statusLabel: L('สถานะผิดปกติของ ', 'Abnormal statuses of ') + (x.name || ''),
+            ...(() => {
+              const n = all.find((y) => y.id === x.id), d = n && n.stat;
+              if (!d) return { hasSt: false, stLines: [] };
+              const fk = n.factor || '', ln = [];
+              const add = (k, v, c) => { if (v) ln.push({ k: k, v: v, c: c || '#A9A5C2' }); };
+              const nz = (v) => (v == null || v === '' ? '0' : String(v));
+              add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1) + ' · Slots ' + (d.slots || (fk === 'norms' ? 8 : 5)), d.boss ? '#FF3D6E' : '#2EE6F0');
+              add('IP', '10 · AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
+              add('WM', '10 · PWR+' + nz(d.pwr) + (fk === 'shifter' ? ' · RGN+' + nz(d.wmRgn) : ''), '#C084FC');
+              const ba = d.ba || {};
+              add('ABILITY', 'Force ' + (ba.force || 0) + ' · Tactical ' + (ba.tactical || 0) + ' · Trick ' + (ba.trick || 0) + ' · Sense ' + (ba.sense || 0));
+              if ((fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n) add(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400');
+              const list = (a, f) => (a || []).filter((r) => r && r.n).map(f).join(' · ');
+              add('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)));
+              add('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
+              add('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
+              add('BONDED', d.bond || '');
+              return { hasSt: true, stLines: ln };
+            })(),
             statuses: ENC_STATUS.map((st) => {
               const onS = x.status.indexOf(st) !== -1;
               return { n: st, pressed: onS ? 'true' : 'false', toggle: () => this.encToggle(x.id, st),
@@ -1392,6 +1420,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=ef9d537c"></script>
+<script src="../assets/beta-gm.js?v=4a440f30"></script>
 </body>
 </html>

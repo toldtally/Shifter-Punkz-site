@@ -191,7 +191,7 @@
     /* NPCs: the GM's library (NPC page) and the Encounter strip players see (sessions.encounter) */
     async loadNpcs() {
       var r = await sb.from('npcs').select('id, name, portrait_url, data').eq('gm_id', this.state.profile.id).order('name');
-      this.apply({ npcLib: (r.data || []).map(function (n) { return { id: n.id, name: n.name, role: (n.data && n.data.role) || '', pic: n.portrait_url || '' }; }) });
+      this.apply({ npcLib: (r.data || []).map(function (n) { return { id: n.id, name: n.name, role: (n.data && n.data.role) || '', pic: n.portrait_url || '', factor: (n.data && n.data.factor) || '', stat: (n.data && n.data.stat) || null }; }) });
     }
     async encSet(list) {
       var sid = this.state.sid;

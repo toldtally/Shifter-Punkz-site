@@ -51,7 +51,7 @@
       var npcs = (res[0].data || []).map(function (r) {
         var d = r.data || {};
         paths[r.id] = r.portrait_path || null;
-        return { id: r.id, name: r.name, pic: r.portrait_url || '', gang: r.gang_id, x: r.x, y: r.y, role: d.role || '', factor: d.factor || '', notes: d.notes || '' };
+        return { id: r.id, name: r.name, pic: r.portrait_url || '', gang: r.gang_id, x: r.x, y: r.y, role: d.role || '', factor: d.factor || '', notes: d.notes || '', stat: d.stat || null };
       });
       // a PC on the map keeps the name and picture it had; seated characters refresh them
       var pcs = (res[3].data || []).map(function (r) {
@@ -82,7 +82,7 @@
       if (kind === 'link') return { id: r.id, gm_id: gm, a: r.a, b: r.b, kind: r.kind, note: (r.note || '').slice(0, 300) };
       if (kind === 'pc') return { gm_id: gm, character_id: r.id, name: (r.name || '').slice(0, 60), portrait_url: r.pic || null, factor: r.factor || null, x: r.x, y: r.y };
       return { id: r.id, gm_id: gm, name: (r.name || '').slice(0, 60), portrait_url: r.pic || null, portrait_path: r.pic ? this._paths[r.id] || null : null,
-        gang_id: r.gang || null, x: r.x, y: r.y, data: { role: r.role || '', factor: r.factor || '', notes: r.notes || '' } };
+        gang_id: r.gang || null, x: r.x, y: r.y, data: { role: r.role || '', factor: r.factor || '', notes: r.notes || '', stat: r.stat || null } };
     }
     async flush() {
       if (this._flushing) { this._again = true; return; }

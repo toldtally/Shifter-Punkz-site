@@ -313,9 +313,88 @@ html{scroll-behavior:smooth}
                 </sc-for>
               </select>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 6px; padding: 12px; background: #0B0A12; border: 1px dashed #3A3655">
-              <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; color: #D8D6E8">STATUS</span>
-              <span style="font-size: 12.5px; line-height: 1.6; color: #8C88A6">{{t.statusSoon}}</span>
+            <!-- STATUS: GM only. REP x2 = points to spend; costs follow the player sheet -->
+            <div style="display: flex; flex-direction: column; gap: 12px; padding: 12px; background: #0B0A12; border: 1px solid #2A2740">
+              <div style="display: flex; align-items: center; gap: 8px">
+                <span style="flex: 1; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; color: #D8D6E8">STATUS</span>
+                <span title="{{st.ptsTip}}" style="padding: 3px 8px; border: 1px solid {{st.ptsColor}}; color: {{st.ptsColor}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap">{{st.ptsText}}</span>
+              </div>
+              <div role="group" aria-label="{{st.tierLabel}}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px">
+                <button type="button" aria-pressed="{{st.normPressed}}" onClick="{{st.setNorm}}" style="{{st.normStyle}}">{{st.normText}}</button>
+                <button type="button" aria-pressed="{{st.bossPressed}}" onClick="{{st.setBoss}}" style="{{st.bossStyle}}">{{st.bossText}}</button>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-lv" class="lbl">Session Lv</label><input id="st-lv" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="1" max="20" value="{{st.lv}}" onInput="{{st.onLv}}"></div>
+                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-rep" class="lbl">REP</label><input id="st-rep" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="99" value="{{st.rep}}" onInput="{{st.onRep}}"></div>
+                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-slots" class="lbl">Slots</label><input id="st-slots" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="99" value="{{st.slots}}" onInput="{{st.onSlots}}"></div>
+              </div>
+              <span style="margin-top: -4px; font-size: 12px; line-height: 1.6; color: {{st.hintColor}}">{{st.repHint}}</span>
+              <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-bond" class="lbl">Bonded Item</label><input id="st-bond" class="fld" type="text" maxlength="120" value="{{st.bond}}" onInput="{{st.onBond}}"></div>
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+                <span style="min-width: 64px; padding-bottom: 8px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF">IP 10</span>
+                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-amr" class="lbl">AMR+</label><input id="st-amr" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.amr}}" onInput="{{st.onAmr}}"></div>
+                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-iprgn" class="lbl">RGN+</label><input id="st-iprgn" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.ipRgn}}" onInput="{{st.onIpRgn}}"></div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+                <span style="min-width: 64px; padding-bottom: 8px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #C084FC">WM 10</span>
+                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-pwr" class="lbl">PWR+</label><input id="st-pwr" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.pwr}}" onInput="{{st.onPwr}}"></div>
+                <sc-if value="{{st.isShifter}}" hint-placeholder-val="{{ true }}">
+                  <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-wmrgn" class="lbl">RGN+</label><input id="st-wmrgn" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.wmRgn}}" onInput="{{st.onWmRgn}}"></div>
+                </sc-if>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span class="lbl">Basic Ability</span>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px">
+                  <sc-for list="{{st.ba}}" as="b" hint-placeholder-count="4">
+                    <div style="display: flex; align-items: center; gap: 6px; padding: 4px 6px; border: 1px solid #2A2740">
+                      <span style="flex: 1; min-width: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: #D8D6E8">{{b.label}}</span>
+                      <button type="button" onClick="{{b.dec}}" disabled="{{b.decOff}}" aria-label="{{b.decLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">−</button>
+                      <span style="width: 18px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #FFFFFF">{{b.v}}</span>
+                      <button type="button" onClick="{{b.inc}}" disabled="{{b.incOff}}" aria-label="{{b.incLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">+</button>
+                    </div>
+                  </sc-for>
+                </div>
+                <span style="font-size: 12px; line-height: 1.6; color: #8C88A6">{{st.baNote}}</span>
+              </div>
+              <sc-if value="{{st.hasCos}}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; flex-direction: column; gap: 4px">
+                  <label for="st-cos" class="lbl">{{st.cosTitle}}</label>
+                  <div style="display: flex; gap: 6px">
+                    <input id="st-cos" class="fld" type="text" maxlength="60" value="{{st.cosName}}" onInput="{{st.onCosName}}" style="flex: 1; min-width: 0">
+                    <select class="fld" aria-label="{{st.cosTitle}} level" onChange="{{st.onCosLv}}" style="width: auto">
+                      <sc-for list="{{st.cosLvs}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                    </select>
+                  </div>
+                </div>
+              </sc-if>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span class="lbl">General skills (2)</span>
+                <sc-for list="{{st.skills}}" as="k" hint-placeholder-count="2">
+                  <div style="display: flex; flex-direction: column; gap: 4px">
+                    <div style="display: flex; gap: 6px">
+                      <select class="fld" aria-label="{{k.aria}}" onChange="{{k.onName}}" style="flex: 1; min-width: 0">
+                        <sc-for list="{{k.opts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                      </select>
+                      <select class="fld" aria-label="{{k.aria}} level" onChange="{{k.onLv}}" disabled="{{k.lvOff}}" style="width: auto">
+                        <sc-for list="{{k.lvs}}" as="o" hint-placeholder-count="1"><option value="{{o.v}}" selected="{{o.sel}}">{{o.label}}</option></sc-for>
+                      </select>
+                    </div>
+                    <sc-if value="{{k.hasFx}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; line-height: 1.5; color: #8C88A6">{{k.fx}}</span></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span class="lbl">Weapons (2)</span>
+                <sc-for list="{{st.weapons}}" as="w" hint-placeholder-count="2">
+                  <div style="display: flex; gap: 6px"><input class="fld" type="text" maxlength="60" aria-label="{{w.aria}}" placeholder="{{w.ph}}" value="{{w.n}}" onInput="{{w.onN}}" style="flex: 1; min-width: 0"><input class="fld" type="text" maxlength="160" aria-label="{{w.ariaFx}}" placeholder="Effect" value="{{w.fx}}" onInput="{{w.onFx}}" style="flex: 1.4; min-width: 0"></div>
+                </sc-for>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span class="lbl">Gears (2)</span>
+                <sc-for list="{{st.gears}}" as="w" hint-placeholder-count="2">
+                  <div style="display: flex; gap: 6px"><input class="fld" type="text" maxlength="60" aria-label="{{w.aria}}" placeholder="{{w.ph}}" value="{{w.n}}" onInput="{{w.onN}}" style="flex: 1; min-width: 0"><input class="fld" type="text" maxlength="160" aria-label="{{w.ariaFx}}" placeholder="Effect" value="{{w.fx}}" onInput="{{w.onFx}}" style="flex: 1.4; min-width: 0"></div>
+                </sc-for>
+              </div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 4px">
               <label for="npc-notes" class="lbl">{{t.notes}}</label>
@@ -452,6 +531,71 @@ function npcArt(bg, accent, mark) {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='" + bg + "'/><circle cx='32' cy='26' r='11' fill='#0B0A12'/><path d='M12 64c2-14 10-20 20-20s18 6 20 20z' fill='#0B0A12'/>" + mark.replace(/ACC/g, accent) + "</svg>";
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
+const NPC_SKILLS = [
+  ["Charismatic Eyes", 1, "การโน้มน้าวด้วยสายตา +1 Trick", 1],
+  ["Awareness", 1, "การรับรู้ภยันตรายรอบตัว +1 Sense", 1],
+  ["Dead Eyes", 1, "คุ้มกันสถานะ [Panic] 1 ครั้ง/session", 2],
+  ["Quick Draw", 1, "หากเริ่มการปะทะก่อน(melee) +1 Force", 2],
+  ["On track", 1, "การเดินสะกดรอย, ย่องเบา +1 Tactical", 2],
+  ["Gun Slinger", 1, "เมื่อใช้อาวุธประเภทปืนพก +1 Tactical", 2],
+  ["Robbery", 1, "Action เกี่ยวกับการฉกฉวยสิ่งของเล็กๆ +1 Tactical", 2],
+  ["Body Shell", 1, "รับ DMG น้อยลง 1 แต่ไม่ต่ำกว่า 1", 2],
+  ["Bargaining", 1, "แอคชั่นเกี่ยวกับการเจรจา, ต่อรอง +1 Trick", 2],
+  ["Safe Hands", 1, "แอคชั่นเกี่ยวกับการรักษา +1 Trick", 2],
+  ["Taunting", 1, "Trick>6 เพื่อยั่วยุเป้าหมาย และยกเลิกแอคชั่นที่เป้าหมายกำลังทำอยู่ และ +1BD ให้แก่เป้าหมายในแอคชั่นถัดไป(stack ได้)", 2],
+  ["Battle Roar", 1, "คำรามเพื่อข่มขู่ ทำให้เป้าหมายที่อยู่ข้างหน้า 2 เมตรติดสถานะ [สตัน]", 3],
+  ["Inner Beast", 1, "เมื่อ IP เหลือ 3 หรือต่ำกว่า DMG+3", 3],
+  ["Cunning Rolls", 1, "เลือกผู้เล่น 1 คน(รวมถึงตัวเอง) re-roll เต๋าในการทอยครั้งนั้นกี่ลูกก็ได้ 1 ครั้งต่อ sessions", 4],
+  ["Healing", 1, "ลบล้าง physical Injuries ได้ 1 อย่าง(ต้องมีอุปกรณ์ เช่น ผ้าพันแผล)", 1],
+  ["Healing", 2, "ลบล้าง physical Injuries ได้ 1 อย่าง(ต้องมีอุปกรณ์ เช่น ผ้าพันแผล) เพิ่ม IP ตามเต๋าหน้า 8", 2],
+  ["Healing", 3, "ลบล้าง physical Injuries ได้ 1 อย่าง(ต้องมีอุปกรณ์ เช่น ผ้าพันแผล) และ +1IP ในการรักษานั้นได้ทันที และเพิ่ม IP ได้อีกตามเต๋าหน้า 8", 3],
+  ["Smith", 1, "สามารถสร้างและซ่อมอาวุธและชุดเกราะ Lv1(1DMG / 1AMR) ได้", 1],
+  ["Smith", 2, "สามารถสร้างและซ่อมอาวุธและชุดเกราะระดับ Lv2(2DMG / 2AMR) ได้", 2],
+  ["Smith", 3, "สามารถเปลี่ยน FX ให้อาวุธและชุดเกราะได้ 1 อย่าง", 3],
+  ["Smith", 4, "สามารถเพิ่ม, เปลี่ยน FX ให้อาวุธและชุดเกราะได้ 2 อย่าง (ซ้ำไม่ได้)", 4],
+  ["Smith", 5, "สามารถเพิ่ม, เปลี่ยน FX ให้อาวุธและชุดเกราะได้ 2 อย่าง และสามารถติดอาวุธเพิ่มให้กับอาวุธที่ modify อยู่ได้ 1 อย่าง", 5],
+  ["Tinker", 1, "สามารถซ่อมหรือประดิษฐ์อุปกรณ์ที่เป็นของใช้ทั่วไปได้", 1],
+  ["Tinker", 2, "สามารถซ่อมประดิษฐ์อุปกรณ์ที่มีความ functional มากขึ้น เช่น โต๊ะพับ, บันไดเก้าอี้, DIY ฯลฯ", 2],
+  ["Tinker", 3, "สามารถสร้างที่ซ่อน, bunker ชั่วคราวได้", 3],
+  ["Tinker", 4, "สามารถสร้างที่อยู่อาศัยที่มีความซับซ้อนได้มากขึ้น เช่น บ้านสำหรับอยู่อาศัย", 4],
+  ["Tinker", 5, "การทอยเกี่ยวกับการสร้างที่ไม่เกี่ยวกับไฟฟ้าหรือเครื่องยนต์ Trick+2", 5],
+  ["Electrician", 1, "สามารถประดิษฐ์อุปกรณ์ไฟฟ้าทั่วไปได้, เข้าใจพื้นฐานระบบไฟฟ้าเป็นอย่างดี", 1],
+  ["Electrician", 2, "สามารถสร้างเครื่องใช้ไฟฟ้าในระดับช่างเทคนิคได้(คอมพิวเตอร์, โทรศัพท์ ฯลฯ)", 2],
+  ["Electrician", 3, "สามารถสร้างอุปกรณ์ขนาดเล็กที่สามารถควบคุมระยะไกลได้(โดรน, อุปกรณ์แจมสัญญาณ ฯลฯ)", 3],
+  ["Electrician", 4, "สามารถสร้างหุ่นยนต์สำหรับใช้งานได้ในระดับต้น", 4],
+  ["Electrician", 5, "สามารถสร้างเอนจิ้นไฟฟ้า, ยานพาหนะไฟฟ้า, หุ่นยนต์ขนาดใหญ่ได้", 5],
+  ["Multilingual", 1, "สามารถพูดภาษาเพิ่มได้ 1 ภาษา(รวม native)", 1],
+  ["Multilingual", 2, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 2],
+  ["Multilingual", 3, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 3],
+  ["Multilingual", 4, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 4],
+  ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
+];
+/* NPC status (GM only): REP x2 = points to spend. Costs follow the player sheet:
+   Basic Ability starts like a player (4 free points, at most 2 in one stat), each point past that 5 REP, max 3;
+   Cosmic Ability / Gadget Lv2 5 REP, Lv3 12 more; a General skill's Lv1 is free, higher levels cost what the skill list says. */
+const NPC_BA = [['force', 'Force'], ['tactical', 'Tactical'], ['trick', 'Trick'], ['sense', 'Sense']];
+function npcStat(n) {
+  const d = (n && n.stat) || {};
+  const two = (a, base) => [0, 1].map((i) => Object.assign({}, base, (a || [])[i] || {}));
+  return {
+    boss: !!d.boss, lv: d.lv != null ? String(d.lv) : '1', rep: d.rep != null ? String(d.rep) : '0',
+    slots: d.slots != null && d.slots !== '' ? String(d.slots) : (n && n.factor === 'norms' ? '8' : '5'),
+    bond: d.bond || '', amr: d.amr != null ? String(d.amr) : '0', ipRgn: d.ipRgn != null ? String(d.ipRgn) : '0',
+    pwr: d.pwr != null ? String(d.pwr) : '0', wmRgn: d.wmRgn != null ? String(d.wmRgn) : '0',
+    ba: Object.assign({ force: 0, tactical: 0, trick: 0, sense: 0 }, d.ba || {}),
+    cos: Object.assign({ n: '', lv: 1 }, d.cos || {}),
+    skills: two(d.skills, { n: '', lv: 1 }), weapons: two(d.weapons, { n: '', fx: '' }), gears: two(d.gears, { n: '', fx: '' })
+  };
+}
+function npcCost(st, factor) {
+  const vals = NPC_BA.map((b) => +st.ba[b[0]] || 0);
+  const free = Math.min(4, vals.reduce((a, v) => a + Math.min(v, 2), 0));
+  const ba = (vals.reduce((a, v) => a + v, 0) - free) * 5;
+  const cl = +st.cos.lv || 1;
+  const cos = factor === 'shifter' || factor === 'norms' ? (cl >= 3 ? 17 : cl === 2 ? 5 : 0) : 0;
+  const sk = st.skills.reduce((a, k) => a + (k.n ? NPC_SKILLS.filter((r) => r[0] === k.n && r[1] > 1 && r[1] <= (+k.lv || 1)).reduce((b, r) => b + r[3], 0) : 0), 0);
+  return { ba: ba, cos: cos, sk: sk, total: ba + cos + sk, budget: Math.max(0, +st.rep || 0) * 2 };
+}
 const NPC_W = 2400, NPC_H = 1600;
 const uid = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, () => Math.floor(Math.random() * 16).toString(16)));
 /* relationship kinds: colour and line style on the map */
@@ -579,6 +723,10 @@ class Component extends DCLogic {
     const npcs = this.state.npcs.map((n) => (n.id === id ? Object.assign({}, n, patch) : n));
     this.setState({ npcs: npcs });
     this.commit('npc', npcs.find((n) => n.id === id));
+  }
+  editStat(id, patch) {
+    const n = this.state.npcs.find((x) => x.id === id);
+    if (n) this.editNpc(id, { stat: Object.assign({}, npcStat(n), patch) });
   }
   editGang(id, patch) {
     const gangs = this.state.gangs.map((g) => (g.id === id ? Object.assign({}, g, patch) : g));
@@ -888,6 +1036,71 @@ class Component extends DCLogic {
       rels: relsOf('npc:' + curNpc.id), noRels: !relsOf('npc:' + curNpc.id).length,
       startLink: () => this.setState({ linkMode: true, linkFrom: 'npc:' + curNpc.id })
     } : {};
+    v.st = curNpc ? (() => {
+      const id = curNpc.id, fk = curNpc.factor || '', st = npcStat(curNpc), c = npcCost(st, fk);
+      const val = (e) => String(e && e.target ? e.target.value : '');
+      const clampN = (x, lo, hi) => (x === '' ? '' : String(Math.max(lo, Math.min(hi, parseInt(x, 10) || 0))));
+      const put = (k, lo, hi) => (e) => this.editStat(id, { [k]: clampN(val(e), lo, hi) });
+      const lv = Math.max(1, +st.lv || 1), rep = +st.rep || 0;
+      const lo = st.boss ? lv + 1 : 0, hi = st.boss ? lv + 2 : lv;
+      const repOk = rep >= lo && rep <= hi;
+      const over = c.total > c.budget;
+      const tier = (on, col) => 'min-height: 34px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 13px; border: 1px solid ' + col + '; background: ' + (on ? col : 'transparent') + '; color: ' + (on ? '#0B0A12' : col);
+      const baVals = NPC_BA.map((b) => +st.ba[b[0]] || 0);
+      const baFree = Math.min(4, baVals.reduce((a, x) => a + Math.min(x, 2), 0));
+      const names = []; NPC_SKILLS.forEach((r) => { if (names.indexOf(r[0]) === -1) names.push(r[0]); });
+      const rows = (key, ph) => st[key].map((r, i) => ({
+        n: r.n, fx: r.fx, ph: ph + ' ' + (i + 1), aria: ph + ' ' + (i + 1), ariaFx: ph + ' ' + (i + 1) + ' effect',
+        onN: (e) => { const a = st[key].slice(); a[i] = Object.assign({}, a[i], { n: val(e).slice(0, 60) }); this.editStat(id, { [key]: a }); },
+        onFx: (e) => { const a = st[key].slice(); a[i] = Object.assign({}, a[i], { fx: val(e).slice(0, 160) }); this.editStat(id, { [key]: a }); }
+      }));
+      return {
+        ptsText: L('แต้ม ', 'PTS ') + c.total + ' / ' + c.budget,
+        ptsColor: over ? '#FF3D6E' : '#FFD400',
+        ptsTip: L('แต้มอัปสถานะ = REP × 2 · Basic Ability ' + c.ba + ' · Cosmic ' + c.cos + ' · Skills ' + c.sk, 'Status points = REP × 2 · Basic Ability ' + c.ba + ' · Cosmic ' + c.cos + ' · Skills ' + c.sk),
+        tierLabel: L('ประเภท NPC', 'NPC tier'),
+        normText: L('ทั่วไป', 'Regular'), bossText: L('บอส', 'Boss'),
+        normPressed: st.boss ? 'false' : 'true', bossPressed: st.boss ? 'true' : 'false',
+        normStyle: tier(!st.boss, '#2EE6F0'), bossStyle: tier(st.boss, '#FF3D6E'),
+        setNorm: () => this.editStat(id, { boss: false }), setBoss: () => this.editStat(id, { boss: true }),
+        lv: st.lv, rep: st.rep, slots: st.slots,
+        onLv: put('lv', 1, 20), onRep: put('rep', 0, 99), onSlots: put('slots', 0, 99),
+        repHint: (st.boss ? L('บอส: REP ' + lo + '–' + hi + ' (Session Lv +1 ถึง +2)', 'Boss: REP ' + lo + '–' + hi + ' (Session Lv +1 to +2)') : L('ทั่วไป: REP ไม่เกิน ' + hi + ' (≤ Session Lv)', 'Regular: REP up to ' + hi + ' (≤ Session Lv)')) +
+          (over ? L(' · ใช้แต้มเกินไป ' + (c.total - c.budget), ' · ' + (c.total - c.budget) + ' points over') : ''),
+        hintColor: repOk && !over ? '#8C88A6' : '#FF3D6E',
+        bond: st.bond, onBond: (e) => this.editStat(id, { bond: val(e).slice(0, 120) }),
+        amr: st.amr, ipRgn: st.ipRgn, pwr: st.pwr, wmRgn: st.wmRgn,
+        onAmr: put('amr', 0, 2), onIpRgn: put('ipRgn', 0, 2), onPwr: put('pwr', 0, 2), onWmRgn: put('wmRgn', 0, 2),
+        isShifter: fk === 'shifter',
+        ba: NPC_BA.map((b) => {
+          const x = +st.ba[b[0]] || 0;
+          const set = (d) => this.editStat(id, { ba: Object.assign({}, st.ba, { [b[0]]: Math.max(0, Math.min(3, x + d)) }) });
+          return { label: b[1], v: String(x), dec: () => set(-1), inc: () => set(1), decOff: x <= 0, incOff: x >= 3,
+            decLabel: L('ลด ', 'Lower ') + b[1], incLabel: L('เพิ่ม ', 'Raise ') + b[1] };
+        }),
+        baNote: L('ฟรี ' + baFree + ' / 4 แต้ม (ค่าละไม่เกิน 2) · เกินนั้นแต้มละ 5 REP · สูงสุด 3', 'Free ' + baFree + ' / 4 points (2 per stat) · past that 5 REP a point · max 3'),
+        hasCos: fk === 'shifter' || fk === 'norms',
+        cosTitle: fk === 'norms' ? 'Cosmic Gadget' : 'Cosmic Ability',
+        cosName: st.cos.n, onCosName: (e) => this.editStat(id, { cos: Object.assign({}, st.cos, { n: val(e).slice(0, 60) }) }),
+        cosLvs: [[1, 'Lv1'], [2, 'Lv2 · 5 REP'], [3, 'Lv3 · 17 REP']].map((o) => ({ v: String(o[0]), label: o[1], sel: (+st.cos.lv || 1) === o[0] })),
+        onCosLv: (e) => this.editStat(id, { cos: Object.assign({}, st.cos, { lv: +val(e) || 1 }) }),
+        skills: st.skills.map((k, i) => {
+          const levels = NPC_SKILLS.filter((r) => r[0] === k.n);
+          const cur = levels.find((r) => r[1] === (+k.lv || 1));
+          let sum = 0;
+          return {
+            aria: 'General skill ' + (i + 1),
+            opts: [{ v: '', label: L('— ไม่มี —', '— None —'), sel: !k.n }].concat(names.map((nm) => ({ v: nm, label: nm, sel: k.n === nm }))),
+            onName: (e) => { const a = st.skills.slice(); a[i] = { n: val(e), lv: 1 }; this.editStat(id, { skills: a }); },
+            lvs: levels.length ? levels.map((r) => { if (r[1] > 1) sum += r[3]; return { v: String(r[1]), label: 'Lv' + r[1] + (r[1] > 1 ? ' · ' + sum + ' REP' : ''), sel: (+k.lv || 1) === r[1] }; }) : [{ v: '1', label: 'Lv1', sel: true }],
+            lvOff: levels.length < 2,
+            onLv: (e) => { const a = st.skills.slice(); a[i] = Object.assign({}, a[i], { lv: +val(e) || 1 }); this.editStat(id, { skills: a }); },
+            hasFx: !!cur, fx: cur ? cur[2] : ''
+          };
+        }),
+        weapons: rows('weapons', 'Weapon'), gears: rows('gears', 'Gear')
+      };
+    })() : {};
     v.ge = curGang ? {
       name: curGang.name,
       onName: (e) => this.editGang(curGang.id, { name: String(e && e.target ? e.target.value : '').slice(0, 60) }),
@@ -1061,7 +1274,6 @@ class Component extends DCLogic {
         name: L('ชื่อ', 'NAME'), namePh: L('ชื่อ NPC', 'NPC name'),
         role: L('บทบาท / อาชีพ', 'ROLE'), rolePh: L('เช่น เจ้าของร้านซ่อมไซเบอร์แวร์', 'e.g. cyberware repair shop owner'),
         gang: L('สังกัดแก๊ง', 'GANG'),
-        statusSoon: L('ค่าสถานะของ NPC จะเพิ่มตามรายละเอียดที่กำหนดภายหลัง', 'NPC stats arrive once their details are set.'),
         notes: L('โน้ตของ GM', 'GM NOTES'), notesPh: L('เบื้องหลัง เป้าหมาย ความลับ… (ผู้เล่นไม่เห็น)', 'Backstory, goals, secrets… (players never see this)'),
         rels: L('ความสัมพันธ์', 'RELATIONSHIPS'), noRels: L('ยังไม่มีเส้นความสัมพันธ์', 'No relationships yet'),
         linkFromHere: L('⟷ เชื่อมกับคนอื่น', '⟷ Link to someone'),
@@ -1078,6 +1290,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-npcs.js?v=3d5fa19f"></script>
+<script src="../assets/beta-npcs.js?v=3f7a289c"></script>
 </body>
 </html>
