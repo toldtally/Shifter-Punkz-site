@@ -1136,12 +1136,14 @@ class Component extends DCLogic {
     if (!window.SPDice) return;
     const s = this.state.s, th = this.state.lang !== 'en';
     if (!extra && (s.coma || s.dead)) return;
-    const m = parseInt(mod, 10) || 0;
+    // Cosmic Infected: the dice Mod can't be used
+    const noMod = !!(s.inj && s.inj['Cosmic Infected'] && !s.inj['Cosmic Stigma']);
+    const m = noMod ? 0 : (parseInt(mod, 10) || 0);
     const col = { shifter: '#2EE6F0', outlaw: '#FF2E88', cpd: '#FFD400' }[s.factor] || '#2EE6F0';
     window.SPDice.tray(Object.assign({
       th: th, who: (s.name || '').trim() || (th ? 'ตัวละคร' : 'Character'), color: col, label: name,
       base: s.inj && s.inj['Cosmic Stigma'] ? 1 : Math.max(0, val + m),
-      baseNote: s.inj && s.inj['Cosmic Stigma'] ? '(Cosmic Stigma: ' + (th ? 'ทอยได้แค่ 1D8' : 'only 1D8') + ')' : '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + ')',
+      baseNote: s.inj && s.inj['Cosmic Stigma'] ? '(Cosmic Stigma: ' + (th ? 'ทอยได้แค่ 1D8' : 'only 1D8') + ')' : '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + (noMod && (parseInt(mod, 10) || 0) ? (th ? ' · Infected: ใช้ Mod ไม่ได้' : ' · Infected: no Mod') : '') + ')',
       enervated: !!(s.inj && s.inj.Enervated),
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
       ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
@@ -1471,7 +1473,7 @@ class Component extends DCLogic {
         { n: 'Fainted', tip: L('เมื่อเริ่มเทิร์น ทอยค่า Sense ให้มากกว่า Fainted DC เพื่อฟื้น', 'At the start of your turn, roll Sense over the Fainted DC to come to'), dc: true },
         { n: 'Hallucinated', tip: L('เห็นภาพหลอน เห็นศัตรูเป็นมิตร และมิตรเป็นศัตรู • DC+2', 'Hallucinations: foes look like friends and friends like foes • DC+2') }] },
       { group: 'Cosmic Overwhelm', items: [
-        { n: 'Cosmic Infected', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • −1 Basic Ability แต่ไม่ต่ำกว่า 1', 'Cosmic Dice replace D8s, like EX • −1 Basic Ability, min 1') }, { n: 'Cosmic Stigma', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • Hallucinated • Basic Ability ทุกอันทอยได้แค่ 1D8', 'Cosmic Dice replace D8s, like EX • Hallucinated • every Basic Ability rolls only 1D8') }, { n: 'Cosmic Outburst', tip: L('-2IP หากเทิร์นนั้นไม่ได้ใช้พลังคอสมิค • ทุกครั้งที่ใช้พลังคอสมิคจะเป็นการเพิ่มระดับ WM ขึ้นเรื่อยๆ', '-2 IP if you use no cosmic power that turn • every use of cosmic power keeps raising WM') }] }
+        { n: 'Cosmic Infected', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • −1 Basic Ability แต่ไม่ต่ำกว่า 1 • ไม่สามารถใช้ MOD เต๋าได้', 'Cosmic Dice replace D8s, like EX • −1 Basic Ability, min 1 • the dice Mod can\'t be used') }, { n: 'Cosmic Stigma', tip: L('Cosmic Dice จะเป็นการแทนที่ D8 เหมือนค่า EX • Hallucinated • Basic Ability ทุกอันทอยได้แค่ 1D8', 'Cosmic Dice replace D8s, like EX • Hallucinated • every Basic Ability rolls only 1D8') }, { n: 'Cosmic Outburst', tip: L('-2IP หากเทิร์นนั้นไม่ได้ใช้พลังคอสมิค • ทุกครั้งที่ใช้พลังคอสมิคจะเป็นการเพิ่มระดับ WM ขึ้นเรื่อยๆ', '-2 IP if you use no cosmic power that turn • every use of cosmic power keeps raising WM') }] }
     ];
 
     const tbl = this.state.tbl;
