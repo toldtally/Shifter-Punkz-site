@@ -120,7 +120,12 @@ html{scroll-behavior:smooth}
         <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">ROLE // PLAYER · {{countLabel}}</p>
         <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.3)">{{t.title}}</h1>
       </div>
-      <a href="character.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 24px; background: #FF2E88; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.06em; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">+ {{t.newChar}}</a>
+      <sc-if value="{{canNew}}" hint-placeholder-val="{{ true }}">
+        <a href="character.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 24px; background: #FF2E88; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.06em; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">+ {{t.newChar}}</a>
+      </sc-if>
+      <sc-if value="{{atLimit}}" hint-placeholder-val="{{ false }}">
+        <span title="{{limitTip}}" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 18px; border: 1px solid #3A3655; color: #8C88A6; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{limitText}}</span>
+      </sc-if>
     </div>
 
     <div role="group" aria-label="Filter" style="display: flex; flex-wrap: wrap; gap: 8px">
@@ -227,11 +232,13 @@ html{scroll-behavior:smooth}
         </article>
       </sc-for>
 
+      <sc-if value="{{canNew}}" hint-placeholder-val="{{ true }}">
       <a href="character.html" class="gl" style="--d: 0.4s; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 22px; border: 2px dashed #3A3655; text-decoration: none; color: #A9A5C2">
         <span style="width: 56px; height: 56px; border: 1px solid #FF2E88; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-size: 30px; color: #FF2E88" aria-hidden="true">+</span>
         <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; color: #FFFFFF">{{t.newChar}}</span>
         <span style="font-size: 13px">{{t.newHint}}</span>
       </a>
+      </sc-if>
     </div>
 
     <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
@@ -243,7 +250,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=6cfcb537"></script>
-<script src="../assets/sp.js?v=5d5cbef6"></script>
+<script src="../assets/sp.js?v=9f7442c4"></script>
 <script src="../assets/beta-common.js?v=942fe33a"></script>
 <script>
 class Component extends DCLogic {
@@ -251,6 +258,8 @@ class Component extends DCLogic {
     super(props);
     this.state = { lang: 'th', filter: 'all', deleted: [], confirm: null, toast: '', tbl: { a: { mode: 'live', code: 'SP-K7QX' } } };
   }
+  /* how many characters this account may keep: 5, or 10 once GM is unlocked */
+  charLimit() { return 5; }
   renderVals() {
     const th = this.state.lang !== 'en';
     const L = (a, b) => (th ? a : b);
@@ -299,7 +308,11 @@ class Component extends DCLogic {
       enStyle: th ? off : on,
       hasToast: !!this.state.toast,
       toast: this.state.toast,
-      countLabel: all.length + L(' ตัวละคร', ' CHARACTERS'),
+      countLabel: all.length + ' / ' + this.charLimit() + L(' ตัวละคร', ' CHARACTERS'),
+      canNew: all.length < this.charLimit(),
+      atLimit: all.length >= this.charLimit(),
+      limitText: L('ครบ ' + this.charLimit() + ' ตัวแล้ว', 'Limit of ' + this.charLimit() + ' reached'),
+      limitTip: L('ผู้เล่นสร้างได้สูงสุด 5 ตัว · ผู้ที่ปลดล็อก GM แล้วสร้างได้ 10 ตัว · ลบตัวละครเก่าเพื่อสร้างใหม่', 'Players can keep 5 characters · 10 once GM is unlocked · delete one to make room'),
       filters: fdefs.map((d) => ({
         label: d.label,
         count: String(d.id === 'all' ? all.length : all.filter((c) => c.f === d.id).length),
@@ -404,6 +417,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-characters.js?v=574f54d3"></script>
+<script src="../assets/beta-characters.js?v=84ca501a"></script>
 </body>
 </html>

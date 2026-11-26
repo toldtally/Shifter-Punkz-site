@@ -39,6 +39,8 @@
       this.setState({ list: r.data || [], seats: (m.data || []).filter(function (x) { return x.sessions; }), loading: false, toast: r.error ? SP.err(r.error, this.state.lang !== 'en') : this.state.toast });
     }
 
+    charLimit() { var p = this.state.profile || {}; return p.gm_allowed || p.role === 'gm' ? 10 : 5; }
+
     renderVals() {
       var v = super.renderVals();
       var th = this.state.lang !== 'en';
@@ -51,7 +53,10 @@
       });
       var cur = this.state.filter;
       var shown = list.filter((c) => cur === 'all' || c.f === cur);
-      v.countLabel = list.length + L(' ตัวละคร', ' CHARACTERS');
+      var lim = this.charLimit();
+      v.countLabel = list.length + ' / ' + lim + L(' ตัวละคร', ' CHARACTERS');
+      v.canNew = list.length < lim; v.atLimit = !v.canNew;
+      v.limitText = L('ครบ ' + lim + ' ตัวแล้ว', 'Limit of ' + lim + ' reached');
       v.filters = v.filters.map((fl, i) => {
         var id = ['all', 'shifter', 'norms', 'cpd'][i];
         return Object.assign({}, fl, { count: String(id === 'all' ? list.length : list.filter((c) => c.f === id).length) });
