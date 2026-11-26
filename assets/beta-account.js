@@ -162,7 +162,7 @@
       var th = this.th(), L = function (a, b) { return th ? a : b; };
       var owned = this.state.owned || [], bm = this.state.bookMsg, gmOk = !!(p && p.gm_allowed);
       v.bk = {
-        title: L('หนังสือของฉัน', 'My books'),
+        title: L('อยากเป็น GM?', 'Want to be a GM?'),
         chip: gmOk ? L('GM ปลดล็อกแล้ว', 'GM UNLOCKED') : L('GM ล็อกอยู่', 'GM LOCKED'),
         chipColor: gmOk ? '#4ADE80' : '#8C88A6',
         sub: gmOk ? L('กรอกรหัสจากหนังสือเล่มอื่นเพื่อเพิ่มเข้าบัญชีได้ รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'Add codes from your other books here. Each code works once.')
