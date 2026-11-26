@@ -36,6 +36,7 @@
       var has = function (p) { return ids.some(function (i) { return i.provider === p; }); };
       this.setState({ ready: true, profile: r.data, name: r.data.display_name, role: r.data.role, news: r.data.news_opt_in,
         email: u.email || '', identities: ids, google: has('google'), discord: has('discord') });
+      sb.rpc('am_i_admin').then((a) => { if (a.data === true) this.setState({ isAdmin: true }); });
       var b = await sb.from('book_codes').select('book, redeemed_at').order('redeemed_at');
       this.setState({ owned: b.data || [] });
     }
@@ -150,6 +151,7 @@
       var p = this.state.profile;
       var kind = this.state.msgKind;
       v.email = this.state.email;
+      v.isAdmin = !!this.state.isAdmin;
       v.publicId = p ? SP.publicId(p.public_no) : '…';
       v.saveProfile = () => {
         var n = (this.state.name || '').trim();

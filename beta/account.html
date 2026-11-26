@@ -208,6 +208,9 @@ html{scroll-behavior:smooth}
           <sc-if value="{{isPlayer}}" hint-placeholder-val="{{ true }}">
             <a href="characters.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openMine}}</a>
           </sc-if>
+          <sc-if value="{{isAdmin}}" hint-placeholder-val="{{ false }}">
+            <a href="admin.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 22px; border: 1px solid #FF2E88; color: #FF2E88; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.openAdmin}}</a>
+          </sc-if>
         </section></sc-if>
 
         <!-- Sign-in methods -->
@@ -286,7 +289,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=6cfcb537"></script>
-<script src="../assets/sp.js?v=c8ef47ce"></script>
+<script src="../assets/sp.js?v=911a5e7b"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
@@ -418,6 +421,7 @@ class Component extends DCLogic {
         save: L('บันทึก', 'Save'),
         roleTitle: L('บทบาท', 'Role'),
         openMine: L('ตัวละครของฉัน', 'My characters'),
+        openAdmin: L('ผู้ใช้ทั้งหมด (แอดมิน)', 'All users (admin)'),
         openGm: L('Session ของฉัน', 'My sessions'),
         signin: L('วิธีเข้าสู่ระบบ', 'Sign-in methods'),
         signinHint: L('ต้องเหลือวิธีเข้าสู่ระบบอย่างน้อย 1 วิธีเสมอ', 'Keep at least one way to sign in.'),
@@ -437,6 +441,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-account.js?v=9c877fad"></script>
+<script src="../assets/beta-account.js?v=db7f3ed2"></script>
 </body>
 </html>
