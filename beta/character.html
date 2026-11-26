@@ -826,7 +826,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=a60a9d0f"></script>
 <script src="../assets/beta-common.js?v=1f9d034b"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
-<script src="../assets/dice.js?v=d4f711c0"></script>
+<script src="../assets/dice.js?v=17e199bc"></script>
 <script>
 function initialSheet() {
   return {
@@ -1160,7 +1160,8 @@ class Component extends DCLogic {
           if (outb) patch.outN = (parseInt(cur.outN, 10) || 0) + 1;
           // spent past the WM left (confirmed in the tray): WM hits 0 and Cosmic Outburst starts now
           else if (sp.over) { patch.inj = Object.assign({}, cur.inj, { 'Cosmic Outburst': true }); patch.outN = 0; }
-          const g = sp.whelm >= 7 ? 3 : sp.whelm >= 4 ? 1 : 0;
+          // EX comes from the picked tier only (Outburst's stacked tiers don't count)
+          const tb = sp.whelmBase != null ? sp.whelmBase : sp.whelm, g = tb >= 7 ? 3 : tb >= 4 ? 1 : 0;
           if (g) patch = Object.assign(patch, this.exGain(g, Object.assign({}, cur, patch)));
         }
         // SE spent on extra dice becomes EX; a pair of [8] gives SE back

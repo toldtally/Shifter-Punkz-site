@@ -298,7 +298,7 @@
           }
           if (o.whelm && st.cos >= 0 && cosN()) {
             var add = o.whelm.add || 0, eff = Math.min(10, st.tier + add), info = (o.whelm.rows || [])[eff] || '';
-            var exG = eff >= 7 ? 3 : eff >= 4 ? 1 : 0;
+            var exG = st.tier >= 7 ? 3 : st.tier >= 4 ? 1 : 0;
             b.appendChild(el('div', { class: 'spd-row', title: info }, [el('span', { class: 'spd-lbl', text: 'Whelm Tier' }),
               stepper(st.tier, 0, 10, function (v) { st.tier = v; st.overOk = false; render(); }),
               el('span', { class: 'spd-note', text: (o.whelm.outburst ? L('ระดับ ' + eff + ' · Outburst ไม่ใช้ WM', 'Tier ' + eff + ' · Outburst costs no WM') + (add ? ' (+' + add + ')' : '') : L('ใช้ ' + eff + ' WM', 'Costs ' + eff + ' WM')) +
@@ -409,7 +409,7 @@
       st.rolling = true;
       var pl = payload('roll');
       if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, seUse: o.enervated ? 0 : st.se, secret: st.secret,
-        whelm: o.whelm && st.cosName ? Math.min(10, st.tier + (o.whelm.add || 0)) : null, over: whelmOver() && st.overOk });
+        whelm: o.whelm && st.cosName ? Math.min(10, st.tier + (o.whelm.add || 0)) : null, whelmBase: o.whelm && st.cosName ? st.tier : null, over: whelmOver() && st.overOk });
       o.se = Math.max(0, (o.se || 0) - (o.enervated ? 0 : st.se)) + (pl.p8 ? 1 : 0); st.se = 0;
       render();
     }
