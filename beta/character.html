@@ -1707,7 +1707,15 @@ class Component extends DCLogic {
         items: g.items.map((it) => ({
           // a renamed injury (Poisoned → Fever) still reads the old key from older sheets and JSON imports
           n: it.n, tip: it.tip, hasDc: !!it.dc, checked: !!(s.inj[it.n] || (it.old && s.inj[it.old])),
-          toggle: () => { const inj = Object.assign({}, this.state.s.inj), was = !!(inj[it.n] || (it.old && inj[it.old])); if (it.old) delete inj[it.old]; inj[it.n] = !was; this.upd({ inj: inj }); }
+          toggle: () => {
+            const cur = this.state.s, inj = Object.assign({}, cur.inj), was = !!(inj[it.n] || (it.old && inj[it.old]));
+            if (it.old) delete inj[it.old];
+            inj[it.n] = !was;
+            const patch = { inj: inj };
+            // Insane: Force Mod +2 while ticked (taken back when unticked)
+            if (it.n === 'Insane') patch.baMod = Object.assign({}, cur.baMod, { force: String((parseInt(cur.baMod.force, 10) || 0) + (was ? -2 : 2)) });
+            this.upd(patch);
+          }
         }))
       })),
       abilities: [
