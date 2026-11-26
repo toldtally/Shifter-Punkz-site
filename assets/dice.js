@@ -214,7 +214,7 @@
     injectCss();
     var th = o.th !== false, L = function (a, b) { return th ? a : b; };
     var acc = o.color || C.cyan;
-    var st = { extra: 0, se: 0, d8: o.free ? 2 : 0, d4: 0, cos: -1, ex: 0, secret: false, dice: null, base: null, used: 0, rolling: false };
+    var st = { extra: 0, se: 0, d8: o.free ? 2 : 0, d4: 0, cos: -1, ex: 0, tier: 0, secret: false, dice: null, base: null, used: 0, rolling: false };
     var prevFocus = document.activeElement;
     var back = el('div', { class: 'spd-back', role: 'presentation' });
     var card = el('div', { class: 'spd-card', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'spd-title', tabindex: '-1', style: '--acc:' + acc });
@@ -294,6 +294,16 @@
               if (o.cosReplace) row.appendChild(el('span', { class: 'spd-note', text: L('Cosmic Infected: Cosmic Dice แทนที่ D8', 'Cosmic Infected: Cosmic Dice replace D8s') }));
               b.appendChild(row);
             }
+          }
+          if (o.whelm && st.cos >= 0 && cosN()) {
+            var add = o.whelm.add || 0, eff = Math.min(10, st.tier + add), info = (o.whelm.rows || [])[eff] || '';
+            var exG = eff >= 7 ? 3 : eff >= 4 ? 1 : 0;
+            b.appendChild(el('div', { class: 'spd-row', title: info }, [el('span', { class: 'spd-lbl', text: 'Whelm Tier' }),
+              stepper(st.tier, 0, 10, function (v) { st.tier = v; render(); }),
+              el('span', { class: 'spd-note', text: L('ใช้ ' + eff + ' WM', 'Costs ' + eff + ' WM') + (add ? L(' (Outburst +' + add + ')', ' (Outburst +' + add + ')') : '') +
+                (exG ? L(' · ได้ ' + exG + ' EX', ' · +' + exG + ' EX') : '') + (eff > (o.whelm.wm || 0) ? L(' · WM ไม่พอ (มี ' + (o.whelm.wm || 0) + ')', ' · not enough WM (' + (o.whelm.wm || 0) + ')') : '') +
+                (eff >= 10 ? L(' · หลังใช้ ทอย SeD >8', ' · then roll SeD >8') : '') })]));
+            if (info) b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: '' }), el('span', { class: 'spd-note', text: info })]));
           }
           if ((o.ex || 0) > 0) {
             b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'Exhaustion' }),
@@ -393,7 +403,8 @@
       st.rid = rid; st.srv = srv; st.finished = false;
       st.rolling = true;
       var pl = payload('roll');
-      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, seUse: o.enervated ? 0 : st.se, secret: st.secret });
+      if (o.onRoll) o.onRoll(pl, { ex: st.exUsed, se: pl.p8 ? 1 : 0, seUse: o.enervated ? 0 : st.se, secret: st.secret,
+        whelm: o.whelm && st.cosName ? Math.min(10, st.tier + (o.whelm.add || 0)) : null });
       o.se = Math.max(0, (o.se || 0) - (o.enervated ? 0 : st.se)) + (pl.p8 ? 1 : 0); st.se = 0;
       render();
     }

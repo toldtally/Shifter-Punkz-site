@@ -826,7 +826,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=a60a9d0f"></script>
 <script src="../assets/beta-common.js?v=1f9d034b"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
-<script src="../assets/dice.js?v=30bef5a8"></script>
+<script src="../assets/dice.js?v=6c515523"></script>
 <script>
 function initialSheet() {
   return {
@@ -987,6 +987,22 @@ const SKILLS = [
   ["Multilingual", 4, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 4],
   ["Multilingual", 5, "สามารถพูดภาษาเพิ่มได้อีก 1 ภาษา(รวมภาษาก่อนหน้า และ native)", 5]
 ];
+/* Whelm Tier (rules sheet, tab "Whelm Tier"): how strong a use of cosmic power is; the tier is also its WM cost.
+   Tier 4–6 gives 1 EX, 7–9 gives 3 EX, 10 also needs a SeD roll >8. Blank cells are still to be decided. */
+const WHELM = [
+  ['ระดับตาตุ่ม', 'สัมผัส', '1 ช่วงแขน', 'คนเดิน', '1 ฝ่ามือ', '0'],
+  ['ระดับครึ่งต้นขา', '1 ช่วงคืบ', '', 'คนวิ่ง', '1 แขนโอบ', '1-5'],
+  ['คนปกติ', '1 ช่วงศอก', '1 ห้องสตูดิโอ', 'สุนัขวิ่ง', '1 คนโอบ', '6-10'],
+  ['บันไดลิง', '1 ก้าวยาว', 'ห้องโถงบ้านธรรมดา', 'ชีต้าห์วิ่ง', '2 คนโอบ', '11-20'],
+  ['', '3 ก้าวยาว', 'บ้านธรรมดาทั้งหลัง', 'รถยนต์', '3 คนโอบ', '20-30'],
+  ['', 'ถนน 2 เลน', 'ลาน ฮ.', 'รถแข่ง F1', 'รถยนต์ 1 คัน', '40-50'],
+  ['บ้านเดี่ยว', 'ถนน 4 เลน', 'ห้องบอลรูม', 'ความเร็วลูกกระสุน', 'รถมินิบัส', '60-70'],
+  ['บ้านแฝด', '1 ช่วงตึก', 'สนามบอล', 'รถไฟหัวกระสุน', 'รถทัวร์', '80-90'],
+  ['ต้นไม้ใหญ่', '3 ช่วงตึก', '1 ห้างสรรพสินค้า', 'เครื่องบิน', 'รถทัวร์ 3 คัน', '100-140'],
+  ['ตึก 5 ชั้น', 'ข้ามเมือง', '2 ห้างสรรพสินค้า', 'ยานรบสอดแนม', 'เรือยอร์ช', '150-190'],
+  ['ตึกระฟ้า', 'ข้ามอำเภอ', '1 เมือง', 'ฟ้าแลบ', 'ภูเขา 1 ลูก', '200']
+];
+const whelmRow = (r) => ['Size ' + (r[0] || '—'), 'Range ' + r[1], 'Area ' + (r[2] || '—'), 'Speed ' + r[3], 'Mass ' + r[4], '±' + r[5] + '°C'].join(' · ');
 /* IP down to 0, or 5 Injuries ticked */
 const crisisCond = (s) => {
   const ip = s.hpCur !== '' && s.hpCur != null && (parseInt(s.hpCur, 10) || 0) <= 0;
@@ -1050,6 +1066,9 @@ class Component extends DCLogic {
     let patch = {};
     if (inj.Fever) patch = Object.assign(patch, this.exGain(1, s));
     if (inj.Bleeding) patch.hpCur = String(Math.max(0, (parseInt(patch.hpCur != null ? patch.hpCur : s.hpCur, 10) || 0) - 1));
+    // Cosmic Outburst: −2 IP when this turn used no cosmic power
+    if (inj['Cosmic Outburst'] && !s.cosUsed) patch.hpCur = String(Math.max(0, (parseInt(patch.hpCur != null ? patch.hpCur : s.hpCur, 10) || 0) - 2));
+    if (s.cosUsed) patch.cosUsed = false;
     // RGN+: current IP / WM come back by their RGN+ (after Fever / Bleeding), never past MAX
     if (!s.dead && !s.coma) {
       const n = (v) => parseInt(v, 10) || 0;
@@ -1059,6 +1078,7 @@ class Component extends DCLogic {
       if (patch.hpCur === s.hpCur) delete patch.hpCur;
       if (patch.spCur === s.spCur) delete patch.spCur;
     }
+    if (patch.hpCur != null && (parseInt(patch.hpCur, 10) || 0) <= 0 && s.outN) patch.outN = 0;
     if (!Object.keys(patch).length) return;
     const was = this.state.dirty;
     this.upd(patch); this.rollSaved(patch, was);
@@ -1125,11 +1145,20 @@ class Component extends DCLogic {
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
       ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
       cosReplace: !!(s.inj && s.inj['Cosmic Infected']),
+      whelm: s.factor === 'shifter' ? { rows: WHELM.map(whelmRow), add: s.inj && s.inj['Cosmic Outburst'] ? (parseInt(s.outN, 10) || 0) : 0, wm: parseInt(s.spCur, 10) || 0 } : null,
       se: s.se || 0, seLock: !!(s.boost && s.boost.kind && s.boost.kind !== 'dice'),
       onRoll: (p, sp) => {
         const cur = this.state.s;
         let patch = {};
         if (sp.ex) patch.ex = Math.max(0, cur.ex - sp.ex);
+        // a use of cosmic power: WM pays the Whelm Tier, tiers 4–6 / 7–9 / 10 give 1 / 3 / 3 EX, and the turn counts as "used" for Cosmic Outburst
+        if (sp.whelm != null) {
+          patch.spCur = String(Math.max(0, (parseInt(cur.spCur, 10) || 0) - sp.whelm));
+          patch.cosUsed = true;
+          if (cur.inj && cur.inj['Cosmic Outburst']) patch.outN = (parseInt(cur.outN, 10) || 0) + 1;
+          const g = sp.whelm >= 7 ? 3 : sp.whelm >= 4 ? 1 : 0;
+          if (g) patch = Object.assign(patch, this.exGain(g, Object.assign({}, cur, patch)));
+        }
         // SE spent on extra dice becomes EX; a pair of [8] gives SE back
         if (sp.se || sp.seUse) patch.se = Math.min(3, Math.max(0, cur.se - (sp.seUse || 0)) + (sp.se || 0));
         if (sp.seUse) {
@@ -1285,7 +1314,12 @@ class Component extends DCLogic {
         if (v !== '' && this.state.s.hpCur !== '' && num(this.state.s.hpCur) > num(v)) patch.hpCur = String(Math.max(0, num(v)));
         this.upd(patch);
       },
-      hpCur: set('hpCur', (v) => (v === '' || this.state.s.hpMax === '' ? v : clampStr(v, 0, num(this.state.s.hpMax)))),
+      hpCur: (e) => {
+        set('hpCur', (v) => (v === '' || this.state.s.hpMax === '' ? v : clampStr(v, 0, num(this.state.s.hpMax))))(e);
+        // IP down to 0 clears Cosmic Outburst's stacked tiers
+        const cur = this.state.s;
+        if (cur.hpCur !== '' && num(cur.hpCur) <= 0 && cur.outN) this.upd({ outN: 0 });
+      },
       spPwr: set('spPwr', (v) => clampStr(v, 0, 2)), spRgn: set('spRgn', (v) => clampStr(v, 0, 2)),
       // same for WM: current never goes above MAX WM
       spMax: (e) => {
@@ -1706,13 +1740,14 @@ class Component extends DCLogic {
         group: g.group,
         items: g.items.map((it) => ({
           // a renamed injury (Poisoned → Fever) still reads the old key from older sheets and JSON imports
-          n: it.n, tip: it.tip, hasDc: !!it.dc, checked: !!(s.inj[it.n] || (it.old && s.inj[it.old])),
+          n: it.n + (it.n === 'Cosmic Outburst' && s.inj && s.inj[it.n] && num(s.outN) ? ' · Tier +' + num(s.outN) : ''), tip: it.tip, hasDc: !!it.dc, checked: !!(s.inj[it.n] || (it.old && s.inj[it.old])),
           toggle: () => {
             const cur = this.state.s, inj = Object.assign({}, cur.inj), was = !!(inj[it.n] || (it.old && inj[it.old]));
             if (it.old) delete inj[it.old];
             inj[it.n] = !was;
             const patch = { inj: inj };
             // Insane: Force Mod +2 while ticked (taken back when unticked)
+            if (it.n === 'Cosmic Outburst' && was) { patch.outN = 0; patch.cosUsed = false; }
             if (it.n === 'Insane') patch.baMod = Object.assign({}, cur.baMod, { force: String(was ? (parseInt(cur.baMod.force, 10) || 0) - 2 : Math.max(2, (parseInt(cur.baMod.force, 10) || 0) + 2)) });
             this.upd(patch);
           }
