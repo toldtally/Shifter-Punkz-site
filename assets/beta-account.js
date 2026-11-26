@@ -109,7 +109,8 @@
 
     async resetPassword() {
       this.setState({ busy: true, msg: '' });
-      var r = await sb.auth.resetPasswordForEmail(this.state.email, { redirectTo: SP.base + 'auth.html' });
+      var cap = await SP.captcha();
+      var r = await sb.auth.resetPasswordForEmail(this.state.email, { redirectTo: SP.base + 'auth.html', captchaToken: cap || undefined });
       if (r.error) return this.fail(r.error);
       this.say('ok', 'ส่งลิงก์เปลี่ยนรหัสผ่านไปที่ ' + this.state.email + ' แล้ว', 'We sent a password link to ' + this.state.email + '.');
     }

@@ -36,6 +36,7 @@
       var m = (e && (e.message || e.error_description || e)) || '';
       m = String(m);
       for (var k in ERR) if (m.indexOf(k) !== -1) return ERR[k][th ? 0 : 1];
+      if (/captcha/i.test(m)) return th ? 'ระบบตรวจกันบอทไม่ผ่าน รีเฟรชหน้าแล้วลองใหม่' : 'The bot check didn\'t pass. Refresh the page and try again.';
       if (/rate limit|too many/i.test(m)) return th ? 'ลองถี่เกินไป รอสักครู่แล้วลองใหม่' : 'Too many tries. Wait a moment and try again.';
       if (/Failed to fetch|NetworkError/i.test(m)) return th ? 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่' : 'Couldn\'t reach the server. Check your connection.';
       return (th ? 'เกิดข้อผิดพลาด: ' : 'Something went wrong: ') + m;
@@ -109,6 +110,27 @@
       var r = await sb.storage.from('portraits').upload(path, blob, { upsert: true, contentType: blob.type, cacheControl: '3600' });
       if (r.error) throw r.error;
       return path + '?v=' + Date.now();
+    },
+    /* Cloudflare Turnstile (invisible): a one-time token for Supabase Auth's bot check.
+       Resolves '' off the live domains or if Turnstile can't load, so the call still goes through. */
+    captcha: function () {
+      if (!/(^|\.)shifterpunkz\.com$|^toldtally\.github\.io$/.test(location.hostname)) return Promise.resolve('');
+      var load = SP._tsLoad || (SP._tsLoad = new Promise(function (ok, no) {
+        var sc = document.createElement('script');
+        sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        sc.async = true; sc.onload = ok; sc.onerror = no;
+        document.head.appendChild(sc);
+      }));
+      return load.then(function () {
+        return new Promise(function (ok) {
+          var box = document.getElementById('sp-ts');
+          if (!box) { box = document.createElement('div'); box.id = 'sp-ts'; box.style.cssText = 'position:fixed;left:-9999px;top:0'; document.body.appendChild(box); }
+          if (SP._tsId != null) { try { turnstile.remove(SP._tsId); } catch (e) {} }
+          var done = false, fin = function (t) { if (!done) { done = true; ok(t || ''); } };
+          setTimeout(fin, 15000);
+          SP._tsId = turnstile.render(box, { sitekey: '0x4AAAAAAGTm3CLUpMdYHXWy', callback: fin, 'error-callback': function () { fin(''); } });
+        });
+      }).catch(function () { return ''; });
     },
     imageErr: function (e, th) {
       var m = e && e.message;

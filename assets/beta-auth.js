@@ -58,9 +58,10 @@
       var name = val('dname').trim(), email = val('email').trim(), pw = val('pw');
       if (!email || pw.length < 8) return this.say('error', 'กรอกอีเมล และรหัสผ่านอย่างน้อย 8 ตัวอักษร', 'Enter an email and a password of at least 8 characters.');
       this.setState({ busy: true, msg: '' });
+      var cap = await SP.captcha();
       var r = await sb.auth.signUp({
         email: email, password: pw,
-        options: { emailRedirectTo: SP.base + 'auth.html', data: { display_name: name, news_opt_in: checked('news') } }
+        options: { captchaToken: cap || undefined, emailRedirectTo: SP.base + 'auth.html', data: { display_name: name, news_opt_in: checked('news') } }
       });
       if (r.error) return this.fail(r.error);
       if (r.data.session) { await this.loadProfile(); return this.setState({ mode: 'done', busy: false, msg: '' }); }
@@ -71,7 +72,8 @@
       var email = val('lemail').trim(), pw = val('lpw');
       if (!email || !pw) return this.say('error', 'กรอกอีเมลและรหัสผ่าน', 'Enter your email and password.');
       this.setState({ busy: true, msg: '' });
-      var r = await sb.auth.signInWithPassword({ email: email, password: pw });
+      var cap = await SP.captcha();
+      var r = await sb.auth.signInWithPassword({ email: email, password: pw, options: { captchaToken: cap || undefined } });
       if (r.error) return this.fail(r.error);
       await this.loadProfile();
       var next = takeNext();
@@ -100,7 +102,8 @@
       var email = val('lemail').trim();
       if (!email) return this.say('error', 'กรอกอีเมลในช่องด้านบนก่อน แล้วกด "ลืมรหัสผ่าน?" อีกครั้ง', 'Type your email above first, then tap "Forgot password?" again.');
       this.setState({ busy: true, msg: '' });
-      var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: SP.base + 'auth.html' });
+      var cap = await SP.captcha();
+      var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: SP.base + 'auth.html', captchaToken: cap || undefined });
       if (r.error) return this.fail(r.error);
       this.say('ok', 'ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลแล้ว', 'We sent a reset link to your email.');
     }
