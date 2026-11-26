@@ -231,15 +231,18 @@ html{scroll-behavior:smooth}
             </sc-for>
           </div>
           <p role="status" style="margin: 0; padding: 12px 14px; background: #0B0A12; border-left: 2px solid {{roleColor}}; font-size: 14px; line-height: 1.6; color: #D8D6E8">{{roleMsg}}</p>
-          <sc-if value="{{isGm}}" hint-placeholder-val="{{ false }}">
-            <a href="sessions.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openGm}}</a>
-          </sc-if>
-          <sc-if value="{{isPlayer}}" hint-placeholder-val="{{ true }}">
-            <a href="characters.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openMine}}</a>
-          </sc-if>
-          <sc-if value="{{isAdmin}}" hint-placeholder-val="{{ false }}">
-            <a href="admin.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 22px; border: 1px solid #FF2E88; color: #FF2E88; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.openAdmin}}</a>
-          </sc-if>
+          <!-- the page buttons sit on one line -->
+          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+            <sc-if value="{{isGm}}" hint-placeholder-val="{{ false }}">
+              <a href="sessions.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openGm}}</a>
+            </sc-if>
+            <sc-if value="{{isPlayer}}" hint-placeholder-val="{{ true }}">
+              <a href="characters.html" style="align-self: flex-start; display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; background: #2EE6F0; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.openMine}}</a>
+            </sc-if>
+            <sc-if value="{{isAdmin}}" hint-placeholder-val="{{ false }}">
+              <a href="admin.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 22px; border: 1px solid #FF2E88; color: #FF2E88; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.openAdmin}}</a>
+            </sc-if>
+          </div>
         </section></sc-if>
 
         <!-- Sign-in methods -->
