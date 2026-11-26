@@ -69,6 +69,8 @@
       if (sess.bgm) this.onBgm(Object.assign({ type: 'state' }, sess.bgm));
       this._turnKey = sess.turn + ':' + sess.round;
       this._turnWho = ((sess.turn_order || [])[sess.turn || 0] || {}).id || null;
+      // opened the sheet during this character's turn: a Fainted check not yet rolled for this turn comes up now
+      if (this._turnWho && this._turnWho === this.state.charId && sess.turn_based !== false) setTimeout(() => this.turnStart(sess.id + ':' + this._turnKey), 1200);
       this._ch = sb.channel('sheet-' + sess.id)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions', filter: 'id=eq.' + sess.id }, (p) => {
           var row = p.new || {};
@@ -83,6 +85,8 @@
               if (this._turnWho && this._turnWho === this.state.charId && !this._selfEnded && ss.turn_based !== false) this.turnEndEffects();
               this._selfEnded = false;
               this._turnWho = ((ss.turn_order || [])[row.turn || 0] || {}).id || null;
+              // this character's turn begins: Fainted rolls Sense first
+              if (this._turnWho && this._turnWho === this.state.charId && ss.turn_based !== false) setTimeout(() => this.turnStart(ss.id + ':' + tk), 600);
             }
             if (tk !== this._turnKey) { this._turnKey = tk; if (this.state.s.boost && this.state.s.boost.kind) { var was = this.state.dirty; this.upd({ boost: null }); this.rollSaved({ boost: null }, was); } }
           }

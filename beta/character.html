@@ -1199,6 +1199,27 @@ class Component extends DCLogic {
       }
     }));
   }
+  /* the start of this character's turn (the live site calls this when the turn arrives; key = that turn).
+     Fainted: roll Sense against the Fainted DC — at or over it wakes up (DC back to 8), under it lowers the DC by 1 and skips the turn */
+  turnStart(key) {
+    const s = this.state.s;
+    if (!s.inj || !s.inj.Fainted || s.dead || s.coma || (key && s.faintKey === key)) return;
+    const th = this.state.lang !== 'en', k = 'sense', dc = Math.max(1, Math.min(8, parseInt(s.faintDc, 10) || 8));
+    if (key) { const was = this.state.dirty; this.upd({ faintKey: key }); this.rollSaved({ faintKey: key }, was); }
+    const br = Object.assign({ sense: 0 }, s.baRep || {});
+    let v = Math.min(3, 1 + (s.ba[k] || 0) + (parseInt(br[k], 10) || 0) + (s.factor === 'cpd' && DIVISIONS[s.traitName] === k ? 1 : 0));
+    if (s.inj['Cosmic Infected']) v = Math.max(1, v - 1);
+    this.openRoll('Sense', v, s.baMod[k], {
+      label: th ? 'Sense · Fainted (DC ' + dc + ')' : 'Sense · Fainted (DC ' + dc + ')',
+      note: th ? 'เริ่มเทิร์น: ทอยให้ได้ ' + dc + ' ขึ้นไปเพื่อฟื้น · ไม่ถึง = DC −1 และข้ามเทิร์นนี้' : 'Start of turn: roll ' + dc + '+ to come to · below = DC −1 and this turn is skipped',
+      onFinal: (p) => {
+        const cur = this.state.s, was = this.state.dirty, ok = ((p && p.r) || 0) >= dc;
+        const patch = ok ? { inj: Object.assign({}, cur.inj, { Fainted: false }), faintDc: '8' } : { faintDc: String(Math.max(1, dc - 1)) };
+        this.upd(patch); this.rollSaved(patch, was);
+        if (!ok) setTimeout(() => this.endTurn(), 400);
+      }
+    });
+  }
   /* after a 10-WM use: roll Sense, below 8 ticks Fainted */
   whelmSense() {
     const s = this.state.s, th = this.state.lang !== 'en', k = 'sense';
@@ -2054,6 +2075,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=3a2ed19b"></script>
+<script src="../assets/beta-character.js?v=29b8e628"></script>
 </body>
 </html>
