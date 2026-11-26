@@ -529,7 +529,15 @@ html{scroll-behavior:smooth}
                             </div>
                           </sc-for>
                         </div>
-                        <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
+                        <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
+                          <sc-for list="{{en.rows}}" as="rw" hint-placeholder-count="3">
+                            <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{rw.lc}}; padding-top: 1px">{{rw.lk}}</dt>
+                            <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{rw.lv}}</dd>
+                            <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{rw.rc}}; padding-top: 1px">{{rw.rk}}</dt>
+                            <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{rw.rv}}</dd>
+                          </sc-for>
+                        </dl>
+                        <dl style="margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
                           <sc-for list="{{en.stLines}}" as="ln" hint-placeholder-count="4">
                             <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{ln.c}}; padding-top: 1px">{{ln.k}}</dt>
                             <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{ln.v}}</dd>
@@ -573,7 +581,15 @@ html{scroll-behavior:smooth}
                         </div>
                       </sc-for>
                     </div>
-                    <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
+                    <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
+                      <sc-for list="{{peek.rows}}" as="rw" hint-placeholder-count="3">
+                        <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{rw.lc}}; padding-top: 1px">{{rw.lk}}</dt>
+                        <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{rw.lv}}</dd>
+                        <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{rw.rc}}; padding-top: 1px">{{rw.rk}}</dt>
+                        <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{rw.rv}}</dd>
+                      </sc-for>
+                    </dl>
+                    <dl style="margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
                       <sc-for list="{{peek.stLines}}" as="ln" hint-placeholder-count="4">
                         <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{ln.c}}; padding-top: 1px">{{ln.k}}</dt>
                         <dd style="margin: 0; min-width: 0; color: #D8D6E8; overflow-wrap: anywhere">{{ln.v}}</dd>
@@ -886,15 +902,17 @@ class Component extends DCLogic {
     const fk = n.factor || '', ln = [];
     const add = (k, v, c) => { if (v) ln.push({ k: k, v: v, c: c || '#A9A5C2' }); };
     const nz = (v) => (v == null || v === '' ? '0' : String(v));
-    add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1), d.boss ? '#FF3D6E' : '#2EE6F0');
-    add('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
-    if (fk === 'shifter') add('WM', 'PWR+' + nz(d.pwr) + ' · RGN+' + Math.max(1, +d.wmRgn || 1), '#C084FC');
-    const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
-    if ((fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n) add(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400');
     const list = (a, f) => (a || []).filter((r) => r && r.n).map(f).join(' · ');
+    const cell = (k, v, c) => (v ? { k: k, v: v, c: c || '#A9A5C2' } : { k: '', v: '', c: '#A9A5C2' });
+    const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
+    // left: tier, IP, WM · right: Cosmic Ability / Gadget, Weapons, Gears (same rows)
+    const rows = [
+      [cell(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1), d.boss ? '#FF3D6E' : '#2EE6F0'),
+        (fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n ? cell(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400') : cell()],
+      [cell('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn)), cell('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))],
+      [fk === 'shifter' ? cell('WM', 'PWR+' + nz(d.pwr) + ' · RGN+' + Math.max(1, +d.wmRgn || 1), '#C084FC') : cell(), cell('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')))]
+    ].filter((r) => r[0].v || r[1].v).map((r) => ({ lk: r[0].k, lv: r[0].v, lc: r[0].c, rk: r[1].k, rv: r[1].v, rc: r[1].c }));
     add('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)));
-    add('WEAPONS', list(d.weapons, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
-    add('GEARS', list(d.gears, (r) => r.n + (r.fx ? ' (' + r.fx + ')' : '')));
     add('BONDED', d.bond || '');
     const bar = (k, key, c, max, def, of) => {
       const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(max, +d[key] || 0)) : def;
@@ -902,7 +920,7 @@ class Component extends DCLogic {
         decOff: v <= 0, incOff: v >= max, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
     };
     const abil = [['Force', 'force', '#FF3D6E'], ['Tactical', 'tactical', '#2EE6F0'], ['Trick', 'trick', '#C084FC'], ['Sense', 'sense', '#FFD400']].map((a) => ({ k: a[0], v: String(b1(a[1])), c: a[2] }));
-    return { abil: abil, stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF', 10, 10, ' / 10')].concat(fk === 'shifter' ? [bar('WM', 'wmCur', '#C084FC', 10, 10, ' / 10')] : []).concat([bar('Slots', 'slots', '#FFD400', 99, fk === 'norms' ? 8 : 5, '')]) };
+    return { abil: abil, rows: rows, stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF', 10, 10, ' / 10')].concat(fk === 'shifter' ? [bar('WM', 'wmCur', '#C084FC', 10, 10, ' / 10')] : []).concat([bar('Slots', 'slots', '#FFD400', 99, fk === 'norms' ? 8 : 5, '')]) };
   }
   encDrop(id) { this.encSet((this.state.encounter || []).filter((x) => x.id !== id)); }
   encToggle(id, st) {
@@ -1129,7 +1147,7 @@ class Component extends DCLogic {
             name: x.name || L('(ไม่มีชื่อ)', '(unnamed)'), url: x.url, hasPic: !!x.url, noPic: !x.url, initial: ini(x.name),
             remove: () => this.encDrop(x.id), removeLabel: L('เอาออกจาก Encounter: ', 'Take out of the encounter: ') + (x.name || ''),
             statusLabel: L('สถานะผิดปกติของ ', 'Abnormal statuses of ') + (x.name || ''),
-            ...(() => { const n = all.find((y) => y.id === x.id); return n ? Object.assign({ hasSt: true }, this.npcStatView(n)) : { hasSt: false, stLines: [], bars: [], abil: [] }; })(),
+            ...(() => { const n = all.find((y) => y.id === x.id); return n ? Object.assign({ hasSt: true }, this.npcStatView(n)) : { hasSt: false, stLines: [], bars: [], abil: [], rows: [] }; })(),
             statuses: ENC_STATUS.map((st) => {
               const onS = x.status.indexOf(st) !== -1;
               return { n: st, pressed: onS ? 'true' : 'false', toggle: () => this.encToggle(x.id, st),
@@ -1146,7 +1164,7 @@ class Component extends DCLogic {
           npcLibNoneText: all.length ? L('ไม่พบ NPC ที่ตรงกับคำค้น', 'No NPC matches that search') : L('ยังไม่มี NPC สร้างได้ที่หน้า NPC', 'No NPCs yet. Make some on the NPC page.'),
           peek: (() => {
             const n = all.find((y) => y.id === this.state.npcPeek);
-            if (!n) return { has: false, bars: [], stLines: [], abil: [] };
+            if (!n) return { has: false, bars: [], stLines: [], abil: [], rows: [] };
             return Object.assign({ has: true, name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), aria: L('สถานะของ ', 'Status of ') + (n.name || ''),
               url: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: ini(n.name), close: () => this.setState({ npcPeek: null }) }, this.npcStatView(n));
           })(),
