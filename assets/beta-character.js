@@ -1,13 +1,13 @@
-/* Character Sheet on Supabase: load/save the sheet, portrait in storage, session seat, GM's BGM. */
+/* Character Sheet on Supabase: load/save the sheet, portrait in storage, session seat, CM's BGM. */
 (function () {
   'use strict';
   var sb = SP.sb;
   var JOIN_ERR = {
     BAD_CODE: ['รหัสต้องเป็นรูปแบบ SP-XXXX (ตัวอักษรหรือตัวเลข 4 ตัว)', 'Codes look like SP-XXXX'],
-    SESSION_NOT_FOUND: ['ไม่พบ session นี้ ลองขอรหัสใหม่จาก GM', 'No session with that code.'],
+    SESSION_NOT_FOUND: ['ไม่พบ session นี้ ลองขอรหัสใหม่จาก CM', 'No session with that code.'],
     SESSION_ENDED: ['Session นี้จบไปแล้ว รหัสใช้ไม่ได้อีก', 'That session has ended.'],
     SESSION_FULL: ['Session นี้ที่นั่งเต็มแล้ว', 'That session is full.'],
-    OWN_SESSION: ['นี่คือ session ของคุณเอง (ในฐานะ GM)', 'That is your own session (as GM).'],
+    OWN_SESSION: ['นี่คือ session ของคุณเอง (ในฐานะ CM)', 'That is your own session (as CM).'],
     CHARACTER_SEATED: ['ตัวละครนี้อยู่ใน session อื่นอยู่แล้ว ใช้ตัวละครอื่นเข้าร่วม หรือออกจาก session เดิมก่อน', 'This character already sits in another session. Use another character, or leave that session first.']
   };
 
@@ -32,7 +32,7 @@
 
     th() { return this.state.lang !== 'en'; }
     factorLocked() { var seat = this.state.seat; return !!(seat && this.state.charId && seat.character_id === this.state.charId); }
-    /* the picture the GM has up for this sheet's session (sessions.scene, kept fresh by realtime) */
+    /* the picture the CM has up for this sheet's session (sessions.scene, kept fresh by realtime) */
     sceneNow() {
       var seat = this.state.seat;
       return seat && seat.character_id === this.state.charId && this.state.charId && seat.sessions ? seat.sessions.scene || null : null;
@@ -74,11 +74,11 @@
           var row = p.new || {};
           this.setState({ seat: Object.assign({}, this.state.seat, { sessions: Object.assign({}, this.state.seat.sessions, row) }) });
           if (row.bgm) this.onBgm(Object.assign({ type: 'state' }, row.bgm));
-          // the GM moved the turn on: Surge Energy boosts end
+          // the CM moved the turn on: Surge Energy boosts end
           if ('turn' in row) {
             var tk = row.turn + ':' + row.round;
             if (tk !== this._turnKey) {
-              // the GM moved on from this character's turn: Fever / Bleeding bite now (unless this sheet already ended it)
+              // the CM moved on from this character's turn: Fever / Bleeding bite now (unless this sheet already ended it)
               var ss = Object.assign({}, this.state.seat.sessions, row);
               if (this._turnWho && this._turnWho === this.state.charId && !this._selfEnded && ss.turn_based !== false) this.turnEndEffects();
               this._selfEnded = false;
@@ -117,7 +117,7 @@
       var seat = this.state.seat, id = this.state.charId;
       if (!seat || !id || seat.character_id !== id || !seat.sessions) return { off: false, mine: false, info: th ? 'ยังไม่ได้อยู่ใน session · กดเพื่อล้างบัฟ SE' : 'Not at a table · clears SE boosts' };
       var ss = seat.sessions, order = ss.turn_order || [], cur = order[ss.turn || 0];
-      if (!order.length) return { off: false, mine: false, info: th ? 'GM ยังไม่ได้จัดลำดับเทิร์น' : 'No turn order yet' };
+      if (!order.length) return { off: false, mine: false, info: th ? 'CM ยังไม่ได้จัดลำดับเทิร์น' : 'No turn order yet' };
       var mine = !!cur && cur.id === id;
       return { off: !mine, mine: mine, info: mine ? (th ? '▶ ถึงเทิร์นคุณแล้ว (รอบ ' + (ss.round || 1) + ')' : '▶ Your turn (round ' + (ss.round || 1) + ')') : (th ? 'ยังไม่ถึงเทิร์นคุณ' : 'Not your turn yet') };
     }
@@ -131,7 +131,7 @@
       this.setState({ seat: Object.assign({}, this.state.seat, { sessions: Object.assign({}, this.state.seat.sessions, r.data) }) });
     }
 
-    /* Exhaustion / Surge Energy / Advance pts changed by a roll: write just those into the saved sheet so the GM Monitor updates now */
+    /* Exhaustion / Surge Energy / Advance pts changed by a roll: write just those into the saved sheet so the CM Monitor updates now */
     rollSaved(patch, wasDirty) {
       // one at a time, so a later write never starts from a sheet missing the earlier one
       this._rollQ = (this._rollQ || Promise.resolve()).then(() => this.rollWrite(patch, wasDirty));
@@ -238,11 +238,11 @@
         doMove: () => this.join(tbl.pending, true),
         turnShow: !!(mine && live) && !this.isRoleplay(),
         stColor: live ? '#4ADE80' : '#FFD400',
-        stLabel: live ? 'LIVE' : sess && sess.status === 'ended' ? 'ENDED' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
+        stLabel: live ? 'LIVE' : sess && sess.status === 'ended' ? 'ENDED' : L('รอ CM เริ่ม SESSION', 'WAITING FOR CM'),
         joinedCode: sess ? sess.invite_code : '',
         tableName: sess ? L('Session: ', 'SESSION: ') + sess.name : '',
         hasLv: !!(sess && sess.level), lv: sess && sess.level ? sess.level : '',
-        liveText: live ? L('ทุกครั้งที่กดบันทึก GM จะเห็นการเปลี่ยนแปลงทันที', 'Every save reaches your GM instantly.') : L('เข้า session แล้ว GM จะเห็นตัวละครนี้เมื่อเริ่ม session', 'You\'re seated. Your GM sees this sheet once the session starts.'),
+        liveText: live ? L('ทุกครั้งที่กดบันทึก CM จะเห็นการเปลี่ยนแปลงทันที', 'Every save reaches your CM instantly.') : L('เข้า session แล้ว CM จะเห็นตัวละครนี้เมื่อเริ่ม session', 'You\'re seated. Your CM sees this sheet once the session starts.'),
         doLeave: async () => {
           var r = await sb.rpc('leave_session', { p_session: sess ? sess.id : null });
           if (r.error) return this.setState({ msg: SP.err(r.error, th) });

@@ -172,7 +172,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{spCanAskGm}}">
-              <button type="button" role="menuitem" onClick="{{spAskSessions}}" aria-expanded="{{spWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{spSessionsLabel}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{spAskSessions}}" aria-expanded="{{spWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{spSessionsLabel}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{spWarn}}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{spWarnText}}</p>
@@ -390,7 +390,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="assets/dc.js?v=36171e0f"></script>
-<script src="assets/sp.js?v=911a5e7b"></script>
+<script src="assets/sp.js?v=a60a9d0f"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
@@ -460,7 +460,7 @@ class Component extends DCLogic {
         ctaTrpg: L('เริ่มเล่น TRPG', 'PLAY THE TRPG'),
         keyArt: L('[ FULL-BLEED KEY ART ]\nภาพหลักคลุมเต็ม section', '[ FULL-BLEED KEY ART ]\nHero image'),
         seriesSoon: L('ซีรีส์แอนิเมชันเรื่องแรกของจักรวาล Shifter Punkz กำลังอยู่ระหว่างการผลิต ติดตามการเปิดตัวได้เร็วๆ นี้', 'The first animated series in the Shifter Punkz universe is in production. Stay tuned for the reveal.'),
-        trpgPitch: L('เกมเล่นตามบทบาทบนโต๊ะในจักรวาล Shifter Punkz รับบทเป็น Shifter, Norms หรือ C.P.D. แล้วเอาตัวรอดในกรุงเทพฯ ปี 26xx ตอนนี้เปิดให้ลอง playtest แล้ว พร้อมเครื่องมือออนไลน์สำหรับผู้เล่นและ GM', 'A tabletop roleplaying game set in the Shifter Punkz universe. Play a Shifter, a Norm or a C.P.D. agent and survive Bangkok, 26xx. Playtesting is open now, with online tools for players and GMs.'),
+        trpgPitch: L('เกมเล่นตามบทบาทบนโต๊ะในจักรวาล Shifter Punkz รับบทเป็น Shifter, Norms หรือ C.P.D. แล้วเอาตัวรอดในกรุงเทพฯ ปี 26xx ตอนนี้เปิดให้ลอง playtest แล้ว พร้อมเครื่องมือออนไลน์สำหรับผู้เล่นและ CM', 'A tabletop roleplaying game set in the Shifter Punkz universe. Play a Shifter, a Norm or a C.P.D. agent and survive Bangkok, 26xx. Playtesting is open now, with online tools for players and CMs.'),
         trpgGo: L('อ่านกฎและ Lore →', 'Read the rules & lore →'),
         ctaChar: L('สร้างตัวละคร', 'Create a character'),
         boardSoon: L('บอร์ดเกมจากจักรวาล Shifter Punkz กำลังอยู่ระหว่างการพัฒนา ชวนเพื่อนมานั่งล้อมโต๊ะ แล้วออกไปลุยบนถนนของเมืองนี้ด้วยกัน ติดตามการเปิดตัวได้เร็วๆ นี้', 'A Shifter Punkz board game is in development. Gather your crew around the table and take to the streets of this city together. Watch for the reveal.'),
@@ -510,9 +510,9 @@ class Component extends DCLogic {
     };
     out.trpgFeatures = [
       { code: 'TOOL-01', title: L('ใบตัวละครออนไลน์', 'Online character sheet'), desc: L('สร้างและเก็บตัวละครไว้ในบัญชี คำนวณค่าต่างๆ ให้อัตโนมัติ เปิดต่อได้จากทุกเครื่อง', 'Build and keep characters in your account. The math is done for you, on any device.') },
-      { code: 'TOOL-02', title: L('เข้าร่วม session', 'Join a session'), desc: L('กรอกรหัสเชิญ SP-XXXX จาก GM แล้วตัวละครก็พร้อมลงเล่นทันที', 'Enter your GM\'s SP-XXXX invite code and your character is at the table.') },
-      { code: 'TOOL-03', title: 'GM Monitor', desc: L('GM เห็นค่าพลังและเหตุการณ์ของทุกคนแบบเรียลไทม์ จัดลำดับเทิร์น และจดบันทึกเนื้อเรื่องของแคมเปญ', 'Your GM sees everyone\'s stats and moves live, runs the turn order and keeps the campaign log.') },
-      { code: 'TOOL-04', title: 'BGM BOT', desc: L('เพลงประกอบและเสียงบรรยากาศที่ GM เลือก ดังพร้อมกันในเครื่องของผู้เล่นทุกคน', 'Music and ambience picked by the GM, playing on every player\'s device at once.') }
+      { code: 'TOOL-02', title: L('เข้าร่วม session', 'Join a session'), desc: L('กรอกรหัสเชิญ SP-XXXX จาก CM แล้วตัวละครก็พร้อมลงเล่นทันที', 'Enter your CM\'s SP-XXXX invite code and your character is at the table.') },
+      { code: 'TOOL-03', title: 'CM Monitor', desc: L('CM เห็นค่าพลังและเหตุการณ์ของทุกคนแบบเรียลไทม์ จัดลำดับเทิร์น และจดบันทึกเนื้อเรื่องของแคมเปญ', 'Your CM sees everyone\'s stats and moves live, runs the turn order and keeps the campaign log.') },
+      { code: 'TOOL-04', title: 'BGM BOT', desc: L('เพลงประกอบและเสียงบรรยากาศที่ CM เลือก ดังพร้อมกันในเครื่องของผู้เล่นทุกคน', 'Music and ambience picked by the CM, playing on every player\'s device at once.') }
     ];
     out.media = stag(out.media, 'hub').map((m, i) => {
       const locked = m.kind !== 'TRPG';
@@ -527,6 +527,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="assets/session-nav.js?v=fb455465"></script>
+<script src="assets/session-nav.js?v=3357c418"></script>
 </body>
 </html>

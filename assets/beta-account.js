@@ -94,7 +94,7 @@
       var name = BOOK_NAMES[res] ? BOOK_NAMES[res][this.th() ? 0 : 1] : pt ? (pt.book_title || res) : BOOK_NAMES.core[this.th() ? 0 : 1];
       this.setState({ bookBusy: false, bookCode: '', bookMsg: wasGm
         ? { kind: 'ok', th: 'เพิ่ม ' + name + ' เข้าบัญชีแล้ว', en: name + ' added to your account.' }
-        : { kind: 'ok', th: 'เพิ่ม ' + name + ' แล้ว · ปลดล็อกบทบาท GM แล้ว เลือกเป็น GM ได้ที่ส่วนบทบาทด้านล่าง', en: name + ' added. The GM role is unlocked: pick it under Role below.' } });
+        : { kind: 'ok', th: 'เพิ่ม ' + name + ' แล้ว · ปลดล็อกบทบาท CM แล้ว เลือกเป็น CM ได้ที่ส่วนบทบาทด้านล่าง', en: name + ' added. The CM role is unlocked: pick it under Role below.' } });
     }
 
     async patch(fields, okTh, okEn) {
@@ -190,11 +190,11 @@
       var owned = this.state.owned || [], bm = this.state.bookMsg, gmOk = !!(p && p.gm_allowed);
       var self = this, packs = this.state.packs || [], sess = this.state.mySessions || [], pm = this.state.packMsg;
       v.bk = {
-        title: gmOk ? L('คลัง GM', 'GM Vault') : L('อยากเป็น GM?', 'Want to be a GM?'),
-        chip: gmOk ? L('GM ปลดล็อกแล้ว', 'GM UNLOCKED') : L('GM ล็อกอยู่', 'GM LOCKED'),
+        title: gmOk ? L('คลัง CM', 'CM Vault') : L('อยากเป็น CM?', 'Want to be a CM?'),
+        chip: gmOk ? L('CM ปลดล็อกแล้ว', 'CM UNLOCKED') : L('CM ล็อกอยู่', 'CM LOCKED'),
         chipColor: gmOk ? '#4ADE80' : '#8C88A6',
         sub: gmOk ? L('กรอกรหัสจากหนังสือเล่มอื่นเพื่อเพิ่มเข้าบัญชีได้ รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'Add codes from your other books here. Each code works once.')
-                  : L('บทบาท GM เปิดให้เจ้าของหนังสือ Shifter Punkz TRPG อย่างน้อย 1 เล่ม กรอกรหัสในหน้าแรกของหนังสือเพื่อปลดล็อก รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'The GM role is for owners of at least one Shifter Punkz TRPG book. Enter the code inside the front cover to unlock it. Each code works once.'),
+                  : L('บทบาท CM เปิดให้เจ้าของหนังสือ Shifter Punkz TRPG อย่างน้อย 1 เล่ม กรอกรหัสในหน้าแรกของหนังสือเพื่อปลดล็อก รหัสแต่ละเล่มใช้ได้ครั้งเดียว', 'The CM role is for owners of at least one Shifter Punkz TRPG book. Enter the code inside the front cover to unlock it. Each code works once.'),
         hasOwned: owned.length > 0,
         owned: owned.map(function (o) { var pt = (self.state.packs || []).find(function (x) { return x.book === o.book; }); var n = BOOK_NAMES[o.book] || (pt ? [pt.book_title || o.book, pt.book_title || o.book, '#2EE6F0'] : BOOK_NAMES.core); return { name: th ? n[0] : n[1], accent: n[2], when: L('ลงทะเบียน ', 'Added ') + new Date(o.redeemed_at).toLocaleDateString(th ? 'th-TH' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) }; }),
         label: L('รหัสหนังสือ', 'BOOK CODE'),
@@ -236,7 +236,7 @@
       };
       v.canGm = !!(p && p.gm_allowed);
       v.menuCanAskGm = !!(p && p.gm_allowed && this.state.role !== 'gm');
-      // a GM can sit at another GM's table without switching roles
+      // a CM can sit at another CM's table without switching roles
       v.askChars = () => { location.href = 'characters.html'; };
       if (p && p.gm_allowed) v.askSessions = () => { location.href = 'sessions.html'; };
       v.roles = v.roles.map((r) => Object.assign({}, r, {

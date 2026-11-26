@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NPC Network · Shifter Punkz</title>
-<meta name="description" content="NPC ของ GM Shifter Punkz (beta)">
+<meta name="description" content="NPC ของ CM Shifter Punkz (beta)">
 <meta name="robots" content="noindex">
 <meta property="og:title" content="NPC Network · Shifter Punkz">
-<meta property="og:description" content="NPC ของ GM Shifter Punkz (beta)">
+<meta property="og:description" content="NPC ของ CM Shifter Punkz (beta)">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0B0A12">
 <link rel="icon" href="../assets/icons/favicon.ico?v=63be0f36" sizes="48x48">
@@ -123,7 +123,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
-              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
@@ -146,7 +146,7 @@ html{scroll-behavior:smooth}
   <main style="max-width: 1440px; margin: 0 auto; padding: 36px 24px 96px; display: flex; flex-direction: column; gap: 18px">
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
       <div style="display: flex; flex-direction: column; gap: 8px">
-        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FFD400">ROLE // GM · {{countLabel}}</p>
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FFD400">ROLE // CM · {{countLabel}}</p>
         <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">NPC Network</h1>
         <p style="margin: 0; max-width: 720px; font-size: 14px; line-height: 1.65; color: #A9A5C2">{{t.sub}}</p>
       </div>
@@ -314,7 +314,7 @@ html{scroll-behavior:smooth}
                 </sc-for>
               </select>
             </div>
-            <!-- STATUS: GM only. REP x2 = points to spend; costs follow the player sheet -->
+            <!-- STATUS: CM only. REP x2 = points to spend; costs follow the player sheet -->
             <div style="display: flex; flex-direction: column; gap: 12px; padding: 12px; background: #0B0A12; border: 1px solid #2A2740">
               <div style="display: flex; align-items: center; gap: 8px">
                 <span style="flex: 1; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; color: #D8D6E8">STATUS</span>
@@ -538,10 +538,10 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
-<script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=f83fe316"></script>
+<script src="../assets/sp.js?v=a60a9d0f"></script>
+<script src="../assets/beta-common.js?v=f5a747cd"></script>
 <script>
-/* demo portraits for the prototype (the live site uses the GM's uploads) */
+/* demo portraits for the prototype (the live site uses the CM's uploads) */
 function npcArt(bg, accent, mark) {
   const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='" + bg + "'/><circle cx='32' cy='26' r='11' fill='#0B0A12'/><path d='M12 64c2-14 10-20 20-20s18 6 20 20z' fill='#0B0A12'/>" + mark.replace(/ACC/g, accent) + "</svg>";
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
@@ -611,7 +611,7 @@ const NPC_COS_TAGS = {
   'Density/Weight': 'Instant - Any', 'Density/Noise': 'Instant - Any', 'Density/Mass': 'Instant - Any', 'Density/Solidify': 'Instant - Any', 'Density/Stuff': 'Instant - Any', 'Density/Gravity': 'Instant - Any', 'Density/Elastic': 'Instant - Any', 'Density/Matter': 'Instant - Any'
 };
 const NPC_COS_INFO = {
-  'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในระยะสายตา', passive: 'มักมีของ 1 อย่างในฉากติดตัวมาด้วยโดยไม่ตั้งใจชิ้นละฉาก โดยของชิ้นนั้นจะขึ้นอยู่กับ GM (slot 0)' },
+  'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในระยะสายตา', passive: 'มักมีของ 1 อย่างในฉากติดตัวมาด้วยโดยไม่ตั้งใจชิ้นละฉาก โดยของชิ้นนั้นจะขึ้นอยู่กับ CM (slot 0)' },
   'Energy/Voltage': { fx: 'ควบคุมพลังงานไฟฟ้าจากแหล่งที่มีกระแสไฟฟ้า', passive: 'มีไฟฟ้าสถิตบางๆออกมาจากตัว เหมือนผิวแห้งตลอดเวลา' },
   'Energy/Magnet': { fx: 'คุมแรงแม่เหล็กกับวัตถุที่มีพลังงานแม่เหล็กในระยะสายตา', passive: '' },
   'Energy/Luminary': { fx: 'ย้ายหรือควบคุมแหล่งกำเนิดแสง 1 อย่างในระยะสายตา', passive: '' },
@@ -673,7 +673,7 @@ function npcCosType(c) {
   const t = NPC_COS_TYPES.find((x) => (NPC_COS_NAMES[x[0]] || []).indexOf(c.n) !== -1);
   return t ? t[0] : '';
 }
-/* NPC status (GM only): REP x2 = points to spend. Costs follow the player sheet:
+/* NPC status (CM only): REP x2 = points to spend. Costs follow the player sheet:
    every Basic Ability starts at 1 with 4 free points to add (like a player), each point past those 5 REP, max 3;
    Cosmic Ability / Gadget Lv2 5 REP, Lv3 12 more; a General skill's Lv1 is free, higher levels cost what the skill list says. */
 const NPC_BA = [['force', 'Force'], ['tactical', 'Tactical'], ['trick', 'Trick'], ['sense', 'Sense']];
@@ -1350,13 +1350,13 @@ class Component extends DCLogic {
       charWarn: !!s.charWarn,
       charWarnExpanded: s.charWarn ? 'true' : 'false',
       askChars: () => this.setState({ charWarn: !s.charWarn, roleWarn: false }),
-      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "CM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a CM right now; switch to Player first (one role at a time).'),
       roleWarn: !!s.roleWarn,
       roleWarnExpanded: s.roleWarn ? 'true' : 'false',
       askSessions: () => this.setState({ roleWarn: !s.roleWarn, charWarn: false }),
       switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm' }),
       switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player' }),
-      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท CM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น CM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the CM role. Your account is a Player right now; switch to CM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
       setTh: () => this.setState({ lang: 'th' }),
@@ -1365,13 +1365,13 @@ class Component extends DCLogic {
       enPressed: th ? 'false' : 'true',
       thStyle: th ? on : off,
       enStyle: th ? off : on,
-      roleName: 'GM',
+      roleName: 'CM',
       roleColor: '#FFD400',
       t: {
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
-        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
-        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchRole: L('เปลี่ยนเป็น CM', 'Switch to CM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น CM แล้ว', '✓ You are now a CM'),
         menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
         menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
@@ -1405,7 +1405,7 @@ class Component extends DCLogic {
         name: L('ชื่อ', 'NAME'), namePh: L('ชื่อ NPC', 'NPC name'),
         role: L('บทบาท / อาชีพ', 'ROLE'), rolePh: L('เช่น เจ้าของร้านซ่อมไซเบอร์แวร์', 'e.g. cyberware repair shop owner'),
         gang: L('สังกัดแก๊ง', 'GANG'),
-        notes: L('โน้ตของ GM', 'GM NOTES'), notesPh: L('เบื้องหลัง เป้าหมาย ความลับ… (ผู้เล่นไม่เห็น)', 'Backstory, goals, secrets… (players never see this)'),
+        notes: L('โน้ตของ CM', 'CM NOTES'), notesPh: L('เบื้องหลัง เป้าหมาย ความลับ… (ผู้เล่นไม่เห็น)', 'Backstory, goals, secrets… (players never see this)'),
         rels: L('ความสัมพันธ์', 'RELATIONSHIPS'), noRels: L('ยังไม่มีเส้นความสัมพันธ์', 'No relationships yet'),
         linkFromHere: L('⟷ เชื่อมกับคนอื่น', '⟷ Link to someone'),
         delNpc: L('ลบ NPC', 'Delete NPC'), delGang: L('ลบแก๊ง', 'Delete gang'), delPc: L('เอาออกจากแผนผัง', 'Remove from map'), delLink: L('ลบเส้นความสัมพันธ์', 'Delete relationship'),
@@ -1414,13 +1414,13 @@ class Component extends DCLogic {
         color: L('สีกรอบ', 'COLOUR'), members: L('สมาชิก', 'MEMBERS'), noMembers: L('ยังไม่มีสมาชิก ลาก NPC เข้ามาในกรอบ หรือเลือกแก๊งที่หน้า NPC', 'No members yet. Drag NPCs into the frame or pick the gang on an NPC.'),
         swap: L('สลับทิศทาง', 'Swap direction'), kind: L('ประเภท', 'KIND'),
         linkNote: L('รายละเอียด (แสดงบนเส้น)', 'DETAIL (shown on the line)'), linkNotePh: L('เช่น เป็นหนี้ 50,000 เครดิต', 'e.g. owes 50,000 credits'),
-        pcNote: L('ข้อมูล PC มาจากตัวละครที่นั่งอยู่ใน session ของคุณ แผนผังนี้เห็นเฉพาะ GM', 'PC details come from characters seated in your sessions. Only you see this map.'),
-        protoNote: L('PROTOTYPE // ข้อมูลตัวอย่าง เก็บในเบราว์เซอร์นี้ ตอนเชื่อม Supabase จะเป็นตาราง npcs + npc_gangs + npc_links ของบัญชี GM', 'PROTOTYPE // Sample data kept in this browser. With Supabase these are the GM\'s npcs, npc_gangs and npc_links rows.')
+        pcNote: L('ข้อมูล PC มาจากตัวละครที่นั่งอยู่ใน session ของคุณ แผนผังนี้เห็นเฉพาะ CM', 'PC details come from characters seated in your sessions. Only you see this map.'),
+        protoNote: L('PROTOTYPE // ข้อมูลตัวอย่าง เก็บในเบราว์เซอร์นี้ ตอนเชื่อม Supabase จะเป็นตาราง npcs + npc_gangs + npc_links ของบัญชี CM', 'PROTOTYPE // Sample data kept in this browser. With Supabase these are the CM\'s npcs, npc_gangs and npc_links rows.')
       }
     });
   }
 }
 </script>
-<script src="../assets/beta-npcs.js?v=e904a8d2"></script>
+<script src="../assets/beta-npcs.js?v=fc4d9931"></script>
 </body>
 </html>

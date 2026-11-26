@@ -1,4 +1,4 @@
-/* Shared helpers for the signed-in beta pages (characters, sheet, sessions, GM monitor). */
+/* Shared helpers for the signed-in beta pages (characters, sheet, sessions, CM monitor). */
 (function () {
   'use strict';
   var sb = SP.sb;
@@ -23,7 +23,7 @@
   SP.baVal = function (v) { return 1 + SP.num(v); };
   /* sessions.scene: one picture (older) or a list of up to 4 */
   SP.sceneList = function (v) { return (Array.isArray(v) ? v : v ? [v] : []).filter(function (x) { return x && x.url; }).slice(0, 4); };
-  /* sessions.encounter: NPCs the GM brought in (picture, name and abnormal statuses only) */
+  /* sessions.encounter: NPCs the CM brought in (picture, name and abnormal statuses only) */
   SP.encounterList = function (v) { return (Array.isArray(v) ? v : []).filter(function (x) { return x && x.id; }).map(function (x) { return { id: x.id, name: x.name || '', url: x.url || '', status: Array.isArray(x.status) ? x.status : [], at: x.at || 0 }; }).slice(0, 8); };
   /* C.P.D. Divisions add +1 to one Basic Ability */
   SP.DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
@@ -88,9 +88,9 @@
       page.setState({ profile: r.data, role: role, menuRole: role, roleWarn: false, charWarn: false, menuSwitched: role });
       if (page.onRoleChange) page.onRoleChange(role);
     };
-    // a GM can sit at another GM's table without switching roles: "My characters" opens straight away
+    // a CM can sit at another CM's table without switching roles: "My characters" opens straight away
     v.askChars = function () { location.href = 'characters.html'; };
-    // top nav: every account has My characters; GM-unlocked accounts also get My sessions, whichever role is selected
+    // top nav: every account has My characters; CM-unlocked accounts also get My sessions, whichever role is selected
     v.navCanChars = true;
     v.navCanGm = !!p.gm_allowed;
     if (p.gm_allowed) v.askSessions = function () { location.href = 'sessions.html'; };

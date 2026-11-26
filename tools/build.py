@@ -65,7 +65,7 @@ BETA_LINKS = {"Main": "../index.html", "TRPG": "../trpg.html", "Account": "accou
 ASK_GM = ('re:<sc-if value="\\{\\{menuNotGm\\}\\}"( hint-placeholder-val="\\{\\{ true \\}\\}">\\s*<button type="button" role="menuitem" onClick="\\{\\{askSessions\\}\\}")', '<sc-if value="{{menuCanAskGm}}"\\1', 1)
 ME = ('re:aria-hidden="true">N</span><span>Nox', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1)
 
-BOOKS = '''<!-- Books: a code printed in any book unlocks the GM role -->
+BOOKS = '''<!-- Books: a code printed in any book unlocks the CM role -->
         <section id="books" aria-labelledby="books-h" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; display: flex; flex-direction: column; gap: 16px">
           <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px">
             <h2 id="books-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{bk.title}}</h2>
@@ -165,15 +165,15 @@ PAGES = [
          desc="ใบตัวละคร Shifter Punkz (beta)", beta="beta-character.js", common=True, bgm=True, links=BETA_LINKS,
          markup=[ASK_GM, ME]),
     dict(src="GMTables.dc.html", out="beta/sessions.html", title="Session ของฉัน · Shifter Punkz",
-         desc="Session ของ GM Shifter Punkz (beta)", beta="beta-sessions.js", common=True, links=BETA_LINKS,
+         desc="Session ของ CM Shifter Punkz (beta)", beta="beta-sessions.js", common=True, links=BETA_LINKS,
          markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
          ]),
     dict(src="NPC.dc.html", out="beta/npcs.html", title="NPC Network · Shifter Punkz",
-         desc="NPC ของ GM Shifter Punkz (beta)", beta="beta-npcs.js", common=True, links=BETA_LINKS,
+         desc="NPC ของ CM Shifter Punkz (beta)", beta="beta-npcs.js", common=True, links=BETA_LINKS,
          markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
          ]),
-    dict(src="GMSheet.dc.html", out="beta/gm.html", title="GM Monitor · Shifter Punkz",
-         desc="GM Monitor Shifter Punkz (beta)", beta="beta-gm.js", common=True, bgm=True, links=BETA_LINKS,
+    dict(src="GMSheet.dc.html", out="beta/gm.html", title="CM Monitor · Shifter Punkz",
+         desc="CM Monitor Shifter Punkz (beta)", beta="beta-gm.js", common=True, bgm=True, links=BETA_LINKS,
          markup=[ASK_GM, (r're:aria-hidden="true">N</span><span>Nox · \{\{roleName\}\}', 'aria-hidden="true">{{meInitial}}</span><span>{{meName}}', 1),
              (r're:<!-- Prototype-only role preview -->\s*<div .*?</sc-for>\s*</span>\s*</div>', '', 1),
              ('<textarea class="fld" rows="2" aria-label="{{t.gmNote}} {{p.name}}" placeholder="{{t.gmNote}}"></textarea>',
@@ -221,7 +221,7 @@ def session_nav(body):
               </sc-if>
             </sc-if>
             <sc-if value="{{{{spCanAskGm}}}}">
-              <button type="button" role="menuitem" onClick="{{{{spAskSessions}}}}" aria-expanded="{{{{spWarnExpanded}}}}" style="{MENU_ITEM}; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{{{spSessionsLabel}}}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{{{spAskSessions}}}}" aria-expanded="{{{{spWarnExpanded}}}}" style="{MENU_ITEM}; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{{{spSessionsLabel}}}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{{{spWarn}}}}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{{{spWarnText}}}}</p>

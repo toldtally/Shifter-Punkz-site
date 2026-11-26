@@ -1,4 +1,4 @@
-/* NPC Network on Supabase: the GM's NPCs, gangs, relationship lines and the PCs pinned to the map. */
+/* NPC Network on Supabase: the CM's NPCs, gangs, relationship lines and the PCs pinned to the map. */
 (function () {
   'use strict';
   var sb = SP.sb;

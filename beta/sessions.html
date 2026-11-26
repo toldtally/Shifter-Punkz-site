@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Session ของฉัน · Shifter Punkz</title>
-<meta name="description" content="Session ของ GM Shifter Punkz (beta)">
+<meta name="description" content="Session ของ CM Shifter Punkz (beta)">
 <meta name="robots" content="noindex">
 <meta property="og:title" content="Session ของฉัน · Shifter Punkz">
-<meta property="og:description" content="Session ของ GM Shifter Punkz (beta)">
+<meta property="og:description" content="Session ของ CM Shifter Punkz (beta)">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0B0A12">
 <link rel="icon" href="../assets/icons/favicon.ico?v=63be0f36" sizes="48x48">
@@ -108,7 +108,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
-              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
@@ -131,7 +131,7 @@ html{scroll-behavior:smooth}
   <main style="max-width: 1280px; margin: 0 auto; padding: 44px 24px 96px; display: flex; flex-direction: column; gap: 26px">
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
       <div style="display: flex; flex-direction: column; gap: 8px">
-        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FFD400">ROLE // GM · {{countLabel}}</p>
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FFD400">ROLE // CM · {{countLabel}}</p>
         <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">{{t.title}}</h1>
       </div>
       <button type="button" onClick="{{toggleCreate}}" aria-expanded="{{createExpanded}}" style="min-height: 48px; padding: 0 24px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.04em; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{createBtn}}</button>
@@ -273,8 +273,8 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
-<script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=f83fe316"></script>
+<script src="../assets/sp.js?v=a60a9d0f"></script>
+<script src="../assets/beta-common.js?v=f5a747cd"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
@@ -289,7 +289,7 @@ class Component extends DCLogic {
       ]
     };
   }
-  /* prototype only: follow pause / resume / end pressed on the GM Monitor artboard */
+  /* prototype only: follow pause / resume / end pressed on the CM Monitor artboard */
   componentDidMount() {
     const LAB = { live: ['กำลังเล่น', 'Running now'], paused: ['พักเมื่อสักครู่', 'Paused just now'], idle: ['จบรอบเล่นเมื่อสักครู่', 'Play ended just now'], ended: ['จบเมื่อสักครู่', 'Ended just now'] };
     const applySt = (map) => {
@@ -345,13 +345,13 @@ class Component extends DCLogic {
       charWarn: !!this.state.charWarn,
       charWarnExpanded: this.state.charWarn ? 'true' : 'false',
       askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
-      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "CM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a CM right now; switch to Player first (one role at a time).'),
       roleWarn: !!this.state.roleWarn,
       roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
       askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
       switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm' }),
       switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player' }),
-      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท CM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น CM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the CM role. Your account is a Player right now; switch to CM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
       setTh: () => this.setState({ lang: 'th' }),
@@ -360,7 +360,7 @@ class Component extends DCLogic {
       enPressed: th ? 'false' : 'true',
       thStyle: th ? on : off,
       enStyle: th ? off : on,
-      roleName: 'GM',
+      roleName: 'CM',
       roleColor: '#FFD400',
       countLabel: tables.length + L(' session', ' SESSIONS'),
       hasToast: !!this.state.toast,
@@ -407,7 +407,7 @@ class Component extends DCLogic {
         let cTitle = '', cBody = '', cOk = '', cColor = '#FFD400', cBg = '#1F1A06', confirm = () => {};
         if (mine === 'start') {
           cTitle = L('เริ่ม session นี้?', 'Start a session here?');
-          cBody = live ? L('1 บัญชีรันได้ทีละ 1 session session "' + nm(live) + '" ที่ LIVE อยู่จะถูกพักอัตโนมัติ ผู้เล่นที่นั่นจะเห็นสถานะ "รอ GM" ข้อมูลไม่หาย', 'One live session per account. "' + nm(live) + '" will be paused; its players see "waiting for GM" and nothing is lost.') : L('ผู้เล่นใน session จะเห็นสถานะ LIVE และ GM Monitor จะเริ่มรับข้อมูลตัวละคร', 'Seated players go LIVE and the GM Monitor starts receiving their sheets.');
+          cBody = live ? L('1 บัญชีรันได้ทีละ 1 session session "' + nm(live) + '" ที่ LIVE อยู่จะถูกพักอัตโนมัติ ผู้เล่นที่นั่นจะเห็นสถานะ "รอ CM" ข้อมูลไม่หาย', 'One live session per account. "' + nm(live) + '" will be paused; its players see "waiting for CM" and nothing is lost.') : L('ผู้เล่นใน session จะเห็นสถานะ LIVE และ CM Monitor จะเริ่มรับข้อมูลตัวละคร', 'Seated players go LIVE and the CM Monitor starts receiving their sheets.');
           cOk = live ? L('พัก session เดิม แล้วเริ่ม', 'Pause other & start') : L('เริ่ม session', 'Start');
           cColor = '#4ADE80'; cBg = '#0B1A10';
           confirm = () => this.setState({ tables: this.state.tables.map((y) => (y.id === x.id ? Object.assign({}, y, { st: 'live', lastTh: 'กำลังเล่น', lastEn: 'Running now', sessions: y.sessions + 1 }) : y.st === 'live' ? Object.assign({}, y, { st: 'paused', lastTh: 'พักเมื่อสักครู่', lastEn: 'Paused just now' }) : y)), confirm: null, toast: L('เริ่ม session "' + nm(x) + '" แล้ว', 'Session started: ' + nm(x)) + (live ? L(' · พัก "' + nm(live) + '"', ' · paused "' + nm(live) + '"') : '') });
@@ -468,8 +468,8 @@ class Component extends DCLogic {
       t: {
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
-        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
-        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchRole: L('เปลี่ยนเป็น CM', 'Switch to CM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น CM แล้ว', '✓ You are now a CM'),
         menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
         menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
@@ -494,18 +494,18 @@ class Component extends DCLogic {
         cancel: L('ยกเลิก', 'Cancel'),
         code: L('รหัสเชิญผู้เล่น', 'PLAYER INVITE CODE'),
         resetCode: L('สร้างรหัสใหม่', 'New code'),
-        openScreen: L('เปิด GM Monitor', 'Open GM Monitor'),
+        openScreen: L('เปิด CM Monitor', 'Open CM Monitor'),
         openNotes: L('เปิดดูบันทึก', 'Open notes'),
         pause: L('❚❚ พัก session', '❚❚ Pause'),
         start: L('เริ่ม session', 'Start session'),
         end: L('จบ session', 'End session'),
         del: L('ลบ session', 'Delete'),
-        protoNote: L('PROTOTYPE // ข้อมูล session เป็นตัวอย่าง ตอนเชื่อม Supabase จะเป็นตาราง tables + table_members ของบัญชี GM นี้', 'PROTOTYPE // Sample tables. With Supabase these come from the GM\'s sessions + table_members rows.')
+        protoNote: L('PROTOTYPE // ข้อมูล session เป็นตัวอย่าง ตอนเชื่อม Supabase จะเป็นตาราง tables + table_members ของบัญชี CM นี้', 'PROTOTYPE // Sample tables. With Supabase these come from the CM\'s sessions + table_members rows.')
       }
     };
   }
 }
 </script>
-<script src="../assets/beta-sessions.js?v=aef058e7"></script>
+<script src="../assets/beta-sessions.js?v=9e551462"></script>
 </body>
 </html>

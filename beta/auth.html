@@ -240,7 +240,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
-<script src="../assets/sp.js?v=911a5e7b"></script>
+<script src="../assets/sp.js?v=a60a9d0f"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
@@ -259,7 +259,7 @@ class Component extends DCLogic {
     const roleBase = 'text-align: left; padding: 14px; cursor: pointer; background: #0B0A12; color: #FFFFFF; min-height: 44px; ';
     const roleDefs = [
       { id: 'player', name: L('ผู้เล่น', 'Player'), accent: '#2EE6F0', desc: L('สร้างตัวละครและเข้าร่วม session', 'Make characters and join sessions') },
-      { id: 'gm', name: 'GM', accent: '#FFD400', desc: L('เปิด session และดูตัวละครของผู้เล่น', 'Run sessions and see players\' sheets') }
+      { id: 'gm', name: 'CM', accent: '#FFD400', desc: L('เปิด session และดูตัวละครของผู้เล่น', 'Run sessions and see players\' sheets') }
     ];
     const cur = roleDefs.find((r) => r.id === this.state.role) || roleDefs[0];
     const nm = (this.state.name || '').trim();
@@ -296,7 +296,7 @@ class Component extends DCLogic {
         pick: () => { if (r.id !== this.state.role) this.setState({ role: r.id, switched: true }); }
       })),
       roleMsg: this.state.switched ? L('เปลี่ยนบทบาทเป็น ', 'Role switched to ') + cur.name + L(' แล้ว · 1 บัญชีเป็นได้ทีละ 1 บทบาท', ' · One account holds one role at a time') : L('1 บัญชีเป็นได้ทีละ 1 บทบาท สลับได้ทุกเมื่อ', 'One account holds one role at a time. Switch whenever you like.'),
-      doneSub: cur.id === 'gm' ? L('คุณกำลังใช้บทบาท GM เปิด GM Monitor เพื่อดูตัวละครของผู้เล่นใน session ได้เลย', 'You are playing as GM. Open the GM Monitor to see your players\' characters.') : L('บัญชีพร้อมแล้ว ไปสร้างตัวละครตัวแรกของคุณได้เลย', 'Your account is ready. Go make your first character.'),
+      doneSub: cur.id === 'gm' ? L('คุณกำลังใช้บทบาท CM เปิด CM Monitor เพื่อดูตัวละครของผู้เล่นใน session ได้เลย', 'You are playing as CM. Open the CM Monitor to see your players\' characters.') : L('บัญชีพร้อมแล้ว ไปสร้างตัวละครตัวแรกของคุณได้เลย', 'Your account is ready. Go make your first character.'),
       goHref: cur.id === 'gm' ? 'sessions.html' : 'characters.html',
       goTarget: '_self',
       goLabel: cur.id === 'gm' ? L('Session ของฉัน', 'My Sessions') : L('ตัวละครของฉัน', 'My Characters'),
@@ -305,7 +305,7 @@ class Component extends DCLogic {
       roleColor: cur.accent,
       perks: [
         { code: 'SAVE', accent: '#2EE6F0', title: L('ตัวละครผูกกับบัญชีของคุณ', 'Characters tied to your account'), desc: L('สร้างและเก็บตัวละครไว้ในบัญชี เปิดต่อได้จากทุกเครื่อง', 'Build and keep characters in your account, on any device.') },
-        { code: 'SESSION', accent: '#FFD400', title: L('เข้าร่วม session กับ GM', 'Join a GM\'s session'), desc: L('GM เห็นใบตัวละครของผู้เล่นใน session ได้ทันที ไม่ต้องส่งไฟล์', 'Your GM sees your sheet in the session, no files to send.') },
+        { code: 'SESSION', accent: '#FFD400', title: L('เข้าร่วม session กับ CM', 'Join a CM\'s session'), desc: L('CM เห็นใบตัวละครของผู้เล่นใน session ได้ทันที ไม่ต้องส่งไฟล์', 'Your CM sees your sheet in the session, no files to send.') },
         { code: 'NEWS', accent: '#FF2E88', title: L('รับข่าวก่อนใคร', 'Hear it first'), desc: L('ข่าวหนังสือ ภาคเสริม และอัปเดตของ Shifter Punkz ถ้าคุณเลือกรับ', 'Books, expansions and Shifter Punkz updates, if you opt in.') }
       ],
       t: {
@@ -325,7 +325,7 @@ class Component extends DCLogic {
         password: L('รหัสผ่าน', 'PASSWORD'),
         pwHint: L('อย่างน้อย 8 ตัวอักษร', 'At least 8 characters'),
         roleLabel: L('บทบาทเริ่มต้น', 'STARTING ROLE'),
-        roleHint: L('เปลี่ยนเป็นผู้เล่นหรือ GM ได้ทุกเมื่อหลังสมัคร', 'Switch between Player and GM any time after signing up'),
+        roleHint: L('เปลี่ยนเป็นผู้เล่นหรือ CM ได้ทุกเมื่อหลังสมัคร', 'Switch between Player and CM any time after signing up'),
         settings: L('ตั้งค่าบัญชี', 'Account settings'),
         switchLabel: L('บทบาทปัจจุบัน', 'CURRENT ROLE'),
         newsOpt: L('รับข่าวสารและอัปเดตของ Shifter Punkz ทางอีเมล', 'Email me Shifter Punkz news and updates'),

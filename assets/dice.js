@@ -1,4 +1,4 @@
-/* Shifter Punkz dice roller: a roll tray for the sheet / GM Monitor and pop-up cards for other people's rolls.
+/* Shifter Punkz dice roller: a roll tray for the sheet / CM Monitor and pop-up cards for other people's rolls.
  *
  *   SPDice.tray({ th, who, color, label, base, cosmic: [{ name, n }], ex, adv, enervated, free, secretOk,
  *                 onRoll(payload, spend), onDone(payload, spend), post(payload) })
@@ -271,7 +271,7 @@
           b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'D8' }), stepper(st.d8, 0, 12, function (v) { st.d8 = v; render(); })]));
           b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: 'D4' }), stepper(st.d4, 0, 12, function (v) { st.d4 = v; render(); })]));
           if (o.secretOk) b.appendChild(el('div', { class: 'spd-row' }, [el('span', { class: 'spd-lbl', text: L('ทอยลับ', 'Secret') }),
-            el('button', { type: 'button', class: 'spd-chip', 'aria-pressed': st.secret ? 'true' : 'false', onclick: function () { st.secret = !st.secret; render(); } }, [st.secret ? L('เห็นแค่ GM', 'GM only') : L('ทุกคนเห็น', 'Everyone sees')])]));
+            el('button', { type: 'button', class: 'spd-chip', 'aria-pressed': st.secret ? 'true' : 'false', onclick: function () { st.secret = !st.secret; render(); } }, [st.secret ? L('เห็นแค่ CM', 'CM only') : L('ทุกคนเห็น', 'Everyone sees')])]));
         } else {
           b.appendChild(el('p', { class: 'spd-note' }, [L('เต๋าพื้นฐาน ', 'Base dice ') , el('b', { style: 'color:#fff', text: String(o.base || 0) + 'D8' }), ' ' + (o.baseNote || '')]));
           if (o.enervated) b.appendChild(el('p', { class: 'spd-warn', text: L('Enervated: ทอยได้เพียง 1D8', 'Enervated: you roll only 1D8') }));
@@ -421,7 +421,7 @@
     var foot = el('div', { class: 'spd-sub' });
     var pop = el('div', { class: 'spd-pop', role: 'status', style: '--acc:' + (p.col || C.cyan) }, [head, tr, foot]);
     if (anchor) {
-      // sits on the lower part of the roller's card (GM Monitor); a newer roll on the same card replaces it
+      // sits on the lower part of the roller's card (CM Monitor); a newer roll on the same card replaces it
       var prev = document.querySelector('.spd-on[data-for="' + anchor.id + '"]'); if (prev) prev.remove();
       pop.setAttribute('data-for', anchor.id);
       anchor._spdPop = pop;

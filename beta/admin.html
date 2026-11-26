@@ -64,7 +64,7 @@
   <div id="app"><div class="msg">กำลังโหลด…</div></div>
   <p class="note" id="users-note">บัญชีที่ไม่ยืนยันอีเมลภายใน 7 วันจะถูกลบอัตโนมัติทุกคืนเวลาราว 03:17 น. · "ไม่ active" = ยืนยันแล้วแต่ไม่ได้เข้าใช้เกิน 30 วัน และยังไม่มีตัวละคร</p>
   <h2>Campaign books</h2>
-  <p class="lead">หนังสือ 1 เล่มมีได้หลาย campaign: เลือก PC, NPC และรูปฉากจากบัญชีนี้ใส่แต่ละ campaign แล้วสร้างโค้ด CP-XXXX-XXXX ของเล่มไปพิมพ์ในหนังสือ · ผู้ใช้กรอกโค้ดที่หน้าตั้งค่าบัญชี จะปลดล็อก GM และ Import ได้ทุก campaign ในเล่ม campaign ละ 1 ครั้ง · เก็บต้นฉบับ (ตัวละคร, NPC, รูป) ไว้ อย่าลบ เพราะรูปในชุดใช้ไฟล์เดียวกับต้นฉบับ</p>
+  <p class="lead">หนังสือ 1 เล่มมีได้หลาย campaign: เลือก PC, NPC และรูปฉากจากบัญชีนี้ใส่แต่ละ campaign แล้วสร้างโค้ด CP-XXXX-XXXX ของเล่มไปพิมพ์ในหนังสือ · ผู้ใช้กรอกโค้ดที่หน้าตั้งค่าบัญชี จะปลดล็อก CM และ Import ได้ทุก campaign ในเล่ม campaign ละ 1 ครั้ง · เก็บต้นฉบับ (ตัวละคร, NPC, รูป) ไว้ อย่าลบ เพราะรูปในชุดใช้ไฟล์เดียวกับต้นฉบับ</p>
   <div id="packs"><div class="msg">กำลังโหลด…</div></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -105,7 +105,7 @@
         return '<button data-f="' + f[0] + '" aria-pressed="' + (filter === f[0]) + '">' + f[1] + (f[0] === 'all' ? '' : ' · ' + cnt(f[0])) + '</button>';
       }).join('') + '</div>' +
       (shown.length ? '<div class="tbl"><table><thead><tr>' +
-        '<th>บัญชี</th><th>สถานะ</th><th>สมัคร</th><th>เข้าล่าสุด</th><th>เข้าด้วย</th><th>GM</th><th>ตัวละคร</th><th>Session</th><th>NPC</th><th>ไฟล์รูป</th>' +
+        '<th>บัญชี</th><th>สถานะ</th><th>สมัคร</th><th>เข้าล่าสุด</th><th>เข้าด้วย</th><th>CM</th><th>ตัวละคร</th><th>Session</th><th>NPC</th><th>ไฟล์รูป</th>' +
         '</tr></thead><tbody>' + shown.map(function (r) {
           var u = r.u;
           return '<tr><td>' + esc(u.display_name || '—') + '<span class="sub">' + esc(u.email) + '</span></td>' +
@@ -113,7 +113,7 @@
             '<td>' + fmt(u.created_at) + '<span class="sub">' + ago(u.created_at) + '</span></td>' +
             '<td>' + fmt(u.last_sign_in_at) + '<span class="sub">' + ago(u.last_sign_in_at) + '</span></td>' +
             '<td>' + esc(u.provider || '—') + '</td>' +
-            '<td>' + (u.gm_allowed ? '<span class="tag t-ok">GM</span>' : '<span class="t-dim">—</span>') + '</td>' +
+            '<td>' + (u.gm_allowed ? '<span class="tag t-ok">CM</span>' : '<span class="t-dim">—</span>') + '</td>' +
             '<td class="num">' + u.characters + '</td><td class="num">' + u.sessions + '</td><td class="num">' + u.npcs + '</td><td class="num">' + u.files + '</td></tr>';
         }).join('') + '</tbody></table></div>' : '<div class="msg">ไม่มีบัญชีในกลุ่มนี้</div>');
     app.querySelectorAll('[data-f]').forEach(function (b) { b.onclick = function () { filter = b.dataset.f; render(); }; });

@@ -95,7 +95,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
-              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
@@ -251,15 +251,15 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
-<script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=f83fe316"></script>
+<script src="../assets/sp.js?v=a60a9d0f"></script>
+<script src="../assets/beta-common.js?v=f5a747cd"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.state = { lang: 'th', filter: 'all', deleted: [], confirm: null, toast: '', tbl: { a: { mode: 'live', code: 'SP-K7QX' } } };
   }
-  /* how many characters this account may keep: 5, or 10 once GM is unlocked */
+  /* how many characters this account may keep: 5, or 10 once CM is unlocked */
   charLimit() { return 5; }
   renderVals() {
     const th = this.state.lang !== 'en';
@@ -293,13 +293,13 @@ class Component extends DCLogic {
       charWarn: !!this.state.charWarn,
       charWarnExpanded: this.state.charWarn ? 'true' : 'false',
       askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
-      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "CM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a CM right now; switch to Player first (one role at a time).'),
       roleWarn: !!this.state.roleWarn,
       roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
       askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
       switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm' }),
       switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player' }),
-      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท CM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น CM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the CM role. Your account is a Player right now; switch to CM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
       setTh: () => this.setState({ lang: 'th' }),
@@ -314,7 +314,7 @@ class Component extends DCLogic {
       canNew: all.length < this.charLimit(),
       atLimit: all.length >= this.charLimit(),
       limitText: L('ครบ ' + this.charLimit() + ' ตัวแล้ว', 'Limit of ' + this.charLimit() + ' reached'),
-      limitTip: L('ผู้เล่นสร้างได้สูงสุด 5 ตัว · ผู้ที่ปลดล็อก GM แล้วสร้างได้ 10 ตัว · ตัวละคร KIA ไม่นับ', 'Players can keep 5 characters · 10 once GM is unlocked · KIA characters do not count'),
+      limitTip: L('ผู้เล่นสร้างได้สูงสุด 5 ตัว · ผู้ที่ปลดล็อก CM แล้วสร้างได้ 10 ตัว · ตัวละคร KIA ไม่นับ', 'Players can keep 5 characters · 10 once CM is unlocked · KIA characters do not count'),
       filters: fdefs.map((d) => ({
         label: d.label,
         count: String(d.id === 'all' ? all.length : all.filter((c) => c.f === d.id).length),
@@ -353,7 +353,7 @@ class Component extends DCLogic {
             tLive: mode === 'live', tLeaving: mode === 'leaving', tIdle: mode === 'idle', tForm: mode === 'form', tConflict: mode === 'conflict',
             tblBorder: mode === 'live' ? (isLive ? 'rgba(74,222,128,0.45)' : 'rgba(255,212,0,0.45)') : mode === 'conflict' ? '#FFD400' : '#2A2740',
             stColor: isLive ? '#4ADE80' : '#FFD400',
-            stLabel: isLive ? 'LIVE' : L('รอ GM เริ่ม', 'WAITING'),
+            stLabel: isLive ? 'LIVE' : L('รอ CM เริ่ม', 'WAITING'),
             joinedCode: tb.code || '',
             tableName: tb.code ? tName(tb.code) : '',
             code: tb.input || '', hasErr: !!tb.err, err: tb.err || '', invalid: tb.err ? 'true' : 'false',
@@ -366,7 +366,7 @@ class Component extends DCLogic {
               if (e && e.preventDefault) e.preventDefault();
               const v = String(tb.input || '').trim().toUpperCase();
               if (!/^SP-[A-HJ-NP-Z2-9]{4}$/.test(v)) return put({ err: L('รหัสต้องเป็นรูปแบบ SP-XXXX (ตัวอักษรหรือตัวเลข 4 ตัว)', 'Codes look like SP-XXXX (4 letters or digits)') });
-              if (!TABLES[v]) return put({ err: L('ไม่พบ session นี้ ลองขอรหัสใหม่จาก GM', 'No session with that code.') });
+              if (!TABLES[v]) return put({ err: L('ไม่พบ session นี้ ลองขอรหัสใหม่จาก CM', 'No session with that code.') });
               if (TABLES[v].st === 'ended') return put({ err: L('Session นี้จบไปแล้ว รหัสใช้ไม่ได้อีก', 'That session has ended.') });
               if (seated) return put({ mode: 'conflict', pending: v, err: '' });
               put({ mode: 'live', code: v, input: '', err: '' });
@@ -388,8 +388,8 @@ class Component extends DCLogic {
       t: {
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
-        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
-        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchRole: L('เปลี่ยนเป็น CM', 'Switch to CM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น CM แล้ว', '✓ You are now a CM'),
         menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
         menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
@@ -410,9 +410,9 @@ class Component extends DCLogic {
         moveHere: L('ย้ายมา session นี้', 'Move here'),
         join: L('เข้าร่วม session', 'Join a session'),
         joinShort: L('เข้าร่วม', 'Join'),
-        codeLabel: L('รหัสเชิญจาก GM', 'Invite code from your GM'),
+        codeLabel: L('รหัสเชิญจาก CM', 'Invite code from your CM'),
         leave: L('ออกจาก session', 'Leave'),
-        leaveBody: L('ออกจาก session นี้? GM จะไม่เห็นการอัปเดตของตัวละครนี้อีก', 'Leave this session? Your GM stops seeing this character\'s updates.'),
+        leaveBody: L('ออกจาก session นี้? CM จะไม่เห็นการอัปเดตของตัวละครนี้อีก', 'Leave this session? Your CM stops seeing this character\'s updates.'),
         confirmLeave: L('ยืนยันออก', 'Leave'),
         protoNote: L('PROTOTYPE // ตัวละครในหน้านี้เป็นตัวอย่าง ตอนเชื่อม Supabase จะแสดงตัวละครจริงของบัญชีนั้น · ลองรหัส SP-K7QX (LIVE) / SP-R4MZ (พักอยู่) / SP-H2WD (จบแล้ว)', 'PROTOTYPE // Sample characters. With Supabase this shows the account\'s real characters. · Try SP-K7QX (live) / SP-R4MZ (paused) / SP-H2WD (ended)')
       }
@@ -420,6 +420,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-characters.js?v=b3eb668b"></script>
+<script src="../assets/beta-characters.js?v=c61d27a1"></script>
 </body>
 </html>

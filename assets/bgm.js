@@ -670,7 +670,7 @@
         st.ambients = {};
         emit();
       },
-      /* apply a synced { mood, ambients } from the GM */
+      /* apply a synced { mood, ambients } from the CM */
       apply: function (remote) {
         remote = remote || {};
         this.setMood(remote.mood || null);

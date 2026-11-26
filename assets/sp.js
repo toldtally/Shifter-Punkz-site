@@ -15,7 +15,7 @@
     QUOTA_FULL: ['ข้อมูลส่วนนี้ครบจำนวนสูงสุดแล้ว ลบรายการเก่าก่อนจึงจะเพิ่มใหม่ได้', 'This list is full. Delete an old entry to add a new one.'],
     DATA_TOO_LARGE: ['ข้อมูลยาวเกินไป ลองตัดให้สั้นลง', 'That\'s too much text. Try shortening it.'],
     RATE_LIMIT_EVENTS: ['ส่งถี่เกินไป รอสักครู่แล้วลองใหม่', 'Too many actions at once. Wait a moment and try again.'],
-    CHARACTER_LIMIT: ['สร้างตัวละครครบจำนวนแล้ว (ผู้เล่น 5 ตัว · ผู้ที่ปลดล็อก GM 10 ตัว · ไม่นับตัวที่ KIA) ลบตัวละครเก่าก่อนจึงจะสร้างใหม่ได้', 'You\'ve reached your character limit (5 for players, 10 once GM is unlocked; KIA characters don\'t count). Delete one to make room.'],
+    CHARACTER_LIMIT: ['สร้างตัวละครครบจำนวนแล้ว (ผู้เล่น 5 ตัว · ผู้ที่ปลดล็อก CM 10 ตัว · ไม่นับตัวที่ KIA) ลบตัวละครเก่าก่อนจึงจะสร้างใหม่ได้', 'You\'ve reached your character limit (5 for players, 10 once CM is unlocked; KIA characters don\'t count). Delete one to make room.'],
     DIVISION_LOCKED: ['ตัวละครนี้อยู่ใน session เปลี่ยน Division ไม่ได้ ออกจาก session ก่อน', 'This character is in a session, so its Division can\'t change. Leave the session first.'],
     FACTOR_LOCKED: ['ตัวละครนี้อยู่ใน session เปลี่ยน Faction ไม่ได้ ออกจาก session ก่อน', 'This character is in a session, so its Faction can\'t change. Leave the session first.'],
     'Invalid login credentials': ['อีเมลหรือรหัสผ่านไม่ถูกต้อง', 'Wrong email or password.'],

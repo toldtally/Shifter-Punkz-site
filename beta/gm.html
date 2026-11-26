@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GM Monitor · Shifter Punkz</title>
-<meta name="description" content="GM Monitor Shifter Punkz (beta)">
+<title>CM Monitor · Shifter Punkz</title>
+<meta name="description" content="CM Monitor Shifter Punkz (beta)">
 <meta name="robots" content="noindex">
-<meta property="og:title" content="GM Monitor · Shifter Punkz">
-<meta property="og:description" content="GM Monitor Shifter Punkz (beta)">
+<meta property="og:title" content="CM Monitor · Shifter Punkz">
+<meta property="og:description" content="CM Monitor Shifter Punkz (beta)">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0B0A12">
 <link rel="icon" href="../assets/icons/favicon.ico?v=63be0f36" sizes="48x48">
@@ -112,7 +112,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
-              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
@@ -139,7 +139,7 @@ html{scroll-behavior:smooth}
     <main style="max-width: 720px; margin: 0 auto; padding: 80px 24px 120px">
       <section style="display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding: 36px; background: #151225; border: 1px solid #FFD400; border-top: 3px solid #FFD400">
         <div style="height: 10px; align-self: stretch; background: repeating-linear-gradient(45deg, #FFD400 0 10px, #151225 10px 20px)" aria-hidden="true"></div>
-        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #FFD400">ACCESS DENIED // GM CLEARANCE REQUIRED</p>
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #FFD400">ACCESS DENIED // CM CLEARANCE REQUIRED</p>
         <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px; color: #FFFFFF">{{t.lockTitle}}</h1>
         <p style="margin: 0; font-size: 16px; line-height: 1.75; color: #A9A5C2">{{t.lockBody}}</p>
         <div style="display: flex; flex-wrap: wrap; gap: 10px">
@@ -150,7 +150,7 @@ html{scroll-behavior:smooth}
     </main>
   </sc-if>
 
-  <!-- GM VIEW -->
+  <!-- CM VIEW -->
   <sc-if value="{{isGm}}" hint-placeholder-val="{{ true }}">
     <main class="cpd-play" style="position: relative; max-width: 1400px; margin: 0 auto; padding: 28px 24px 96px">
       <div class="crt" aria-hidden="true">
@@ -165,7 +165,7 @@ html{scroll-behavior:smooth}
         <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
           <div style="display: flex; flex-direction: column; gap: 8px">
             <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #FF3D6E"><span class="live-dot" style="width: 9px; height: 9px; background: #FF3D6E; border-radius: 50%" aria-hidden="true"></span>LIVE // {{curTableLabel}}</p>
-            <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 54px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">GM Monitor</h1>
+            <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 54px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">CM Monitor</h1>
           </div>
           <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
             <div style="position: relative">
@@ -401,7 +401,7 @@ html{scroll-behavior:smooth}
           </aside>
         </div>
 
-        <!-- Scene screen: pictures the GM puts up for every seated player -->
+        <!-- Scene screen: pictures the CM puts up for every seated player -->
         <section aria-labelledby="scene-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
             <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
@@ -510,7 +510,7 @@ html{scroll-behavior:smooth}
                           <button type="button" onClick="{{es.toggle}}" aria-pressed="{{es.pressed}}" style="{{es.style}}">{{es.n}}</button>
                         </sc-for>
                       </div>
-                      <!-- the NPC's status from the NPC page: GM only, never sent to players -->
+                      <!-- the NPC's status from the NPC page: CM only, never sent to players -->
                       <sc-if value="{{en.hasSt}}" hint-placeholder-val="{{ false }}">
                         <div style="display: flex; flex-wrap: wrap; gap: 6px">
                           <sc-for list="{{en.bars}}" as="br" hint-placeholder-count="2">
@@ -554,7 +554,7 @@ html{scroll-behavior:smooth}
               </div>
             </div>
             <div style="flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
-              <!-- status of one library NPC, for rolls outside an encounter (GM only) -->
+              <!-- status of one library NPC, for rolls outside an encounter (CM only) -->
               <sc-if value="{{peek.has}}" hint-placeholder-val="{{ false }}">
                 <div role="region" aria-label="{{peek.aria}}" style="display: flex; gap: 10px; padding: 10px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid #FFD400">
                   <span style="width: 56px; height: 56px; flex-shrink: 0; overflow: hidden; background: #1D1930; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; color: #FFD400"><sc-if value="{{peek.hasPic}}" hint-placeholder-val="{{ true }}"><img src="{{peek.url}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{peek.noPic}}" hint-placeholder-val="{{ false }}">{{peek.initial}}</sc-if></span>
@@ -629,7 +629,7 @@ html{scroll-behavior:smooth}
           </div>
         </section>
 
-        <!-- Session notes: the GM's private story log, one entry per play -->
+        <!-- Session notes: the CM's private story log, one entry per play -->
         <section aria-labelledby="notes-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #C084FC">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
             <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
@@ -737,12 +737,12 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
-<script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=f83fe316"></script>
-<script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=02914620"></script>
+<script src="../assets/sp.js?v=a60a9d0f"></script>
+<script src="../assets/beta-common.js?v=f5a747cd"></script>
+<script src="../assets/bgm.js?v=a178f801"></script>
+<script src="../assets/dice.js?v=9ecd8612"></script>
 <script>
-/* demo scene pictures for the prototype (the live site uses the GM's uploads or links) */
+/* demo scene pictures for the prototype (the live site uses the CM's uploads or links) */
 function sceneArt(sky, glow, label) {
   const b = [[0,52,14,38],[12,40,10,50],[24,58,16,32],[38,30,9,60],[49,48,13,42],[64,36,11,54],[77,56,15,34],[94,26,8,64],[104,44,14,46],[120,54,12,36],[134,34,10,56],[146,50,14,40]];
   const blds = b.map((r) => "<rect x='" + r[0] + "' y='" + r[1] + "' width='" + r[2] + "' height='" + r[3] + "' fill='#0B0A12'/>").join('');
@@ -815,7 +815,7 @@ class Component extends DCLogic {
       step: 0
     };
   }
-  /* rolls: players' arrive here (canvas: BroadcastChannel; live site: session_events); the GM's go out the same way */
+  /* rolls: players' arrive here (canvas: BroadcastChannel; live site: session_events); the CM's go out the same way */
   /* live site: the server rolls the faces (null here: the canvas rolls in the browser) */
   diceRoller() { return null; }
   dicePost(roll) { if (this._bc) { try { this._bc.postMessage({ type: 'dice', roll: roll }); } catch (e) {} } }
@@ -823,7 +823,7 @@ class Component extends DCLogic {
     if (!window.SPDice || !roll) return;
     this.setState({ feed: [{ at: Date.now(), id: '_dice', who: roll.who || '?', col: roll.col || '#FFD400', th: window.SPDice.line(roll, true), en: window.SPDice.line(roll, false) }].concat(this.state.feed).slice(0, 100) });
   }
-  /* a player's roll tumbles on top of that player's card; the GM's own go bottom left */
+  /* a player's roll tumbles on top of that player's card; the CM's own go bottom left */
   diceIn(roll, charId) {
     if (window.SPDice) {
       const id = charId || Object.keys(this.state.chars).find((k) => this.state.chars[k].name === roll.who);
@@ -834,7 +834,7 @@ class Component extends DCLogic {
   gmRoll() {
     if (!window.SPDice) return;
     const th = this.state.lang !== 'en';
-    window.SPDice.tray({ th: th, free: true, secretOk: true, who: 'GM', color: '#FFD400', label: '', source: this.diceRoller(),
+    window.SPDice.tray({ th: th, free: true, secretOk: true, who: 'CM', color: '#FFD400', label: '', source: this.diceRoller(),
       onRoll: (p, sp) => { this.diceFeed(Object.assign({}, p, { lab: sp.secret ? (th ? '(ลับ)' : '(secret)') : '' })); if (!sp.secret) this.dicePost(p); } });
   }
   componentDidMount() {
@@ -881,7 +881,7 @@ class Component extends DCLogic {
     const list = (this.state.encounter || []).filter((x) => x.id !== n.id);
     this.encSet(list.concat([{ id: n.id, name: n.name || '', url: n.pic || '', status: [], at: Date.now() }]).slice(-8));
   }
-  /* current IP / WM of an NPC in the encounter (GM only): kept in the NPC's status */
+  /* current IP / WM of an NPC in the encounter (CM only): kept in the NPC's status */
   npcAdjust(id, key, d, max, def) {
     max = max || 10; def = def == null ? 10 : def;
     let saved = null;
@@ -896,7 +896,7 @@ class Component extends DCLogic {
     if (saved) this.npcStatSave(id, saved);
   }
   npcStatSave() {}
-  /* an NPC's status from the NPC page as GM-only lines plus current IP / WM counters */
+  /* an NPC's status from the NPC page as CM-only lines plus current IP / WM counters */
   npcStatView(n) {
     const L = (a, b) => (this.state.lang !== 'en' ? a : b);
     const d = n.stat || {};
@@ -1073,13 +1073,13 @@ class Component extends DCLogic {
       charWarn: !!this.state.charWarn,
       charWarnExpanded: this.state.charWarn ? 'true' : 'false',
       askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
-      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "CM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a CM right now; switch to Player first (one role at a time).'),
       roleWarn: !!this.state.roleWarn,
       roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
       askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
       switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm', role: 'gm', switched: true }),
       switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player', role: 'player', switched: true }),
-      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท CM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น CM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the CM role. Your account is a Player right now; switch to CM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
       bgmMoods: (window.SPBGM ? window.SPBGM.MOODS : []).map((m) => {
@@ -1136,7 +1136,7 @@ class Component extends DCLogic {
         };
       })(),
       ...(() => {
-        // NPCs: the GM's library, shown as a picture (Scene) or brought into the Encounter strip
+        // NPCs: the CM's library, shown as a picture (Scene) or brought into the Encounter strip
         const enc = this.state.encounter || [];
         const shownIds = (this.state.sceneShown || []).map((x) => x.id);
         const q = String(this.state.npcQ || '').trim().toLowerCase();
@@ -1237,7 +1237,7 @@ class Component extends DCLogic {
           bgmNowCode: M ? M.code + ' // ' + L(M.th, M.en).toUpperCase() : (ambNames.length ? 'AMBIENCE ONLY' : 'STANDBY'),
           bgmNowTitle: M ? M.title : (ambNames.length ? L('เสียงบรรยากาศ', 'Ambience') : L('ยังไม่ได้เปิดเพลง', 'Nothing playing')),
           bgmNowAmb: ambNames.length ? '+ ' + ambNames.join(', ') : L('เลือกอารมณ์เพลงด้านล่าง', 'Pick a mood below'),
-          bgmStatus: !s.playing ? L('○ ปิดอยู่', '○ OFF') : sync ? '● ON AIR · ' + listeners + L(' คนได้ยิน', ' LISTENING') : L('● GM ฟังคนเดียว', '● GM ONLY'),
+          bgmStatus: !s.playing ? L('○ ปิดอยู่', '○ OFF') : sync ? '● ON AIR · ' + listeners + L(' คนได้ยิน', ' LISTENING') : L('● CM ฟังคนเดียว', '● CM ONLY'),
           bgmStatusColor: !s.playing ? '#8C88A6' : sync ? '#4ADE80' : '#FFD400',
           bgmStop: () => this.bgmDo((e) => e.stopAll()),
           bgmVol: String(Math.round(s.volume * 100)),
@@ -1248,7 +1248,7 @@ class Component extends DCLogic {
           bgmSyncBorder: sync ? '#4ADE80' : '#3A3655',
           bgmSyncTrack: sync ? 'rgba(74,222,128,0.18)' : '#0B0A12',
           bgmSyncKnob: sync ? '20px' : '2px',
-          bgmSyncSub: sync ? L('ผู้เล่นใน session ได้ยินเพลงเดียวกัน (ปรับเสียงฝั่งตัวเองได้)', 'Players in the session hear the same mix (their own volume)') : L('ตอนนี้ได้ยินเฉพาะเครื่อง GM', 'Only this device hears it right now'),
+          bgmSyncSub: sync ? L('ผู้เล่นใน session ได้ยินเพลงเดียวกัน (ปรับเสียงฝั่งตัวเองได้)', 'Players in the session hear the same mix (their own volume)') : L('ตอนนี้ได้ยินเฉพาะเครื่อง CM', 'Only this device hears it right now'),
           bgmToggleSync: () => { this.setState({ bgmSync: !sync }); setTimeout(() => this.bgmBroadcast(), 0); }
         };
       })(),
@@ -1260,9 +1260,9 @@ class Component extends DCLogic {
       enStyle: th ? off : on,
       isGm: isGm,
       locked: !isGm,
-      roleName: isGm ? 'GM' : L('ผู้เล่น', 'Player'),
+      roleName: isGm ? 'CM' : L('ผู้เล่น', 'Player'),
       roleColor: isGm ? '#FFD400' : '#2EE6F0',
-      previewRoles: [{ id: 'player', name: L('ผู้เล่น', 'Player') }, { id: 'gm', name: 'GM' }].map((r) => ({
+      previewRoles: [{ id: 'player', name: L('ผู้เล่น', 'Player') }, { id: 'gm', name: 'CM' }].map((r) => ({
         name: r.name,
         pressed: this.state.role === r.id ? 'true' : 'false',
         pick: () => this.setState({ role: r.id }),
@@ -1290,7 +1290,7 @@ class Component extends DCLogic {
       }),
       hasSwitch: !!this.state.pendingTable,
       switchTitle: this.state.pendingTable ? L('เริ่ม session ที่ ' + TABLES[this.state.pendingTable].th + '?', 'Start a session at ' + TABLES[this.state.pendingTable].en + '?') : '',
-      switchBody: this.state.pendingTable ? L('1 บัญชีรันได้ทีละ 1 session session ' + TABLES[this.state.cur].th + ' จะถูกพักอัตโนมัติ ผู้เล่นที่นั่นจะเห็นสถานะ "รอ GM" และข้อมูลทั้งหมดยังอยู่ครบ', 'One live session per account. ' + TABLES[this.state.cur].en + ' will be paused; its players see "waiting for GM" and nothing is lost.') : '',
+      switchBody: this.state.pendingTable ? L('1 บัญชีรันได้ทีละ 1 session session ' + TABLES[this.state.cur].th + ' จะถูกพักอัตโนมัติ ผู้เล่นที่นั่นจะเห็นสถานะ "รอ CM" และข้อมูลทั้งหมดยังอยู่ครบ', 'One live session per account. ' + TABLES[this.state.cur].en + ' will be paused; its players see "waiting for CM" and nothing is lost.') : '',
       cancelSwitch: () => this.setState({ pendingTable: null }),
       doSwitch: () => {
         const to = this.state.pendingTable; const from = this.state.cur;
@@ -1418,7 +1418,7 @@ class Component extends DCLogic {
         agoColor: now - c.at < 15000 ? '#FFD400' : '#8C88A6',
         isConfirm: this.state.confirm === c.id,
         notConfirm: this.state.confirm !== c.id,
-        confirmText: L('เอา ' + c.name + ' ออกจาก session นี้? ใบตัวละครของผู้เล่นยังอยู่ แต่ GM จะไม่เห็นอีก', 'Remove ' + c.name + ' from this session? The player keeps their sheet, but you won\'t see it here.'),
+        confirmText: L('เอา ' + c.name + ' ออกจาก session นี้? ใบตัวละครของผู้เล่นยังอยู่ แต่ CM จะไม่เห็นอีก', 'Remove ' + c.name + ' from this session? The player keeps their sheet, but you won\'t see it here.'),
         askDel: () => this.setState({ confirm: c.id }),
         cancelDel: () => this.setState({ confirm: null }),
         doDel: () => this.setState({ removed: this.state.removed.concat([c.id]), confirm: null })
@@ -1441,15 +1441,15 @@ class Component extends DCLogic {
         rpTip: L('ช่วงเนื้อเรื่อง ไม่มีลำดับเทิร์น', 'Story time, no turn order'),
         encModeTip: L('เข้าสู่ encounter แบบผลัดกันเล่นทีละเทิร์น', 'Turn-based encounter'),
         rpNote: L('ช่วงเนื้อเรื่อง ยังไม่มีลำดับเทิร์น · ผู้เล่นทอยได้ตามปกติ · SE ที่ใช้จะหมดหลังทอยเต๋า · Fever / Bleeding / RGN+ ไม่ทำงานจนกว่าจะกลับเข้า ENCOUNTER', 'Story time, no turn order · players roll as usual · SE boosts end after each roll · Fever / Bleeding / RGN+ wait until ENCOUNTER'),
-        gmRollTip: L('ทอยเต๋าของ GM (เลือกทอยลับได้)', 'GM roll (can be secret)'),
+        gmRollTip: L('ทอยเต๋าของ CM (เลือกทอยลับได้)', 'CM roll (can be secret)'),
         bgmMood: L('อารมณ์เพลง', 'Mood'),
         bgmMusic: L('เพลง', 'Music'),
         bgmSync: L('ส่งเสียงให้ผู้เล่น', 'Play for players'),
         bgmNote: L('เพลงสร้างสดในเบราว์เซอร์ ไม่ซ้ำเดิม · ผู้เล่นกด "ฟังด้วย" ในใบตัวละครหนึ่งครั้งเพื่อเปิดเสียง', 'Music is generated live and never repeats exactly. Players tap "Listen" once on their sheet.'),
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
-        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
-        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchRole: L('เปลี่ยนเป็น CM', 'Switch to CM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น CM แล้ว', '✓ You are now a CM'),
         menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
         menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
@@ -1463,9 +1463,9 @@ class Component extends DCLogic {
         addNpc: L('เพิ่ม NPC', 'ADD NPC'),
         npcPh: L('ชื่อ NPC เช่น ลูกน้อง Golden Crown', 'NPC name, e.g. Golden Crown thug'),
         previewAs: L('ดูหน้านี้ในฐานะ', 'VIEW THIS PAGE AS'),
-        lockTitle: L('หน้านี้สำหรับ GM เท่านั้น', 'This page is for GMs only'),
-        lockBody: L('ตอนนี้บัญชีของคุณใช้บทบาทผู้เล่น เปลี่ยนบทบาทเป็น GM ในหน้าตั้งค่าบัญชีก่อน แล้วกลับมาเปิด GM Monitor อีกครั้ง', 'Your account is using the Player role. Switch to GM in Account settings, then open the GM Monitor again.'),
-        switchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
+        lockTitle: L('หน้านี้สำหรับ CM เท่านั้น', 'This page is for CMs only'),
+        lockBody: L('ตอนนี้บัญชีของคุณใช้บทบาทผู้เล่น เปลี่ยนบทบาทเป็น CM ในหน้าตั้งค่าบัญชีก่อน แล้วกลับมาเปิด CM Monitor อีกครั้ง', 'Your account is using the Player role. Switch to CM in Account settings, then open the CM Monitor again.'),
+        switchRole: L('เปลี่ยนเป็น CM', 'Switch to CM'),
         backMine: L('กลับไปตัวละครของฉัน', 'Back to my characters'),
         tableName: L('Session: ตรอกนีออนลาดพร้าว', 'SESSION: LAT PHRAO NEON ALLEY'),
         navTables: L('Session ของฉัน', 'MY SESSIONS'),
@@ -1483,7 +1483,7 @@ class Component extends DCLogic {
         backSessions: L('กลับไปหน้า Session ของฉัน →', 'Back to My Sessions →'),
         tableCode: L('รหัสเชิญผู้เล่น', 'PLAYER INVITE CODE'),
         details: L('รายละเอียดเต็ม', 'Full details'),
-        gmNote: L('โน้ต GM (ผู้เล่นไม่เห็น)', 'GM note (hidden from players)'),
+        gmNote: L('โน้ต CM (ผู้เล่นไม่เห็น)', 'CM note (hidden from players)'),
         remove: L('เอาออกจาก session', 'Remove from session'),
         cancel: L('ยกเลิก', 'Cancel'),
         sceneSub: L('ภาพที่ผู้เล่นเห็นพร้อมกัน', 'WHAT EVERY PLAYER SEES'),
@@ -1494,10 +1494,10 @@ class Component extends DCLogic {
         encClear: L('จบ Encounter', 'End encounter'),
         npcSearch: L('ค้นหา NPC', 'Search NPCs'),
         npcSearchPh: L('ค้นหา NPC…', 'Search NPCs…'),
-        peekTip: L('ดูสถานะ NPC สำหรับทอยเต๋านอก Encounter (เห็นเฉพาะ GM)', 'See this NPC\'s status for rolls outside an encounter (GM only)'),
-        peekClose: L('ปิดสถานะ NPC', 'Close NPC status'), peekGmOnly: L('เห็นเฉพาะ GM', 'GM ONLY'),
+        peekTip: L('ดูสถานะ NPC สำหรับทอยเต๋านอก Encounter (เห็นเฉพาะ CM)', 'See this NPC\'s status for rolls outside an encounter (CM only)'),
+        peekClose: L('ปิดสถานะ NPC', 'Close NPC status'), peekGmOnly: L('เห็นเฉพาะ CM', 'CM ONLY'),
         npcLib: L('คลัง NPC', 'NPC library'),
-        npcHint: L('"ขึ้นภาพ" ส่งแค่รูป NPC ขึ้นจอผู้เล่นแบบ Scene · "+ Encounter" ใส่ NPC ลงแถบ Encounter บนใบตัวละครผู้เล่น ผู้เล่นเห็นรูป ชื่อ และสถานะผิดปกติที่ GM กดไว้เท่านั้น', '"Show picture" puts only the NPC\'s picture on players\' screens, like a scene. "+ Encounter" adds them to the Encounter strip on players\' sheets: players see the picture, the name and the abnormal statuses you switch on, nothing else.'),
+        npcHint: L('"ขึ้นภาพ" ส่งแค่รูป NPC ขึ้นจอผู้เล่นแบบ Scene · "+ Encounter" ใส่ NPC ลงแถบ Encounter บนใบตัวละครผู้เล่น ผู้เล่นเห็นรูป ชื่อ และสถานะผิดปกติที่ CM กดไว้เท่านั้น', '"Show picture" puts only the NPC\'s picture on players\' screens, like a scene. "+ Encounter" adds them to the Encounter strip on players\' sheets: players see the picture, the name and the abnormal statuses you switch on, nothing else.'),
         sceneNow: L('บนจอผู้เล่นตอนนี้', 'ON PLAYERS\' SCREENS NOW'),
         sceneOff: L('ยังไม่ได้ขึ้นภาพ กดภาพในคลังเพื่อขึ้นจอ', 'Nothing up yet. Pick a picture from the library.'),
         sceneClear: L('■ เอาภาพลงทั้งหมด', '■ Take all down'),
@@ -1508,7 +1508,7 @@ class Component extends DCLogic {
         sceneLib: L('คลังภาพของ session นี้', 'This session\'s picture library'),
         sceneEmpty: L('คลังภาพยังว่าง อัปโหลดภาพฉาก แผนที่ หรือ NPC เตรียมไว้ก่อนเล่นได้เลย', 'The library is empty. Upload scenes, maps or NPCs before you play.'),
         sceneHint: L('กดภาพเพื่อขึ้นจอผู้เล่น ขึ้นพร้อมกันได้ 4 ภาพ ถ้ากดภาพที่ 5 จะแทนที่ภาพที่ขึ้นก่อน กดภาพที่อยู่บนจอซ้ำเพื่อเอาลง · ผู้เล่นเห็นเป็นหน้าต่างที่มุมขวาบนของใบตัวละคร ลากย้ายและปรับขนาดเองได้ · PNG, JPG, WebP', 'Tap a picture to put it on every player\'s screen. Up to 4 at once; a fifth replaces the one that went up first. Tap an on-screen picture again to take it down. Players get a window at the top right of their sheet that they can move and resize. PNG, JPG or WebP.'),
-        notesSub: L('บันทึกเนื้อเรื่อง · เห็นเฉพาะ GM', 'STORY LOG · GM ONLY'),
+        notesSub: L('บันทึกเนื้อเรื่อง · เห็นเฉพาะ CM', 'STORY LOG · CM ONLY'),
         newNote: L('+ บันทึกรอบใหม่', '+ New play log'),
         notesEmpty: L('ยังไม่มีบันทึก กด "+ บันทึกรอบใหม่" เพื่อจดเนื้อเรื่องของรอบนี้', 'No notes yet. Press "+ New play log" to start writing up this play.'),
         notesListLabel: L('บันทึกแต่ละรอบ', 'Play logs'),
@@ -1528,6 +1528,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=19cb37d3"></script>
+<script src="../assets/beta-gm.js?v=7cd0657b"></script>
 </body>
 </html>

@@ -170,7 +170,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{spCanAskGm}}">
-              <button type="button" role="menuitem" onClick="{{spAskSessions}}" aria-expanded="{{spWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{spSessionsLabel}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{spAskSessions}}" aria-expanded="{{spWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400">{{spSessionsLabel}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{spWarn}}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{spWarnText}}</p>
@@ -650,7 +650,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="assets/dc.js?v=36171e0f"></script>
-<script src="assets/sp.js?v=911a5e7b"></script>
+<script src="assets/sp.js?v=a60a9d0f"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
@@ -751,7 +751,7 @@ class Component extends DCLogic {
         techTitle: L('พลังที่ซื้อขายได้', 'Power you can buy'),
         techP1: L('พลัง Shifter ไม่ได้อยู่แค่ในร่างคนจากการทดลอง แต่ยังอยู่ในมนุษย์สังเคราะห์ และในวัตถุที่ซื้อขายกันเพื่อการสงคราม', 'Shifter power lives not only in experimental human bodies, but in synthetic humans and in objects traded for war.'),
         howTitle: L('TRPG คืออะไร?', 'What is a TRPG?'),
-        howP1: L('Tabletop Role-Playing Game หรือ TRPG คือเกมเล่าเรื่องร่วมกันรอบโต๊ะ ผู้เล่นแต่ละคนสวมบทบาทเป็นตัวละครหนึ่งตัว และมีหนึ่งคนรับหน้าที่ Game Master (GM) ผู้บรรยายโลก เล่นเป็นตัวละครอื่นทั้งหมด และตัดสินผลของการกระทำ', 'A Tabletop Role-Playing Game, or TRPG, is a story you tell together around a table. Each player takes on one character, and one person is the Game Master (GM), who describes the world, plays everyone else and decides what happens.'),
+        howP1: L('Tabletop Role-Playing Game หรือ TRPG คือเกมเล่าเรื่องร่วมกันรอบโต๊ะ ผู้เล่นแต่ละคนสวมบทบาทเป็นตัวละครหนึ่งตัว และมีหนึ่งคนรับหน้าที่ City Master (CM) ผู้บรรยายโลก เล่นเป็นตัวละครอื่นทั้งหมด และตัดสินผลของการกระทำ', 'A Tabletop Role-Playing Game, or TRPG, is a story you tell together around a table. Each player takes on one character, and one person is the City Master (CM), who describes the world, plays everyone else and decides what happens.'),
         howP2: L('ไม่มีกระดาน ไม่มีบทพูดตายตัว และไม่มีใครชนะหรือแพ้ ตัวละครของคุณทำอะไรก็ได้ที่คิดออก เมื่อสิ่งที่ทำมีความเสี่ยง ลูกเต๋าจะตัดสินว่าสำเร็จหรือไม่ เป้าหมายคือสร้างเรื่องราวที่สนุกด้วยกัน', 'There is no board, no script and no winner. Your character can try anything you can think of; when it is risky, the dice decide how it goes. The goal is a story everyone enjoys.'),
         loopTitle: L('การเล่นหนึ่งรอบเป็นแบบนี้', 'How a moment of play works'),
         exampleLabel: L('ตัวอย่างการเล่น', 'EXAMPLE OF PLAY'),
@@ -830,27 +830,27 @@ class Component extends DCLogic {
         { name: 'Shifter Energy Cell', desc: L('การจับ Shifter จริงมาทำเป็นแบตเตอรี่มนุษย์ เพื่อขับเคลื่อนอาวุธสงครามหรือเกราะป้องกันของกลุ่มผู้มีอิทธิพล', 'Real Shifters captured and turned into human batteries to power the syndicates\' weapons and armor.') }
       ],
       roles: [
-        { name: 'Game Master (GM)', accent: '#FFD400', desc: L('ผู้เล่าเรื่องและผู้ตัดสิน บรรยายฉาก เล่นเป็น NPC ทุกตัว วางปมภารกิจ และบอกว่าเมื่อไหร่ต้องทอยเต๋า', 'Storyteller and referee who sets scenes, plays every NPC, builds the mission and calls for rolls.') },
+        { name: 'City Master (CM)', accent: '#FFD400', desc: L('ผู้เล่าเรื่องและผู้ตัดสิน บรรยายฉาก เล่นเป็น NPC ทุกตัว วางปมภารกิจ และบอกว่าเมื่อไหร่ต้องทอยเต๋า', 'Storyteller and referee who sets scenes, plays every NPC, builds the mission and calls for rolls.') },
         { name: L('ผู้เล่น (Player)', 'Player'), accent: '#2EE6F0', desc: L('สวมบทบาทตัวละครของตัวเอง ตัดสินใจว่าตัวละครพูดอะไร ทำอะไร และร่วมมือกับเพื่อนผ่านภารกิจ', 'Plays one character: decides what they say and do, and works with the others through the mission.') }
       ],
       loop: stag([
-        { n: '01', title: L('GM เล่าสถานการณ์', 'The GM sets the scene'), desc: L('บรรยายว่าตัวละครอยู่ที่ไหน เห็นอะไร และมีอะไรเกิดขึ้น', 'Where you are, what you see, what is happening.') },
+        { n: '01', title: L('CM เล่าสถานการณ์', 'The CM sets the scene'), desc: L('บรรยายว่าตัวละครอยู่ที่ไหน เห็นอะไร และมีอะไรเกิดขึ้น', 'Where you are, what you see, what is happening.') },
         { n: '02', title: L('ผู้เล่นบอกสิ่งที่จะทำ', 'You say what you do'), desc: L('พูดเป็นตัวละครหรือบอกการกระทำได้อย่างอิสระ', 'Speak in character or describe your action, anything goes.') },
-        { n: '03', title: L('ทอยเต๋าเมื่อผลไม่แน่นอน', 'Roll when it\'s uncertain'), desc: L('GM บอกว่าใช้ Basic Ability ไหน แล้วทอยเต๋า D8', 'The GM names a Basic Ability and you roll your D8s.') },
-        { n: '04', title: L('GM เล่าผลลัพธ์', 'The GM narrates the result'), desc: L('สำเร็จ สำเร็จบางส่วน หรือพลาด เรื่องราวเดินต่อ แล้ววนกลับไปข้อ 1', 'Success, partial success or failure. The story moves, and it starts again.') }
+        { n: '03', title: L('ทอยเต๋าเมื่อผลไม่แน่นอน', 'Roll when it\'s uncertain'), desc: L('CM บอกว่าใช้ Basic Ability ไหน แล้วทอยเต๋า D8', 'The CM names a Basic Ability and you roll your D8s.') },
+        { n: '04', title: L('CM เล่าผลลัพธ์', 'The CM narrates the result'), desc: L('สำเร็จ สำเร็จบางส่วน หรือพลาด เรื่องราวเดินต่อ แล้ววนกลับไปข้อ 1', 'Success, partial success or failure. The story moves, and it starts again.') }
       ], 'howto', 0.2),
       example: [
-        { who: 'GM', color: '#FFD400', line: L('ตรอกแคบย่านลาดพร้าวยามค่ำ ชายเสื้อสูทสามคนยืนรออยู่ในเงามืด หนึ่งในนั้นถือกระเป๋าเอกสาร', 'A narrow Lat Phrao alley at night. Three men in suits wait in the shadows; one holds a briefcase.') },
+        { who: 'CM', color: '#FFD400', line: L('ตรอกแคบย่านลาดพร้าวยามค่ำ ชายเสื้อสูทสามคนยืนรออยู่ในเงามืด หนึ่งในนั้นถือกระเป๋าเอกสาร', 'A narrow Lat Phrao alley at night. Three men in suits wait in the shadows; one holds a briefcase.') },
         { who: L('ผู้เล่น', 'PLAYER'), color: '#2EE6F0', line: L('ฉันจะแอบเข้าไปใกล้ๆ หลังถังขยะ ฟังว่าพวกนั้นคุยอะไรกัน', 'I creep behind the dumpsters and listen in.') },
-        { who: 'GM', color: '#FFD400', line: L('ทอย Tactical เลย', 'Roll Tactical.') },
+        { who: 'CM', color: '#FFD400', line: L('ทอย Tactical เลย', 'Roll Tactical.') },
         { who: L('ผู้เล่น', 'PLAYER'), color: '#2EE6F0', line: L('ทอย 2 ลูก ได้ [6] กับ [6] ออกคู่ เลยปรับเป็น [7]!', 'Two dice: a [6] and a [6]. A pair, so it becomes a [7]!') },
-        { who: 'GM', color: '#FFD400', line: L('คุณได้ยินชัดว่าในกระเป๋าคือของที่ขโมยมาจากห้องวิจัย และชายคนหนึ่งค่อยๆ ยกปืนเก็บเสียงขึ้นมา…', 'You clearly hear the case holds something stolen from a lab, and one man slowly raises a silenced pistol…') }
+        { who: 'CM', color: '#FFD400', line: L('คุณได้ยินชัดว่าในกระเป๋าคือของที่ขโมยมาจากห้องวิจัย และชายคนหนึ่งค่อยๆ ยกปืนเก็บเสียงขึ้นมา…', 'You clearly hear the case holds something stolen from a lab, and one man slowly raises a silenced pistol…') }
       ],
       needs: [
         { name: L('ลูกเต๋า D8 และ D4', 'D8 and D4 dice'), desc: L('D8 คือเต๋าหลัก ส่วน D4 ใช้กับ Cosmic Dice และ Exhaustion', 'D8s are the main dice; D4s are for Cosmic Dice and Exhaustion.') },
         { name: 'Character Sheet', desc: L('แผ่นบันทึกตัวละคร พร้อมดินสอและยางลบ', 'A character sheet, with pencil and eraser.') },
-        { name: 'Core Rulebook', desc: L('ให้ GM ใช้ดูกฎและเตรียมภารกิจ', 'For the GM to check rules and prepare missions.') },
-        { name: L('เพื่อนร่วมโต๊ะ', 'Friends'), desc: L('GM หนึ่งคน กับผู้เล่นอีกหลายคน', 'One GM and a few players.') }
+        { name: 'Core Rulebook', desc: L('ให้ CM ใช้ดูกฎและเตรียมภารกิจ', 'For the CM to check rules and prepare missions.') },
+        { name: L('เพื่อนร่วมโต๊ะ', 'Friends'), desc: L('CM หนึ่งคน กับผู้เล่นอีกหลายคน', 'One CM and a few players.') }
       ],
       factors: stag([
         { name: 'Shifter', accent: '#2EE6F0', desc: L('มนุษย์ที่มีพลังคอสมิค ใช้พลังเหนือมนุษย์ทั่วไปได้ แต่ต้องคอยหลบซ่อนตัวจากกลุ่มนอกกฎหมายและหน่วย C.P.D.', 'Humans with cosmic power, able to do what ordinary people cannot, but always hiding from outlaw gangs and the C.P.D.') },
@@ -901,6 +901,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="assets/session-nav.js?v=fb455465"></script>
+<script src="assets/session-nav.js?v=3357c418"></script>
 </body>
 </html>

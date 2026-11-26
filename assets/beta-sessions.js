@@ -1,4 +1,4 @@
-/* My Sessions on Supabase: the GM's sessions, seats, invite codes and start / pause / end. */
+/* My Sessions on Supabase: the CM's sessions, seats, invite codes and start / pause / end. */
 (function () {
   'use strict';
   var sb = SP.sb;

@@ -99,7 +99,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
-              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
@@ -162,7 +162,7 @@ html{scroll-behavior:smooth}
           </div>
         </section>
 
-        <!-- Books: a code printed in any book unlocks the GM role -->
+        <!-- Books: a code printed in any book unlocks the CM role -->
         <section id="books" aria-labelledby="books-h" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; display: flex; flex-direction: column; gap: 16px">
           <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px">
             <h2 id="books-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{bk.title}}</h2>
@@ -318,7 +318,7 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
-<script src="../assets/sp.js?v=911a5e7b"></script>
+<script src="../assets/sp.js?v=a60a9d0f"></script>
 <script>
 class Component extends DCLogic {
   constructor(props) {
@@ -332,8 +332,8 @@ class Component extends DCLogic {
     const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
     const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
     const roleDefs = [
-      { id: 'player', name: L('ผู้เล่น', 'Player'), accent: '#2EE6F0', desc: L('สร้างตัวละคร เข้าร่วม session และเล่นภารกิจกับ GM', 'Create characters, join sessions and play missions.') },
-      { id: 'gm', name: 'GM', accent: '#FFD400', desc: L('เปิด session เล่าเรื่อง และดูใบตัวละครของผู้เล่นใน GM Monitor', 'Run sessions, tell the story and see players\' sheets in the GM Monitor.') }
+      { id: 'player', name: L('ผู้เล่น', 'Player'), accent: '#2EE6F0', desc: L('สร้างตัวละคร เข้าร่วม session และเล่นภารกิจกับ CM', 'Create characters, join sessions and play missions.') },
+      { id: 'gm', name: 'CM', accent: '#FFD400', desc: L('เปิด session เล่าเรื่อง และดูใบตัวละครของผู้เล่นใน CM Monitor', 'Run sessions, tell the story and see players\' sheets in the CM Monitor.') }
     ];
     const cur = roleDefs.find((r) => r.id === this.state.role) || roleDefs[0];
     const nm = (this.state.name || '').trim();
@@ -371,13 +371,13 @@ class Component extends DCLogic {
       charWarn: !!this.state.charWarn,
       charWarnExpanded: this.state.charWarn ? 'true' : 'false',
       askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
-      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "CM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a CM right now; switch to Player first (one role at a time).'),
       roleWarn: !!this.state.roleWarn,
       roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
       askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
       switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm', role: 'gm', switched: true }),
       switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player', role: 'player', switched: true }),
-      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท CM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น CM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the CM role. Your account is a Player right now; switch to CM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
       setTh: () => this.setState({ lang: 'th' }),
@@ -433,8 +433,8 @@ class Component extends DCLogic {
         pwSave: L('บันทึกรหัสผ่าน', 'Save password'),
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
-        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
-        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchRole: L('เปลี่ยนเป็น CM', 'Switch to CM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น CM แล้ว', '✓ You are now a CM'),
         menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
         menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
@@ -461,7 +461,7 @@ class Component extends DCLogic {
         logout: L('ออกจากระบบ', 'Log out'),
         del: L('ลบบัญชี', 'Delete account'),
         delTitle: L('ลบบัญชีนี้ถาวร?', 'Delete this account for good?'),
-        delBody: L('บัญชี ตัวละครทั้งหมด และข้อมูล session GM ของคุณจะถูกลบ และกู้คืนไม่ได้', 'Your account, all your characters and your GM session data will be deleted. This can\'t be undone.'),
+        delBody: L('บัญชี ตัวละครทั้งหมด และข้อมูล session CM ของคุณจะถูกลบ และกู้คืนไม่ได้', 'Your account, all your characters and your CM session data will be deleted. This can\'t be undone.'),
         cancel: L('ยกเลิก', 'Cancel'),
         delConfirm: L('ลบบัญชีถาวร', 'Delete permanently'),
         protoNote: L('PROTOTYPE // ข้อมูลในหน้านี้เป็นตัวอย่าง ยังไม่เชื่อมระบบสมาชิกจริง', 'PROTOTYPE // Sample data only. Not connected to real accounts yet.')
@@ -470,6 +470,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-account.js?v=49660d6d"></script>
+<script src="../assets/beta-account.js?v=d013fec9"></script>
 </body>
 </html>

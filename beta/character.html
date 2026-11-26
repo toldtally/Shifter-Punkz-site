@@ -71,7 +71,7 @@ textarea.fld{resize:vertical;line-height:1.45}
 .eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}
 .eq.off i{animation:none;height:3px;opacity:.5}
 @keyframes eqB{0%,100%{height:4px}50%{height:16px}}
-/* scene window: CRT boot when the GM puts a picture up, CRT power-off when it comes down */
+/* scene window: CRT boot when the CM puts a picture up, CRT power-off when it comes down */
 .scrt{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:16px 18px;pointer-events:none;background:#050508;background-image:repeating-linear-gradient(0deg,rgba(255,46,136,.08) 0 1px,transparent 1px 3px)}
 .sbl{margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;color:#FF2E88;white-space:nowrap;overflow:hidden;clip-path:inset(0 100% 0 0)}
 .sbl-ok{color:#2EE6F0}
@@ -173,7 +173,7 @@ html{scroll-behavior:smooth}
               </sc-if>
             </sc-if>
             <sc-if value="{{menuCanAskGm}}" hint-placeholder-val="{{ true }}">
-              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">GM</span></button>
+              <button type="button" role="menuitem" onClick="{{askSessions}}" aria-expanded="{{roleWarnExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; width: 100%; border: 0; border-bottom: 1px solid #2A2740; background: transparent; cursor: pointer; text-align: left; color: #FFD400"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M5 14.5h6M8 12v2.5" stroke="currentColor" stroke-width="1.5"></path></svg>{{t.menuSessions}}<span style="margin-left: auto; padding: 1px 6px; border: 1px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em">CM</span></button>
               <sc-if value="{{roleWarn}}" hint-placeholder-val="{{ false }}">
                 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px 16px; background: #1F1A06; border-bottom: 1px solid #2A2740">
                   <p style="margin: 0; font-size: 13px; line-height: 1.55; color: #EDE3B8">{{roleWarnText}}</p>
@@ -282,7 +282,7 @@ html{scroll-behavior:smooth}
           <sc-if value="{{tb.notLeaving}}" hint-placeholder-val="{{ true }}">
             <button type="button" onClick="{{tb.askLeave}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #4A1630; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{tb.leaveLabel}}</button>
           </sc-if>
-          <!-- End turn: only once the GM has started the session -->
+          <!-- End turn: only once the CM has started the session -->
           <sc-if value="{{tb.turnShow}}" hint-placeholder-val="{{ true }}">
             <button type="button" onClick="{{endTurn}}" disabled="{{turnOff}}" title="{{t.endTurnTip}}" style="min-height: 40px; padding: 0 16px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px">{{t.endTurn}}</button>
           </sc-if>
@@ -307,7 +307,7 @@ html{scroll-behavior:smooth}
       </sc-if>
     </section>
 
-    <!-- Scene windows: up to 2 pictures the GM is showing; players drag a header to move it and its corner to resize -->
+    <!-- Scene windows: up to 2 pictures the CM is showing; players drag a header to move it and its corner to resize -->
     <sc-for list="{{sceneWins}}" as="sw" hint-placeholder-count="1">
     <sc-if value="{{sw.on}}" hint-placeholder-val="{{ true }}">
       <div id="scene-win-{{sw.i}}" data-scene-slot="{{sw.i}}" class="{{sw.anim}}" role="dialog" aria-label="{{sw.label}}" style="position: fixed; z-index: {{sw.z}}; left: {{sw.x}}px; top: {{sw.y}}px; width: {{sw.w}}px; max-width: calc(100vw - 16px); display: flex; flex-direction: column; background: #0B0A12; border: 1px solid #FF2E88; box-shadow: 0 18px 48px rgba(0,0,0,0.6)">
@@ -321,7 +321,7 @@ html{scroll-behavior:smooth}
         <div style="position: relative; min-height: 150px; background: #000000">
           <img class="scimg" src="{{sw.url}}" alt="{{sw.title}}" draggable="false" style="display: block; width: 100%; height: auto; max-height: 78vh; object-fit: contain">
           <div class="scrt" aria-hidden="true">
-            <p class="sbl" style="--d: 0.2s">&gt; SCENE.LINK // GM FEED</p>
+            <p class="sbl" style="--d: 0.2s">&gt; SCENE.LINK // CM FEED</p>
             <p class="sbl" style="--d: 0.3s">&gt; HANDSHAKE .......... OK</p>
             <p class="sbl" style="--d: 0.4s">&gt; DECODING FRAME .... OK</p>
             <p class="sbl sbl-ok" style="--d: 0.5s">&gt; RENDER ▮ ON SCREEN</p>
@@ -419,7 +419,7 @@ html{scroll-behavior:smooth}
       </div>
     </sc-if>
 
-    <!-- Encounter: NPCs the GM brought in; players see only picture, name and abnormal statuses -->
+    <!-- Encounter: NPCs the CM brought in; players see only picture, name and abnormal statuses -->
     <sc-if value="{{encOn}}" hint-placeholder-val="{{ false }}">
       <section aria-labelledby="enc-h" class="enc-in" style="margin-bottom: 16px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
         <div style="padding: 8px 14px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; align-items: center; gap: 10px">
@@ -820,10 +820,10 @@ html{scroll-behavior:smooth}
 </template>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=36171e0f"></script>
-<script src="../assets/sp.js?v=911a5e7b"></script>
-<script src="../assets/beta-common.js?v=f83fe316"></script>
-<script src="../assets/bgm.js?v=9ad01035"></script>
-<script src="../assets/dice.js?v=02914620"></script>
+<script src="../assets/sp.js?v=a60a9d0f"></script>
+<script src="../assets/beta-common.js?v=f5a747cd"></script>
+<script src="../assets/bgm.js?v=a178f801"></script>
+<script src="../assets/dice.js?v=9ecd8612"></script>
 <script>
 function initialSheet() {
   return {
@@ -837,7 +837,7 @@ function initialSheet() {
     se: 0, ex: 0, adv: '5', skills: [], weapons: [], gears: [], cosmic: []
   };
 }
-/* demo scene pictures for the prototype (the live site uses the GM's uploads or links) */
+/* demo scene pictures for the prototype (the live site uses the CM's uploads or links) */
 function sceneArt(sky, glow, label) {
   const b = [[0,52,14,38],[12,40,10,50],[24,58,16,32],[38,30,9,60],[49,48,13,42],[64,36,11,54],[77,56,15,34],[94,26,8,64],[104,44,14,46],[120,54,12,36],[134,34,10,56],[146,50,14,40]];
   const blds = b.map((r) => "<rect x='" + r[0] + "' y='" + r[1] + "' width='" + r[2] + "' height='" + r[3] + "' fill='#0B0A12'/>").join('');
@@ -861,7 +861,7 @@ const COSMIC_TAGS = {
 };
 /* the rulebook text for each Cosmic Ability, filled into Effect / Passive when the player picks it (added a few at a time) */
 const COSMIC_INFO = {
-  'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในระยะสายตา', passive: 'มักมีของ 1 อย่างในฉากติดตัวมาด้วยโดยไม่ตั้งใจชิ้นละฉาก โดยของชิ้นนั้นจะขึ้นอยู่กับ GM (slot 0)' },
+  'Space/Replace': { fx: 'สลับตำแหน่งของวัตถุ 2 อย่างในระยะสายตา', passive: 'มักมีของ 1 อย่างในฉากติดตัวมาด้วยโดยไม่ตั้งใจชิ้นละฉาก โดยของชิ้นนั้นจะขึ้นอยู่กับ CM (slot 0)' },
   'Energy/Voltage': { fx: 'ควบคุมพลังงานไฟฟ้าจากแหล่งที่มีกระแสไฟฟ้า', passive: 'มีไฟฟ้าสถิตบางๆออกมาจากตัว เหมือนผิวแห้งตลอดเวลา' },
   'Energy/Magnet': { fx: 'คุมแรงแม่เหล็กกับวัตถุที่มีพลังงานแม่เหล็กในระยะสายตา', passive: '' },
   'Energy/Luminary': { fx: 'ย้ายหรือควบคุมแหล่งกำเนิดแสง 1 อย่างในระยะสายตา', passive: '' },
@@ -1104,7 +1104,7 @@ class Component extends DCLogic {
     if (over) out.hpCur = String(Math.max(0, (parseInt(s.hpCur, 10) || 0) - over));
     return out;
   }
-  /* live site: points a roll spends or earns are saved straight away so the GM sees them */
+  /* live site: points a roll spends or earns are saved straight away so the CM sees them */
   rollSaved() {}
   /* live site: the server rolls the faces (null here: the canvas rolls in the browser) */
   diceRoller() { return null; }
@@ -1151,7 +1151,7 @@ class Component extends DCLogic {
       }
     }));
   }
-  /* GM's BGM state arrives here (BroadcastChannel on the canvas, Supabase realtime on the live site) */
+  /* CM's BGM state arrives here (BroadcastChannel on the canvas, Supabase realtime on the live site) */
   onBgm(msg) {
     this.setState({ bgmRemote: msg });
     if (this.state.bgmOn && this._bgm && this.state.tbl.joined) this._bgm.apply(msg.sync ? msg : {});
@@ -1163,9 +1163,9 @@ class Component extends DCLogic {
     try { this.state.scPos = JSON.parse(localStorage.getItem('sp-scene-pos2') || 'null') || [JSON.parse(localStorage.getItem('sp-scene-pos') || 'null'), null, null, null]; } catch (e) { this.state.scPos = [null, null, null, null]; }
     this.sceneDragInit();
   }
-  /* the picture the GM is showing (canvas: BroadcastChannel; live site: sessions.scene of the seated session) */
+  /* the picture the CM is showing (canvas: BroadcastChannel; live site: sessions.scene of the seated session) */
   sceneNow() { return this.state.scene || null; }
-  /* NPCs in the GM's encounter (canvas: BroadcastChannel; live site: sessions.encounter of the seated session) */
+  /* NPCs in the CM's encounter (canvas: BroadcastChannel; live site: sessions.encounter of the seated session) */
   encounterNow() { const v = this.state.encounter; return (Array.isArray(v) ? v : []).filter((x) => x && x.id).slice(0, 8); }
   /* sessions.scene holds one picture (older saves) or a list of up to 4 */
   sceneList() { const v = this.sceneNow(); return (Array.isArray(v) ? v : v ? [v] : []).filter((x) => x && x.url).slice(0, 4); }
@@ -1402,7 +1402,7 @@ class Component extends DCLogic {
         if (e && e.preventDefault) e.preventDefault();
         const c = String(tbl.code || '').trim().toUpperCase();
         if (!/^SP-[A-HJ-NP-Z2-9]{4}$/.test(c)) return setTbl({ err: L('รหัสต้องเป็นรูปแบบ SP-XXXX (ตัวอักษรหรือตัวเลข 4 ตัว)', 'Codes look like SP-XXXX (4 letters or digits)') });
-        if (!TABLES[c]) return setTbl({ err: L('ไม่พบ session นี้ ลองขอรหัสใหม่จาก GM', 'No session with that code. Ask your GM for a fresh one.') });
+        if (!TABLES[c]) return setTbl({ err: L('ไม่พบ session นี้ ลองขอรหัสใหม่จาก CM', 'No session with that code. Ask your CM for a fresh one.') });
         if (TABLES[c].st === 'ended') return setTbl({ err: L('Session นี้จบไปแล้ว รหัสใช้ไม่ได้อีก', 'That session has ended; its code is closed.') });
         if (tbl.other) return setTbl({ pending: c, err: '' });
         setTbl({ joined: c, err: '', code: '' });
@@ -1414,19 +1414,19 @@ class Component extends DCLogic {
       doMove: () => setTbl({ joined: tbl.pending, pending: '', other: null, code: '' }),
       turnShow: !!(joinedT && joinedT.st === 'live') && !this.isRoleplay(),
       stColor: joinedT && joinedT.st === 'live' ? '#4ADE80' : '#FFD400',
-      stLabel: joinedT && joinedT.st === 'live' ? 'LIVE' : L('รอ GM เริ่ม SESSION', 'WAITING FOR GM'),
+      stLabel: joinedT && joinedT.st === 'live' ? 'LIVE' : L('รอ CM เริ่ม SESSION', 'WAITING FOR CM'),
       joinedCode: tbl.joined,
       tableName: tbl.joined ? L('Session: ', 'SESSION: ') + tName(tbl.joined) : '',
       hasLv: !!(tbl.joined && TABLES[tbl.joined] && TABLES[tbl.joined].lv), lv: tbl.joined && TABLES[tbl.joined] ? TABLES[tbl.joined].lv : '',
       askLeave: () => setTbl({ leaving: true }),
       cancelLeave: () => setTbl({ leaving: false }),
       doLeave: () => { setTbl({ joined: '', leaving: false }); if (this._bgm) this._bgm.stopAll(); this.setState({ bgmOn: false }); },
-      outText: L('ยังไม่ได้เข้าร่วม session กรอกรหัสเชิญจาก GM เพื่อให้ GM เห็นใบตัวละครนี้แบบเรียลไทม์', 'Not in a session yet. Enter your GM\'s invite code so they can follow this sheet live.'),
+      outText: L('ยังไม่ได้เข้าร่วม session กรอกรหัสเชิญจาก CM เพื่อให้ CM เห็นใบตัวละครนี้แบบเรียลไทม์', 'Not in a session yet. Enter your CM\'s invite code so they can follow this sheet live.'),
       codeLabel: L('รหัสเชิญ', 'Invite code'),
       joinLabel: L('เข้าร่วม session', 'Join session'),
-      liveText: joinedT && joinedT.st === 'live' ? L('ทุกครั้งที่กดบันทึก GM จะเห็นการเปลี่ยนแปลงทันที', 'Every save reaches your GM instantly.') : L('เข้า session แล้ว GM จะเห็นตัวละครนี้เมื่อเริ่ม session', 'You\'re seated. Your GM sees this sheet once the session starts.'),
+      liveText: joinedT && joinedT.st === 'live' ? L('ทุกครั้งที่กดบันทึก CM จะเห็นการเปลี่ยนแปลงทันที', 'Every save reaches your CM instantly.') : L('เข้า session แล้ว CM จะเห็นตัวละครนี้เมื่อเริ่ม session', 'You\'re seated. Your CM sees this sheet once the session starts.'),
       leaveLabel: L('ออกจาก session', 'Leave session'),
-      leaveBody: L('ออกจาก session นี้? GM จะไม่เห็นการอัปเดตของตัวละครนี้อีก (ใบตัวละครยังอยู่ครบ)', 'Leave this session? Your GM stops seeing updates from this character. The sheet itself stays.'),
+      leaveBody: L('ออกจาก session นี้? CM จะไม่เห็นการอัปเดตของตัวละครนี้อีก (ใบตัวละครยังอยู่ครบ)', 'Leave this session? Your CM stops seeing updates from this character. The sheet itself stays.'),
       cancel: L('ยกเลิก', 'Cancel'),
       confirmLeave: L('ยืนยันออก', 'Leave')
     };
@@ -1511,12 +1511,12 @@ class Component extends DCLogic {
         const isMin = !!(cur && scMin[i] === cur.at);
         const geo = this.sceneGeom(i);
         const resizeBy = (d) => this.sceneSetPos(i, Object.assign({}, geo, { w: geo.w + d }));
-        const title = sc ? (sc.title || L('ภาพจาก GM', 'From your GM')) : '';
+        const title = sc ? (sc.title || L('ภาพจาก CM', 'From your CM')) : '';
         return {
           i: i, on: !!sc && !isMin, min: isMin,
           anim: !cur || scTuck[i] ? 'scw-off' : this._scFlip[i] ? 'scw-a' : 'scw-b',
           url: sc ? sc.url : '', title: title,
-          label: L('ภาพจาก GM: ', 'Picture from your GM: ') + title,
+          label: L('ภาพจาก CM: ', 'Picture from your CM: ') + title,
           x: geo.x, y: geo.y, w: geo.w, z: this.state.scTop === i ? 62 : 60, chipY: 128 + i * 52,
           dragTip: L('ลากเพื่อย้าย', 'Drag to move'), resizeTip: L('ลากเพื่อปรับขนาด', 'Drag to resize'),
           smaller: () => resizeBy(-80), bigger: () => resizeBy(80),
@@ -1526,7 +1526,7 @@ class Component extends DCLogic {
             this.setState({ scTuck: Object.assign({}, this.state.scTuck, { [i]: true }) });
             setTimeout(() => this.setState({ scTuck: Object.assign({}, this.state.scTuck, { [i]: false }), scMin: Object.assign({}, this.state.scMin, { [i]: cur.at }) }), 380);
           },
-          minLabel: L('พับเก็บ (ภาพใหม่จาก GM จะเด้งขึ้นมาเอง)', 'Tuck away (a new picture from the GM pops back up)'),
+          minLabel: L('พับเก็บ (ภาพใหม่จาก CM จะเด้งขึ้นมาเอง)', 'Tuck away (a new picture from the CM pops back up)'),
           restore: () => this.setState({ scMin: Object.assign({}, this.state.scMin, { [i]: null }), scTop: i })
         };
       })
@@ -1555,13 +1555,13 @@ class Component extends DCLogic {
       charWarn: !!this.state.charWarn,
       charWarnExpanded: this.state.charWarn ? 'true' : 'false',
       askChars: () => this.setState({ charWarn: !this.state.charWarn, roleWarn: false }),
-      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).'),
+      charWarnText: L('ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "CM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Characters is for the Player role. Your account is a CM right now; switch to Player first (one role at a time).'),
       roleWarn: !!this.state.roleWarn,
       roleWarnExpanded: this.state.roleWarn ? 'true' : 'false',
       askSessions: () => this.setState({ roleWarn: !this.state.roleWarn, charWarn: false }),
       switchToGm: () => this.setState({ menuRole: 'gm', roleWarn: false, charWarn: false, menuSwitched: 'gm' }),
       switchToPlayer: () => this.setState({ menuRole: 'player', roleWarn: false, charWarn: false, menuSwitched: 'player' }),
-      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).'),
+      roleWarnText: L('Session ของฉัน ใช้ได้เฉพาะบทบาท CM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น CM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)', 'My Sessions is for the CM role. Your account is a Player right now; switch to CM first (one role at a time).'),
       userMenuKey: (e) => { if (e && e.key === 'Escape') this.setState({ userMenu: false }); },
       navLogout: () => this.setState({ userMenu: false }),
       setTh: () => this.setState({ lang: 'th' }),
@@ -1724,7 +1724,7 @@ class Component extends DCLogic {
       remain: String(pool - used),
       poolColor: pool - used < 0 ? '#FF3D6E' : '#2EE6F0',
       baRepNote: L(' · เกินแต้มฟรีใช้ 5 REP/แต้ม (สูงสุด 3) · ซื้อแล้ว ', ' · past the free points 5 REP a point (max 3) · bought ') + ['force', 'tactical', 'trick', 'sense'].reduce((a, k) => a + (num(baRep[k]) || 0), 0) + L(' แต้ม', ''),
-      // Surge Energy boosts (cleared when the GM moves the turn on)
+      // Surge Energy boosts (cleared when the CM moves the turn on)
       pwrBoost: boost.kind === 'pwr' ? '+' + boost.n + ' SE' : '',
       sePwrShow: s.factor === 'shifter',
       sePwrOff: !(s.se > 0) || (boost.kind && boost.kind !== 'pwr') || (num(s.spPwr) + (boost.kind === 'pwr' ? boost.n : 0)) >= 2,
@@ -1905,11 +1905,11 @@ class Component extends DCLogic {
         seSkillPick: L('เลือกสกิลที่จะเพิ่มเลเวล', 'Skill to level up'),
         seSkillBtn: L('สกิล +1 LV', 'Skill +1 LV'),
         boostClear: L('ล้าง', 'Clear'),
-        seNote: L('เลือกเพิ่มได้อย่างเดียวต่อเทิร์น: เต๋า (ตอนทอย) · PWR+ (รวมไม่เกิน 2) · เลเวลสกิล — แต้ม SE ที่ใช้กลายเป็น EX และบัฟหายเมื่อ GM เลื่อนเทิร์น', 'One boost per turn: dice (when rolling) · PWR+ (max 2 total) · skill level — SE spent becomes EX; the boost ends when the GM moves the turn on'),
+        seNote: L('เลือกเพิ่มได้อย่างเดียวต่อเทิร์น: เต๋า (ตอนทอย) · PWR+ (รวมไม่เกิน 2) · เลเวลสกิล — แต้ม SE ที่ใช้กลายเป็น EX และบัฟหายเมื่อ CM เลื่อนเทิร์น', 'One boost per turn: dice (when rolling) · PWR+ (max 2 total) · skill level — SE spent becomes EX; the boost ends when the CM moves the turn on'),
         menuChars: L('ตัวละครของฉัน', 'My Characters'),
         menuSessions: L('Session ของฉัน', 'My Sessions'),
-        menuSwitchRole: L('เปลี่ยนเป็น GM', 'Switch to GM'),
-        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น GM แล้ว', '✓ You are now a GM'),
+        menuSwitchRole: L('เปลี่ยนเป็น CM', 'Switch to CM'),
+        menuSwitched: L('✓ เปลี่ยนบทบาทเป็น CM แล้ว', '✓ You are now a CM'),
         menuSwitchPlayer: L('เปลี่ยนเป็นผู้เล่น', 'Switch to Player'),
         menuSwitchedPlayer: L('✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว', '✓ You are now a Player'),
         menuSettings: L('ตั้งค่าบัญชี', 'Settings'),
@@ -1965,6 +1965,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-character.js?v=795661f6"></script>
+<script src="../assets/beta-character.js?v=3a2ed19b"></script>
 </body>
 </html>

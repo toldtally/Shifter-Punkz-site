@@ -1,4 +1,4 @@
-/* GM Monitor on Supabase: live party from players' sheets, turn order, LIVE FEED, presence and the BGM bot. */
+/* CM Monitor on Supabase: live party from players' sheets, turn order, LIVE FEED, presence and the BGM bot. */
 (function () {
   'use strict';
   var sb = SP.sb;
@@ -38,7 +38,7 @@
       var me = await SP.requireUser('gm.html');
       if (!me) return;
       if (!me.profile.gm_allowed) { location.replace('characters.html'); return; }
-      // any GM-unlocked account runs its tables here, whichever role is selected
+      // any CM-unlocked account runs its tables here, whichever role is selected
       this.setState({ user: me.user, profile: me.profile, role: 'gm' });
       this.loadNpcs();
       await this.loadSessions();
@@ -96,7 +96,7 @@
       this.subscribe(sid);
     }
 
-    /* Session notes: the GM's private log for this session, one entry per play. */
+    /* Session notes: the CM's private log for this session, one entry per play. */
     async loadNotes() {
       var sid = this.state.sid;
       var r = await sb.from('session_notes').select('*').eq('session_id', sid).order('play_no', { ascending: false });
@@ -123,7 +123,7 @@
       if (!ok) { clearTimeout(this._noteT); this._noteT = setTimeout(() => this.flushNotes(), 5000); }
     }
 
-    /* Scene screen: the GM's picture library (session_images) and what's on players' screens (sessions.scene). */
+    /* Scene screen: the CM's picture library (session_images) and what's on players' screens (sessions.scene). */
     async setLevel(lv) {
       var sid = this.state.sid, sess = this.state.session;
       if (!sid || !sess || sess.format !== 'campaign') return;
@@ -188,7 +188,7 @@
       this.apply({ scenes: this.state.scenes.filter(function (x) { return x.id !== it.id; }), sceneAskDel: null });
     }
 
-    /* NPCs: the GM's library (NPC page) and the Encounter strip players see (sessions.encounter) */
+    /* NPCs: the CM's library (NPC page) and the Encounter strip players see (sessions.encounter) */
     async loadNpcs() {
       var r = await sb.from('npcs').select('id, name, portrait_url, data').eq('gm_id', this.state.profile.id).order('name');
       this.apply({ npcLib: (r.data || []).map(function (n) { return { id: n.id, name: n.name, role: (n.data && n.data.role) || '', pic: n.portrait_url || '', factor: (n.data && n.data.factor) || '', stat: (n.data && n.data.stat) || null }; }) });
@@ -226,7 +226,7 @@
       this.apply({ chars: chars, members: members, order: order, turn: Math.min(this.state.turn, Math.max(0, order.length - 1)) });
     }
 
-    /* the GM's own rolls (not the secret ones) go to everyone at the table */
+    /* the CM's own rolls (not the secret ones) go to everyone at the table */
     diceRoller() {
       return async (sizes, cosmic, meta, opt) => {
         var r = await sb.rpc('roll_dice', { p_session: opt && opt.secret ? null : this.state.sid || null, p_character: null, p_sizes: sizes, p_cosmic: cosmic, p_meta: meta });
@@ -317,7 +317,7 @@
       var liveNow = ss.find((s) => s.status === 'live');
       v.hasSwitch = !!pend;
       v.switchTitle = pend ? L('เริ่ม session ' + pend.name + '?', 'Start ' + pend.name + '?') : '';
-      v.switchBody = pend ? (liveNow && liveNow.id !== pend.id ? L('1 บัญชีรันได้ทีละ 1 session "' + liveNow.name + '" จะถูกพักอัตโนมัติ ผู้เล่นที่นั่นจะเห็นสถานะ "รอ GM"', 'One live session per account. "' + liveNow.name + '" will be paused.') : L('ผู้เล่นที่นั่งอยู่จะเห็นสถานะ LIVE', 'Seated players go LIVE.')) : '';
+      v.switchBody = pend ? (liveNow && liveNow.id !== pend.id ? L('1 บัญชีรันได้ทีละ 1 session "' + liveNow.name + '" จะถูกพักอัตโนมัติ ผู้เล่นที่นั่นจะเห็นสถานะ "รอ CM"', 'One live session per account. "' + liveNow.name + '" will be paused.') : L('ผู้เล่นที่นั่งอยู่จะเห็นสถานะ LIVE', 'Seated players go LIVE.')) : '';
       v.doSwitch = async () => {
         var to = this.state.pendingTable;
         var r = await sb.rpc('start_session', { p_session: to });
@@ -374,7 +374,7 @@
       v.hasEnded = !!(sess && st === 'ended');
       v.endedNote = sess ? (camp ? L('แคมเปญ ' + sess.name + ' จบแล้ว', sess.name + ' (campaign) has ended') : L('session ' + sess.name + ' จบแล้ว', sess.name + ' has ended')) : '';
       v.hasIdle = !!(sess && camp && st === 'idle' && sess.play_count > 0);
-      // session notes, saved to Supabase (GM only)
+      // session notes, saved to Supabase (CM only)
       var notes = this.state.notes || [];
       var selNote = notes.find((n) => n.id === this.state.noteSel) || notes[0] || null;
       var hm = (ms) => new Date(ms).toLocaleTimeString(th ? 'th-TH' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
@@ -443,7 +443,7 @@
         var c = e.character_id ? chars[e.character_id] : null;
         var what;
         if (e.kind === 'join') what = L('เข้าร่วม session', 'joined the session');
-        else if (e.kind === 'leave') what = e.payload && e.payload.reason === 'removed_by_gm' ? L('ถูก GM เอาออกจาก session', 'was removed by the GM') : e.payload && e.payload.reason === 'moved' ? L('ย้ายไป session อื่น', 'moved to another session') : L('ออกจาก session', 'left the session');
+        else if (e.kind === 'leave') what = e.payload && e.payload.reason === 'removed_by_gm' ? L('ถูก CM เอาออกจาก session', 'was removed by the CM') : e.payload && e.payload.reason === 'moved' ? L('ย้ายไป session อื่น', 'moved to another session') : L('ออกจาก session', 'left the session');
         else if (e.kind === 'status') what = { live: L('เริ่ม session', 'session started'), paused: L('พัก session', 'session paused'), ended: L('จบ session', 'session ended') }[(e.payload || {}).status] || e.kind;
         else if (e.kind === 'update') what = Object.keys(e.payload || {}).map((k) => {
           var x = e.payload[k];
@@ -452,8 +452,8 @@
         }).join(' · ');
         else if (e.kind === 'roll') what = window.SPDice ? window.SPDice.line(e.payload, th) : 'roll';
         else what = e.kind;
-        if (e.kind === 'roll' && !c) return { time: hhmmss(e.created_at), who: String((e.payload || {}).who || 'GM').slice(0, 40), color: '#FFD400', what: what };
-        return { time: hhmmss(e.created_at), who: c ? c.name : (e.kind === 'status' ? 'GM' : L('ผู้เล่น', 'Player')), color: c ? C[c.f] : '#FFD400', what: what };
+        if (e.kind === 'roll' && !c) return { time: hhmmss(e.created_at), who: String((e.payload || {}).who || 'CM').slice(0, 40), color: '#FFD400', what: what };
+        return { time: hhmmss(e.created_at), who: c ? c.name : (e.kind === 'status' ? 'CM' : L('ผู้เล่น', 'Player')), color: c ? C[c.f] : '#FFD400', what: what };
       });
       v.onlineCount = Object.keys(chars).filter((k) => chars[k].online).length + ' / ' + Object.keys(chars).length;
       if (this.state.ready && !sess) v.curTableLabel = L('ยังไม่มี session — สร้างที่ "Session ของฉัน"', 'No session yet: create one in My Sessions');

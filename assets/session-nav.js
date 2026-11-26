@@ -69,16 +69,16 @@
       v.spWarn = !!this.state.spWarn;
       v.spWarnExpanded = this.state.spWarn ? 'true' : 'false';
       v.spAskSessions = u && u.gmAllowed ? () => { location.href = 'beta/sessions.html'; } : () => this.setState({ spWarn: !this.state.spWarn, spCharWarn: false });
-      v.spWarnText = this.state.spErr || (th ? 'Session ของฉัน ใช้ได้เฉพาะบทบาท GM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น GM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Sessions is for the GM role. Your account is a Player right now; switch to GM first (one role at a time).');
+      v.spWarnText = this.state.spErr || (th ? 'Session ของฉัน ใช้ได้เฉพาะบทบาท CM ตอนนี้บัญชีของคุณเป็น "ผู้เล่น" เปลี่ยนเป็น CM ก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Sessions is for the CM role. Your account is a Player right now; switch to CM first (one role at a time).');
       v.spSwitchedGm = this.state.spSwitched === 'gm';
       v.spSwitchedPlayer = this.state.spSwitched === 'player';
-      v.spSwitchedLabel = th ? '✓ เปลี่ยนบทบาทเป็น GM แล้ว' : '✓ You are now a GM';
+      v.spSwitchedLabel = th ? '✓ เปลี่ยนบทบาทเป็น CM แล้ว' : '✓ You are now a CM';
       v.spSwitchedPlayerLabel = th ? '✓ เปลี่ยนบทบาทเป็นผู้เล่นแล้ว' : '✓ You are now a Player';
       v.spCharWarn = !!this.state.spCharWarn;
       v.spCharWarnExpanded = this.state.spCharWarn ? 'true' : 'false';
-      // a GM can play at another GM's table without switching roles
+      // a CM can play at another CM's table without switching roles
       v.spAskChars = () => { location.href = 'beta/characters.html'; };
-      v.spCharWarnText = this.state.spErr || (th ? 'ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "GM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Characters is for the Player role. Your account is a GM right now; switch to Player first (one role at a time).');
+      v.spCharWarnText = this.state.spErr || (th ? 'ตัวละครของฉัน ใช้ได้เฉพาะบทบาทผู้เล่น ตอนนี้บัญชีของคุณเป็น "CM" เปลี่ยนเป็นผู้เล่นก่อนเข้า (1 บัญชีเป็นได้ทีละ 1 บทบาท)' : 'My Characters is for the Player role. Your account is a CM right now; switch to Player first (one role at a time).');
       v.spSwitchPlayerLabel = th ? 'เปลี่ยนเป็นผู้เล่น' : 'Switch to Player';
       var setRole = async (role) => {
         var s = (await sb.auth.getSession()).data.session;
@@ -91,7 +91,7 @@
       v.spSwitchToPlayer = () => setRole('player');
       v.spCharsLabel = th ? 'ตัวละครของฉัน' : 'My Characters';
       v.spSessionsLabel = th ? 'Session ของฉัน' : 'My Sessions';
-      v.spSwitchLabel = th ? 'เปลี่ยนเป็น GM' : 'Switch to GM';
+      v.spSwitchLabel = th ? 'เปลี่ยนเป็น CM' : 'Switch to CM';
       v.spKey = (e) => { if (e && e.key === 'Escape') this.setState({ spMenu: false }); };
       v.spLogout = async (e) => {
         if (e && e.preventDefault) e.preventDefault();

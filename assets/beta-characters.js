@@ -4,10 +4,10 @@
   var sb = SP.sb;
   var JOIN_ERR = {
     BAD_CODE: ['รหัสต้องเป็นรูปแบบ SP-XXXX (ตัวอักษรหรือตัวเลข 4 ตัว)', 'Codes look like SP-XXXX'],
-    SESSION_NOT_FOUND: ['ไม่พบ session นี้ ลองขอรหัสใหม่จาก GM', 'No session with that code.'],
+    SESSION_NOT_FOUND: ['ไม่พบ session นี้ ลองขอรหัสใหม่จาก CM', 'No session with that code.'],
     SESSION_ENDED: ['Session นี้จบไปแล้ว รหัสใช้ไม่ได้อีก', 'That session has ended.'],
     SESSION_FULL: ['Session นี้ที่นั่งเต็มแล้ว', 'That session is full.'],
-    OWN_SESSION: ['นี่คือ session ของคุณเอง (ในฐานะ GM)', 'That is your own session (as GM).'],
+    OWN_SESSION: ['นี่คือ session ของคุณเอง (ในฐานะ CM)', 'That is your own session (as CM).'],
     NOT_YOUR_CHARACTER: ['ตัวละครนี้ไม่ใช่ของบัญชีนี้', 'That character is not yours.'],
     CHARACTER_SEATED: ['ตัวละครนี้อยู่ใน session อื่นอยู่แล้ว ใช้ตัวละครอื่น หรือออกจาก session เดิมก่อน', 'This character already sits in another session.']
   };
@@ -105,7 +105,7 @@
           tLive: mode === 'live', tLeaving: mode === 'leaving', tIdle: mode === 'idle', tForm: mode === 'form', tConflict: mode === 'conflict',
           tblBorder: mode === 'live' ? (isLive ? 'rgba(74,222,128,0.45)' : 'rgba(255,212,0,0.45)') : mode === 'conflict' ? '#FFD400' : '#2A2740',
           stColor: isLive ? '#4ADE80' : '#FFD400',
-          stLabel: isLive ? 'LIVE' : L('รอ GM เริ่ม', 'WAITING'),
+          stLabel: isLive ? 'LIVE' : L('รอ CM เริ่ม', 'WAITING'),
           joinedCode: sess ? sess.invite_code : '',
           tableName: seatName(sess),
           code: tb.input || '', hasErr: !!tb.err, err: tb.err || '', invalid: tb.err ? 'true' : 'false',
