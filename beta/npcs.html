@@ -335,13 +335,13 @@ html{scroll-behavior:smooth}
                 <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-amr" class="lbl">AMR+</label><input id="st-amr" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.amr}}" onInput="{{st.onAmr}}"></div>
                 <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-iprgn" class="lbl">RGN+</label><input id="st-iprgn" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.ipRgn}}" onInput="{{st.onIpRgn}}"></div>
               </div>
-              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
-                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-wmcur" class="lbl" style="color: #C084FC">WM</label><div style="display: flex; align-items: center; gap: 6px"><input id="st-wmcur" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="10" value="{{st.wmCur}}" onInput="{{st.onWmCur}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8C88A6">/ 10</span></div></div>
-                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-pwr" class="lbl">PWR+</label><input id="st-pwr" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.pwr}}" onInput="{{st.onPwr}}"></div>
-                <sc-if value="{{st.isShifter}}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{st.isShifter}}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
+                  <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-wmcur" class="lbl" style="color: #C084FC">WM</label><div style="display: flex; align-items: center; gap: 6px"><input id="st-wmcur" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="10" value="{{st.wmCur}}" onInput="{{st.onWmCur}}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8C88A6">/ 10</span></div></div>
+                  <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-pwr" class="lbl">PWR+</label><input id="st-pwr" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="2" value="{{st.pwr}}" onInput="{{st.onPwr}}"></div>
                   <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-wmrgn" class="lbl">RGN+</label><input id="st-wmrgn" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="1" max="2" value="{{st.wmRgn}}" onInput="{{st.onWmRgn}}"></div>
-                </sc-if>
-              </div>
+                </div>
+              </sc-if>
               <div style="display: flex; flex-direction: column; gap: 6px">
                 <span class="lbl">Basic Ability</span>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 6px">

@@ -521,6 +521,14 @@ html{scroll-behavior:smooth}
                             </div>
                           </sc-for>
                         </div>
+                        <div role="group" aria-label="Basic Ability" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+                          <sc-for list="{{en.abil}}" as="ab" hint-placeholder-count="4">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; background: #151225; border: 1px solid {{ab.c}}; border-top-width: 3px">
+                              <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.03em; text-transform: uppercase; color: {{ab.c}}; max-width: 100%; overflow: hidden; text-overflow: ellipsis">{{ab.k}}</span>
+                              <span style="font-family: 'JetBrains Mono', monospace; font-size: 24px; line-height: 1; color: #FFFFFF">{{ab.v}}</span>
+                            </div>
+                          </sc-for>
+                        </div>
                         <dl style="margin: 0; padding-top: 6px; border-top: 1px dashed #2A2740; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; font-size: 12px; line-height: 1.5">
                           <sc-for list="{{en.stLines}}" as="ln" hint-placeholder-count="4">
                             <dt style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; color: {{ln.c}}; padding-top: 1px">{{ln.k}}</dt>
@@ -554,6 +562,14 @@ html{scroll-behavior:smooth}
                           <button type="button" onClick="{{br.dec}}" disabled="{{br.decOff}}" aria-label="{{br.decLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">−</button>
                           <span style="min-width: 44px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #FFFFFF">{{br.v}}<span style="color: #8C88A6">{{br.of}}</span></span>
                           <button type="button" onClick="{{br.inc}}" disabled="{{br.incOff}}" aria-label="{{br.incLabel}}" style="width: 28px; height: 28px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer">+</button>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div role="group" aria-label="Basic Ability" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+                      <sc-for list="{{peek.abil}}" as="ab" hint-placeholder-count="4">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; background: #151225; border: 1px solid {{ab.c}}; border-top-width: 3px">
+                          <span style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.03em; text-transform: uppercase; color: {{ab.c}}; max-width: 100%; overflow: hidden; text-overflow: ellipsis">{{ab.k}}</span>
+                          <span style="font-family: 'JetBrains Mono', monospace; font-size: 24px; line-height: 1; color: #FFFFFF">{{ab.v}}</span>
                         </div>
                       </sc-for>
                     </div>
@@ -872,9 +888,8 @@ class Component extends DCLogic {
     const nz = (v) => (v == null || v === '' ? '0' : String(v));
     add(d.boss ? 'BOSS' : L('ทั่วไป', 'REGULAR'), 'REP ' + nz(d.rep) + ' · Session Lv ' + (d.lv || 1), d.boss ? '#FF3D6E' : '#2EE6F0');
     add('IP', 'AMR+' + nz(d.amr) + ' · RGN+' + nz(d.ipRgn));
-    add('WM', 'PWR+' + nz(d.pwr) + (fk === 'shifter' ? ' · RGN+' + Math.max(1, +d.wmRgn || 1) : ''), '#C084FC');
+    if (fk === 'shifter') add('WM', 'PWR+' + nz(d.pwr) + ' · RGN+' + Math.max(1, +d.wmRgn || 1), '#C084FC');
     const ba = d.ba || {}, b1 = (k) => Math.max(1, +ba[k] || 1);
-    add('ABILITY', 'Force ' + b1('force') + ' · Tactical ' + b1('tactical') + ' · Trick ' + b1('trick') + ' · Sense ' + b1('sense'));
     if ((fk === 'shifter' || fk === 'norms') && d.cos && d.cos.n) add(fk === 'norms' ? 'GADGET' : 'COSMIC', d.cos.n + ' Lv' + (d.cos.lv || 1), '#FFD400');
     const list = (a, f) => (a || []).filter((r) => r && r.n).map(f).join(' · ');
     add('SKILLS', list(d.skills, (r) => r.n + ' Lv' + (r.lv || 1)));
@@ -886,7 +901,8 @@ class Component extends DCLogic {
       return { k: k, v: String(v), of: of, c: c, aria: k + ' ' + (n.name || ''), dec: () => this.npcAdjust(n.id, key, -1, max, def), inc: () => this.npcAdjust(n.id, key, 1, max, def),
         decOff: v <= 0, incOff: v >= max, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
     };
-    return { stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF', 10, 10, ' / 10'), bar('WM', 'wmCur', '#C084FC', 10, 10, ' / 10'), bar('Slots', 'slots', '#FFD400', 99, fk === 'norms' ? 8 : 5, '')] };
+    const abil = [['Force', 'force', '#FF3D6E'], ['Tactical', 'tactical', '#2EE6F0'], ['Trick', 'trick', '#C084FC'], ['Sense', 'sense', '#FFD400']].map((a) => ({ k: a[0], v: String(b1(a[1])), c: a[2] }));
+    return { abil: abil, stLines: ln, bars: [bar('IP', 'ipCur', '#FFFFFF', 10, 10, ' / 10')].concat(fk === 'shifter' ? [bar('WM', 'wmCur', '#C084FC', 10, 10, ' / 10')] : []).concat([bar('Slots', 'slots', '#FFD400', 99, fk === 'norms' ? 8 : 5, '')]) };
   }
   encDrop(id) { this.encSet((this.state.encounter || []).filter((x) => x.id !== id)); }
   encToggle(id, st) {
@@ -1113,7 +1129,7 @@ class Component extends DCLogic {
             name: x.name || L('(ไม่มีชื่อ)', '(unnamed)'), url: x.url, hasPic: !!x.url, noPic: !x.url, initial: ini(x.name),
             remove: () => this.encDrop(x.id), removeLabel: L('เอาออกจาก Encounter: ', 'Take out of the encounter: ') + (x.name || ''),
             statusLabel: L('สถานะผิดปกติของ ', 'Abnormal statuses of ') + (x.name || ''),
-            ...(() => { const n = all.find((y) => y.id === x.id); return n ? Object.assign({ hasSt: true }, this.npcStatView(n)) : { hasSt: false, stLines: [], bars: [] }; })(),
+            ...(() => { const n = all.find((y) => y.id === x.id); return n ? Object.assign({ hasSt: true }, this.npcStatView(n)) : { hasSt: false, stLines: [], bars: [], abil: [] }; })(),
             statuses: ENC_STATUS.map((st) => {
               const onS = x.status.indexOf(st) !== -1;
               return { n: st, pressed: onS ? 'true' : 'false', toggle: () => this.encToggle(x.id, st),
@@ -1130,7 +1146,7 @@ class Component extends DCLogic {
           npcLibNoneText: all.length ? L('ไม่พบ NPC ที่ตรงกับคำค้น', 'No NPC matches that search') : L('ยังไม่มี NPC สร้างได้ที่หน้า NPC', 'No NPCs yet. Make some on the NPC page.'),
           peek: (() => {
             const n = all.find((y) => y.id === this.state.npcPeek);
-            if (!n) return { has: false, bars: [], stLines: [] };
+            if (!n) return { has: false, bars: [], stLines: [], abil: [] };
             return Object.assign({ has: true, name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), aria: L('สถานะของ ', 'Status of ') + (n.name || ''),
               url: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: ini(n.name), close: () => this.setState({ npcPeek: null }) }, this.npcStatView(n));
           })(),
