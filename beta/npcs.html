@@ -325,7 +325,7 @@ html{scroll-behavior:smooth}
               </div>
               <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end">
                 <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-lv" class="lbl">Session Lv</label><input id="st-lv" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="1" max="20" value="{{st.lv}}" onInput="{{st.onLv}}"></div>
-                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-rep" class="lbl">REP</label><input id="st-rep" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="99" value="{{st.rep}}" onInput="{{st.onRep}}"></div>
+                <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-rep" class="lbl">REP</label><input id="st-rep" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="{{st.repMax}}" value="{{st.rep}}" onInput="{{st.onRep}}"></div>
                 <div style="display: flex; flex-direction: column; gap: 4px"><label for="st-slots" class="lbl">Slots</label><input id="st-slots" class="fld" type="number" style="width: 64px; font-family: 'JetBrains Mono', monospace" min="0" max="99" value="{{st.slots}}" onInput="{{st.onSlots}}"></div>
               </div>
               <span style="margin-top: -4px; font-size: 12px; line-height: 1.6; color: {{st.hintColor}}">{{st.repHint}}</span>
@@ -1044,8 +1044,9 @@ class Component extends DCLogic {
       const clampN = (x, lo, hi) => (x === '' ? '' : String(Math.max(lo, Math.min(hi, parseInt(x, 10) || 0))));
       const put = (k, lo, hi) => (e) => this.editStat(id, { [k]: clampN(val(e), lo, hi) });
       const lv = Math.max(1, +st.lv || 1), rep = +st.rep || 0;
-      const lo = st.boss ? lv + 1 : 0, hi = st.boss ? lv + 2 : lv;
-      const repOk = rep >= lo && rep <= hi;
+      // a regular NPC may hold up to Session Lv + 5 REP; a boss has no cap
+      const hi = lv + 5;
+      const repOk = st.boss || rep <= hi;
       const over = c.total > c.budget;
       const tier = (on, col) => 'min-height: 34px; cursor: pointer; font-family: Chakra Petch, sans-serif; font-weight: 700; font-size: 13px; border: 1px solid ' + col + '; background: ' + (on ? col : 'transparent') + '; color: ' + (on ? '#0B0A12' : col);
       const names = []; NPC_SKILLS.forEach((r) => { if (names.indexOf(r[0]) === -1) names.push(r[0]); });
@@ -1062,10 +1063,11 @@ class Component extends DCLogic {
         normText: L('ทั่วไป', 'Regular'), bossText: L('บอส', 'Boss'),
         normPressed: st.boss ? 'false' : 'true', bossPressed: st.boss ? 'true' : 'false',
         normStyle: tier(!st.boss, '#2EE6F0'), bossStyle: tier(st.boss, '#FF3D6E'),
-        setNorm: () => this.editStat(id, { boss: false }), setBoss: () => this.editStat(id, { boss: true }),
-        lv: st.lv, rep: st.rep, slots: st.slots,
-        onLv: put('lv', 1, 20), onRep: put('rep', 0, 99), onSlots: put('slots', 0, 99),
-        repHint: (st.boss ? L('บอส: REP ' + lo + '–' + hi + ' (Session Lv +1 ถึง +2)', 'Boss: REP ' + lo + '–' + hi + ' (Session Lv +1 to +2)') : L('ทั่วไป: REP ไม่เกิน ' + hi + ' (≤ Session Lv)', 'Regular: REP up to ' + hi + ' (≤ Session Lv)')) +
+        setNorm: () => this.editStat(id, { boss: false, rep: String(Math.min(rep, hi)) }), setBoss: () => this.editStat(id, { boss: true }),
+        lv: st.lv, rep: st.rep, slots: st.slots, repMax: st.boss ? '999' : String(hi),
+        onLv: (e) => { const x = clampN(val(e), 1, 20); this.editStat(id, st.boss || x === '' ? { lv: x } : { lv: x, rep: String(Math.min(rep, (+x || 1) + 5)) }); },
+        onRep: put('rep', 0, st.boss ? 999 : hi), onSlots: put('slots', 0, 99),
+        repHint: (st.boss ? L('บอส: REP ไม่จำกัด', 'Boss: no REP cap') : L('ทั่วไป: REP สูงสุด ' + hi + ' (Session Lv + 5)', 'Regular: REP up to ' + hi + ' (Session Lv + 5)')) +
           (over ? L(' · ใช้แต้มเกินไป ' + (c.total - c.budget), ' · ' + (c.total - c.budget) + ' points over') : ''),
         hintColor: repOk && !over ? '#8C88A6' : '#FF3D6E',
         bond: st.bond, onBond: (e) => this.editStat(id, { bond: val(e).slice(0, 120) }),
