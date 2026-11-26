@@ -113,6 +113,12 @@
       if (a.value !== nv) a.value = nv;
     }
     morphKids(a, b);
+    // a select the user has touched ignores option "selected" attributes: set the choice directly
+    if (a.tagName === 'SELECT') {
+      var want = b.hasAttribute('value') ? b.getAttribute('value') : null;
+      if (want == null) { var so = b.querySelector('option[selected]'); if (so) want = so.getAttribute('value'); }
+      if (want != null && a.value !== want) a.value = want;
+    }
   }
   function morphKids(a, b) {
     var an = Array.prototype.slice.call(a.childNodes);
