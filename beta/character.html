@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="../assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -36,7 +36,7 @@ a{color:#2EE6F0}a:hover{color:#FF2E88}
 .panel{background:#151225;border:1px solid #2A2740;border-top:3px solid #3A3655;margin-bottom:14px}
 .pk{border-top-color:#FF2E88}.cy{border-top-color:#2EE6F0}
 .ph{background:#1D1930;border-bottom:1px solid #2A2740;padding:9px 14px;clip-path:polygon(0 0,100% 0,100% 100%,14px 100%,0 calc(100% - 14px));display:flex;align-items:center;justify-content:space-between;gap:8px}
-.ph h2{margin:0;font-family:'Chakra Petch',sans-serif;font-size:16px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:#FFFFFF}
+.ph h2{margin:0;font-family:'Orbitron','Chakra Petch',sans-serif;font-size:16px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;color:#FFFFFF}
 .pb{padding:14px}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:90px}
@@ -198,7 +198,7 @@ html{scroll-behavior:smooth}
     <header style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid #2A2740; padding-bottom: 20px; margin-bottom: 22px">
       <div>
         <p class="hero-gl" style="--d: .1s; margin: 0 0 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FF2E88">CHARACTER SHEET // NEW RECRUIT</p>
-        <h1 class="hero-gl" style="--d: .25s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-size: 40px; font-weight: 700; color: #FFFFFF; text-shadow: 0 0 20px rgba(46,230,240,.35)">{{t.title}}</h1>
+        <h1 class="hero-gl" style="--d: .25s; margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-size: 40px; font-weight: 500; color: #FFFFFF; text-shadow: 0 0 20px rgba(46,230,240,.35)">{{t.title}}</h1>
       </div>
       <div style="text-align: right; font-size: 13px; color: #A9A5C2; display: flex; flex-direction: column; gap: 3px">
         <span>{{charTag}}</span>
@@ -342,7 +342,7 @@ html{scroll-behavior:smooth}
       <div aria-hidden="true" style="position: fixed; inset: 0; z-index: 2147480000; background: rgba(40,4,14,0.82)"></div>
       <div role="alertdialog" aria-modal="true" aria-labelledby="crisis-h" class="trd-in" style="position: fixed; z-index: 2147480001; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 24px)); padding: 22px 22px 20px; background: #151225; border: 1px solid #4A1630; border-top: 3px solid #FF3D6E; box-shadow: 0 24px 64px rgba(0,0,0,0.7); display: flex; flex-direction: column; gap: 12px; text-align: center">
         <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FF3D6E">CRITICAL // {{crisisWhy}}</p>
-        <h2 id="crisis-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em; color: #FFFFFF">{{t.crisisTitle}}</h2>
+        <h2 id="crisis-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 22px; letter-spacing: 0.04em; color: #FFFFFF">{{t.crisisTitle}}</h2>
         <p style="margin: 0; font-size: 13.5px; line-height: 1.7; color: #D8D6E8">{{t.crisisBody}}</p>
         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 4px">
           <button type="button" class="btn" onClick="{{crisisForce}}" style="border-color: #FF3D6E; color: #FF3D6E">{{t.crisisForce}}</button>
@@ -356,7 +356,7 @@ html{scroll-behavior:smooth}
       <div aria-hidden="true" style="position: fixed; inset: 0; z-index: 2147480000; background: rgba(40,4,14,0.86)"></div>
       <div role="alertdialog" aria-modal="true" aria-labelledby="death-h" aria-describedby="death-b" class="trd-in" style="position: fixed; z-index: 2147480001; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 24px)); padding: 22px 22px 20px; background: #151225; border: 1px solid #4A1630; border-top: 3px solid #FF3D6E; box-shadow: 0 24px 64px rgba(0,0,0,0.7); display: flex; flex-direction: column; gap: 12px; text-align: center">
         <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FF3D6E">KIA // {{t.deathTag}}</p>
-        <h2 id="death-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.04em; color: #FFFFFF">{{t.deathTitle}}</h2>
+        <h2 id="death-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 22px; letter-spacing: 0.04em; color: #FFFFFF">{{t.deathTitle}}</h2>
         <p id="death-b" style="margin: 0; font-size: 13.5px; line-height: 1.7; color: #D8D6E8">{{t.deathBody}}</p>
         <div style="display: flex; justify-content: center; margin-top: 4px">
           <button type="button" class="btn" onClick="{{deathConfirm}}" style="background: #FF3D6E; border-color: #FF3D6E; color: #0B0A12">{{t.deathOk}}</button>
@@ -369,7 +369,7 @@ html{scroll-behavior:smooth}
       <div id="traits-dlg" role="dialog" aria-modal="true" aria-labelledby="traits-h" tabindex="-1" onKeyDown="{{traitsKey}}" class="trd-in" style="position: fixed; z-index: 91; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100vw - 24px)); max-height: min(86vh, 900px); display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; box-shadow: 0 24px 64px rgba(0,0,0,0.7); outline: none">
         <div style="padding: 12px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
           <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px">
-            <h2 id="traits-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.08em; color: #FFFFFF">TRAITS</h2>
+            <h2 id="traits-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 18px; letter-spacing: 0.08em; color: #FFFFFF">TRAITS</h2>
             <span style="font-size: 12.5px; color: #A9A5C2">{{t.traitsSub}}</span>
           </div>
           <button type="button" class="btn sm" onClick="{{rollTrait}}" style="border-color: #2EE6F0; color: #2EE6F0">{{t.traitsRoll}}</button>
@@ -399,7 +399,7 @@ html{scroll-behavior:smooth}
       <div id="skills-dlg" role="dialog" aria-modal="true" aria-labelledby="skills-h" tabindex="-1" onKeyDown="{{skillsKey}}" class="trd-in" style="position: fixed; z-index: 91; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100vw - 24px)); max-height: min(86vh, 900px); display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; box-shadow: 0 24px 64px rgba(0,0,0,0.7); outline: none">
         <div style="padding: 12px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px">
           <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px">
-            <h2 id="skills-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.08em; color: #FFFFFF">GENERAL SKILLS</h2>
+            <h2 id="skills-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 18px; letter-spacing: 0.08em; color: #FFFFFF">GENERAL SKILLS</h2>
             <span style="font-size: 12.5px; color: #A9A5C2">{{t.skillsSub}}</span>
           </div>
           <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFD400">{{skillWallet}}</span>
@@ -425,7 +425,7 @@ html{scroll-behavior:smooth}
       <section aria-labelledby="enc-h" class="enc-in" style="margin-bottom: 16px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
         <div style="padding: 8px 14px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; align-items: center; gap: 10px">
           <span class="enc-dot" aria-hidden="true"></span>
-          <h2 id="enc-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.1em; color: #FFFFFF">ENCOUNTER</h2>
+          <h2 id="enc-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.1em; color: #FFFFFF">ENCOUNTER</h2>
           <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #FF3D6E">{{encCount}}</span>
         </div>
         <ul style="margin: 0; padding: 12px 14px; list-style: none; display: flex; gap: 12px; overflow-x: auto">

@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="../assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -132,7 +132,7 @@ html{scroll-behavior:smooth}
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
       <div style="display: flex; flex-direction: column; gap: 8px">
         <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FFD400">ROLE // CM · {{countLabel}}</p>
-        <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">{{t.title}}</h1>
+        <h1 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">{{t.title}}</h1>
       </div>
       <button type="button" onClick="{{toggleCreate}}" aria-expanded="{{createExpanded}}" style="min-height: 48px; padding: 0 24px; border: 0; background: #FFD400; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.04em; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{createBtn}}</button>
     </div>
@@ -144,7 +144,7 @@ html{scroll-behavior:smooth}
 
     <sc-if value="{{createOpen}}" hint-placeholder-val="{{ false }}">
       <form onSubmit="{{create}}" aria-label="{{t.newTitle}}" style="display: flex; flex-direction: column; gap: 16px; padding: 22px; background: #151225; border: 1px solid #3A3655; border-top: 3px solid #FFD400">
-        <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; color: #FFFFFF">{{t.newTitle}}</h2>
+        <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 20px; color: #FFFFFF">{{t.newTitle}}</h2>
         <div style="display: flex; flex-wrap: wrap; gap: 16px">
           <div style="flex: 2 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
             <label for="tName" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9A5C2">{{t.fName}}</label>
@@ -201,7 +201,7 @@ html{scroll-behavior:smooth}
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
             <div style="min-width: 0; display: flex; flex-direction: column; gap: 6px">
               <span style="display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: {{c.stColor}}"><span class="{{c.dotClass}}" style="width: 8px; height: 8px; border-radius: 50%; background: {{c.stColor}}" aria-hidden="true"></span>{{c.stLabel}}</span>
-              <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; line-height: 1.2; color: #FFFFFF">{{c.name}}</h2>
+              <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 22px; line-height: 1.2; color: #FFFFFF">{{c.name}}</h2>
               <p style="margin: 0; font-size: 13px; color: #A9A5C2">{{c.meta}}</p>
             </div>
             <div style="flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px">

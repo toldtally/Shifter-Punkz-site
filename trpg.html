@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=VT323&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=VT323&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -225,7 +225,7 @@ html{scroll-behavior:smooth}
       <div class="{{rv.howto}}" style="display: flex; flex-wrap: wrap; gap: 40px">
         <div style="flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
           <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">01 // NEW TO TRPG?</p>
-          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.howTitle}}</h2>
+          <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 44px; color: #FFFFFF">{{t.howTitle}}</h2>
           <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.howP1}}</p>
           <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.howP2}}</p>
         </div>
@@ -241,7 +241,7 @@ html{scroll-behavior:smooth}
 
       <!-- Loop -->
       <div style="display: flex; flex-direction: column; gap: 16px">
-        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 26px; color: #FFFFFF">{{t.loopTitle}}</h3>
+        <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 26px; color: #FFFFFF">{{t.loopTitle}}</h3>
         <ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
           <sc-for list="{{loop}}" as="lp" hint-placeholder-count="4">
             <li class="{{lp.cls}}" style="position: relative; padding: 24px; background: #151225; border: 1px solid #2A2740; --d: {{lp.d}}">
@@ -277,7 +277,7 @@ html{scroll-behavior:smooth}
   <section id="lore" data-rv="lore" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; display: flex; flex-direction: column; gap: 32px">
     <div class="{{rv.lore}}" style="display: flex; flex-direction: column; gap: 10px">
       <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">02 // LORE ARCHIVE</p>
-      <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.loreTitle}}</h2>
+      <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 44px; color: #FFFFFF">{{t.loreTitle}}</h2>
       <p style="margin: 0; max-width: 680px; font-size: 16px; line-height: 1.7; color: #9A97B0">{{t.loreSub}}</p>
     </div>
     <div role="tablist" aria-label="Lore chapters" style="display: flex; flex-wrap: wrap; gap: 8px">
@@ -291,7 +291,7 @@ html{scroll-behavior:smooth}
       <div role="tabpanel" class="tab-in" style="display: flex; flex-wrap: wrap; gap: 40px; padding: 40px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88">
         <div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
           <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #FF2E88">CHAPTER 01 // ORIGIN</p>
-          <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 32px; color: #FFFFFF">{{t.originTitle}}</h3>
+          <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 32px; color: #FFFFFF">{{t.originTitle}}</h3>
           <sc-for list="{{origin}}" as="p" hint-placeholder-count="5">
             <p style="margin: 0; font-size: 17px; line-height: 1.85">{{p.text}}</p>
           </sc-for>
@@ -319,7 +319,7 @@ html{scroll-behavior:smooth}
         <div style="display: flex; flex-wrap: wrap; gap: 32px">
           <div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
             <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #2EE6F0">CHAPTER 02 // SHIFTER</p>
-            <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 32px; color: #FFFFFF">{{t.shifterTitle}}</h3>
+            <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 32px; color: #FFFFFF">{{t.shifterTitle}}</h3>
             <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.shifterP1}}</p>
             <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.shifterP2}}</p>
           </div>
@@ -358,7 +358,7 @@ html{scroll-behavior:smooth}
           <div style="display: flex; flex-wrap: wrap; gap: 32px">
             <div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
               <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #FFD400">CHAPTER 03 // COSMIC PROTECTION DEPARTMENT</p>
-              <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 32px; color: #FFFFFF">C.P.D.</h3>
+              <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 32px; color: #FFFFFF">C.P.D.</h3>
               <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.cpdP1}}</p>
               <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.cpdP2}}</p>
             </div>
@@ -394,7 +394,7 @@ html{scroll-behavior:smooth}
       <div role="tabpanel" class="tab-in" style="display: flex; flex-direction: column; gap: 28px; padding: 40px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88">
         <div style="display: flex; flex-direction: column; gap: 16px; max-width: 820px">
           <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #FF2E88">CHAPTER 04 // OUTLAWS</p>
-          <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 32px; color: #FFFFFF">{{t.outlawTitle}}</h3>
+          <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 32px; color: #FFFFFF">{{t.outlawTitle}}</h3>
           <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.outlawP1}}</p>
           <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.outlawP2}}</p>
         </div>
@@ -417,7 +417,7 @@ html{scroll-behavior:smooth}
       <div role="tabpanel" class="tab-in" style="display: flex; flex-wrap: wrap; gap: 40px; padding: 40px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0">
         <div style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
           <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #2EE6F0">CHAPTER 05 // NORMS &amp; PUNKZ</p>
-          <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 32px; color: #FFFFFF">{{t.normsTitle}}</h3>
+          <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 32px; color: #FFFFFF">{{t.normsTitle}}</h3>
           <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.normsP1}}</p>
           <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.normsP2}}</p>
         </div>
@@ -440,7 +440,7 @@ html{scroll-behavior:smooth}
       <div role="tabpanel" class="tab-in" style="display: flex; flex-direction: column; gap: 28px; padding: 40px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FFD400">
         <div style="display: flex; flex-direction: column; gap: 16px; max-width: 820px">
           <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #FFD400">CHAPTER 06 // COSMIC TECH</p>
-          <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 32px; color: #FFFFFF">{{t.techTitle}}</h3>
+          <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 32px; color: #FFFFFF">{{t.techTitle}}</h3>
           <p style="margin: 0; font-size: 17px; line-height: 1.85">{{t.techP1}}</p>
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
@@ -459,12 +459,12 @@ html{scroll-behavior:smooth}
   <section data-rv="rules" style="max-width: 1280px; margin: 0 auto; padding: 88px 24px; border-top: 1px solid #2A2740; display: flex; flex-direction: column; gap: 48px">
     <div class="{{rv.rules}}" style="display: flex; flex-direction: column; gap: 10px">
       <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FF2E88">03 // CORE RULES AT A GLANCE</p>
-      <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.rulesTitle}}</h2>
+      <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 44px; color: #FFFFFF">{{t.rulesTitle}}</h2>
       <p style="margin: 0; max-width: 680px; font-size: 16px; line-height: 1.7; color: #9A97B0">{{t.rulesSub}}</p>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 16px">
-      <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.step1}}</h3>
+      <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.step1}}</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px">
         <sc-for list="{{factors}}" as="fc" hint-placeholder-count="3">
           <div class="{{fc.cls}}" style="display: flex; flex-direction: column; gap: 10px; padding: 24px; background: #151225; border: 1px solid {{fc.accent}}; --d: {{fc.d}}">
@@ -476,7 +476,7 @@ html{scroll-behavior:smooth}
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 16px">
-      <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.step2}}</h3>
+      <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.step2}}</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(max(240px, calc((100% - 48px) / 4)), 1fr)); gap: 16px">
         <sc-for list="{{abilities}}" as="ab" hint-placeholder-count="4">
           <div style="padding: 22px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0">
@@ -489,7 +489,7 @@ html{scroll-behavior:smooth}
 
     <div style="display: flex; flex-wrap: wrap; gap: 32px">
       <div style="flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
-        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.step3}}</h3>
+        <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.step3}}</h3>
         <p style="margin: 0; font-size: 16px; line-height: 1.8">{{t.rollP}}</p>
         <div style="display: flex; flex-direction: column; gap: 1px; background: #2A2740; border: 1px solid #2A2740">
           <sc-for list="{{results}}" as="rs" hint-placeholder-count="7">
@@ -501,7 +501,7 @@ html{scroll-behavior:smooth}
         </div>
       </div>
       <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
-        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.step4}}</h3>
+        <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.step4}}</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px">
           <sc-for list="{{resources}}" as="rc" hint-placeholder-count="6">
             <div style="padding: 16px; background: #151225; border: 1px solid #3A3655">
@@ -516,12 +516,12 @@ html{scroll-behavior:smooth}
 
     <div style="display: flex; flex-wrap: wrap; gap: 24px">
       <div style="flex: 1 1 460px; min-width: 0; padding: 28px; background: #151225; border: 1px solid #2A2740; display: flex; flex-direction: column; gap: 12px">
-        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: #FFFFFF">{{t.growTitle}}</h3>
+        <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 22px; color: #FFFFFF">{{t.growTitle}}</h3>
         <p style="margin: 0; font-size: 15px; line-height: 1.8; color: #C3C0D6">{{t.growP}}</p>
       </div>
       <!-- Cosmic Gadgets: how ordinary humans get cosmic power -->
       <div style="flex: 1 1 460px; min-width: 0; padding: 28px; background: #151225; border: 1px solid #2A2740; display: flex; flex-direction: column; gap: 12px">
-        <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: #FFFFFF">{{t.gadgetTitle}}</h3>
+        <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 22px; color: #FFFFFF">{{t.gadgetTitle}}</h3>
         <p style="margin: 0; font-size: 15px; line-height: 1.8; color: #C3C0D6">{{t.gadgetP}}</p>
         <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
           <sc-for list="{{gadgetForms}}" as="gf" hint-placeholder-count="2">
@@ -538,7 +538,7 @@ html{scroll-behavior:smooth}
       <div class="{{rv.store}}" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
         <div style="display: flex; flex-direction: column; gap: 10px">
           <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #FFD400">04 // GET THE BOOKS</p>
-          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; color: #FFFFFF">{{t.storeTitle}}</h2>
+          <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 44px; color: #FFFFFF">{{t.storeTitle}}</h2>
         </div>
       </div>
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(max(260px, calc((100% - 60px) / 4)), 1fr)); gap: 20px">
@@ -563,7 +563,7 @@ html{scroll-behavior:smooth}
                 <p style="margin: 0; padding: 3px 8px; border: 1px solid #9A97B0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #9A97B0">COMING SOON</p>
               </sc-if>
             </div>
-            <h3 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 21px; line-height: 1.25; color: #FFFFFF">{{bk.title}}</h3>
+            <h3 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 21px; line-height: 1.25; color: #FFFFFF">{{bk.title}}</h3>
             <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #C3C0D6; flex: 1">{{bk.desc}}</p>
             <!-- One-Shot missions are sealed: free download for book owners only -->
             <sc-if value="{{bk.hooksLocked}}" hint-placeholder-val="{{ false }}">

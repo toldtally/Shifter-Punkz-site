@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="../assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -122,7 +122,7 @@ html{scroll-behavior:smooth}
   <main style="max-width: 1280px; margin: 0 auto; padding: 56px 24px 96px; display: flex; flex-direction: column; gap: 36px">
     <div style="display: flex; flex-direction: column; gap: 8px">
       <p class="hero-gl" style="--d: 0.05s; margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">USER ID // {{publicId}}</p>
-      <h1 class="hero-gl" style="--d: 0.2s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.3)">{{t.title}}</h1>
+      <h1 class="hero-gl" style="--d: 0.2s; margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.3)">{{t.title}}</h1>
     </div>
 
     <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
@@ -137,7 +137,7 @@ html{scroll-behavior:smooth}
 
         <!-- Profile -->
         <section id="profile" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88; display: flex; flex-direction: column; gap: 20px">
-          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.profile}}</h2>
+          <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.profile}}</h2>
           <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center">
             <div style="width: 88px; height: 88px; flex-shrink: 0; background: #0B0A12; border: 1px solid {{roleColor}}; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 34px; color: {{roleColor}}" aria-hidden="true"><sc-if value="{{avatarUrl}}" hint-placeholder-val="{{ false }}"><img src="{{avatarUrl}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{noAvatar}}" hint-placeholder-val="{{ true }}">{{initial}}</sc-if></div>
             <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
@@ -219,7 +219,7 @@ html{scroll-behavior:smooth}
         <!-- Role -->
         <sc-if value="{{canGm}}" hint-placeholder-val="{{ true }}"><section id="role" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{roleColor}}; display: flex; flex-direction: column; gap: 18px">
           <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px">
-            <h2 id="role-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.roleTitle}}</h2>
+            <h2 id="role-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.roleTitle}}</h2>
             <p style="margin: 0; padding: 4px 10px; border: 1px solid {{roleColor}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: {{roleColor}}">{{roleChip}}</p>
           </div>
           <div role="group" aria-labelledby="role-h" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
@@ -247,7 +247,7 @@ html{scroll-behavior:smooth}
 
         <!-- Sign-in methods -->
         <section id="signin" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0; display: flex; flex-direction: column; gap: 16px">
-          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.signin}}</h2>
+          <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.signin}}</h2>
           <div style="display: flex; flex-direction: column; gap: 1px; background: #2A2740; border: 1px solid #2A2740">
             <sc-for list="{{methods}}" as="me" hint-placeholder-count="3">
               <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 16px 18px; background: #0B0A12">
@@ -285,7 +285,7 @@ html{scroll-behavior:smooth}
 
         <!-- Notifications -->
         <section id="notify" style="padding: 28px; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FFD400; display: flex; flex-direction: column; gap: 14px">
-          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.notify}}</h2>
+          <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.notify}}</h2>
           <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; padding: 16px 18px; background: #0B0A12; border: 1px solid #2A2740">
             <span style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 2px"><b id="news-l" style="font-family: 'Chakra Petch', sans-serif; font-size: 17px; color: #FFFFFF">{{t.newsTitle}}</b><span style="font-size: 13px; line-height: 1.6; color: #A9A5C2">{{t.newsDesc}}</span></span>
             <button type="button" role="switch" aria-checked="{{newsChecked}}" aria-labelledby="news-l" onClick="{{toggleNews}}" style="{{newsTrack}}"><span style="{{newsKnob}}"></span></button>
@@ -294,7 +294,7 @@ html{scroll-behavior:smooth}
 
         <!-- Session / danger -->
         <section id="danger" style="padding: 28px; background: #151225; border: 1px solid #4A1630; border-top: 3px solid #FF3D6E; display: flex; flex-direction: column; gap: 16px">
-          <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{t.danger}}</h2>
+          <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{t.danger}}</h2>
           <div style="display: flex; flex-wrap: wrap; gap: 12px">
             <a href="auth.html" onClick="{{logout}}" style="display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; border: 1.5px solid #3A3655; color: #D8D6E8; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px">{{t.logout}}</a>
             <sc-if value="{{notConfirming}}" hint-placeholder-val="{{ true }}">

@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="../assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -96,7 +96,7 @@ html{scroll-behavior:smooth}
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2.5" y="6" width="9" height="6.5" fill="none" stroke="#FFD400" stroke-width="1.5"></rect><path d="M4.5 6V4.2a2.5 2.5 0 0 1 5 0V6" fill="none" stroke="#FFD400" stroke-width="1.5"></path></svg>
         ACCESS RESTRICTED // REGISTERED PLAYERS ONLY
       </div>
-      <h1 class="hero-gl" style="--d: 0.1s; margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(40px, 5.5vw, 68px); line-height: 1.02; color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.35)">{{t.leftTitle}}</h1>
+      <h1 class="hero-gl" style="--d: 0.1s; margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: clamp(40px, 5.5vw, 68px); line-height: 1.02; color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.35)">{{t.leftTitle}}</h1>
       <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
         <sc-for list="{{perks}}" as="pk" hint-placeholder-count="3">
           <li style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; background: #151225; border: 1px solid #2A2740; border-left: 3px solid {{pk.accent}}">
@@ -120,7 +120,7 @@ html{scroll-behavior:smooth}
           <div style="display: flex; flex-direction: column; gap: 16px">
             <div style="display: flex; flex-direction: column; gap: 6px">
               <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #4ADE80">ACCESS GRANTED // INVITE</p>
-              <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 26px; color: #FFFFFF">{{setPwTitle}}</h2>
+              <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 26px; color: #FFFFFF">{{setPwTitle}}</h2>
               <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #A9A5C2">{{setPwSub}}</p>
             </div>
             <sc-if value="{{setPwNeedsName}}" hint-placeholder-val="{{ true }}">
@@ -207,7 +207,7 @@ html{scroll-behavior:smooth}
         <sc-if value="{{isDone}}" hint-placeholder-val="{{ false }}">
           <div class="hero-gl" style="display: flex; flex-direction: column; gap: 18px; align-items: flex-start">
             <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #2EE6F0">&gt; ACCESS GRANTED</p>
-            <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 34px; line-height: 1.15; color: #FFFFFF">{{welcome}}</h2>
+            <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 34px; line-height: 1.15; color: #FFFFFF">{{welcome}}</h2>
             <div style="display: flex; flex-wrap: wrap; gap: 8px">
               <p style="margin: 0; padding: 4px 10px; border: 1px solid {{roleColor}}; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: {{roleColor}}">{{roleChip}}</p>
               <p style="margin: 0; padding: 4px 10px; border: 1px solid #3A3655; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: #A9A5C2">USER ID // {{publicId}}</p>

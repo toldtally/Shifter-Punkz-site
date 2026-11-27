@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="../assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -120,7 +120,7 @@ html{scroll-behavior:smooth}
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
       <div style="display: flex; flex-direction: column; gap: 8px">
         <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.16em; color: #2EE6F0">ROLE // PLAYER · {{countLabel}}</p>
-        <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.3)">{{t.title}}</h1>
+        <h1 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: clamp(36px, 4.5vw, 56px); color: #FFFFFF; text-shadow: 0 0 22px rgba(46,230,240,0.3)">{{t.title}}</h1>
       </div>
       <sc-if value="{{canNew}}" hint-placeholder-val="{{ true }}">
         <a href="character.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 24px; background: #FF2E88; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.06em; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">+ {{t.newChar}}</a>
@@ -147,7 +147,7 @@ html{scroll-behavior:smooth}
                 
               </div>
               <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 10px">
-                <h2 style="margin: 0; min-width: 0; overflow-wrap: anywhere; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 24px; color: #FFFFFF">{{c.name}}</h2>
+                <h2 style="margin: 0; min-width: 0; overflow-wrap: anywhere; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 24px; color: #FFFFFF">{{c.name}}</h2>
                 <span style="flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: {{c.color}}">{{c.repTag}}</span>
               </div>
               <p style="margin: 0; font-size: 13px; color: #A9A5C2">{{c.sub}}</p>

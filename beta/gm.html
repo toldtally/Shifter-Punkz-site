@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="../assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -140,7 +140,7 @@ html{scroll-behavior:smooth}
       <section style="display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding: 36px; background: #151225; border: 1px solid #FFD400; border-top: 3px solid #FFD400">
         <div style="height: 10px; align-self: stretch; background: repeating-linear-gradient(45deg, #FFD400 0 10px, #151225 10px 20px)" aria-hidden="true"></div>
         <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #FFD400">ACCESS DENIED // CM CLEARANCE REQUIRED</p>
-        <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 40px; color: #FFFFFF">{{t.lockTitle}}</h1>
+        <h1 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 40px; color: #FFFFFF">{{t.lockTitle}}</h1>
         <p style="margin: 0; font-size: 16px; line-height: 1.75; color: #A9A5C2">{{t.lockBody}}</p>
         <div style="display: flex; flex-wrap: wrap; gap: 10px">
           <a href="account.html#role" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; background: #FFD400; color: #0B0A12; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%)">{{t.switchRole}}</a>
@@ -165,7 +165,7 @@ html{scroll-behavior:smooth}
         <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
           <div style="display: flex; flex-direction: column; gap: 8px">
             <p style="margin: 0; display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #FF3D6E"><span class="live-dot" style="width: 9px; height: 9px; background: #FF3D6E; border-radius: 50%" aria-hidden="true"></span>LIVE // {{curTableLabel}}</p>
-            <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: clamp(36px, 4.5vw, 54px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">CM Monitor</h1>
+            <h1 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: clamp(36px, 4.5vw, 54px); color: #FFFFFF; text-shadow: 0 0 22px rgba(255,212,0,0.3)">CM Monitor</h1>
           </div>
           <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
             <div style="position: relative">
@@ -259,7 +259,7 @@ html{scroll-behavior:smooth}
                   <button type="button" onClick="{{setRoleplay}}" aria-pressed="{{rpPressed}}" title="{{t.rpTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{rpBg}}; color: {{rpFg}}">ROLEPLAY</button>
                   <button type="button" onClick="{{setEncounter}}" aria-pressed="{{encPressed}}" title="{{t.encModeTip}}" style="min-height: 34px; padding: 0 12px; border: 0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.06em; background: {{encBg}}; color: {{encFg}}">ENCOUNTER</button>
                 </div>
-                <h2 id="turn-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.06em; color: #FFFFFF">{{t.modeTitle}}</h2>
+                <h2 id="turn-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 18px; letter-spacing: 0.06em; color: #FFFFFF">{{t.modeTitle}}</h2>
                 <sc-if value="{{encMode}}" hint-placeholder-val="{{ true }}"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #FFD400">ROUND {{round}}</span></sc-if>
               </div>
               <sc-if value="{{encMode}}" hint-placeholder-val="{{ true }}">
@@ -309,7 +309,7 @@ html{scroll-behavior:smooth}
                 <div style="display: flex; gap: 12px; align-items: center">
                   <div style="position: relative; width: 52px; height: 52px; flex-shrink: 0; background: #0B0A12; border: 1px solid {{p.color}}; display: flex; align-items: center; justify-content: center; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 22px; color: {{p.color}}" aria-hidden="true"><sc-if value="{{p.hasPortrait}}" hint-placeholder-val="{{ false }}"><img src="{{p.portrait}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block"></sc-if><sc-if value="{{p.noPortrait}}" hint-placeholder-val="{{ true }}">{{p.initial}}</sc-if><span style="position: absolute; right: -4px; bottom: -4px; width: 12px; height: 12px; border: 2px solid #151225; background: {{p.onlineColor}}"></span></div>
                   <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
-                    <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 21px; color: #FFFFFF">{{p.name}}</h2>
+                    <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 21px; color: #FFFFFF">{{p.name}}</h2>
                     <p style="margin: 0; font-size: 12px; color: #A9A5C2">{{p.sub}}</p>
                   </div>
                   <span style="padding: 2px 8px; border: 1px solid {{p.color}}; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{p.color}}">{{p.factor}}</span>
@@ -388,7 +388,7 @@ html{scroll-behavior:smooth}
           <!-- Side: live feed (runs down to the Scene screen, as tall as the party cards) -->
           <aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
             <section style="flex: 1; min-height: 0; display: flex; flex-direction: column; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
-              <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">LIVE FEED</h2><span style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{gmRoll}}" title="{{t.gmRollTip}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .05em"><svg width="14" height="14" viewBox="0 0 100 100" aria-hidden="true" style="display: block"><polygon points="50,4 95,50 50,96 5,50" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="round"/><polygon points="50,22 78,62 22,62" fill="currentColor" fill-opacity=".35"/></svg>{{t.gmRoll}}</button><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{feedStateColor}}">{{feedState}}</span></span></div>
+              <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">LIVE FEED</h2><span style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{gmRoll}}" title="{{t.gmRollTip}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border: 1px solid #FFD400; background: transparent; color: #FFD400; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: .05em"><svg width="14" height="14" viewBox="0 0 100 100" aria-hidden="true" style="display: block"><polygon points="50,4 95,50 50,96 5,50" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="round"/><polygon points="50,22 78,62 22,62" fill="currentColor" fill-opacity=".35"/></svg>{{t.gmRoll}}</button><span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: {{feedStateColor}}">{{feedState}}</span></span></div>
               <ol role="log" aria-live="polite" style="flex: 1 1 0; min-height: 260px; margin: 0; padding: 8px 0; list-style: none; display: flex; flex-direction: column; overflow-y: auto">
                 <sc-for list="{{feed}}" as="fd" hint-placeholder-count="5">
                   <li style="display: flex; gap: 10px; padding: 8px 16px; border-bottom: 1px solid #1D1930; font-size: 13px; line-height: 1.5">
@@ -405,7 +405,7 @@ html{scroll-behavior:smooth}
         <section aria-labelledby="scene-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF2E88">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
             <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
-              <h2 id="scene-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">SCENE SCREEN</h2>
+              <h2 id="scene-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">SCENE SCREEN</h2>
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #8C88A6">{{t.sceneSub}}</span>
             </div>
             <span role="status" aria-live="polite" style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: {{sceneStatusColor}}">{{sceneStatus}}</span>
@@ -482,7 +482,7 @@ html{scroll-behavior:smooth}
         <section aria-labelledby="npc-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #FF3D6E">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
             <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
-              <h2 id="npc-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">NPC // ENCOUNTER</h2>
+              <h2 id="npc-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">NPC // ENCOUNTER</h2>
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #8C88A6">{{t.npcSub}}</span>
             </div>
             <a href="npcs.html" style="font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; color: #FFD400; text-decoration: none">{{t.npcManage}}</a>
@@ -633,7 +633,7 @@ html{scroll-behavior:smooth}
         <section aria-labelledby="notes-h" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid #C084FC">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px">
             <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px">
-              <h2 id="notes-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">SESSION NOTES</h2>
+              <h2 id="notes-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">SESSION NOTES</h2>
               <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: #8C88A6">{{t.notesSub}}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 12px">
@@ -683,7 +683,7 @@ html{scroll-behavior:smooth}
         <!-- BGM bot (full-width bottom row) -->
         <section aria-label="BGM" style="background: #151225; border: 1px solid #2A2740; border-top: 3px solid {{bgmColor}}">
           <div style="padding: 10px 16px; background: #1D1930; border-bottom: 1px solid #2A2740; display: flex; justify-content: space-between; align-items: center; gap: 10px">
-                <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">BGM BOT</h2>
+                <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.08em; color: #FFFFFF">BGM BOT</h2>
                 <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; color: {{bgmStatusColor}}">{{bgmStatus}}</span>
               </div>
           <div style="padding: 16px; display: flex; flex-wrap: wrap; align-items: stretch; gap: 16px 20px">

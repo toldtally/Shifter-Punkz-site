@@ -16,7 +16,7 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png?v=8f9a1321">
 <link rel="manifest" href="assets/icons/site.webmanifest?v=bcd47d89">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&amp;family=Orbitron:wght@500;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
 <style>
 body{margin:0;background:#0B0A12}
 a{color:#2EE6F0}a:hover{color:#FF2E88}
@@ -67,7 +67,7 @@ html{scroll-behavior:smooth}
   <main style="max-width: 1280px; margin: 0 auto; padding: 56px 24px 80px; display: flex; flex-direction: column; gap: 40px">
     <div style="display: flex; flex-direction: column; gap: 10px; max-width: 720px">
       <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FFD400">{{t.kicker}}</p>
-      <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; line-height: 1.1; color: #FFFFFF; text-wrap: balance">{{t.title}}</h1>
+      <h1 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 44px; line-height: 1.1; color: #FFFFFF; text-wrap: balance">{{t.title}}</h1>
       <p style="margin: 0; font-size: 16px; line-height: 1.7; color: #A9A5C2">{{t.lead}}</p>
     </div>
 
@@ -77,7 +77,7 @@ html{scroll-behavior:smooth}
       <section aria-labelledby="ct-form-h" style="flex: 1 1 560px; min-width: 0; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0">
         <sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
           <form onSubmit="{{submit}}" novalidate="novalidate" style="margin: 0; padding: 32px; display: flex; flex-direction: column; gap: 22px">
-            <h2 id="ct-form-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.06em; color: #FFFFFF">{{t.formTitle}}</h2>
+            <h2 id="ct-form-h" style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 20px; letter-spacing: 0.06em; color: #FFFFFF">{{t.formTitle}}</h2>
             <div class="hp" aria-hidden="true"><label for="ct-website">Website</label><input id="ct-website" type="text" name="website" tabindex="-1" autocomplete="off" value="{{f.hp}}" onInput="{{on.hp}}"></div>
 
             <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
@@ -131,7 +131,7 @@ html{scroll-behavior:smooth}
         <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
           <div role="status" aria-live="polite" style="padding: 48px 32px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start">
             <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #4ADE80">{{t.sentKicker}}</p>
-            <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 28px; color: #FFFFFF">{{t.sentTitle}}</h2>
+            <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 28px; color: #FFFFFF">{{t.sentTitle}}</h2>
             <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #A9A5C2; max-width: 520px">{{sentBody}}</p>
             <button type="button" onClick="{{again}}" style="margin-top: 8px; min-height: 44px; padding: 0 18px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.06em">{{t.again}}</button>
           </div>

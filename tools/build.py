@@ -41,7 +41,7 @@ SETPW = '''<sc-if value="{{isSetPw}}" hint-placeholder-val="{{ false }}">
           <div style="display: flex; flex-direction: column; gap: 16px">
             <div style="display: flex; flex-direction: column; gap: 6px">
               <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #4ADE80">ACCESS GRANTED // INVITE</p>
-              <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 26px; color: #FFFFFF">{{setPwTitle}}</h2>
+              <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 26px; color: #FFFFFF">{{setPwTitle}}</h2>
               <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #A9A5C2">{{setPwSub}}</p>
             </div>
             <sc-if value="{{setPwNeedsName}}" hint-placeholder-val="{{ true }}">
