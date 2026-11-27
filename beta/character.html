@@ -143,6 +143,7 @@ html{scroll-behavior:smooth}
         <a href="../trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">TRPG</a>
         <a href="characters.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navMine}}</a>
         <sc-if value="{{navCanGm}}" hint-placeholder-val="{{ true }}"><a href="sessions.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navTables}}</a></sc-if>
+        <sc-if value="{{navCanGm}}" hint-placeholder-val="{{ true }}"><a href="npcs.html" style="color: #D8D6E8; text-decoration: none; padding: 10px 0">{{t.navNpc}}</a></sc-if>
       </div>
       <div style="position: relative" onKeyDown="{{userMenuKey}}">
         <button type="button" onClick="{{toggleUserMenu}}" aria-haspopup="true" aria-expanded="{{userMenuExpanded}}" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 12px 0 4px; border: 1px solid #2EE6F0; text-decoration: none; color: #FFFFFF; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; background: transparent; cursor: pointer">
@@ -2037,6 +2038,7 @@ class Component extends DCLogic {
         navHome: L('หน้าแรก', 'HOME'),
         navMine: L('ตัวละครของฉัน', 'MY CHARACTERS'),
         navTables: L('Session ของฉัน', 'MY SESSIONS'),
+        navNpc: 'NPC',
         title: L('สร้างตัวละคร', 'Create a character'),
         save: L('บันทึกตัวละคร', 'Save character'),
         phName: L('ชื่อตัวละคร', 'Character name'),
