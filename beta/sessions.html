@@ -201,7 +201,23 @@ html{scroll-behavior:smooth}
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px">
             <div style="min-width: 0; display: flex; flex-direction: column; gap: 6px">
               <span style="display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: {{c.stColor}}"><span class="{{c.dotClass}}" style="width: 8px; height: 8px; border-radius: 50%; background: {{c.stColor}}" aria-hidden="true"></span>{{c.stLabel}}</span>
-              <h2 style="margin: 0; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 22px; line-height: 1.2; color: #FFFFFF">{{c.name}}</h2>
+              <sc-if value="{{c.notRenaming}}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; align-items: flex-start; gap: 6px">
+                  <h2 style="margin: 0; min-width: 0; overflow-wrap: anywhere; font-family: 'Orbitron', 'Chakra Petch', sans-serif; font-weight: 500; font-size: 22px; line-height: 1.2; color: #FFFFFF">{{c.name}}</h2>
+                  <sc-if value="{{c.canRename}}" hint-placeholder-val="{{ true }}">
+                    <button type="button" onClick="{{c.startRename}}" aria-label="{{c.renameLabel}}" title="{{c.renameLabel}}" style="flex-shrink: 0; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid transparent; background: transparent; color: #8C88A6; cursor: pointer"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 2.5l3 3L5 14H2v-3z"></path><path d="M9 4l3 3"></path></svg></button>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{c.renaming}}" hint-placeholder-val="{{ false }}">
+                <form onSubmit="{{c.saveName}}" style="display: flex; flex-direction: column; gap: 8px">
+                  <input class="fld" type="text" maxlength="60" value="{{c.renameVal}}" onInput="{{c.onRename}}" aria-label="{{c.renameLabel}}" aria-invalid="{{c.renameBad}}" style="font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 17px; min-height: 40px; padding: 6px 10px">
+                  <div style="display: flex; gap: 8px">
+                    <button type="submit" style="min-height: 36px; padding: 0 14px; border: 0; background: #2EE6F0; color: #0B0A12; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.renameSave}}</button>
+                    <button type="button" onClick="{{c.cancelName}}" style="min-height: 36px; padding: 0 14px; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.renameCancel}}</button>
+                  </div>
+                </form>
+              </sc-if>
               <p style="margin: 0; font-size: 13px; color: #A9A5C2">{{c.meta}}</p>
             </div>
             <div style="flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px">
@@ -301,6 +317,13 @@ class Component extends DCLogic {
     try { this._demoCh = new BroadcastChannel('sp-demo-sessions'); this._demoCh.onmessage = (e) => applySt(e.data); } catch (e) {}
   }
   componentWillUnmount() { if (this._demoCh) this._demoCh.close(); }
+  /* the CM can rename a session that hasn't ended (the live site saves it to Supabase) */
+  renameSession(x, v) {
+    const L = (a, b) => (this.state.lang === 'en' ? b : a);
+    const n = String(v || '').trim().slice(0, 60);
+    if (!n) return;
+    this.setState({ renaming: null, tables: this.state.tables.map((y) => (y.id === x.id ? Object.assign({}, y, { th: n, en: n }) : y)), toast: L('เปลี่ยนชื่อเป็น "' + n + '" แล้ว', 'Renamed to "' + n + '"') });
+  }
   /* campaigns can change Session Lv as the party grows; one-shots keep theirs */
   setLevel(x, lv) {
     const L = (a, b) => (this.state.lang === 'en' ? b : a);
@@ -429,9 +452,19 @@ class Component extends DCLogic {
           cOk = L('ยืนยันลบ', 'Delete'); cColor = '#FF3D6E'; cBg = '#1A0B14';
           confirm = () => this.setState({ tables: this.state.tables.filter((y) => y.id !== x.id), confirm: null, toast: L('ลบ "' + nm(x) + '" แล้ว', 'Deleted "' + nm(x) + '"') });
         }
+        const rn = this.state.renaming && this.state.renaming.id === x.id ? this.state.renaming : null;
         return {
           d: (0.06 + i * 0.08).toFixed(2) + 's',
           name: nm(x),
+          canRename: x.st !== 'ended',
+          renaming: !!rn, notRenaming: !rn,
+          renameLabel: L('แก้ชื่อ session', 'Rename session'),
+          renameVal: rn ? rn.v : '',
+          renameBad: rn && !rn.v.trim() ? 'true' : 'false',
+          startRename: () => this.setState({ renaming: { id: x.id, v: nm(x) }, confirm: null }),
+          onRename: (e) => this.setState({ renaming: { id: x.id, v: e.target.value } }),
+          cancelName: () => this.setState({ renaming: null }),
+          saveName: (e) => { if (e && e.preventDefault) e.preventDefault(); this.renameSession(x, rn ? rn.v : ''); },
           meta: L(x.lastTh, x.lastEn) + ' · ' + L('เล่นแล้ว ' + x.sessions + ' ครั้ง', 'played ' + x.sessions + (x.sessions === 1 ? ' time' : ' times')),
           type: x.type === 'campaign' ? L('แคมเปญ', 'CAMPAIGN') : 'ONE-SHOT',
           lv: x.lv || '-', hasLv: !!x.lv,
@@ -489,6 +522,8 @@ class Component extends DCLogic {
         fLv: 'SESSION LV',
         fLvHint: 'Lv 1–20',
         nameErr: L('ตั้งชื่อ Session ก่อนสิ!', 'Give the session a name first.'),
+        renameSave: L('บันทึก', 'SAVE'),
+        renameCancel: L('ยกเลิก', 'CANCEL'),
         newNote: L('ระบบสร้างรหัสเชิญให้อัตโนมัติ session ใหม่จะอยู่ในสถานะ "พักอยู่" จนกว่าจะกดเริ่ม session', 'An invite code is generated for you. New sessions stay paused until you start a session.'),
         doCreate: L('สร้าง session', 'Create session'),
         cancel: L('ยกเลิก', 'Cancel'),
@@ -506,6 +541,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-sessions.js?v=9e551462"></script>
+<script src="../assets/beta-sessions.js?v=acdc7ef6"></script>
 </body>
 </html>

@@ -44,6 +44,13 @@
       }) });
     }
 
+    renameSession(x, v) {
+      var n = String(v || '').trim().slice(0, 60);
+      if (!n) return;
+      this.setState({ renaming: null });
+      this.act(function () { return sb.from('sessions').update({ name: n }).eq('id', x.id); },
+        'เปลี่ยนชื่อเป็น "' + n + '" แล้ว', 'Renamed to "' + n + '"');
+    }
     setLevel(x, lv) {
       var n = x.th || x.en;
       this.act(function () { return sb.from('sessions').update({ level: lv }).eq('id', x.id); },
