@@ -26,7 +26,7 @@
   /* sessions.encounter: NPCs the CM brought in (picture, name and abnormal statuses only) */
   SP.encounterList = function (v) { return (Array.isArray(v) ? v : []).filter(function (x) { return x && x.id; }).map(function (x) { var o = { id: x.id, name: x.name || '', url: x.url || '', status: Array.isArray(x.status) ? x.status : [], at: x.at || 0 }; if (x.npc) o.npc = x.npc; return o; }).slice(0, 8); };
   /* C.P.D. Divisions add +1 to one Basic Ability */
-  SP.DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
+  SP.DIVISIONS = { 'Division 1: Aegis Containment Unit': 'force', 'Division 2: Infiltrater Investigation Unit': 'tactical', 'Division 3: Black Iris Observations Unit': 'trick', 'Division 4: Re-Genesis Research & Rehab': 'sense' };
   SP.baOf = function (sheet, factor, k) {
     var s = sheet || {}, ba = s.ba || {};
     // free points + points bought with REP (baRep) + a C.P.D. Division's +1, never past 3
