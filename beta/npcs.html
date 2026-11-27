@@ -459,6 +459,14 @@ html{scroll-behavior:smooth}
                 <button type="button" onClick="{{gm.pick}}" style="display: flex; align-items: center; min-height: 34px; padding: 4px 10px; background: #0B0A12; border: 1px solid #2A2740; cursor: pointer; text-align: left; color: #D8D6E8; font-size: 13px">{{gm.name}}</button>
               </sc-for>
             </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span class="lbl">{{t.rels}}</span>
+              <sc-if value="{{ge.noRels}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12.5px; color: #8C88A6">{{t.noRels}}</span></sc-if>
+              <sc-for list="{{ge.rels}}" as="rl" hint-placeholder-count="2">
+                <button type="button" onClick="{{rl.pick}}" style="display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 10px; background: #0B0A12; border: 1px solid #2A2740; border-left: 3px solid {{rl.color}}; cursor: pointer; text-align: left; color: #D8D6E8; font-size: 13px"><span style="color: {{rl.color}}; font-family: 'Chakra Petch', sans-serif; font-weight: 700; white-space: nowrap">{{rl.kind}}</span><span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{rl.other}}</span></button>
+              </sc-for>
+              <button type="button" onClick="{{ge.startLink}}" style="align-self: flex-start; min-height: 36px; padding: 0 12px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.linkFromHere}}</button>
+            </div>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #2A2740">
               <sc-if value="{{noAskDel}}" hint-placeholder-val="{{ true }}">
                 <button type="button" onClick="{{askDel}}" style="min-height: 38px; padding: 0 14px; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.delGang}}</button>
@@ -1100,12 +1108,14 @@ class Component extends DCLogic {
     }));
     const pos = {};
     nodes.forEach((n) => { pos[n.key] = n; });
+    // a gang's lines meet the middle of its title bar
+    s.gangs.forEach((g) => { pos['gang:' + g.id] = { x: g.x + g.w / 2, y: g.y + 15, gang: true }; });
     const links = s.links.filter((l) => pos[l.a] && pos[l.b]).map((l) => {
       const K = this.kindOf(l.kind), A = pos[l.a], B = pos[l.b], pressed = isSel('link', l.id);
       // stop arrows at the edge of the target card
       const dx = B.x - A.x, dy = B.y - A.y, len = Math.max(1, Math.hypot(dx, dy));
       const cut = Math.min(len / 2 - 4, Math.min(64 / Math.max(Math.abs(dx) / len, 0.01), 70 / Math.max(Math.abs(dy) / len, 0.01)));
-      const x2 = K.arrow ? B.x - dx / len * cut : B.x, y2 = K.arrow ? B.y - dy / len * cut : B.y;
+      const x2 = K.arrow && !B.gang ? B.x - dx / len * cut : B.x, y2 = K.arrow && !B.gang ? B.y - dy / len * cut : B.y;
       return {
         x1: A.x, y1: A.y, x2: Math.round(x2), y2: Math.round(y2), mx: Math.round((A.x + B.x) / 2), my: Math.round((A.y + B.y) / 2),
         color: K.color, dash: K.dash || 'none', w: pressed ? 4 : 2.5, op: sel && !pressed && sel.kind === 'link' ? 0.45 : 0.95, marker: K.arrow ? 'url(#mm-arrow)' : 'none',
@@ -1118,8 +1128,8 @@ class Component extends DCLogic {
       const pressed = isSel('gang', g.id) || (s.multi || []).indexOf('gang:' + g.id) !== -1, n = s.npcs.filter((x) => x.gang === g.id).length;
       return {
         id: g.id, x: g.x, y: g.y, w: g.w, h: g.h, color: g.color, name: g.name || L('แก๊งไม่มีชื่อ', 'Unnamed gang'), count: n + ' NPC',
-        fill: g.color + '12', ring: pressed ? '0 0 0 2px ' + g.color + ', 0 0 30px ' + g.color + '40' : 'none', pressed: pressed ? 'true' : 'false',
-        pick: (e) => { if (this.justDragged()) return; if (!this.state.linkMode && e && (e.shiftKey || e.metaKey || e.ctrlKey)) return this.pickNode('gang:' + g.id, e); this.setState({ sel: { kind: 'gang', id: g.id }, multi: [], askDel: false }); }
+        fill: g.color + '12', ring: s.linkFrom === 'gang:' + g.id ? '0 0 0 3px #2EE6F0, 0 0 30px rgba(46,230,240,0.5)' : pressed ? '0 0 0 2px ' + g.color + ', 0 0 30px ' + g.color + '40' : 'none', pressed: pressed ? 'true' : 'false',
+        pick: (e) => { if (this.justDragged()) return; if (this.state.linkMode || (e && (e.shiftKey || e.metaKey || e.ctrlKey))) return this.pickNode('gang:' + g.id, e); this.setState({ sel: { kind: 'gang', id: g.id }, multi: [], askDel: false }); }
       };
     });
 
@@ -1265,7 +1275,9 @@ class Component extends DCLogic {
       colors: GANG_COLORS.map((c) => ({ c: c, label: c, pressed: curGang.color === c ? 'true' : 'false', ring: curGang.color === c ? '#FFFFFF' : 'transparent', pick: () => this.editGang(curGang.id, { color: c }) })),
       members: s.npcs.filter((n) => n.gang === curGang.id).map((n) => ({ name: n.name || L('(ไม่มีชื่อ)', '(unnamed)'), pick: () => this.setState({ sel: { kind: 'npc', id: n.id }, askDel: false }) })),
       count: s.npcs.filter((n) => n.gang === curGang.id).length,
-      noMembers: !s.npcs.some((n) => n.gang === curGang.id)
+      noMembers: !s.npcs.some((n) => n.gang === curGang.id),
+      rels: relsOf('gang:' + curGang.id), noRels: !relsOf('gang:' + curGang.id).length,
+      startLink: () => this.setState({ linkMode: true, linkFrom: 'gang:' + curGang.id })
     } : {};
     v.le = curLink ? {
       a: this.nameOf(curLink.a), b: this.nameOf(curLink.b), color: this.kindOf(curLink.kind).color, arrow: this.kindOf(curLink.kind).arrow ? '→' : '⇄', note: curLink.note || '',
@@ -1290,7 +1302,7 @@ class Component extends DCLogic {
     v.cancelDel = () => this.setState({ askDel: false });
     const relCount = s.links.filter((l) => l.a === delKey || l.b === delKey).length;
     v.delText = curNpc ? L('ลบ ' + (curNpc.name || 'NPC นี้') + (relCount ? ' และเส้นความสัมพันธ์ ' + relCount + ' เส้น' : '') + '? กู้คืนไม่ได้', 'Delete ' + (curNpc.name || 'this NPC') + (relCount ? ' and ' + relCount + ' relationship(s)' : '') + '? This can\'t be undone.')
-      : curGang ? L('ลบแก๊ง ' + (curGang.name || '') + '? สมาชิกยังอยู่บนแผนผัง แต่จะไม่สังกัดแก๊ง', 'Delete ' + (curGang.name || 'this gang') + '? Its members stay on the map without a gang.')
+      : curGang ? L('ลบแก๊ง ' + (curGang.name || '') + (relCount ? ' และเส้นความสัมพันธ์ ' + relCount + ' เส้น' : '') + '? สมาชิกยังอยู่บนแผนผัง แต่จะไม่สังกัดแก๊ง', 'Delete ' + (curGang.name || 'this gang') + (relCount ? ' and ' + relCount + ' relationship' + (relCount === 1 ? '' : 's') : '') + '? Its members stay on the map without a gang.')
       : curPc ? L('เอา ' + curPc.name + ' ออกจากแผนผัง' + (relCount ? ' พร้อมเส้นความสัมพันธ์ ' + relCount + ' เส้น' : '') + '? (ตัวละครของผู้เล่นไม่ถูกลบ)', 'Take ' + curPc.name + ' off the map' + (relCount ? ' with ' + relCount + ' relationship(s)' : '') + '? (The player\'s character is untouched.)') : '';
     v.doDel = () => {
       const gone = s.links.filter((l) => l.a === delKey || l.b === delKey);
