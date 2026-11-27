@@ -98,6 +98,18 @@
     for (var c = src.firstChild; c; c = c.nextSibling) renderNode(c, scope, out);
   }
 
+  /* e-mail links are built with the address reversed in data-em (tools/build.py): put it back for people, not for harvesters */
+  function unhideEmails(box) {
+    var links = box.querySelectorAll('[data-em]');
+    for (var i = 0; i < links.length; i++) {
+      var p = links[i].getAttribute('data-em').split('|');
+      var addr = p[0].split('').reverse().join('') + '@' + (p[1] || '').split('').reverse().join('');
+      links[i].setAttribute('href', 'mailto:' + addr);
+      links[i].setAttribute('aria-label', 'Email ' + addr);
+      var t = links[i].querySelector('[data-em-t]');
+      if (t) t.textContent = addr;
+    }
+  }
   function same(a, b) { return a.nodeType === b.nodeType && a.nodeName === b.nodeName; }
   function morph(a, b) {
     if (a.nodeType === 3) { if (a.nodeValue !== b.nodeValue) a.nodeValue = b.nodeValue; return; }
@@ -157,6 +169,7 @@
         var out = [];
         renderKids(tpl, vals, out);
         for (var i = 0; i < out.length; i++) box.appendChild(out[i]);
+        unhideEmails(box);
         if (first) { while (box.firstChild) root.appendChild(box.firstChild); first = false; }
         else morphKids(root, box);
         if (inst.state.lang) { document.documentElement.lang = inst.state.lang; saveLang(inst.state.lang); }

@@ -272,6 +272,19 @@ def lock_links(markup, locked):
     return pat.sub(swap, markup)
 
 
+def hide_emails(body, js):
+    """Keep e-mail addresses out of the page source (address harvesters read it): the link carries the
+    address reversed in data-em, and assets/dc.js writes the mailto link and the text back at render time."""
+    for user, domain in set(re.findall(r"([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[a-z]{2,})", body)):
+        addr = user + "@" + domain
+        enc = user[::-1] + "|" + domain[::-1]
+        body = body.replace('href="mailto:%s"' % addr, 'href="#" data-em="%s"' % enc)
+        body = re.sub(r'aria-label="([^"]*?)\s*%s"' % re.escape(addr), lambda m: 'aria-label="%s"' % (m.group(1) or "Email"), body)
+        body = body.replace(addr, '<span data-em-t>%s [at] %s</span>' % (user, domain))
+    assert not re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[a-z]{2,}", body), "e-mail address left in the page"
+    return body
+
+
 def build(cfg):
     name, out = cfg["src"], cfg["out"]
     src = (SRC / name).read_text(encoding="utf-8")
@@ -306,6 +319,7 @@ def build(cfg):
             assert body.count(anchor) == 1, "Auth: card anchor missing"
             body = body.replace(anchor, SETPW + '        ' + anchor)
     js = strip_spoilers(name, js)
+    body = hide_emails(body, js)
     helmet = helmet.replace("</style>", EXTRA_CSS + "</style>")
     helmet = re.sub(r'\s*<script src="\./bgm\.js"></script>', '', helmet)
     helmet = re.sub(r'\s*<script src="\./dice\.js"></script>', '', helmet)
