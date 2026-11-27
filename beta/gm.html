@@ -503,6 +503,7 @@ html{scroll-behavior:smooth}
                     <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
                       <div style="display: flex; align-items: center; gap: 8px">
                         <span style="flex: 1; min-width: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px; color: #FFFFFF; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{en.name}}</span>
+                        <button type="button" onClick="{{en.dup}}" disabled="{{en.dupOff}}" aria-label="{{en.dupLabel}}" title="{{en.dupLabel}}" style="min-height: 32px; padding: 0 8px; flex-shrink: 0; border: 1px solid #FF3D6E; background: transparent; color: #FF3D6E; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 12px; opacity: {{en.dupOp}}">+1</button>
                         <button type="button" onClick="{{en.remove}}" aria-label="{{en.removeLabel}}" title="{{en.removeLabel}}" style="width: 32px; min-height: 32px; flex-shrink: 0; border: 1px solid #3A3655; background: transparent; color: #D8D6E8; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">✕</button>
                       </div>
                       <div role="group" aria-label="{{en.statusLabel}}" style="display: flex; flex-wrap: wrap; gap: 4px">
@@ -736,7 +737,7 @@ html{scroll-behavior:smooth}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/dc.js?v=cb5ce512"></script>
 <script src="../assets/sp.js?v=a60a9d0f"></script>
-<script src="../assets/beta-common.js?v=4b84e6e4"></script>
+<script src="../assets/beta-common.js?v=1b98f705"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
 <script src="../assets/dice.js?v=ff3776d0"></script>
 <script>
@@ -877,7 +878,37 @@ class Component extends DCLogic {
   encSet(list) { this.setState({ encounter: list }); this.encBroadcast(list); }
   encAdd(n) {
     const list = (this.state.encounter || []).filter((x) => x.id !== n.id);
-    this.encSet(list.concat([{ id: n.id, name: n.name || '', url: n.pic || '', status: [], at: Date.now() }]).slice(-8));
+    this.encSet(list.concat([{ id: n.id, npc: n.id, name: n.name || '', url: n.pic || '', status: [], at: Date.now() }]).slice(-8));
+  }
+  /* one more of the same NPC in the encounter (henchmen): its own name number, statuses and IP / WM / Slots; the library keeps one NPC */
+  encDup(x) {
+    const L = (a, b) => (this.state.lang !== 'en' ? a : b);
+    const enc = this.state.encounter || [], base = x.npc || x.id;
+    if (enc.length >= 8) return this.setState({ toast: L('Encounter มีได้สูงสุด 8 ตัว', 'An encounter holds up to 8') });
+    const n = (this.state.npcLib || []).find((y) => y.id === base) || {};
+    const root = (n.name || x.name || '').replace(/ #\d+$/, '');
+    const used = enc.filter((y) => (y.npc || y.id) === base).map((y) => (y.id === base ? 1 : +((/ #(\d+)$/.exec(y.name || '') || [])[1]) || 1));
+    let k = 2; while (used.indexOf(k) !== -1) k++;
+    const copy = { id: base + '~' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), npc: base, name: (root + ' #' + k).slice(0, 80), url: x.url || n.pic || '', status: [], at: Date.now() };
+    let i = -1; enc.forEach((y, j) => { if ((y.npc || y.id) === base) i = j; }); // after the last of the same NPC
+    this.encSet(enc.slice(0, i + 1).concat([copy], enc.slice(i + 1)));
+  }
+  /* a copy's own IP / WM / Slots: kept CM-only in the NPC's status (stat.copies), never on players' encounter strip */
+  encCurAdjust(copy, key, d, max, def) {
+    const base = copy.npc, live = (this.state.encounter || []).map((x) => x.id);
+    let saved = null;
+    const lib = (this.state.npcLib || []).map((n) => {
+      if (n.id !== base) return n;
+      const st = n.stat || {}, all = {};
+      Object.keys(st.copies || {}).forEach((k) => { if (live.indexOf(k) !== -1) all[k] = st.copies[k]; });
+      const c = Object.assign({}, all[copy.id] || {}), v = c[key] != null && c[key] !== '' ? +c[key] || 0 : def;
+      c[key] = String(Math.max(0, Math.min(max, v + d)));
+      all[copy.id] = c;
+      saved = Object.assign({}, st, { copies: all });
+      return Object.assign({}, n, { stat: saved });
+    });
+    this.setState({ npcLib: lib });
+    if (saved) this.npcStatSave(base, saved);
   }
   /* current IP / WM of an NPC in the encounter (CM only): kept in the NPC's status */
   npcAdjust(id, key, d, max, def) {
@@ -895,9 +926,11 @@ class Component extends DCLogic {
   }
   npcStatSave() {}
   /* an NPC's status from the NPC page as CM-only lines plus current IP / WM counters */
-  npcStatView(n) {
+  npcStatView(n, copy) {
     const L = (a, b) => (this.state.lang !== 'en' ? a : b);
-    const d = n.stat || {};
+    const st0 = n.stat || {};
+    // a henchman copy starts at full IP / WM and the NPC's Slots, then keeps its own counters
+    const d = copy ? Object.assign({}, st0, { ipCur: '10', wmCur: '10', slots: st0.slots != null && st0.slots !== '' ? String(st0.slots) : '' }, (st0.copies || {})[copy.id] || {}) : st0;
     const fk = n.factor || '', ln = [];
     const add = (k, v, c) => { if (v) ln.push({ k: k, v: v, c: c || '#A9A5C2' }); };
     const nz = (v) => (v == null || v === '' ? '0' : String(v));
@@ -914,7 +947,9 @@ class Component extends DCLogic {
     ].filter((r) => r[0].v || r[1].v).map((r) => ({ lk: r[0].k, lv: r[0].v, lc: r[0].c, rk: r[1].k, rv: r[1].v, rc: r[1].c }));
     const bar = (k, key, c, max, def, of) => {
       const v = d[key] != null && d[key] !== '' ? Math.max(0, Math.min(max, +d[key] || 0)) : def;
-      return { k: k, v: String(v), of: of, c: c, aria: k + ' ' + (n.name || ''), dec: () => this.npcAdjust(n.id, key, -1, max, def), inc: () => this.npcAdjust(n.id, key, 1, max, def),
+      return { k: k, v: String(v), of: of, c: c, aria: k + ' ' + ((copy && copy.name) || n.name || ''),
+        dec: () => (copy ? this.encCurAdjust(copy, key, -1, max, def) : this.npcAdjust(n.id, key, -1, max, def)),
+        inc: () => (copy ? this.encCurAdjust(copy, key, 1, max, def) : this.npcAdjust(n.id, key, 1, max, def)),
         decOff: v <= 0, incOff: v >= max, decLabel: L('ลด ', 'Lower ') + k, incLabel: L('เพิ่ม ', 'Raise ') + k };
     };
     const abil = [['Force', 'force', '#FF3D6E'], ['Tactical', 'tactical', '#2EE6F0'], ['Trick', 'trick', '#C084FC'], ['Sense', 'sense', '#FFD400']].map((a) => ({ k: a[0], v: String(b1(a[1])), c: a[2] }));
@@ -1144,9 +1179,11 @@ class Component extends DCLogic {
         return {
           encList: enc.map((x) => ({
             name: x.name || L('(ไม่มีชื่อ)', '(unnamed)'), url: x.url, hasPic: !!x.url, noPic: !x.url, initial: ini(x.name),
+            dup: () => this.encDup(x), dupOff: enc.length >= 8, dupOp: enc.length >= 8 ? '0.4' : '1',
+            dupLabel: L('เพิ่ม ' + (x.name || 'NPC') + ' อีก 1 ตัว (ลิ่วล้อ)', 'One more ' + (x.name || 'NPC') + ' (henchman)'),
             remove: () => this.encDrop(x.id), removeLabel: L('เอาออกจาก Encounter: ', 'Take out of the encounter: ') + (x.name || ''),
             statusLabel: L('สถานะผิดปกติของ ', 'Abnormal statuses of ') + (x.name || ''),
-            ...(() => { const n = all.find((y) => y.id === x.id); return n ? Object.assign({ hasSt: true }, this.npcStatView(n)) : { hasSt: false, stLines: [], bars: [], abil: [], rows: [] }; })(),
+            ...(() => { const n = all.find((y) => y.id === (x.npc || x.id)); return n ? Object.assign({ hasSt: true }, this.npcStatView(n, x.id !== (x.npc || x.id) ? x : null)) : { hasSt: false, stLines: [], bars: [], abil: [], rows: [] }; })(),
             statuses: ENC_STATUS.map((st) => {
               const onS = x.status.indexOf(st) !== -1;
               return { n: st, pressed: onS ? 'true' : 'false', toggle: () => this.encToggle(x.id, st),
@@ -1168,7 +1205,7 @@ class Component extends DCLogic {
               url: n.pic || '', hasPic: !!n.pic, noPic: !n.pic, initial: ini(n.name), close: () => this.setState({ npcPeek: null }) }, this.npcStatView(n));
           })(),
           npcLib: lib.map((n) => {
-            const onScene = shownIds.indexOf('npc-' + n.id) !== -1, inEnc = enc.some((x) => x.id === n.id), peeking = this.state.npcPeek === n.id;
+            const onScene = shownIds.indexOf('npc-' + n.id) !== -1, inEnc = enc.some((x) => (x.npc || x.id) === n.id), peeking = this.state.npcPeek === n.id;
             return {
               peek: () => this.setState({ npcPeek: peeking ? null : n.id }), peekPressed: peeking ? 'true' : 'false',
               peekText: peeking ? L('■ ปิดสถานะ', '■ Hide status') : L('ดูสถานะ', 'Status'), peekBg: peeking ? '#FFD400' : 'transparent', peekFg: peeking ? '#0B0A12' : '#FFD400',
@@ -1182,7 +1219,7 @@ class Component extends DCLogic {
               encText: inEnc ? L('✕ ออกจาก Enc.', '✕ Leave enc.') : '+ Encounter', encPressed: inEnc ? 'true' : 'false',
               encBg: inEnc ? '#FF3D6E' : 'transparent', encFg: inEnc ? '#0B0A12' : '#FF3D6E',
               encTip: L('ดึงเข้าแถบ Encounter บนชีทผู้เล่น พร้อมสถานะผิดปกติ', 'Bring into the Encounter strip on players\' sheets, with abnormal statuses'),
-              enc: () => (inEnc ? this.encDrop(n.id) : this.encAdd(n))
+              enc: () => (inEnc ? this.encSet(enc.filter((x) => (x.npc || x.id) !== n.id)) : this.encAdd(n))
             };
           })
         };
@@ -1526,6 +1563,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-gm.js?v=7cd0657b"></script>
+<script src="../assets/beta-gm.js?v=922d99b9"></script>
 </body>
 </html>

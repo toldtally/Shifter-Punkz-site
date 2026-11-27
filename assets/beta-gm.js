@@ -202,6 +202,7 @@
         if (r.error) return;
         var data = Object.assign({}, r.data.data || {});
         data.stat = Object.assign({}, data.stat || {}, { ipCur: stat.ipCur, wmCur: stat.wmCur, slots: stat.slots });
+        if (stat.copies) data.stat.copies = stat.copies; // henchman copies in the encounter keep their own counters
         await sb.from('npcs').update({ data: data }).eq('id', id);
       }, 500);
     }

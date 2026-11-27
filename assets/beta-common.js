@@ -24,7 +24,7 @@
   /* sessions.scene: one picture (older) or a list of up to 4 */
   SP.sceneList = function (v) { return (Array.isArray(v) ? v : v ? [v] : []).filter(function (x) { return x && x.url; }).slice(0, 4); };
   /* sessions.encounter: NPCs the CM brought in (picture, name and abnormal statuses only) */
-  SP.encounterList = function (v) { return (Array.isArray(v) ? v : []).filter(function (x) { return x && x.id; }).map(function (x) { return { id: x.id, name: x.name || '', url: x.url || '', status: Array.isArray(x.status) ? x.status : [], at: x.at || 0 }; }).slice(0, 8); };
+  SP.encounterList = function (v) { return (Array.isArray(v) ? v : []).filter(function (x) { return x && x.id; }).map(function (x) { var o = { id: x.id, name: x.name || '', url: x.url || '', status: Array.isArray(x.status) ? x.status : [], at: x.at || 0 }; if (x.npc) o.npc = x.npc; return o; }).slice(0, 8); };
   /* C.P.D. Divisions add +1 to one Basic Ability */
   SP.DIVISIONS = { 'Division 9': 'force', 'Division 7': 'tactical', 'Division 13': 'trick', 'Division 0': 'sense' };
   SP.baOf = function (sheet, factor, k) {
