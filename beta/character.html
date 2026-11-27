@@ -827,7 +827,7 @@ html{scroll-behavior:smooth}
 <script src="../assets/sp.js?v=a60a9d0f"></script>
 <script src="../assets/beta-common.js?v=4b84e6e4"></script>
 <script src="../assets/bgm.js?v=a178f801"></script>
-<script src="../assets/dice.js?v=9fd4f18c"></script>
+<script src="../assets/dice.js?v=ff3776d0"></script>
 <script>
 function initialSheet() {
   return {
@@ -1147,7 +1147,7 @@ class Component extends DCLogic {
       baseNote: '(' + name + ' ' + val + (m ? (m > 0 ? ' + Mod ' : ' − Mod ') + Math.abs(m) : '') + (noMod && (parseInt(mod, 10) || 0) ? (th ? ' · Stigma: ใช้ Mod ไม่ได้' : ' · Stigma: no Mod') : '') + ')',
       enervated: !!(s.inj && s.inj.Enervated),
       cosmic: s.factor === 'cpd' ? [] : (s.cosmic || []).map((r) => ({ name: r.name || r.type || 'Cosmic', n: Math.max(0, Math.min(3, parseInt(r.cd, 10) || 0)) })),
-      ex: s.ex || 0, adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
+      ex: s.ex || 0, dc: s.inj && s.inj.Hallucinated ? [{ n: 'Hallucinated', v: 1 }] : [], adv: Math.max(0, parseInt(s.adv, 10) || 0), source: this.diceRoller(),
       cosReplace: !!(s.inj && (s.inj['Cosmic Infected'] || s.inj['Cosmic Stigma'])),
       whelm: s.factor === 'shifter' ? { rows: WHELM.map(whelmRow), outburst: !!(s.inj && s.inj['Cosmic Outburst']), add: s.inj && s.inj['Cosmic Outburst'] ? (parseInt(s.outN, 10) || 0) : 0, wm: parseInt(s.spCur, 10) || 0 } : null,
       se: s.se || 0, seLock: !!(s.boost && s.boost.kind && s.boost.kind !== 'dice'),

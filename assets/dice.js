@@ -5,6 +5,7 @@
  *   SPDice.show(payload, th)      // someone else's roll: a card that tumbles, then shows the result
  *   SPDice.score(dice)            // { r, from, k } — highest die; each matching die adds +1, capped at that die's top face
  *
+ * DC (o.dc sources + unspent EX points) comes off the final result, down to 0.
  * A roll is D8s (D4s once Exhaustion turns them; an empty pool — ability 0 — rolls 1D4), plus Cosmic Dice (with cosReplace — Cosmic Infected — they take D8 slots instead). The result is the highest die;
  * when several dice show the same number that number goes up by 1 per extra die, never past the die's top face.
  * A natural pair of [8] gives +1 Surge Energy. After the roll, Advance pts move faces up or down by 1 each.
@@ -238,6 +239,16 @@
     var cosN = function () { return !o.free && !o.enervated && st.cos >= 0 ? (o.cosmic[st.cos].n || 0) : 0; };
     var cosSwap = function () { return o.cosReplace ? Math.min(cosN(), count8()) : 0; };
     var exMax = function () { return Math.min(o.ex || 0, count8() - cosSwap()); };
+    /* DC: subtracted from the result (it can reach 0) — the sheet's sources (o.dc, e.g. Hallucinated) plus every EX point left unspent this roll */
+    var dcParts = function (exUsed) {
+      if (o.free) return [];
+      var parts = (o.dc || []).filter(function (x) { return x && x.v > 0; }).map(function (x) { return { n: x.n, v: x.v }; });
+      var exLeft = Math.max(0, (o.ex || 0) - exUsed);
+      if (exLeft) parts.push({ n: 'EX', v: exLeft });
+      return parts;
+    };
+    var dcSum = function (parts) { return parts.reduce(function (a, x) { return a + x.v; }, 0); };
+    var dcText = function (parts) { return parts.map(function (x) { return x.n + ' ' + x.v; }).join(' · '); };
     var whelmOver = function () { return !!(o.whelm && !o.whelm.outburst && st.cos >= 0 && cosN() && st.tier > (o.whelm.wm || 0)); };
     var build = function () {
       if (o.fixed) return o.fixed.map(function (z) { return { s: z === 4 ? 4 : 8 }; });
@@ -252,7 +263,7 @@
     var payload = function (ph) {
       var dice = st.dice || [], sc = score(dice);
       return { ph: ph, who: o.who || '', col: acc, lab: o.label || '', dice: dice.map(function (d) { var x = { s: d.s, v: d.v }; if (d.c) x.c = 1; if (d.m) x.m = d.m; return x; }),
-        r: sc.r, k: sc.k, p8: pair8(st.base || dice), p1: ph === 'adj' ? pair1(dice) : pair1(st.base || dice), p1was: pair1(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '',
+        r: Math.max(0, sc.r - (st.dc || 0)), raw: sc.r, dc: st.dc || 0, k: sc.k, p8: pair8(st.base || dice), p1: ph === 'adj' ? pair1(dice) : pair1(st.base || dice), p1was: pair1(st.base || dice), ex: st.exUsed || 0, adv: st.used, cos: st.cosName || '',
         id: st.rid || null, rid: ph === 'adj' ? st.rid || null : null, srv: !!st.rid || !!st.srv, mv: dice.map(function (d) { return d.m || 0; }) };
     };
 
@@ -324,6 +335,8 @@
         drawDice(tr, pre, {});
         Array.prototype.forEach.call(tr.children, function (n) { n.classList.remove('is-dim'); n.classList.remove('is-best'); n.querySelector('.spd-num').textContent = '?'; });
         b.appendChild(el('p', { class: 'spd-note', text: pre.length ? poolText(pre) : L('ยังไม่มีเต๋า', 'No dice yet') }));
+        var dcPre = dcParts(Math.min(st.ex, exMax()));
+        if (dcPre.length) b.appendChild(el('p', { class: 'spd-warn', text: 'DC ' + dcSum(dcPre) + ' (' + dcText(dcPre) + ') ' + L('• หักจากผลทอย', '• taken off the result') }));
         if (!o.free && !o.fixed && count8() === 0 && !cosN()) b.appendChild(el('p', { class: 'spd-note', text: L('ค่า Ability เป็น 0 • ทอย 1D4 แทน', 'Ability is 0 • roll 1D4 instead') }));
         var f = el('div', { class: 'spd-f' }); card.appendChild(f);
         f.appendChild(el('button', { type: 'button', class: 'spd-btn', onclick: close }, [L('ยกเลิก', 'Cancel')]));
@@ -349,10 +362,11 @@
       if (!o.once) f2.appendChild(again);
       f2.appendChild(done);
       var fill = function () {
-        var sc = score(st.dice);
+        var sc = score(st.dice), dc = st.dc || 0;
         res.innerHTML = '';
-        res.appendChild(el('div', {}, [el('div', { class: 'spd-sub', text: L('ผลทอย', 'RESULT') }), el('div', { class: 'spd-big', text: String(sc.r) })]));
+        res.appendChild(el('div', {}, [el('div', { class: 'spd-sub', text: L('ผลทอย', 'RESULT') }), el('div', { class: 'spd-big', text: String(Math.max(0, sc.r - dc)) })]));
         var side = el('div', { style: 'display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right' }, [el('div', { class: 'spd-why', text: why(st.dice, sc, th) })]);
+        if (dc) side.appendChild(el('div', { class: 'spd-why', style: 'color:' + C.yellow, text: sc.r + ' − DC ' + dc + ' (' + dcText(st.dcParts) + ') = ' + Math.max(0, sc.r - dc) }));
         if (pair8(st.base)) side.appendChild(el('div', { class: 'spd-se', text: L('คู่ [8]! +1 Surge Energy', 'Pair of [8]! +1 Surge Energy') }));
         if (!o.free && pair1(st.dice)) side.appendChild(el('div', { class: 'spd-se', style: 'color:#FF3D6E', text: L('คู่ [1]! +1 EX · +1 Advance pts (ได้เมื่อกดเสร็จ)', 'Pair of [1]! +1 EX · +1 Advance pts (on Done)') }));
         else if (!o.free && pair1(st.base)) side.appendChild(el('div', { class: 'spd-note', text: L('ปรับหน้าเต๋าแล้ว คู่ [1] จึงไม่นับ', 'Faces moved, so the pair of [1] no longer counts') }));
@@ -394,6 +408,7 @@
       var dice = build();
       st.exUsed = dice.filter(function (d) { return d.s === 4 && !d.c && !o.free; }).length;
       st.cosName = cosN() ? o.cosmic[st.cos].name : '';
+      st.dcParts = dcParts(st.exUsed); st.dc = dcSum(st.dcParts);
       if (!o.source) { dice.forEach(function (d) { d.v = rnd(d.s); }); return landed(dice, null, false); }
       st.waiting = true; st.err = ''; render();
       var meta = { who: o.who || '', col: acc, lab: o.label || '', cos: st.cosName, ex: st.exUsed };
@@ -469,9 +484,9 @@
     var drawn = drawDice(tr, dice, { rolling: !adj });
     if (anchor && anchor._spdPop === pop) anchor._spdPlace();
     drawn.then(function () {
-      var sc = score(dice);
-      head.lastChild.textContent = String(sc.r);
-      foot.textContent = why(dice, sc, th) + (p.p8 && !adj ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.lab && p.p1 ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : p.lab && adj && p.p1was ? (th ? ' · คู่ [1] ไม่นับแล้ว' : ' · pair of [1] lost') : '') + (p.cos ? ' · ' + p.cos : '');
+      var sc = score(dice), dc = p.dc | 0;
+      head.lastChild.textContent = String(Math.max(0, sc.r - dc));
+      foot.textContent = why(dice, sc, th) + (dc ? ' · DC −' + dc : '') + (p.p8 && !adj ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.lab && p.p1 ? (th ? ' · คู่ [1] +1 EX +1 ADV' : ' · pair of [1] +1 EX +1 ADV') : p.lab && adj && p.p1was ? (th ? ' · คู่ [1] ไม่นับแล้ว' : ' · pair of [1] lost') : '') + (p.cos ? ' · ' + p.cos : '');
       if (anchor && anchor._spdPop === pop) anchor._spdPlace();
     });
     var t; var go = function () { pop.classList.add('out'); setTimeout(function () { pop.remove(); }, 320); };
@@ -488,7 +503,7 @@
     if (p.ph === 'adj') return (th ? 'ใช้ Advance ' + p.adv + ' แต้ม → ผล ' : 'used ' + p.adv + ' Advance → ') + p.r + (p.p1was && !p.p1 ? (th ? ' · คู่ [1] ไม่นับแล้ว' : ' · pair of [1] lost') : '');
     var dice = p.dice.map(function (d) { return { s: d.s, v: d.v, c: d.c }; });
     var faces = p.dice.map(function (d) { return (d.s === 4 ? 'd4:' : '') + d.v; }).join(',');
-    return (th ? 'ทอย ' : 'rolled ') + (p.lab ? p.lab + ' ' : '') + poolText(dice) + ' [' + faces + '] → ' + p.r + (p.p8 ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.p1 && p.lab ? (th ? ' · คู่ [1]' : ' · pair of [1]') : '');
+    return (th ? 'ทอย ' : 'rolled ') + (p.lab ? p.lab + ' ' : '') + poolText(dice) + ' [' + faces + '] → ' + p.r + (p.dc ? ' (DC −' + p.dc + ')' : '') + (p.p8 ? (th ? ' · คู่ [8] +1 SE' : ' · pair of [8] +1 SE') : '') + (p.p1 && p.lab ? (th ? ' · คู่ [1]' : ' · pair of [1]') : '');
   }
 
   window.SPDice = { tray: tray, show: show, score: score, line: line, pair8: pair8, pair1: pair1 };
