@@ -780,6 +780,9 @@ class Component extends DCLogic {
     this._mid = (e) => { const sc = document.getElementById('mm-scroll'); if (e.button === 1 && sc && sc.contains(e.target)) e.preventDefault(); };
     document.addEventListener('mousedown', this._mid);
     document.addEventListener('auxclick', this._mid);
+    /* mouse wheel over the map zooms in and out around the pointer (sideways scrolling still pans) */
+    this._wheel = (e) => this.wheelZoom(e);
+    document.addEventListener('wheel', this._wheel, { passive: false });
     setTimeout(() => this.fit(), 0);
   }
   componentWillUnmount() {
@@ -790,6 +793,20 @@ class Component extends DCLogic {
     document.removeEventListener('keydown', this._key);
     document.removeEventListener('mousedown', this._mid);
     document.removeEventListener('auxclick', this._mid);
+    document.removeEventListener('wheel', this._wheel);
+  }
+  wheelZoom(e) {
+    const sc = document.getElementById('mm-scroll');
+    if (!sc || !e.target || !sc.contains(e.target) || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    const z = this.state.zoom, dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    const nz = Math.round(Math.min(1.5, Math.max(0.3, z * Math.exp(-dy * 0.0015))) * 100) / 100;
+    if (nz === z) return;
+    const r = sc.getBoundingClientRect(), ox = e.clientX - r.left, oy = e.clientY - r.top;
+    const mx = (sc.scrollLeft + ox) / z, my = (sc.scrollTop + oy) / z;
+    this.setState({ zoom: nz });
+    const keep = () => { sc.scrollLeft = mx * nz - ox; sc.scrollTop = my * nz - oy; };
+    keep(); requestAnimationFrame(keep);
   }
 
   /* ---- persistence: the prototype keeps the map in this browser; the live site writes Supabase rows ---- */
