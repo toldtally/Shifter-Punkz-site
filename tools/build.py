@@ -31,7 +31,7 @@ html{scroll-behavior:smooth}
 """
 
 SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
-ALL = ["Main", "TRPG", "Auth", "Account", "Character", "MyCharacters", "GMSheet", "GMTables", "NPC"]
+ALL = ["Main", "TRPG", "Contact", "Auth", "Account", "Character", "MyCharacters", "GMSheet", "GMTables", "NPC"]
 
 MSG = ('<sc-if value="{{hasMsg}}" hint-placeholder-val="{{ false }}"><p role="status" aria-live="polite" '
        'style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid {{msgColor}}; '
@@ -124,10 +124,17 @@ BOOKS = '''<!-- Books: a code printed in any book unlocks the CM role -->
 PAGES = [
     dict(src="Main.dc.html", out="index.html", title="Shifter Punkz",
          desc="Shifter Punkz — จักรวาลกึ่งไซเบอร์พังก์ในกรุงเทพ 26XX ผ่านแอนิเมชัน TRPG เกมดิจิทัล และบอร์ดเกม",
-         links={"Main": "index.html", "TRPG": "trpg.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
+         links={"Main": "index.html", "TRPG": "trpg.html", "Contact": "contact.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
     dict(src="TRPG.dc.html", out="trpg.html", title="Shifter Punkz TRPG",
          desc="Shifter Punkz TRPG — เกมเล่นบทบาทสมมติระบบ D8 Dice Pool เล่นเป็น Shifter, Norms หรือ C.P.D.",
-         links={"Main": "index.html", "TRPG": "trpg.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
+         links={"Main": "index.html", "TRPG": "trpg.html", "Contact": "contact.html", "Auth": "beta/auth.html"}, beta="session-nav.js", session_nav=True),
+    dict(src="Contact.dc.html", out="contact.html", title="ติดต่อเรา · Shifter Punkz",
+         desc="ติดต่อทีม Shifter Punkz — คำถามเรื่องเกม หนังสือ หรือการร่วมงาน",
+         links={"Main": "index.html", "TRPG": "trpg.html", "Contact": "contact.html"}, extra_js=["contact.js"],
+         markup=[
+             # the live page shows the real Turnstile widget in place of the design's mock check box
+             (r're:<!-- captcha-start -->.*?<!-- captcha-end -->', '<div id="ct-ts" data-dc-keep style="min-height: 65px"></div>', 1),
+         ]),
     dict(src="Auth.dc.html", out="beta/auth.html", title="เข้าสู่ระบบ · Shifter Punkz",
          desc="เข้าสู่ระบบ Shifter Punkz (beta)", beta="beta-auth.js",
          links=BETA_LINKS,
@@ -341,6 +348,8 @@ def build(cfg):
         mount = '</script>\n<script src="%sassets/%s"></script>' % (up, cfg["beta"])
         robots = '<meta name="robots" content="noindex">\n' if out.startswith("beta/") else ""
     else:
+        for x in cfg.get("extra_js", []):
+            scripts += '<script src="%sassets/%s"></script>\n' % (up, x)
         mount = "DC.mount(Component, document.getElementById('app'));\n</script>"
         robots = ""
 

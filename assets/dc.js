@@ -124,7 +124,8 @@
       var nv = b.getAttribute('value');
       if (a.value !== nv) a.value = nv;
     }
-    morphKids(a, b);
+    // data-dc-keep: a box filled by outside code (e.g. the Turnstile widget) keeps its children
+    if (!a.hasAttribute('data-dc-keep')) morphKids(a, b);
     // a select the user has touched ignores option "selected" attributes: set the choice directly
     if (a.tagName === 'SELECT') {
       var want = b.hasAttribute('value') ? b.getAttribute('value') : null;

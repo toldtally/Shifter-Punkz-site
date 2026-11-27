@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ติดต่อเรา · Shifter Punkz</title>
+<meta name="description" content="ติดต่อทีม Shifter Punkz — คำถามเรื่องเกม หนังสือ หรือการร่วมงาน">
+<meta property="og:title" content="ติดต่อเรา · Shifter Punkz">
+<meta property="og:description" content="ติดต่อทีม Shifter Punkz — คำถามเรื่องเกม หนังสือ หรือการร่วมงาน">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B0A12">
+<link rel="icon" href="assets/icons/favicon.ico?v=63be0f36" sizes="48x48">
+<link rel="icon" href="assets/icons/favicon.svg?v=86c95924" type="image/svg+xml">
+<link rel="icon" href="assets/icons/favicon-32.png?v=b49e2f50" sizes="32x32" type="image/png">
+<link rel="icon" href="assets/icons/favicon-16.png?v=b942ad05" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png?v=8f9a1321">
+<link rel="manifest" href="assets/icons/site.webmanifest?v=bcd47d89">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&amp;family=IBM+Plex+Sans+Thai:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap">
+<style>
+body{margin:0;background:#0B0A12}
+a{color:#2EE6F0}a:hover{color:#FF2E88}
+.fld{width:100%;box-sizing:border-box;min-height:48px;padding:12px 14px;background:#0B0A12;border:1px solid #3A3655;color:#FFFFFF;font-family:'IBM Plex Sans Thai',system-ui,sans-serif;font-size:15px;line-height:1.5}
+.fld:focus{outline:2px solid #2EE6F0;outline-offset:-1px;border-color:#2EE6F0}
+.fld::placeholder{color:#6E6A88}
+.fld[aria-invalid="true"]{border-color:#FF3D6E}
+textarea.fld{min-height:180px;resize:vertical}
+.topic input{position:absolute;opacity:0;width:1px;height:1px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.topic input:focus-visible + span{outline:2px solid #2EE6F0;outline-offset:2px}
+
+[data-soon]{opacity:.5;cursor:not-allowed!important;pointer-events:auto}
+[data-soon] .soon-chip{margin-left:6px;padding:1px 6px;border:1px solid currentColor;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+@media (max-width: 720px){
+  p.hero-gl{width:auto!important;height:auto!important;max-width:100%!important}
+  .hero-bg{justify-content:center!important;align-items:flex-end!important;padding:0 16px 20px!important;font-size:10px}
+  .hero-bg > *{opacity:.45}
+}
+[aria-busy="true"]{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<template id="dc-tpl">
+<div style="background: #0B0A12; color: #D8D6E8; font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; min-height: 100vh; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 4px)">
+
+  <!-- Nav -->
+  <header style="border-bottom: 1px solid #2A2740">
+    <nav style="max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px">
+      <a href="index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #FFFFFF">
+        <img src="assets/logo-z.png?v=7eb004a4" alt="Shifter Punkz" width="40" height="40" style="display: block; width: 40px; height: 40px">
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; flex: 1; font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.06em">
+        <a href="index.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">{{t.navHome}}</a>
+        <a href="trpg.html" style="color: #D8D6E8; text-decoration: none; padding: 12px 0">TRPG</a>
+        <a href="contact.html" aria-current="page" style="color: #2EE6F0; text-decoration: none; padding: 12px 0; border-bottom: 2px solid #2EE6F0">{{t.navContact}}</a>
+      </div>
+      <div role="group" aria-label="Language" style="display: flex; border: 1px solid #2EE6F0">
+        <button type="button" onClick="{{setTh}}" aria-pressed="{{thPressed}}" style="{{thStyle}}">TH</button>
+        <button type="button" onClick="{{setEn}}" aria-pressed="{{enPressed}}" style="{{enStyle}}">EN</button>
+      </div>
+    </nav>
+  </header>
+
+  <main style="max-width: 1280px; margin: 0 auto; padding: 56px 24px 80px; display: flex; flex-direction: column; gap: 40px">
+    <div style="display: flex; flex-direction: column; gap: 10px; max-width: 720px">
+      <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #FFD400">{{t.kicker}}</p>
+      <h1 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 44px; line-height: 1.1; color: #FFFFFF; text-wrap: balance">{{t.title}}</h1>
+      <p style="margin: 0; font-size: 16px; line-height: 1.7; color: #A9A5C2">{{t.lead}}</p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+
+      <!-- Form card -->
+      <section aria-labelledby="ct-form-h" style="flex: 1 1 560px; min-width: 0; background: #151225; border: 1px solid #2A2740; border-top: 3px solid #2EE6F0">
+        <sc-if value="{{notSent}}" hint-placeholder-val="{{ true }}">
+          <form onSubmit="{{submit}}" novalidate="novalidate" style="margin: 0; padding: 32px; display: flex; flex-direction: column; gap: 22px">
+            <h2 id="ct-form-h" style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.06em; color: #FFFFFF">{{t.formTitle}}</h2>
+            <div class="hp" aria-hidden="true"><label for="ct-website">Website</label><input id="ct-website" type="text" name="website" tabindex="-1" autocomplete="off" value="{{f.hp}}" onInput="{{on.hp}}"></div>
+
+            <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
+              <legend style="padding: 0; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: #A9A5C2">{{t.topic}}</legend>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                <sc-for list="{{topics}}" as="tp" hint-placeholder-count="5">
+                  <label class="topic" style="position: relative; cursor: pointer">
+                    <input type="radio" name="ct-topic" value="{{tp.k}}" checked="{{tp.on}}" onChange="{{tp.pick}}">
+                    <span style="{{tp.style}}">{{tp.label}}</span>
+                  </label>
+                </sc-for>
+              </div>
+            </fieldset>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 16px">
+              <div style="flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                <label for="ct-name" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: #A9A5C2">{{t.name}}</label>
+                <input id="ct-name" class="fld" type="text" autocomplete="name" maxlength="80" value="{{f.name}}" onInput="{{on.name}}" aria-invalid="{{err.nameBad}}" aria-describedby="ct-name-err" placeholder="{{t.namePh}}">
+                <sc-if value="{{err.name}}" hint-placeholder-val="{{ false }}"><span id="ct-name-err" style="font-size: 13px; color: #FF6B8E">{{err.name}}</span></sc-if>
+              </div>
+              <div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                <label for="ct-email" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: #A9A5C2">{{t.email}}</label>
+                <input id="ct-email" class="fld" type="email" autocomplete="email" maxlength="120" value="{{f.email}}" onInput="{{on.email}}" aria-invalid="{{err.emailBad}}" aria-describedby="ct-email-err" placeholder="<span data-em-t>you [at] example.com</span>">
+                <sc-if value="{{err.email}}" hint-placeholder-val="{{ false }}"><span id="ct-email-err" style="font-size: 13px; color: #FF6B8E">{{err.email}}</span></sc-if>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+                <label for="ct-msg" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.1em; color: #A9A5C2">{{t.msg}}</label>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: {{countColor}}">{{count}}</span>
+              </div>
+              <textarea id="ct-msg" class="fld" maxlength="2000" onInput="{{on.msg}}" aria-invalid="{{err.msgBad}}" aria-describedby="ct-msg-err" placeholder="{{t.msgPh}}">{{f.msg}}</textarea>
+              <sc-if value="{{err.msg}}" hint-placeholder-val="{{ false }}"><span id="ct-msg-err" style="font-size: 13px; color: #FF6B8E">{{err.msg}}</span></sc-if>
+            </div>
+
+            <!-- Turnstile goes here on the live site -->
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <div id="ct-ts" data-dc-keep style="min-height: 65px"></div>
+              <sc-if value="{{err.captcha}}" hint-placeholder-val="{{ false }}"><span style="font-size: 13px; color: #FF6B8E">{{err.captcha}}</span></sc-if>
+            </div>
+
+            <sc-if value="{{sendErr}}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin: 0; padding: 10px 12px; background: #0B0A12; border-left: 3px solid #FF3D6E; font-size: 13.5px; line-height: 1.55; color: #E4E1F0">{{sendErr}}</p></sc-if>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-top: 6px; border-top: 1px solid #2A2740">
+              <p style="margin: 0; flex: 1 1 260px; font-size: 13px; line-height: 1.6; color: #8C88A6">{{t.privacy}}</p>
+              <button type="submit" aria-busy="{{busy}}" style="min-height: 52px; padding: 0 28px; border: 0; cursor: pointer; background: #FF2E88; color: #0B0A12; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.08em">{{sendLabel}}</button>
+            </div>
+          </form>
+        </sc-if>
+
+        <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+          <div role="status" aria-live="polite" style="padding: 48px 32px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start">
+            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: #4ADE80">{{t.sentKicker}}</p>
+            <h2 style="margin: 0; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 28px; color: #FFFFFF">{{t.sentTitle}}</h2>
+            <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #A9A5C2; max-width: 520px">{{sentBody}}</p>
+            <button type="button" onClick="{{again}}" style="margin-top: 8px; min-height: 44px; padding: 0 18px; border: 1px solid #2EE6F0; background: transparent; color: #2EE6F0; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.06em">{{t.again}}</button>
+          </div>
+        </sc-if>
+      </section>
+
+      <!-- Side -->
+      <aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <div style="padding: 24px; background: #151225; border: 1px solid #2A2740; display: flex; flex-direction: column; gap: 10px">
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #FFD400">{{t.replyKicker}}</p>
+          <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #D8D6E8">{{t.replyBody}}</p>
+        </div>
+        <div style="padding: 24px; background: #151225; border: 1px solid #2A2740; display: flex; flex-direction: column; gap: 12px">
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #2EE6F0">{{t.otherKicker}}</p>
+          <a href="https://www.facebook.com/shifterpunkz.official" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #FFFFFF; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.06em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18"></rect><path d="M15 8h-2a2 2 0 0 0-2 2v11M9 13h6"></path></svg>Facebook · Shifter Punkz</a>
+          <p style="margin: 0; font-size: 13.5px; line-height: 1.6; color: #8C88A6">{{t.otherNote}}</p>
+        </div>
+        <div style="padding: 24px; border: 1px dashed #3A3655; display: flex; flex-direction: column; gap: 8px">
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.14em; color: #A9A5C2">{{t.trpgKicker}}</p>
+          <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #A9A5C2">{{t.trpgBody}}</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer style="border-top: 1px solid #2A2740">
+    <div style="height: 8px; background: repeating-linear-gradient(45deg, #FFD400 0 12px, #0B0A12 12px 24px)" aria-hidden="true"></div>
+    <div style="max-width: 1280px; margin: 0 auto; padding: 48px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <p style="margin: 0"><img src="assets/logo-shifterpunkz.png?v=a99b9355" alt="Shifter Punkz" width="204" height="35" style="display: block; height: 35px; width: auto; max-width: 100%"></p>
+        <p style="margin: 0; font-size: 14px; color: #9A97B0">Published by Rollaholic Games · Game Designer: Jittrapa K. (Prim)</p>
+        <p style="margin: 0; font-size: 12.5px; color: #6E6A88">Copyright © 2026 Rollaholic Games. All rights reserved.</p>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px 24px; font-family: 'Chakra Petch', sans-serif; font-size: 14px; font-weight: 600">
+        <a href="index.html" style="padding: 12px 0">{{t.navHome}}</a>
+        <a href="trpg.html" style="padding: 12px 0">TRPG</a>
+        <a href="contact.html" style="padding: 12px 0">{{t.navContact}}</a>
+      </div>
+    </div>
+  </footer>
+</div>
+</template>
+<script src="assets/dc.js?v=cb5ce512"></script>
+<script src="assets/contact.js?v=1c09a323"></script>
+<script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { lang: 'th', topic: 'general', name: '', email: '', msg: '', captcha: false, tried: false, sent: false, busy: false, hp: '', sendErr: '' };
+  }
+  /* live site: assets/contact.js provides window.SPContact (Turnstile + sending) */
+  componentDidMount() {
+    if (window.SPContact) window.SPContact.bind((ok) => this.setState({ captcha: !!ok }));
+  }
+  renderVals() {
+    const s = this.state, th = s.lang !== 'en';
+    const L = (a, b) => (th ? a : b);
+    const on = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: #2EE6F0; color: #0B0A12';
+    const off = 'min-width: 48px; min-height: 40px; border: 0; cursor: pointer; font-family: JetBrains Mono, monospace; font-size: 13px; font-weight: 500; background: transparent; color: #2EE6F0';
+    const TOPICS = [
+      ['general', L('สอบถามทั่วไป', 'General question')],
+      ['business', L('ธุรกิจ / ร่วมงาน', 'Business / collaboration')],
+      ['book', L('หนังสือ / สั่งซื้อ', 'Books / orders')],
+      ['trpg', L('TRPG / กฎการเล่น', 'TRPG / rules')],
+      ['bug', L('แจ้งปัญหาเว็บไซต์', 'Website problem')]
+    ];
+    const email = s.email.trim();
+    const errs = {};
+    if (s.tried) {
+      if (!s.name.trim()) errs.name = L('กรอกชื่อด้วยนะ', 'Please add your name');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errs.email = L('อีเมลนี้ดูไม่ถูกต้อง เราต้องใช้ตอบกลับ', 'That e-mail doesn\'t look right — we need it to reply');
+      if (s.msg.trim().length < 10) errs.msg = L('เขียนรายละเอียดอีกสักนิด (อย่างน้อย 10 ตัวอักษร)', 'A little more detail, please (10 characters or more)');
+      if (!s.captcha) errs.captcha = L('ยืนยันว่าไม่ใช่บอทก่อนส่ง', 'Confirm you\'re not a bot first');
+    }
+    const n = s.msg.length;
+    const topicName = (TOPICS.find((x) => x[0] === s.topic) || TOPICS[0])[1];
+    return {
+      setTh: () => this.setState({ lang: 'th' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      thPressed: th ? 'true' : 'false',
+      enPressed: th ? 'false' : 'true',
+      thStyle: th ? on : off,
+      enStyle: th ? off : on,
+      notSent: !s.sent,
+      sent: s.sent,
+      busy: s.busy ? 'true' : 'false',
+      sendLabel: s.busy ? L('กำลังส่ง…', 'SENDING…') : L('ส่งข้อความ', 'SEND MESSAGE'),
+      topics: TOPICS.map(([k, label]) => ({
+        k: k, label: label, on: s.topic === k,
+        pick: () => this.setState({ topic: k }),
+        style: 'display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; font-family: \'IBM Plex Sans Thai\', sans-serif; font-size: 14px; font-weight: 500; ' +
+          (s.topic === k ? 'background: #2EE6F0; color: #0B0A12; border: 1px solid #2EE6F0' : 'background: transparent; color: #D8D6E8; border: 1px solid #3A3655')
+      })),
+      f: { name: s.name, email: s.email, msg: s.msg, hp: s.hp },
+      sendErr: s.sendErr,
+      on: {
+        name: (e) => this.setState({ name: e.target.value }),
+        email: (e) => this.setState({ email: e.target.value }),
+        msg: (e) => this.setState({ msg: e.target.value }),
+        hp: (e) => this.setState({ hp: e.target.value })
+      },
+      err: {
+        name: errs.name || '', nameBad: errs.name ? 'true' : 'false',
+        email: errs.email || '', emailBad: errs.email ? 'true' : 'false',
+        msg: errs.msg || '', msgBad: errs.msg ? 'true' : 'false',
+        captcha: errs.captcha || ''
+      },
+      count: n + ' / 2000',
+      countColor: n > 1900 ? '#FFD400' : '#6E6A88',
+      captcha: s.captcha,
+      capPressed: s.captcha ? 'true' : 'false',
+      capBorder: s.captcha ? '#4ADE80' : (errs.captcha ? '#FF3D6E' : '#3A3655'),
+      capFill: s.captcha ? '#4ADE80' : 'transparent',
+      toggleCaptcha: () => this.setState({ captcha: !s.captcha }),
+      submit: (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        if (s.busy) return;
+        const ok = s.name.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) && s.msg.trim().length >= 10 && s.captcha;
+        if (!ok) { this.setState({ tried: true }); return; }
+        this.setState({ busy: true, sendErr: '' });
+        if (!window.SPContact) { setTimeout(() => this.setState({ busy: false, sent: true }), 700); return; }
+        window.SPContact.send({ topic: s.topic, name: s.name.trim(), email: email, message: s.msg.trim(), website: s.hp })
+          .then(() => this.setState({ busy: false, sent: true }))
+          .catch((err) => {
+            const c = (err && err.code) || '';
+            const m = c === 'captcha' ? L('ยืนยันว่าไม่ใช่บอทไม่ผ่าน ลองติ๊กใหม่อีกครั้ง', 'The bot check didn\'t pass. Please tick it again.')
+              : c === 'rate_limited' ? L('ส่งถี่เกินไป รอสักครู่แล้วลองใหม่นะ', 'Too many messages at once. Wait a moment and try again.')
+              : c === 'invalid' ? L('ข้อมูลบางช่องไม่ถูกต้อง ลองเช็กอีกครั้ง', 'Some fields don\'t look right. Please check them.')
+              : L('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง หรือทักเพจ Facebook มาได้เลย', 'Couldn\'t send. Try again, or message us on Facebook.');
+            this.setState({ busy: false, sendErr: m, captcha: false });
+            window.SPContact.reset();
+          });
+      },
+      again: () => {
+        this.setState({ sent: false, tried: false, name: '', email: '', msg: '', hp: '', sendErr: '', captcha: false, topic: 'general' });
+        if (window.SPContact) window.SPContact.reset();
+      },
+      sentBody: L('ได้รับข้อความเรื่อง "' + topicName + '" แล้ว เดี๋ยวทีมงานจะตอบกลับไปที่ ' + email + ' นะ',
+        'Got your message about "' + topicName + '". The team will get back to you at ' + email + '.'),
+      t: {
+        navHome: L('หน้าแรก', 'HOME'),
+        navContact: L('ติดต่อเรา', 'CONTACT'),
+        kicker: L('CONTACT // ROLLAHOLIC GAMES', 'CONTACT // ROLLAHOLIC GAMES'),
+        title: L('ติดต่อทีม Shifter Punkz', 'Get in touch with Shifter Punkz'),
+        lead: L('มีคำถามเรื่องเกม หนังสือ หรืออยากร่วมงานกับเรา ส่งข้อความผ่านฟอร์มนี้ได้เลย ข้อความจะส่งตรงถึงทีมงาน', 'Questions about the game or the books, or want to work with us? Send a message here and it goes straight to the team.'),
+        formTitle: L('ส่งข้อความ', 'SEND A MESSAGE'),
+        topic: L('เรื่องที่ติดต่อ', 'TOPIC'),
+        name: L('ชื่อ', 'NAME'),
+        namePh: L('ชื่อที่ให้เราเรียก', 'What should we call you?'),
+        email: L('อีเมลสำหรับตอบกลับ', 'REPLY-TO E-MAIL'),
+        msg: L('ข้อความ', 'MESSAGE'),
+        msgPh: L('เล่ารายละเอียดได้เลย', 'Tell us what\'s up'),
+        captcha: L('ยืนยันว่าไม่ใช่บอท', 'Verify you are human'),
+        privacy: L('เราใช้อีเมลของคุณเพื่อตอบกลับข้อความนี้เท่านั้น', 'We only use your e-mail to reply to this message.'),
+        sentKicker: L('TRANSMISSION RECEIVED', 'TRANSMISSION RECEIVED'),
+        sentTitle: L('ส่งข้อความแล้ว', 'Message sent'),
+        again: L('ส่งข้อความอื่น', 'SEND ANOTHER'),
+        replyKicker: L('การตอบกลับ', 'REPLIES'),
+        replyBody: L('ปกติทีมงานจะตอบกลับทางอีเมลภายในไม่กี่วัน ถ้าเป็นเรื่องด่วน ทักเพจ Facebook มาได้เลย', 'We usually reply by e-mail within a few days. Anything urgent? Message us on Facebook.'),
+        otherKicker: L('ช่องทางอื่น', 'ELSEWHERE'),
+        otherNote: L('ติดตามข่าวสารและอัปเดตล่าสุดได้ที่เพจ', 'News and updates go out on the page first.'),
+        trpgKicker: L('ผู้เล่น TRPG', 'TRPG PLAYERS'),
+        trpgBody: L('ปัญหาเรื่องบัญชี โค้ด หรือชีตตัวละคร เลือกหัวข้อ "แจ้งปัญหาเว็บไซต์" แล้วบอกชื่อที่ใช้ในเว็บมาด้วย จะช่วยให้ตามเรื่องได้เร็วขึ้น', 'Trouble with your account, a code or a character sheet? Pick "Website problem" and tell us the name you use on the site — it helps us find it faster.')
+      }
+    };
+  }
+}
+DC.mount(Component, document.getElementById('app'));
+</script>
+</body>
+</html>
