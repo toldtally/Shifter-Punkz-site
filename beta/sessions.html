@@ -271,7 +271,7 @@ html{scroll-behavior:smooth}
                 <button type="button" onClick="{{c.askEnd}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #3A3655; background: transparent; color: #A9A5C2">{{c.endLabel}}</button>
               </sc-if>
               <sc-if value="{{c.isEnded}}" hint-placeholder-val="{{ false }}">
-                <button type="button" onClick="{{c.askReopen}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; background: #2EE6F0; color: #0B0A12">{{t.reopen}}</button>
+                <button type="button" onClick="{{c.askDup}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 0; background: #2EE6F0; color: #0B0A12">{{t.dup}}</button>
                 <a href="{{c.monitorHref}}" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid #C084FC; color: #C084FC; text-decoration: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px">{{t.openNotes}}</a>
                 <button type="button" onClick="{{c.askDel}}" style="min-height: 40px; padding: 0 14px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 13px; border: 1px solid #4A1630; background: transparent; color: #FF3D6E">{{t.del}}</button>
               </sc-if>
@@ -284,7 +284,6 @@ html{scroll-behavior:smooth}
     <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
       <p role="status" style="margin: 0; align-self: flex-start; padding: 10px 14px; background: #151225; border-left: 3px solid #FFD400; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #D8D6E8">{{toast}}</p>
     </sc-if>
-    <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8C88A6">{{t.protoNote}}</p>
   </main>
 </div>
 </template>
@@ -447,11 +446,12 @@ class Component extends DCLogic {
             : L('รหัสเชิญจะปิดถาวร ผู้เล่นทุกคนออกจาก session ตัวละครยังอยู่ในบัญชีของผู้เล่นครบ ส่วนบันทึก session ยังเปิดดูได้', 'The invite code closes for good and everyone is unseated. Characters stay in each player\'s account, and your session notes stay readable.');
           cOk = x.type === 'campaign' ? L('จบแคมเปญ', 'End campaign') : L('จบ session', 'End session'); cColor = '#FF3D6E'; cBg = '#1A0B14';
           confirm = () => this.setState({ tables: setT(x.id, { st: 'ended', lastTh: 'จบเมื่อสักครู่', lastEn: 'Ended just now' }), confirm: null, toast: L('จบ session "' + nm(x) + '" แล้ว', 'Ended "' + nm(x) + '"') });
-        } else if (mine === 'reopen') {
-          cTitle = L('เปิด session นี้ใหม่?', 'Open this session again?');
-          cBody = L('session จะกลับมาเปิดรับผู้เล่นด้วยรหัสเชิญใหม่ ฉาก NPC และบันทึกที่เตรียมไว้ยังอยู่ครบ ส่วนลำดับเทิร์นและการต่อสู้จะเริ่มใหม่ รหัสเดิม ' + x.code + ' ใช้ไม่ได้แล้ว', 'The session takes players again with a new invite code. Your scenes, NPCs and notes stay; turn order and encounters start fresh. The old code ' + x.code + ' stays closed.');
-          cOk = L('เปิดใหม่', 'Reopen'); cColor = '#2EE6F0'; cBg = '#0B1A1C';
-          confirm = () => { const c = newCode(); this.setState({ tables: setT(x.id, { st: 'idle', code: c, players: [], lastTh: 'เปิดใหม่เมื่อสักครู่', lastEn: 'Reopened just now' }), confirm: null, copied: null, toast: L('เปิด "' + nm(x) + '" ใหม่แล้ว · รหัสเชิญ ' + c, 'Reopened "' + nm(x) + '" · invite code ' + c) }); };
+        } else if (mine === 'dup') {
+          const copyName = (nm(x).slice(0, 51) + L(' (สำเนา)', ' (สำเนา)'));
+          cTitle = L('ทำสำเนา session นี้?', 'Duplicate this session?');
+          cBody = L('สร้าง session ใหม่ชื่อ "' + copyName + '" พร้อมรูปฉากทั้งหมดของ session นี้ ตั้งค่าเหมือนเดิม (รูปแบบ จำนวนที่นั่ง Session Lv) ได้รหัสเชิญใหม่ ที่นั่งว่าง ส่วน session เดิมยังจบอยู่เหมือนเดิม', 'Creates "' + copyName + '" with all of this session\'s scene pictures and the same set-up (format, seats, Session Lv), a new invite code and empty seats. This session stays ended.');
+          cOk = L('ทำสำเนา', 'Duplicate'); cColor = '#2EE6F0'; cBg = '#0B1A1C';
+          confirm = () => { const c = newCode(); const t = Object.assign({}, x, { id: 'd' + this.state.seq, th: copyName, en: copyName, code: c, st: 'idle', players: [], sessions: 0, lastTh: 'ยังไม่เคยเล่น', lastEn: 'Not played yet' }); this.setState({ tables: [t].concat(this.state.tables), seq: this.state.seq + 1, confirm: null, filter: 'all', toast: L('สร้าง "' + copyName + '" แล้ว · รหัสเชิญ ' + c, 'Created "' + copyName + '" · invite code ' + c) }); };
         } else if (mine === 'del') {
           cTitle = L('ลบ session นี้ถาวร?', 'Delete this session for good?');
           cBody = L('ประวัติการเล่นและ LIVE FEED ของ session นี้จะหายไป กู้คืนไม่ได้', 'Its session history and LIVE FEED will be gone and can\'t be recovered.');
@@ -502,7 +502,7 @@ class Component extends DCLogic {
           askReset: () => this.setState({ confirm: { id: x.id, kind: 'reset' }, toast: '' }),
           askEnd: () => this.setState({ confirm: { id: x.id, kind: 'end' }, toast: '' }),
           askDel: () => this.setState({ confirm: { id: x.id, kind: 'del' }, toast: '' }),
-          askReopen: () => this.setState({ confirm: { id: x.id, kind: 'reopen' }, toast: '' })
+          askDup: () => this.setState({ confirm: { id: x.id, kind: 'dup' }, toast: '' })
         };
       }),
       t: {
@@ -530,7 +530,7 @@ class Component extends DCLogic {
         fLvHint: 'Lv 1–20',
         nameErr: L('ตั้งชื่อ Session ก่อนสิ!', 'Give the session a name first.'),
         renameSave: L('บันทึก', 'SAVE'),
-        reopen: L('เปิด session ใหม่', 'REOPEN'),
+        dup: L('ทำสำเนา session', 'DUPLICATE'),
         renameCancel: L('ยกเลิก', 'CANCEL'),
         newNote: L('ระบบสร้างรหัสเชิญให้อัตโนมัติ session ใหม่จะอยู่ในสถานะ "พักอยู่" จนกว่าจะกดเริ่ม session', 'An invite code is generated for you. New sessions stay paused until you start a session.'),
         doCreate: L('สร้าง session', 'Create session'),
@@ -549,6 +549,6 @@ class Component extends DCLogic {
   }
 }
 </script>
-<script src="../assets/beta-sessions.js?v=98db7cdb"></script>
+<script src="../assets/beta-sessions.js?v=70d0fe98"></script>
 </body>
 </html>

@@ -326,6 +326,9 @@ def build(cfg):
             assert body.count(anchor) == 1, "Auth: card anchor missing"
             body = body.replace(anchor, SETPW + '        ' + anchor)
     js = strip_spoilers(name, js)
+    if cfg.get("beta") and out.startswith("beta/"):
+        # the prototype / beta-testing footnote is gone on the live site
+        body = re.sub(r'\s*<p [^>]*>\{\{t\.protoNote\}\}</p>', '', body)
     body = hide_emails(body, js)
     helmet = helmet.replace("</style>", EXTRA_CSS + "</style>")
     helmet = re.sub(r'\s*<script src="\./bgm\.js"></script>', '', helmet)

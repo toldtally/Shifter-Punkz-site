@@ -44,6 +44,31 @@
       }) });
     }
 
+    /* a copy for a new table: the server makes the session, then each scene picture's file is copied into the new session's folder */
+    async duplicate(x) {
+      var th = this.state.lang !== 'en', uid = this.state.profile.id;
+      this.setState({ confirm: null, toast: th ? 'กำลังทำสำเนา…' : 'Duplicating…' });
+      var r = await sb.rpc('duplicate_session', { p_session: x.id });
+      if (r.error) return this.setState({ toast: SP.err(r.error, th) });
+      var nid = r.data, ok = 0, bad = 0;
+      var imgs = await sb.from('session_images').select('url, path, title, created_at').eq('session_id', x.id).order('created_at', { ascending: true });
+      for (var it of (imgs.data || [])) {
+        try {
+          var row = { session_id: nid, url: it.url, path: null, title: it.title || '' };
+          if (it.path) {
+            var to = uid + '/' + nid + '/' + it.path.split('/').pop();
+            var cp = await sb.storage.from('scenes').copy(it.path, to);
+            if (cp.error) throw cp.error;
+            row.path = to; row.url = sb.storage.from('scenes').getPublicUrl(to).data.publicUrl;
+          }
+          var ins = await sb.from('session_images').insert(row);
+          if (ins.error) { if (row.path) sb.storage.from('scenes').remove([row.path]); throw ins.error; }
+          ok++;
+        } catch (e) { bad++; }
+      }
+      this.setState({ filter: 'all', toast: (th ? 'ทำสำเนาแล้ว · รูปฉาก ' + ok + ' รูป' : 'Duplicated · ' + ok + ' scene pictures') + (bad ? (th ? ' · คัดลอกไม่ได้ ' + bad + ' รูป' : ' · ' + bad + ' could not be copied') : '') });
+      await this.load();
+    }
     renameSession(x, v) {
       var n = String(v || '').trim().slice(0, 60);
       if (!n) return;
@@ -84,7 +109,7 @@
         if (mine === 'start') patch.confirm = () => this.act(() => sb.rpc('start_session', { p_session: x.id }), 'เริ่ม session "' + nm + '" แล้ว', 'Session started: ' + nm);
         if (mine === 'reset') patch.confirm = () => this.act(() => sb.rpc('regenerate_invite_code', { p_session: x.id }), 'สร้างรหัสเชิญใหม่แล้ว', 'New invite code ready');
         if (mine === 'end') patch.confirm = () => this.act(() => sb.rpc('end_session', { p_session: x.id }), (x.type === 'campaign' ? 'จบแคมเปญ "' : 'จบ session "') + nm + '" แล้ว · บันทึกยังเปิดดูได้', 'Ended "' + nm + '" · notes stay readable');
-        if (mine === 'reopen') patch.confirm = () => this.act(() => sb.rpc('reopen_session', { p_session: x.id }).then((r) => { if (!r.error) this._reopened = r.data; return r; }), 'เปิด "' + nm + '" ใหม่แล้ว · ดูรหัสเชิญใหม่ที่การ์ด', 'Reopened "' + nm + '" · the new invite code is on its card');
+        if (mine === 'dup') patch.confirm = () => this.duplicate(x);
         if (mine === 'del') patch.confirm = () => this.act(async () => { try { await SP.removeFolder('scenes', this.state.profile.id + '/' + x.id); } catch (e) {} return sb.from('sessions').delete().eq('id', x.id); }, 'ลบ "' + nm + '" แล้ว', 'Deleted "' + nm + '"');
         return Object.assign({}, c, patch);
       });
